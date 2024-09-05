@@ -4,9 +4,8 @@ pragma solidity >=0.8.0 <0.9.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract TurtleToken is ERC20, ERC20Permit, Ownable, ReentrancyGuard {
+contract TurtleToken is ERC20, ERC20Permit, Ownable {
     // - 1 ETH당 TURT 토큰 수 (18자리 소수점)
     uint256 public exchangeRate;
 
@@ -20,7 +19,7 @@ contract TurtleToken is ERC20, ERC20Permit, Ownable, ReentrancyGuard {
     // - 매개변수:
     //   - initialSupply: 초기 토큰 공급량
     //   - _exchangeRate: 초기 환율 설정
-    constructor(uint256 initialSupply, uint256 _exchangeRate) ERC20("TurtleToken", "TURT") ERC20Permit("TurtleToken") Ownable(msg.sender) {
+    constructor(uint256 initialSupply, uint256 _exchangeRate) ERC20("TurtleToken", "TURT") ERC20Permit("TurtleToken") Ownable() {
         _mint(address(this), initialSupply);
         exchangeRate = _exchangeRate;
     }
@@ -28,7 +27,7 @@ contract TurtleToken is ERC20, ERC20Permit, Ownable, ReentrancyGuard {
     // - ETH를 TURT로 환전하는 함수
     // - payable: ETH를 받을 수 있음
     // - nonReentrant: 재진입 공격 방지
-    function buyTokens() public payable nonReentrant {
+    function buyTokens() public payable {
         require(msg.value > 0, "Must send ETH to exchange");
         // - 환전할 토큰 양 계산 (18자리 소수점 고려)
         uint256 tokenAmount = (msg.value * exchangeRate) / 1e18;
@@ -43,7 +42,7 @@ contract TurtleToken is ERC20, ERC20Permit, Ownable, ReentrancyGuard {
     // - TURT를 ETH로 환전하는 함수
     // - 매개변수:
     //   - tokenAmount: 판매할 토큰 양
-    function sellTokens(uint256 tokenAmount) public nonReentrant {
+    function sellTokens(uint256 tokenAmount) public {
         require(tokenAmount > 0, "Must sell a positive amount of tokens");
         require(balanceOf(msg.sender) >= tokenAmount, "Insufficient token balance");
 
