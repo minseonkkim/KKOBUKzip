@@ -1,4 +1,4 @@
-package com.turtlecoin.auctionservice.auction;
+package com.turtlecoin.auctionservice.domain.auction;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

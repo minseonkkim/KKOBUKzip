@@ -4,6 +4,18 @@ server:
 spring:
   application:
     name: auction-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/kkobuk_auction
+    username: root
+    password: ssafy
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+      hibernate:
+        ddl-auto: update
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
 
 eureka:
   instance:
