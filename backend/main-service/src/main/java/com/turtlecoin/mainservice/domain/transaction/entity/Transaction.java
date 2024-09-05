@@ -3,15 +3,18 @@ package com.turtlecoin.mainservice.domain.transaction.entity;
 import com.turtlecoin.mainservice.domain.transactionphoto.entity.TransactionPhoto;
 import com.turtlecoin.mainservice.domain.transactiontag.entity.TransactionTag;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
-import com.turtlecoin.mainservice.domain.user.entity.BaseEntity;
+import com.turtlecoin.mainservice.domain.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Transaction extends BaseEntity {
     @Id @GeneratedValue
     private Long id;
@@ -19,6 +22,7 @@ public class Transaction extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
     private String content;
 
     @Column(nullable = false)

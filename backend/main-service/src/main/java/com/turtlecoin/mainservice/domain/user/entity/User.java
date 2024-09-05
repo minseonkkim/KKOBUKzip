@@ -1,5 +1,6 @@
 package com.turtlecoin.mainservice.domain.user.entity;
 
+import com.turtlecoin.mainservice.domain.global.entity.BaseEntity;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,10 +12,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Builder
 public class User extends BaseEntity {
     @Id @GeneratedValue
     @Column(unique = true, nullable = false)

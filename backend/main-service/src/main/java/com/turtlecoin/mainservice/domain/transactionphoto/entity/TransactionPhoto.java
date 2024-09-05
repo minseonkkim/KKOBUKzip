@@ -1,12 +1,15 @@
 package com.turtlecoin.mainservice.domain.transactionphoto.entity;
 
 import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
-import com.turtlecoin.mainservice.domain.user.entity.BaseEntity;
+import com.turtlecoin.mainservice.domain.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TransactionPhoto extends BaseEntity {
     @Id @GeneratedValue
     private Long id;

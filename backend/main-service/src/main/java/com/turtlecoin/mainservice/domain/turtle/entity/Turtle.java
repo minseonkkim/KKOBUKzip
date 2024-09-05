@@ -2,10 +2,12 @@ package com.turtlecoin.mainservice.domain.turtle.entity;
 
 import com.turtlecoin.mainservice.domain.turtlephoto.entity.TurtlePhoto;
 import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
-import com.turtlecoin.mainservice.domain.user.entity.BaseEntity;
+import com.turtlecoin.mainservice.domain.global.entity.BaseEntity;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Turtle extends BaseEntity {
     @Id @GeneratedValue
     private Long id;

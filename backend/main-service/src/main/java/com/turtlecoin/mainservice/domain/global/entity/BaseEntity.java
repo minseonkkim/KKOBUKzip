@@ -1,4 +1,4 @@
-package com.turtlecoin.mainservice.domain.user.entity;
+package com.turtlecoin.mainservice.domain.global.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
