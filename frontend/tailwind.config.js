@@ -6,6 +6,7 @@ export default {
       fontFamily: {
         'dnf-bitbit': ["DNFBitBitv2"],
         KoPubDotum: ["KoPub Dotum"],
+        stardust: ["PFStardust"],
       },
     },
   },
