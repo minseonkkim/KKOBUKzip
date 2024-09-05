@@ -1,0 +1,4 @@
+# utils
+#
+# 유틸리티용 함수를 저장하는 폴더
+# 하위 폴더로 해당 도메인(ex. utils/user/confirm_email.ts)을 생성하여 사용
