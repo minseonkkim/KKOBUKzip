@@ -1,20 +1,16 @@
+@charset "UTF-8";
+@layer;
+@import "//cdn.jsdelivr.net/npm/font-kopub@1.0/kopubdotum.min.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import "//cdn.jsdelivr.net/npm/font-kopub@1.0/kopubdotum.min.css";
 
 @font-face {
     font-family: 'DNFBitBitv2';
     font-style: normal;
     font-weight: 300;
     src: url('//cdn.df.nexon.com/img/common/font/DNFBitBitv2.otf') format('opentype');
-}
-
-@layer utilities {
-    .font-KoPubDotum {
-        font-family: 'KoPubDotum', sans-serif;
-    }
 }
 
 body {
