@@ -28,13 +28,13 @@ react-multi-carousel
 
 
 -------------------------------
--DDD 에 맞게-
+-DDD 에 맞게 프로젝트 구성-
 
 컴포넌트 폴더 관리 컨셉
 상위 폴더(ex. components)
-도메인 폴더 - 사용자(user), 판매(sales), 경매(auction), 서류(document), 채팅(chat), 관리자(admin)
-// 필요에 의해 추가 가능
-컴포넌트
+도메인 폴더 - 사용자(user), 판매(sale), 경매(auction), 서류(document), 채팅(chat), 관리자(admin)
+// 필요에 의해 추가 가능, 채팅은 애매한...데 일단 분리
+하위에 컴포넌트
 
 예시(gpt생성)
 src/
@@ -74,3 +74,15 @@ src/
     tailwind.css
   App.tsx
   index.tsx
+
+
+  # 페이지 (노션 개인 항목의 페이지 파일 참조) => be랑 용어 통일
+  # 메인 Main
+  # 회원가입 Join
+  # 로그인 Login
+  # 유저(마이) User
+  # 채팅 Chat
+  # 판매 Transaction
+  # 경매 -> 낙찰 Auction
+  # 서류 (증식양도양수폐사질병) Document
+  # 관리자 Admin
