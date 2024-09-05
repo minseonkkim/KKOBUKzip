@@ -5,7 +5,7 @@ export default {
     extend: {
       fontFamily: {
         'dnf-bitbit': ["DNFBitBitv2"],
-        'KoPubDotum': ["KoPub Dotum"],
+        KoPubDotum: ["KoPub Dotum"],
       },
     },
   },
