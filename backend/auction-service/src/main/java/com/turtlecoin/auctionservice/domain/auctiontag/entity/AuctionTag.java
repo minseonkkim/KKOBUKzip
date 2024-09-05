@@ -1,4 +1,4 @@
-package com.turtlecoin.auctionservice.domain.auctiontag;
+package com.turtlecoin.auctionservice.domain.auctiontag.entity;
 
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.global.entity.BaseEntity;

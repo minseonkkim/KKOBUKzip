@@ -12,13 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AuctionPhoto extends BaseEntity {
     @Id @GeneratedValue
-    @Column(unique = true, nullable = false)
     private Long id;
 
     @Column(nullable = false)
     private String imageAddress;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "auction_id", nullable = false)
+    @JoinColumn(name = "transaction_id", nullable = false)
     private Auction auction;
 }

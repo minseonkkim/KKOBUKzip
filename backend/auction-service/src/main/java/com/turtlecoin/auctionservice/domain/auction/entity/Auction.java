@@ -1,7 +1,7 @@
 package com.turtlecoin.auctionservice.domain.auction.entity;
 
 import com.turtlecoin.auctionservice.domain.auctionphoto.entity.AuctionPhoto;
-import com.turtlecoin.auctionservice.domain.auctiontag.AuctionTag;
+import com.turtlecoin.auctionservice.domain.auctiontag.entity.AuctionTag;
 import com.turtlecoin.auctionservice.domain.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
