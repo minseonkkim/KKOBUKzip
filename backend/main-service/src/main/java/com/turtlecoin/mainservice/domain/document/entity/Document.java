@@ -2,6 +2,7 @@ package com.turtlecoin.mainservice.domain.document.entity;
 
 import java.util.UUID;
 
+import com.turtlecoin.mainservice.domain.document.dto.DocumentListDto;
 import com.turtlecoin.mainservice.domain.document.dto.TempDto;
 
 import jakarta.persistence.Column;
@@ -9,18 +10,22 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Document {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String documentHash;
 
 	@Column(nullable = false)
@@ -31,6 +36,9 @@ public class Document {
 
 	@Column(nullable = false)
 	private DocType docType;
+
+	@Column(nullable = false)
+	private String applicant;
 
 	public TempDto toTempDto(){
 		TempDto tempDto = new TempDto(documentHash, turtleUUID, docType);
