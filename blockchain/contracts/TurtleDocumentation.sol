@@ -66,4 +66,10 @@ contract TurtleDocumentation is Ownable {
     }
 
     mapping(string => Turtle) private ownerToTurtle;
+
+    // event 모음
+    event TurtleRegistered(string turtleId, string applicant);
+    event TurtleReproduction(string turtleId, string applicant);
+    event TurtleTransferred(string turtleId, string grantApplicant, string assignApplicant);
+    event TurtleDeath(string turtleId, string applicant);
 }
