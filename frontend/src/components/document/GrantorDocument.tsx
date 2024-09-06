@@ -8,7 +8,7 @@ interface GrantorDocumentDataType {
   address: string;
 }
 
-interface fetchData {
+interface FetchData {
   docType: "양도신청서";
   applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d";
   detail: {
@@ -37,7 +37,7 @@ function GrantorDocument() {
   };
 
   const sendGrantorDocRequest = () => {
-    const docs: fetchData = {
+    const docs: FetchData = {
       docType: "양도신청서",
       applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d",
       detail: {

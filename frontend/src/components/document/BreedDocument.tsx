@@ -13,7 +13,7 @@ interface BreedDocumentDataType {
   location: string;
 }
 
-interface fetchData {
+interface FetchData {
   data: {
     detail: BreedDocumentDataType;
     docType: "인공증식증명서";
@@ -56,7 +56,7 @@ function BreedDocument() {
   };
 
   const sendBreedDocRequest = () => {
-    const docs: fetchData = {
+    const docs: FetchData = {
       // 신청인 정보는 applicant에서 넘어가기에 작성 안 해도 됨
       data: {
         docType: "인공증식증명서",
