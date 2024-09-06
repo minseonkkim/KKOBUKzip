@@ -1,7 +1,5 @@
 package com.turtlecoin.mainservice.domain.transaction.entity;
 
-import com.turtlecoin.mainservice.domain.transactionphoto.entity.TransactionPhoto;
-import com.turtlecoin.mainservice.domain.transactiontag.entity.TransactionTag;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import com.turtlecoin.mainservice.domain.global.entity.BaseEntity;
 import jakarta.persistence.*;

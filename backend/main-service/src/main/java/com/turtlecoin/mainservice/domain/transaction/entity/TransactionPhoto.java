@@ -1,6 +1,5 @@
-package com.turtlecoin.mainservice.domain.transactionphoto.entity;
+package com.turtlecoin.mainservice.domain.transaction.entity;
 
-import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
 import com.turtlecoin.mainservice.domain.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

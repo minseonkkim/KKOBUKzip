@@ -1,6 +1,5 @@
 package com.turtlecoin.mainservice.domain.turtle.entity;
 
-import com.turtlecoin.mainservice.domain.turtlephoto.entity.TurtlePhoto;
 import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
 import com.turtlecoin.mainservice.domain.global.entity.BaseEntity;
 import com.turtlecoin.mainservice.domain.user.entity.User;
