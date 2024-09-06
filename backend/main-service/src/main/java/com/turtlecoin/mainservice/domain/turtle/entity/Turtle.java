@@ -17,7 +17,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Turtle extends BaseEntity {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -48,7 +48,7 @@ public class Turtle extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
-    private UUID uuid;
+    private String uuid;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Transaction transaction;

@@ -5,17 +5,24 @@ spring:
   application:
     name: main-service
   datasource:
-    url: jdbc:mysql://localhost:3306/kkobuk_main
-    username: root
-    password: ssafy
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    jpa:
+    main:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/kkobuk_main
+      username: turtlecoin
+      password: turtlecoin
+    meta:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/meta
+      username: turtlecoin
+      password: turtlecoin
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
       hibernate:
-        ddl-auto: update
-      show-sql: true
-      properties:
-        hibernate:
-          format_sql: true
+        format_sql: true
 
 eureka:
   instance:
