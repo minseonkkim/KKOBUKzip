@@ -7,7 +7,8 @@ interface GrantorDocumentDataType {
   phoneNumber: string;
   address: string;
 }
-interface fetchData {
+
+interface FetchData {
   docType: "양도신청서";
   applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d";
   detail: {
@@ -36,7 +37,7 @@ function GrantorDocument() {
   };
 
   const sendGrantorDocRequest = () => {
-    const docs: fetchData = {
+    const docs: FetchData = {
       docType: "양도신청서",
       applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d",
       detail: {
@@ -116,7 +117,7 @@ function GrantorDocument() {
             </button>
             <input
               type="text"
-              className="w-1/3 px-3 py-2 border rounded"
+              className="w-1/3 px-3 py-2 border rounded ml-2"
               placeholder="기본주소"
               readOnly
               onChange={(evt) => changeHandle("address", evt)}
@@ -128,7 +129,7 @@ function GrantorDocument() {
               onChange={(evt) => {
                 setDetailLocation(evt.target.value);
               }}
-              className="w-1/3 px-3 py-2 border rounded"
+              className="w-1/3 px-3 py-2 border rounded ml-2"
               placeholder="상세주소"
             />
           </div>

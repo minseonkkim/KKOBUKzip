@@ -11,6 +11,9 @@ interface PostcodeData {
   autoJibunAddress?: string;
 }
 
+// kakaomaps의 api를 사용하여
+// 주소 및 우편번호를 return하는 custom hook
+// postcodeData 내부에 어지간한거 다 있다.
 export const usePostcodeSearch = () => {
   const [postcodeData, setPostcodeData] = useState<PostcodeData | null>(null);
   const [guideText, setGuideText] = useState<string>("");
