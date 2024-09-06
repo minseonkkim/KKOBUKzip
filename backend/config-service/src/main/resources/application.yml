@@ -3,8 +3,19 @@ server:
 spring:
   application:
     name: config-service
-  cloud:
-    config:
-      server:
-        git:
-          uri: file:///C:\Users\SSAFY\Desktop\repo
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+#  cloud:
+#    config:
+#      server:
+#        git:
+#          uri: file:///C:\Users\SSAFY\Desktop\repo
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

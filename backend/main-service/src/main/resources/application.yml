@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: main-service
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
   datasource:
     main:
       driver-class-name: com.mysql.cj.jdbc.Driver
@@ -32,3 +37,9 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
