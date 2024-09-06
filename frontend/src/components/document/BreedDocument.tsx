@@ -24,6 +24,7 @@ interface fetchData {
   shelterSpecification: "--사진--"; // 로직 작성하고 이미지데이터로 변경할 것
 }
 // 특이사항
+// 신청인 정보 동적으로 할당할 것(아마 store에서)
 // 구비서류부터 안했음
 
 function BreedDocument() {
@@ -56,6 +57,7 @@ function BreedDocument() {
 
   const sendBreedDocRequest = () => {
     const docs: fetchData = {
+      // 신청인 정보는 applicant에서 넘어가기에 작성 안 해도 됨
       data: {
         docType: "인공증식증명서",
         applicant: "d271c7d8-3f7b-4d4e-8a9e-d60f896b84cb", // storage에서 긁어올 것
@@ -82,38 +84,6 @@ function BreedDocument() {
       <Helmet>
         <title>인공증식서류작성</title>
       </Helmet>
-
-      {/* 신청인 정보 */}
-      <div className="mb-8">
-        <h3 className="text-xl font-semibold mb-4">신청인 정보</h3>
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-          <div className="flex">
-            <span className="w-1/3 font-medium">성명</span>
-            <span className="w-2/3">김씨피</span>
-          </div>
-          <div className="flex">
-            <span className="w-1/3 font-medium">국적</span>
-            <span className="w-2/3">내국인</span>
-          </div>
-          <div className="flex">
-            <span className="w-1/3 font-medium">전화번호</span>
-            <span className="w-2/3">010-3333-3333</span>
-          </div>
-          <div className="flex">
-            <span className="w-1/3 font-medium">생년월일</span>
-            <span className="w-2/3">2024-01-02</span>
-          </div>
-          <div className="flex">
-            <span className="w-1/3 font-medium">이메일</span>
-            <span className="w-2/3">ssafy@ssafy.com</span>
-          </div>
-          <div className="flex">
-            <span className="w-1/3 font-medium">주소</span>
-            <span className="w-2/3">광주광역시 하남산단6번로 107</span>
-          </div>
-        </div>
-      </div>
-      {/* 신청인 정보 끝*/}
 
       {/* 허가 정보 */}
       <div className="mb-8">
