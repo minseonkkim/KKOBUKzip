@@ -5,11 +5,7 @@ import BackgroundImg from "../../assets/Side_View_Scene.gif";
 import TurtleMoving from "../../assets/turtle_moving.gif";
 import TurtleStop from "../../assets/turtle_stop.gif";
 import { useEffect, useState } from "react";
-
-interface Turtle {
-  id: number;
-  name: string;
-}
+import { Link } from "react-router-dom";
 
 function MainPage() {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -53,12 +49,16 @@ function MainPage() {
       <div className="absolute top-[160px] left-0 w-full text-center flex flex-col items-center">
         <span className="font-dnf-bitbit text-[46px] text-white mb-[25px]">당신만의 거북이를 찾아보세요!</span>
         <div className="flex flex-row">
-        <div className="bg-[#dfdfdf] shadow-[3px_3px_0px_#858585] rounded-[10px] px-4 py-2 flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95 mr-7">
-          <span className="font-bold text-gray-500 text-[25px] tracking-widest">판매중인 거북이 →</span>
-        </div>
-        <div className="bg-[#dfdfdf] shadow-[3px_3px_0px_#858585] rounded-[10px] px-4 py-2 flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95">
-          <span className="font-bold text-gray-500 text-[25px] tracking-widest">경매중인 거북이 →</span>
-        </div>
+        <Link to="/transaction-list">
+          <div className="bg-[#dfdfdf] shadow-[3px_3px_0px_#858585] rounded-[10px] px-4 py-2 flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95 mr-7">
+            <span className="font-bold text-gray-500 text-[25px] tracking-widest">판매중인 거북이 →</span>
+          </div>
+        </Link>
+        <Link to="/auction-list">
+          <div className="bg-[#dfdfdf] shadow-[3px_3px_0px_#858585] rounded-[10px] px-4 py-2 flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95">
+            <span className="font-bold text-gray-500 text-[25px] tracking-widest">경매중인 거북이 →</span>
+          </div>
+        </Link>
       </div>
       </div>
 
