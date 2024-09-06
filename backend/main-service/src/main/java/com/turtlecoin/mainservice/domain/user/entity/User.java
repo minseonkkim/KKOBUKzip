@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class User extends BaseEntity {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
     private Long id;
 
@@ -46,7 +46,7 @@ public class User extends BaseEntity {
     private String profileImage;
 
     @Column(nullable = false)
-    private UUID uuid;
+    private String uuid;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

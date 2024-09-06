@@ -2,6 +2,8 @@ package com.turtlecoin.mainservice.domain.document.entity;
 
 import java.util.UUID;
 
+import com.turtlecoin.mainservice.domain.document.dto.TempDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,8 +27,13 @@ public class Document {
 	private Progress progress;
 
 	@Column(nullable = false)
-	private UUID turtleUUID;
+	private String turtleUUID;
 
 	@Column(nullable = false)
 	private DocType docType;
+
+	public TempDto toTempDto(){
+		TempDto tempDto = new TempDto(documentHash, turtleUUID, docType);
+		return tempDto;
+	}
 }
