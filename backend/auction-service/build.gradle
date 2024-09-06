@@ -37,6 +37,9 @@ dependencies {
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	//rabbit mq
+	implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp'
 }
 
 dependencyManagement {
