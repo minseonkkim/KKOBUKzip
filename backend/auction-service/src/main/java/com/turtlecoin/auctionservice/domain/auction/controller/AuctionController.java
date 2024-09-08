@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -78,5 +79,14 @@ public class AuctionController {
         }
 
         return new ResponseEntity<>(ResponseVO.success("auctions", auctions), HttpStatus.OK);
+    }
+
+    // 맞는지 체크 필요
+    @GetMapping("/{auctionId}")
+    // PathVariable("auctionId")
+    public ResponseEntity<?> getAuctionById(@PathVariable Long auctionId) {
+        Optional<Auction> auction = auctionService.getAuctionWithTurtleInfo(auctionId);
+
+        return auction.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
