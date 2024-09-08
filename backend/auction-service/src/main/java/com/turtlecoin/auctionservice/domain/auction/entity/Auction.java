@@ -44,8 +44,10 @@ public class Auction extends BaseEntity {
     private Long turtleId;
 
     @OneToMany(mappedBy = "auction")
+    @Builder.Default
     private List<AuctionPhoto> auctionPhotos = new ArrayList<>();
 
     @OneToMany(mappedBy = "auction")
+    @Builder.Default
     private List<AuctionTag> tags = new ArrayList<>();
 }
