@@ -25,7 +25,18 @@ function App() {
 
           {/* 이하 다른 도메인 자유롭게 수정해주세요... path 라던가... */}
           {/* Document Domain */}
-          <Route path="/doc-form" element={<DocumentFormPage />} />
+          <Route
+            path="/doc-form/transfer-acquisition" // 양수/양도 페이지
+            element={<DocumentFormPage />}
+          />
+          <Route
+            path="/doc-form/breed" // 증식페이지
+            element={<DocumentFormPage />}
+          />
+          <Route
+            path="/doc-form/death" // 사망 페이지
+            element={<DocumentFormPage />}
+          />
           <Route path="/doc-list" element={<DocumentListPage />} />
 
           {/* Auction Domain - 경매 */}

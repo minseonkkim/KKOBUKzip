@@ -5,13 +5,9 @@ import java.util.UUID;
 import com.turtlecoin.mainservice.domain.document.dto.DocumentListDto;
 import com.turtlecoin.mainservice.domain.document.dto.TempDto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,12 +24,14 @@ public class Document {
 	@Column(nullable = true)
 	private String documentHash;
 
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Progress progress;
 
 	@Column(nullable = false)
 	private String turtleUUID;
 
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private DocType docType;
 
@@ -43,5 +41,11 @@ public class Document {
 	public TempDto toTempDto(){
 		TempDto tempDto = new TempDto(documentHash, turtleUUID, docType);
 		return tempDto;
+	}
+
+	public void assignHash(String hash){
+		if(documentHash == null && hash != null){
+			documentHash = hash;
+		}
 	}
 }
