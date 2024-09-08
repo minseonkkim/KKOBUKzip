@@ -72,9 +72,9 @@ contract TurtleDocumentation is Ownable {
 
     // event 모음
     event TurtleRegistered(string turtleId, string applicant);
-    event TurtleMultiplication(string turtleId, string applicant, bytes32 turtleHash);
-    event TurtleTransferred(string turtleId, string grantApplicant, string assignApplicant, bytes32 turtleHash);
-    event TurtleDeath(string turtleId, string applicant, bytes32 turtleHash);
+    event TurtleMultiplication(string turtleId, string applicant, bytes32 documentHash);
+    event TurtleTransferred(string turtleId, string grantApplicant, string assignApplicant, bytes32 docuemntHash);
+    event TurtleDeath(string turtleId, string applicant, bytes32 documentHash);
 
     // (관리자용) 거북이 추가
     function registerTurtle(string memory _turtleId, string memory _applicant) public {
@@ -102,26 +102,88 @@ contract TurtleDocumentation is Ownable {
     ) public returns (bytes32) {
         require(!turtles[_turtleId].exists, "Turtle already registered");
 
-        bytes32 turtleHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
+        bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
 
         Turtle storage newTurtle = turtles[_turtleId];
-        newTurtle.multiplicationDoc[turtleHash].applicant = _applicant;
-        newTurtle.multiplicationDoc[turtleHash].count = _count;
-        newTurtle.multiplicationDoc[turtleHash].purpose = _purpose;
-        newTurtle.multiplicationDoc[turtleHash].location = _location;
-        newTurtle.multiplicationDoc[turtleHash].fatherId = _fatherId;
-        newTurtle.multiplicationDoc[turtleHash].motherId = _motherId;
-        newTurtle.multiplicationDoc[turtleHash].locationSpecification = _locationSpecification;
-        newTurtle.multiplicationDoc[turtleHash].multiplicationMethod = _multiplicationMethod;
-        newTurtle.multiplicationDoc[turtleHash].shelterSpecification = _shelterSpecification;
+        newTurtle.multiplicationDoc[documentHash].applicant = _applicant;
+        newTurtle.multiplicationDoc[documentHash].count = _count;
+        newTurtle.multiplicationDoc[documentHash].purpose = _purpose;
+        newTurtle.multiplicationDoc[documentHash].location = _location;
+        newTurtle.multiplicationDoc[documentHash].fatherId = _fatherId;
+        newTurtle.multiplicationDoc[documentHash].motherId = _motherId;
+        newTurtle.multiplicationDoc[documentHash].locationSpecification = _locationSpecification;
+        newTurtle.multiplicationDoc[documentHash].multiplicationMethod = _multiplicationMethod;
+        newTurtle.multiplicationDoc[documentHash].shelterSpecification = _shelterSpecification;
 
-        emit TurtleMultiplication(_turtleId, _applicant, turtleHash);
+        emit TurtleMultiplication(_turtleId, _applicant, documentHash);
 
-        return turtleHash;
+        return documentHash;
     }
 
     // 거북이 인공증식 서류 조회
-    function searchTutleMultiplicationDocument(string memory _turtleId, bytes32 _hash) public view returns (Multiplication memory) {
-        return turtles[_turtleId].multiplicationDoc[_hash];
+    function searchTutleMultiplicationDocument(string memory _turtleId, bytes32 _documentHash) public view returns (Multiplication memory) {
+        return turtles[_turtleId].multiplicationDoc[_documentHash];
+    }
+
+    // 거북이 양수 서류 등록
+    function turtleAssigneeDocument(string memory _turtleId, string memory _applicant, string memory _assigneeId, uint8 _count, string memory _transferReason, string memory purpose) public returns (bytes32) {
+        bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
+
+        turtles[_turtleId].transferDocs[documentHash].assignApplicant = _applicant;
+        turtles[_turtleId].transferDocs[documentHash].assigneeId = _assigneeId;
+        turtles[_turtleId].transferDocs[documentHash].count = _count;
+        turtles[_turtleId].transferDocs[documentHash].transferReason = _transferReason;
+        turtles[_turtleId].transferDocs[documentHash].purpose = purpose;
+
+        emit TurtleTransferred(_turtleId, _applicant, _assigneeId, documentHash);
+
+        return documentHash;
+    }
+
+    /**
+    * 거북이 양도 서류 등록의 경우에는 아래의 경우를 고려하여 함수를 수정해야 할 것으로 판단됨.
+    * => 거북이 양수 서류 등록 과정에 리턴받은 해시값을 양도 서류 등록 함수 매개변수로 전달하여 기등록된 거북이 양수양도 서류에 정보 추가하는 형식으로 구현할 것 고려
+     */
+    
+    // 거북이 양도 서류 등록
+    function turtleGrantorDocument(string memory _turtleId, string memory _applicant, string memory _grantorId, string memory _aquisition, string memory _fatherId, string memory _motherId) public returns (bytes32) {
+        bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
+
+        turtles[_turtleId].transferDocs[documentHash].grantApplicant = _applicant;
+        turtles[_turtleId].transferDocs[documentHash].grantorId = _grantorId;
+        turtles[_turtleId].transferDocs[documentHash].aquisition = _aquisition;
+        turtles[_turtleId].transferDocs[documentHash].fatherId = _fatherId;
+        turtles[_turtleId].transferDocs[documentHash].motherId = _motherId;
+
+        emit TurtleTransferred(_turtleId, _applicant, _grantorId, documentHash);
+
+        return documentHash;
+    }
+
+    // 거북이 양도양수 서류 조회
+    function searchTurtleTransferDocument(string memory _turtleId, bytes32 _documentHash) public view returns (Transfer memory) {
+        return turtles[_turtleId].transferDocs[_documentHash];
+    }
+
+    // 거북이 폐사질병 서류 등록
+    function registeTurtlerDeathDocument(string memory _turtleId, string memory _applicant, string memory _shelter, uint8 _count, string memory _deathReason, string memory _plan, string memory _deathImage, string memory _diagnosis) public returns (bytes32) {
+        bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
+
+        turtles[_turtleId].deathDoc[documentHash].applicant = _applicant;
+        turtles[_turtleId].deathDoc[documentHash].shelter = _shelter;
+        turtles[_turtleId].deathDoc[documentHash].count = _count;
+        turtles[_turtleId].deathDoc[documentHash].deathReason = _deathReason;
+        turtles[_turtleId].deathDoc[documentHash].plan = _plan;
+        turtles[_turtleId].deathDoc[documentHash].deathImage = _deathImage;
+        turtles[_turtleId].deathDoc[documentHash].diagnosis = _diagnosis;
+
+        emit TurtleDeath(_turtleId, _applicant, documentHash);
+
+        return documentHash;
+    }
+
+    // 거북이 폐사질병 서류 조회
+    function searchTurtleDeathDocument(string memory _turtleId, bytes32 _documentHash) public view returns (Death memory) {
+        return turtles[_turtleId].deathDoc[_documentHash];
     }
 }
