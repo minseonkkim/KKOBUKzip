@@ -29,6 +29,10 @@ spring:
       hibernate:
         format_sql: true
 
+  batch:
+    job:
+      enabled: false
+
 eureka:
   instance:
     prefer-ip-address: true
