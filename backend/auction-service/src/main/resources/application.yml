@@ -11,16 +11,16 @@ spring:
     password: guest
   datasource:
     url: jdbc:mysql://localhost:3306/kkobuk_auction
-    username: root
-    password: ssafy
+    username: turtlecoin
+    password: turtlecoin
     driver-class-name: com.mysql.cj.jdbc.Driver
-    jpa:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
       hibernate:
-        ddl-auto: update
-      show-sql: true
-      properties:
-        hibernate:
-          format_sql: true
+        format_sql: true
 
 eureka:
   instance:
@@ -36,3 +36,8 @@ management:
     web:
       exposure:
         include: '*'
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
