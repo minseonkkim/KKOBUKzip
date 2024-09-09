@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.turtlecoin.mainservice.domain.document.dto.AssignDocumentRequest;
 import com.turtlecoin.mainservice.domain.document.dto.BreedingDocumentRequest;
 import com.turtlecoin.mainservice.domain.document.dto.DeathDocumentRequest;
+import com.turtlecoin.mainservice.domain.document.dto.DocumentApprovalDto;
 import com.turtlecoin.mainservice.domain.document.dto.DocumentListDto;
 import com.turtlecoin.mainservice.domain.document.dto.GrantDocumentRequest;
 import com.turtlecoin.mainservice.domain.document.dto.TempDto;
@@ -94,6 +95,10 @@ public class DocumentController {
 				.progress(Progress.DOCUMENT_REVIEWING)
 				.turtleUUID(turtleUUID)
 				.docType(DocType.BREEDING)
+				/*
+							유저 서비스 구현되면 꼭 추가 해줘야 함!!!!!!!!!!!!!!!!!!!!!!1
+				 */
+				.applicant("dump")
 				.build();
 			documentService.save(document);
 		}catch(Exception e){
@@ -203,6 +208,10 @@ public class DocumentController {
 				.progress(Progress.DOCUMENT_REVIEWING)
 				.turtleUUID(turtleUUID)
 				.docType(DocType.TRANSFER)
+				/*
+							유저 서비스 구현되면 꼭 추가 해줘야 함!!!!!!!!!!!!!!!!!!!!!!1
+				 */
+				.applicant("dump")
 				.build();
 			documentService.save(document);
 
@@ -272,6 +281,10 @@ public class DocumentController {
 				.progress(Progress.DOCUMENT_REVIEWING)
 				.turtleUUID(turtleUUID)
 				.docType(DocType.DEATH)
+				/*
+							유저 서비스 구현되면 꼭 추가 해줘야 함!!!!!!!!!!!!!!!!!!!!!!1
+				 */
+				.applicant("dump")
 				.build();
 			documentService.save(document);
 
@@ -291,7 +304,7 @@ public class DocumentController {
 			// 관리자가 확인 중인 서류를 모두 조회
 			documentList = documentService.getDocumentList();
 		}catch(Exception e){
-			return new ResponseEntity<>(ResponseVO.failure("서류 등록에 실패했습니다.", e.getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ResponseVO.failure("서류 조회에 실패했습니다.", e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 
 		return new ResponseEntity<>(ResponseVO.success("data", documentList), HttpStatus.OK);
@@ -306,5 +319,17 @@ public class DocumentController {
 		TempDto tempDto = documentService.getDocument(documentHash, turtleUUID);
 
 		return new ResponseEntity<>(ResponseVO.success("메시지", tempDto), HttpStatus.OK);
+	}
+
+	// 서류 승인 또는 반려
+	@PostMapping("/approve")
+	public ResponseEntity<?> approveDocument(@RequestBody DocumentApprovalDto documentApprovalDto) {
+		try{
+
+		}catch(Exception e){
+			return new ResponseEntity<>(ResponseVO.failure("서류 처리에 실패했습니다.", e.getMessage()), HttpStatus.BAD_REQUEST);
+		}
+
+		return new ResponseEntity<>(ResponseVO.success("서류 처리에 성공했습니다."), HttpStatus.OK);
 	}
 }

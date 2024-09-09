@@ -48,4 +48,12 @@ public class Document {
 			documentHash = hash;
 		}
 	}
+
+	public void approve(){
+		progress = Progress.DOCUMENT_APPROVED;
+	}
+	
+	public void reject(){
+		progress = Progress.DOCUMENT_REJECTED;
+	}
 }

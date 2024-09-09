@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.turtlecoin.mainservice.domain.document.dto.DocumentApprovalDto;
 import com.turtlecoin.mainservice.domain.document.dto.DocumentListDto;
 import com.turtlecoin.mainservice.domain.document.dto.TempDto;
 import com.turtlecoin.mainservice.domain.document.entity.DocType;
@@ -50,6 +51,14 @@ public class DocumentService {
 			.toList();
 
 		return documentListDtos;
+	}
+
+	// 서류 승인 또는 반려
+	public void approveDocument(DocumentApprovalDto documentApprovalDto) {
+		Document document = documentRepository.findByDocumentHashAndTurtleUUID(documentApprovalDto.getDocumentHash(), documentApprovalDto.getTurtleUUID());
+		if(documentApprovalDto.isFlag()){
+
+		}
 	}
 
 	public TempDto getDocument(String documentHash, String turtleUUID){
