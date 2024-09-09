@@ -10,6 +10,8 @@ import lombok.Getter;
 @Builder
 @Getter
 public class GrantDocumentRequest {
+	private String documentHash;
+	private String turtleUUID;
 	private String docType;
 	private String applicant;
 	private Detail detail;

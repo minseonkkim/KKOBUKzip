@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class DocumentApprovalDto {
+public class DocumentApprovalRequestDto {
 	private String documentHash;
 	private String turtleUUID;
 	private boolean flag;

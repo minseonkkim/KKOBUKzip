@@ -1,10 +1,5 @@
 package com.turtlecoin.mainservice.domain.document.entity;
 
-import java.util.UUID;
-
-import com.turtlecoin.mainservice.domain.document.dto.DocumentListDto;
-import com.turtlecoin.mainservice.domain.document.dto.TempDto;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import jakarta.persistence.*;
@@ -38,11 +33,6 @@ public class Document {
 	@Column(nullable = false)
 	private String applicant;
 
-	public TempDto toTempDto(){
-		TempDto tempDto = new TempDto(documentHash, turtleUUID, docType);
-		return tempDto;
-	}
-
 	public void assignHash(String hash){
 		if(documentHash == null && hash != null){
 			documentHash = hash;
@@ -50,10 +40,14 @@ public class Document {
 	}
 
 	public void approve(){
-		progress = Progress.DOCUMENT_APPROVED;
+		if(progress == Progress.DOCUMENT_REVIEWING){
+			progress = Progress.DOCUMENT_APPROVED;
+		}
 	}
-	
+
 	public void reject(){
-		progress = Progress.DOCUMENT_REJECTED;
+		if(progress == Progress.DOCUMENT_REVIEWING){
+			progress = Progress.DOCUMENT_REJECTED;
+		}
 	}
 }

@@ -1,6 +1,5 @@
 package com.turtlecoin.mainservice.domain.document.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,10 +18,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.turtlecoin.mainservice.domain.document.dto.AssignDocumentRequest;
 import com.turtlecoin.mainservice.domain.document.dto.BreedingDocumentRequest;
 import com.turtlecoin.mainservice.domain.document.dto.DeathDocumentRequest;
-import com.turtlecoin.mainservice.domain.document.dto.DocumentApprovalDto;
+import com.turtlecoin.mainservice.domain.document.dto.DocumentApprovalRequestDto;
 import com.turtlecoin.mainservice.domain.document.dto.DocumentListDto;
+import com.turtlecoin.mainservice.domain.document.dto.DocumentResponseDto;
 import com.turtlecoin.mainservice.domain.document.dto.GrantDocumentRequest;
-import com.turtlecoin.mainservice.domain.document.dto.TempDto;
 import com.turtlecoin.mainservice.domain.document.entity.DocType;
 import com.turtlecoin.mainservice.domain.document.entity.Document;
 import com.turtlecoin.mainservice.domain.document.entity.Progress;
@@ -53,6 +52,10 @@ public class DocumentController {
 		@RequestPart("multiplicationMethod") MultipartFile multiplicationMethod,
 		@RequestPart("shelterSpecification") MultipartFile shelterSpecification) {
 
+		if(locationSpecification == null || shelterSpecification == null || multiplicationMethod == null) {
+			return new ResponseEntity<>(ResponseVO.failure("서류 등록에 실패했습니다.", "항목 누락"), HttpStatus.BAD_REQUEST);
+		}
+
 		String locationSpecificationAddress = "";
 		String multiplicationAddress = "";
 		String shelterSpecificationAddress = "";
@@ -76,8 +79,8 @@ public class DocumentController {
 		String turtleUUID = "";
 		// 블록체인에 업로드 ( 미구현 )
 		try{
-			hash = UUID.randomUUID().toString();
 			turtleUUID = UUID.randomUUID().toString();
+			hash = null;
 		}
 		catch(Exception e){
 			//e.printStackTrace();
@@ -123,15 +126,15 @@ public class DocumentController {
 		return new ResponseEntity<>(ResponseVO.success("서류 등록에 성공했습니다."), HttpStatus.OK);
 	}
 
-	// 양도신청서 등록
-	@PostMapping(value = "/register/grant", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-	public ResponseEntity<?> registerGrantDocument(@RequestBody GrantDocumentRequest requestData) {
+	// 양수신청서 등록
+	@PostMapping(value = "/register/assign", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+	public ResponseEntity<?> registerAssignDocument(@RequestBody AssignDocumentRequest requestData) {
 		String hash = "";
 		String turtleUUID = "";
 		// 블록체인에 업로드 ( 미구현 )
 		try{
-			hash = UUID.randomUUID().toString();
 			turtleUUID = UUID.randomUUID().toString();
+			hash = null;
 		}
 		catch(Exception e){
 			//e.printStackTrace();
@@ -173,15 +176,15 @@ public class DocumentController {
 		return new ResponseEntity<>(ResponseVO.success("서류 등록에 성공했습니다."), HttpStatus.OK);
 	}
 
-	// 양수신청서 등록
-	@PostMapping(value = "/register/assign", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-	public ResponseEntity<?> registerAssignDocument(@RequestBody AssignDocumentRequest requestData) {
+	// 양도신청서 등록
+	@PostMapping(value = "/register/grant", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+	public ResponseEntity<?> registerGrantDocument(@RequestBody GrantDocumentRequest requestData) {
 		String hash = "";
 		String turtleUUID = "";
 		// 블록체인에 업로드 ( 미구현 )
 		try{
-			hash = UUID.randomUUID().toString();
 			turtleUUID = UUID.randomUUID().toString();
+			hash = null;
 		}
 		catch(Exception e){
 			//e.printStackTrace();
@@ -230,6 +233,10 @@ public class DocumentController {
 		@RequestPart("deathImage") MultipartFile deathImage,
 		@RequestPart("diagnosis") MultipartFile diagnosis) {
 
+		if(deathImage == null || diagnosis == null) {
+			return new ResponseEntity<>(ResponseVO.failure("서류 등록에 실패했습니다.", "항목 누락"), HttpStatus.BAD_REQUEST);
+		}
+
 		String deathImageAddress = "";
 		String diagnosisAddress = "";
 
@@ -250,8 +257,8 @@ public class DocumentController {
 		String turtleUUID = "";
 		// 블록체인에 업로드 ( 미구현 )
 		try{
-			hash = UUID.randomUUID().toString();
 			turtleUUID = UUID.randomUUID().toString();
+			hash = null;
 		}
 		catch(Exception e){
 			//e.printStackTrace();
@@ -316,16 +323,22 @@ public class DocumentController {
 		@PathVariable(value = "turtleUUID") String turtleUUID,
 		@PathVariable(value = "documentHash") String documentHash) {
 
-		TempDto tempDto = documentService.getDocument(documentHash, turtleUUID);
+		DocumentResponseDto documentResponseDto;
 
-		return new ResponseEntity<>(ResponseVO.success("메시지", tempDto), HttpStatus.OK);
+		try{
+			documentResponseDto = documentService.getDocument(documentHash, turtleUUID);
+		}catch(Exception e){
+			return new ResponseEntity<>(ResponseVO.failure("서류 조회에 실패했습니다.", e.getMessage()), HttpStatus.BAD_REQUEST);
+		}
+
+		return new ResponseEntity<>(ResponseVO.success("data", documentResponseDto), HttpStatus.OK);
 	}
 
 	// 서류 승인 또는 반려
 	@PostMapping("/approve")
-	public ResponseEntity<?> approveDocument(@RequestBody DocumentApprovalDto documentApprovalDto) {
+	public ResponseEntity<?> approveDocument(@RequestBody DocumentApprovalRequestDto documentApprovalRequestDto) {
 		try{
-
+			documentService.approveDocument(documentApprovalRequestDto);
 		}catch(Exception e){
 			return new ResponseEntity<>(ResponseVO.failure("서류 처리에 실패했습니다.", e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
