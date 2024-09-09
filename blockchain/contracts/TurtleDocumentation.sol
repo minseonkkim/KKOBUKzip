@@ -128,7 +128,7 @@ contract TurtleDocumentation is Ownable {
         string memory _assigneeId,
         uint8 _count,
         string memory _transferReason,
-        string memory purpose
+        string memory _purpose
     ) public returns (bytes32) {
         bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
 
@@ -136,7 +136,7 @@ contract TurtleDocumentation is Ownable {
         turtles[_turtleId].transferDocs[documentHash].assigneeId = _assigneeId;
         turtles[_turtleId].transferDocs[documentHash].count = _count;
         turtles[_turtleId].transferDocs[documentHash].transferReason = _transferReason;
-        turtles[_turtleId].transferDocs[documentHash].purpose = purpose;
+        turtles[_turtleId].transferDocs[documentHash].purpose = _purpose;
 
         emit TurtleTransferred(_turtleId, _applicant, _assigneeId, documentHash);
 
