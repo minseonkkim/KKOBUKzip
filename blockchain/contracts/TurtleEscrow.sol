@@ -130,6 +130,11 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
     /**
      * @dev 자금 해제 (판매자에게 전송)
      * @param _transactionId 거래 ID
+     * @notice CEI 패턴 적용(Checks-Effects-Interactions)
+     * - Checks: 거래 상태 및 거래 조건 확인
+     * - Effects: 거래 상태 업데이트
+     * - Interactions: 토큰 전송
+     *   => 재진입(reentrancy) 공격과 같은 보안 취약점을 방지하고 코드의 일관성을 유지하는 데 도움을 줌
      */
     function releaseFunds(uint256 _transactionId) external nonReentrant {
         Transaction storage transaction = transactions[_transactionId];
@@ -137,12 +142,12 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         require(transaction.state == State.Locked, "Invalid state");
 
         transaction.state = State.Released;
-        require(token.transfer(transaction.seller, transaction.amount), "Token transfer failed");
+        bool success = token.transfer(transaction.seller, transaction.amount);
+        require(success, "Token transfer failed");
 
         emit FundsReleased(_transactionId);
     }
 
-    // 환불 (구매자에게 반환)
     /**
      * @dev 환불 (구매자에게 반환)
      * @param _transactionId 거래 ID
