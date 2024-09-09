@@ -29,7 +29,7 @@ export default function Header(){
         <div className="flex flex-row items-center">
           <div className="mr-3 font-bold text-[22px] cursor-pointer font-stardust">꼬북맘님 로그인 중</div>
           <div className="mr-3 bg-[#F6CA19] hover:bg-[#DFB509] shadow-[3px_3px_0px_#C49B07] hover:shadow-[3px_3px_0px_#CAA612] rounded-[10px] px-2 py-1.5 flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95">
-            <img src={CoinImg} className="w-[27px] h-[27px] mr-1"/>
+            <img src={CoinImg} className="w-[27px] h-[27px] mr-1" draggable="false"/>
             <span className="font-bold text-white text-[20px] tracking-widest">내 지갑</span>
           </div>
           <div className="bg-[#B9A6E6] hover:bg-[#9B8BC1] shadow-[3px_3px_0px_#8568CB] hover:shadow-[3px_3px_0px_#8E70D3] rounded-[10px] px-2 py-1.5 flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95">
