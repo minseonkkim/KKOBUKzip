@@ -14,6 +14,10 @@ import MyPage from "./pages/user/MyPage";
 import AdminDocsListPage from "./pages/user/admin/AdminDocsListPage";
 import AdminDocsDetailPage from "./pages/user/admin/AdminDocsDetailPage";
 import ChatList from "./components/chatting/ChatList";
+import BreedDocument from "./components/document/BreedDocument";
+import AssigneeDocument from "./components/document/AssigneeDocument";
+import GrantorDocument from "./components/document/GrantorDocument";
+import DeathDocument from "./components/document/DeathDocument";
 
 function App() {
   return (
@@ -27,19 +31,27 @@ function App() {
           {/* 이하 다른 도메인 자유롭게 수정해주세요... path 라던가... */}
 
           {/* Document Domain */}
-          <Route
-            path="/doc-form/assign-grant" // 양수/양도 페이지
-            element={<DocumentFormPage />}
-          />
-          <Route
-            path="/doc-form/breed" // 증식페이지
-            element={<DocumentFormPage />}
-          />
-          <Route
-            path="/doc-form/death" // 사망 페이지
-            element={<DocumentFormPage />}
-          />
+          {/* nested routing */}
+          <Route path="/doc-form" element={<DocumentFormPage />}>
+            <Route
+              path="/doc-form/breed" // 증식페이지
+              element={<BreedDocument />}
+            />
+            <Route
+              path="/doc-form/assign" // 양수 페이지
+              element={<AssigneeDocument />}
+            />
+            <Route
+              path="/doc-form/grant" // 양도 페이지
+              element={<GrantorDocument />}
+            />
+            <Route
+              path="/doc-form/death" // 사망 페이지
+              element={<DeathDocument />}
+            />
+          </Route>
           <Route path="/doc-list" element={<DocumentListPage />} />
+
           {/* Auction Domain - 경매 */}
           <Route path="/auction-detail" element={<AuctionDetailPage />} />
           <Route path="/auction-list" element={<AuctionListPage />} />
