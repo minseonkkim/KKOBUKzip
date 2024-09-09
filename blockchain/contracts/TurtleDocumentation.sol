@@ -2,11 +2,8 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract TurtleDocumentation is Ownable {
-    using Counters for Counters.Counter;
-
     // 인공증식 서류
     struct Multiplication {
         // 기본 정보
@@ -61,7 +58,6 @@ contract TurtleDocumentation is Ownable {
         mapping(bytes32 => Multiplication) multiplicationDoc;
         mapping(bytes32 => Transfer) transferDocs;
         mapping(bytes32 => Death) deathDoc;
-        Counters.Counter transferCount;
         bool exists;
     }
 
