@@ -75,3 +75,14 @@ export interface DeathFetchData {
   deathImage: "--사진--";
   diagnosis: "--사진--";
 }
+
+// admin document list
+export interface AdminDocsListDataType {
+  docType: "인공증식증명서" | "양수신고서" | "양도신고서" | "폐사질병신고서";
+  scientificName: string;
+  name: string;
+  email: string;
+  registerDate: string;
+  turtleUUID: string;
+  documentHash: string;
+}
