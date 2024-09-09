@@ -78,9 +78,15 @@ export interface DeathFetchData {
   diagnosis: "--사진--";
 }
 
+export type docType =
+  | "인공증식증명서"
+  | "양수신고서"
+  | "양도신고서"
+  | "폐사질병신고서";
+
 // admin document list
 export interface AdminDocsListDataType {
-  docType: "인공증식증명서" | "양수신고서" | "양도신고서" | "폐사질병신고서";
+  docType: docType;
   scientificName: string;
   name: string;
   email: string;

@@ -3,9 +3,9 @@ import { ApplicantInfoType } from "../types/document";
 // 유저 더미데이터
 export const applicant: ApplicantInfoType = {
   name: "김싸피",
-  nationality: "내국인",
-  phoneNumber: "010-3333-3333",
-  birthDate: "2024-01-02",
+  foreignFlag: "내국인",
+  phonenumber: "010-3333-3333",
+  birth: "2024-01-02",
   email: "ssafy@ssafy.com",
   address: "광주광역시 하남산단6번로 107",
 };
@@ -80,7 +80,7 @@ export const adminBreedResultdata = {
 };
 
 // 관리자가 조회한 양도양수확인서 데이터
-const adminAssignGrantData = {
+export const adminAssignGrantData = {
   docType: "양도양수확인서",
   turtleUUID: "e4eaaaf2-d142-11e1-b3e4-080027620cdd",
   documentHash: "0x1231824910237124",
@@ -116,7 +116,7 @@ const adminAssignGrantData = {
 };
 
 // 관리자가 조회한 폐사질병서류 데이터
-const adminDeathData = {
+export const adminDeathData = {
   docType: "폐사질병서류",
   turtleUUID: "e4eaaaf2-d142-11e1-b3e4-080027620cdd",
   documentHash: "0x1231824910237124",
