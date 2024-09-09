@@ -9,9 +9,11 @@ export default function ChatList() {
 
     const toggleChat = () => {
         setIsOpen(!isOpen);
+        setSelectedChat(null);  // 창을 닫을 때 선택된 채팅도 초기화
     };
+    
 
-    const openChatDetail = (chat:any) => {
+    const openChatDetail = (chat: any) => {
         setSelectedChat(chat); // 상세 채팅을 열 때 선택한 채팅의 정보를 상태로 저장
     };
 
@@ -49,7 +51,7 @@ export default function ChatList() {
                     <div className="w-full h-full">
                         {selectedChat ? (
                             // 상세 채팅
-                            <ChatDetail chat={selectedChat} closeChatDetail={closeChatDetail} />
+                            <ChatDetail chat={selectedChat} closeChatDetail={closeChatDetail} toggleChat={toggleChat} />
                         ) : (
                             // 채팅 목록
                             <div className="px-[10px] w-full bg-transparent rounded-lg overflow-y-auto">
@@ -75,7 +77,6 @@ export default function ChatList() {
                 @keyframes bounce {
                     0%, 100% {
                         transform: translateY(0);
-                    }
                     50% {
                         transform: translateY(-10px);
                     }
