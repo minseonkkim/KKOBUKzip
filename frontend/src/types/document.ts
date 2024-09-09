@@ -98,7 +98,7 @@ export interface AdminDocsListDataType {
 // 신청인 정보
 export interface ApplicantInfoType {
   name: string; // 성명
-  foreignFlag: string; // 국적
+  foreignFlag: boolean; // 국적
   phonenumber: string; // 전화번호
   birth: string; // 생년월일
   email: string; // 이메일
@@ -114,7 +114,7 @@ interface baseAdminDocumentType {
 }
 
 // 관리자가 조회하는 인공증식 문서
-export interface adminBreedDocumentDataType extends baseAdminDocumentType {
+export interface AdminBreedDocumentDataType extends baseAdminDocumentType {
   docType: "인공증식증명서";
   detail: {
     scientificName: "Malaclemys terrapin";

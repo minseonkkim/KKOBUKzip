@@ -17,7 +17,9 @@ function MyDocumentDataForm({ info }: Props) {
         </div>
         <div className="flex items-center">
           <span className="w-1/3 font-medium">국적</span>
-          <span className="w-2/3 px-3 py-2">{info.foreignFlag}</span>
+          <span className="w-2/3 px-3 py-2">
+            {info.foreignFlag ? "내국인" : "외국인"}
+          </span>
         </div>
         <div className="flex items-center">
           <span className="w-1/3 font-medium">전화번호</span>

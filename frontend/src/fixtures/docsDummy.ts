@@ -1,9 +1,12 @@
-import { ApplicantInfoType } from "../types/document";
+import {
+  ApplicantInfoType,
+  AdminBreedDocumentDataType,
+} from "../types/document";
 
 // 유저 더미데이터
 export const applicant: ApplicantInfoType = {
   name: "김싸피",
-  foreignFlag: "내국인",
+  foreignFlag: true,
   phonenumber: "010-3333-3333",
   birth: "2024-01-02",
   email: "ssafy@ssafy.com",
@@ -51,7 +54,7 @@ export const generateRandomData = (n: number) => {
 };
 
 // 관리자가 조회한 인공증식증명서 데이터
-export const adminBreedResultdata = {
+export const adminBreedResultdata: AdminBreedDocumentDataType = {
   docType: "인공증식증명서",
   turtleUUID: "e4eaaaf2-d142-11e1-b3e4-080027620cdd",
   documentHash: "0x1231824910237124",
@@ -68,7 +71,7 @@ export const adminBreedResultdata = {
     area: "150X60X80",
     count: 1,
     purpose: "연구",
-    registerDate: "2024-08-20",
+    registerDate: new Date("2024-08-20"),
     motherUUID: "d271c7d8-3f7b-4d4e-8a9e-d60f896b84cb",
     motherAquisition: "0x123469451035610",
     fatherUUID: "e7c5d4e4-2b55-4d4f-8d53-7d98c6c2a30a",
