@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 // import { Helmet } from "react-helmet-async";
-import BreedDocument from "../../components/document/BreedDocument";
-import GrantorDocument from "../../components/document/GrantorDocument";
-import AssigneeDocument from "../../components/document/AssigneeDocument";
 import MyDocumentDataForm from "../../components/document/MyDocumentDataForm";
-import { useLocation } from "react-router-dom";
-import DeathDocument from "../../components/document/DeathDocument";
+import { Outlet, useLocation } from "react-router-dom";
 import { applicant } from "../../fixtures/docsDummy";
 type TabName = "인공증식" | "양도" | "양수" | "폐사/질병" | ""; // 필요한 탭 이름들을 여기에 추가
 
@@ -31,8 +27,13 @@ function DocumentFormPage() {
 
   useEffect(() => {
     switch (location.pathname) {
-      case "/doc-form/transfer-acquisition":
+      case "/doc-form/grant":
         setActiveTab("양도");
+        // 추후에 동적 할당
+        setTabNameList(["양도", "양수"]);
+        break;
+      case "/doc-form/assign":
+        setActiveTab("양수");
         // 추후에 동적 할당
         setTabNameList(["양도", "양수"]);
         break;
@@ -48,6 +49,7 @@ function DocumentFormPage() {
   if (activeTab.length === 0) {
     return <div>Loading...</div>; // 임시로 로딩 텍스트
   }
+
   return (
     <>
       <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mb-10">
@@ -64,9 +66,9 @@ function DocumentFormPage() {
                 className={`px-4 py-2 ${
                   activeTab === tab
                     ? "border-b-2 border-blue-500 font-bold"
-                    : "cursor-not-allowed"
+                    : "cursor-not-allowed text-gray-400"
                 }`}
-                onClick={() => setActiveTab(tab as TabName)}
+                // onClick={() => setActiveTab(tab as TabName)}
               >
                 {tab}
               </button>
@@ -79,11 +81,7 @@ function DocumentFormPage() {
         <MyDocumentDataForm info={applicant} />
         {/* 신청인 정보 끝*/}
 
-        {/* 각 세부 페이지들 */}
-        {activeTab === "인공증식" && <BreedDocument />}
-        {activeTab === "양도" && <GrantorDocument />}
-        {activeTab === "양수" && <AssigneeDocument />}
-        {activeTab === "폐사/질병" && <DeathDocument />}
+        <Outlet />
       </div>
     </>
   );
