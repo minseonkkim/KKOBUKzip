@@ -12,20 +12,23 @@ function MainPage() {
 
   const [showTurtleMoving, setShowTurtleMoving] = useState(true);
   const [showContent, setShowContent] = useState(false);
-  const [showButtons, setShowButtons] = useState(false); // 버튼을 제어할 새로운 상태
+  const [showButtons, setShowButtons] = useState(false); 
 
   useEffect(() => {
+    // 거북이 애니메이션과 텍스트 애니메이션을 동시에 시작
     const turtleTimer = setTimeout(() => {
       setShowTurtleMoving(false);
     }, 2300);
 
+    // 텍스트가 깜빡이기 시작하는 시간 조정 (2300ms에 동시 시작)
     const contentTimer = setTimeout(() => {
       setShowContent(true);
-    }, 5100);
+    }, 2300);
 
+    // 버튼이 나타나는 타이밍 조정 (텍스트가 깜빡인 후 2초 뒤)
     const buttonTimer = setTimeout(() => {
-      setShowButtons(true); // 텍스트가 깜빡인 후 버튼 표시
-    }, 7100); // 텍스트 깜빡임 애니메이션 시간(2초)을 더해 딜레이 설정
+      setShowButtons(true);
+    }, 4300);
 
     return () => {
       clearTimeout(turtleTimer);
@@ -95,63 +98,63 @@ function MainPage() {
     0% {
       bottom: 4.5%;
       right: 18.5%;
-      transform: scale(0.97) rotate(0deg); /* 초기 상태 */
+      transform: scale(0.97) rotate(0deg); 
     }
     10% {
       bottom: 6.5%;
       right: 21%;
-      transform: scale(0.94) rotate(5deg); /* 오른쪽으로 살짝 기울기 */
+      transform: scale(0.94) rotate(5deg);
     }
     20% {
       bottom: 6.5%;
       right: 21%;
-      transform: scale(0.94) rotate(-5deg); /* 왼쪽으로 살짝 기울기 */
+      transform: scale(0.94) rotate(-5deg);
     }
     30% {
       bottom: 8%;
       right: 27%;
-      transform: scale(0.9) rotate(3deg); /* 다시 오른쪽 */
+      transform: scale(0.9) rotate(3deg);
     }
     40% {
       bottom: 8%;
       right: 27%;
-      transform: scale(0.9) rotate(-3deg); /* 다시 왼쪽 */
+      transform: scale(0.9) rotate(-3deg);
     }
     50% {
       bottom: 10%;
       right: 33%;
-      transform: scale(0.85) rotate(2deg); /* 중간에서 오른쪽 */
+      transform: scale(0.85) rotate(2deg);
     }
     60% {
       bottom: 10%;
       right: 33%;
-      transform: scale(0.85) rotate(-2deg); /* 중간에서 왼쪽 */
+      transform: scale(0.85) rotate(-2deg);
     }
     70% {
       bottom: 12%;
       right: 37%;
-      transform: scale(0.78) rotate(1deg); /* 오른쪽 */
+      transform: scale(0.78) rotate(1deg);
     }
     80% {
       bottom: 12%;
       right: 37%;
-      transform: scale(0.78) rotate(-1deg); /* 왼쪽 */
+      transform: scale(0.78) rotate(-1deg);
     }
     90% {
       bottom: 13%;
       right: 38%;
-      transform: scale(0.7) rotate(0deg); /* 거의 멈추는 위치 */
+      transform: scale(0.7) rotate(0deg);
     }
     100% {
       bottom: 13.5%;
       right: 40%;
-      transform: scale(0.67) translate(0%, 0%) rotate(0deg); /* 최종 위치 */
+      transform: scale(0.67) translate(0%, 0%) rotate(0deg);
     }
   }
 
 
   .blinking-text {
-    animation: blink 1s 2; /* 2번만 깜빡이게 설정 */
+    animation: blink 1s 2;
   }
 
   @keyframes blink {
