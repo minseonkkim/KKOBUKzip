@@ -30,7 +30,11 @@ function App() {
             element={<DocumentFormPage />}
           />
           <Route
-            path="/doc-form/breed-death" // 증식/사망폐사 페이지
+            path="/doc-form/breed" // 증식페이지
+            element={<DocumentFormPage />}
+          />
+          <Route
+            path="/doc-form/death" // 사망 페이지
             element={<DocumentFormPage />}
           />
           <Route path="/doc-list" element={<DocumentListPage />} />

@@ -13,7 +13,7 @@ interface BreedDocumentDataType {
   location: string;
 }
 
-interface fetchData {
+interface FetchData {
   data: {
     detail: BreedDocumentDataType;
     docType: "인공증식증명서";
@@ -56,7 +56,7 @@ function BreedDocument() {
   };
 
   const sendBreedDocRequest = () => {
-    const docs: fetchData = {
+    const docs: FetchData = {
       // 신청인 정보는 applicant에서 넘어가기에 작성 안 해도 됨
       data: {
         docType: "인공증식증명서",
@@ -122,12 +122,12 @@ function BreedDocument() {
             <label className="w-1/4 font-medium">인공증식의 목적/용도</label>
             <select
               onChange={(evt) => changeHandle("purpose", evt)}
-              className="font-medium bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5 px-5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="font-medium bg-gray-50 border border-gray text-gray-900 rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
-              <option value="연구">&nbsp;연구</option>
-              <option value="학술">&nbsp;학술</option>
-              <option value="애완">&nbsp;애완</option>
-              <option value="상업">&nbsp;상업</option>
+              <option value="연구">연구</option>
+              <option value="학술">학술</option>
+              <option value="애완">애완</option>
+              <option value="상업">상업</option>
             </select>
           </div>
 
@@ -143,7 +143,7 @@ function BreedDocument() {
             </button>
             <input
               type="text"
-              className="w-1/3 px-3 py-2 border rounded"
+              className="w-1/3 px-3 ml-2 py-2 border rounded"
               placeholder="기본주소"
               readOnly
               onChange={(evt) => changeHandle("location", evt)}
@@ -155,7 +155,7 @@ function BreedDocument() {
               onChange={(evt) => {
                 setDetailLocation(evt.target.value);
               }}
-              className="w-1/3 px-3 py-2 border rounded"
+              className="w-1/3 px-3 ml-2 py-2 border rounded"
               placeholder="상세주소"
             />
           </div>

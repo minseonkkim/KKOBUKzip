@@ -91,7 +91,7 @@ function AssigneeDocument() {
 
       <div className="mb-8">
         <div className="w-full flex">
-          <span className="text-xl font-semibold mb-4 flex-1">양도인</span>
+          <span className="text-xl font-semibold mb-4 flex-1">양수인</span>
           <label
             htmlFor="loadUserData"
             className="cursor-pointer select-none mr-4"
@@ -136,7 +136,7 @@ function AssigneeDocument() {
             </button>
             <input
               type="text"
-              className="w-1/3 px-3 py-2 border rounded"
+              className="w-1/3 px-3 py-2 border rounded ml-2"
               placeholder="기본주소"
               readOnly
               onChange={(evt) => changeAssigneeHandle("address", evt)}
@@ -148,7 +148,7 @@ function AssigneeDocument() {
               onChange={(evt) => {
                 setDetailLocation(evt.target.value);
               }}
-              className="w-1/3 px-3 py-2 border rounded"
+              className="w-1/3 px-3 py-2 border rounded ml-2"
               placeholder="상세주소"
             />
           </div>
@@ -159,8 +159,8 @@ function AssigneeDocument() {
       {/* 개체 정보 - 사전에 설정된 정보 불러올 것 */}
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">개체 정보 작성</h3>
-        <div className="grid grid-cols-2 gap-y-4">
-          <div className="flex">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex items-center">
             <span className="w-1/3 font-medium">학명</span>
             <span className="w-2/3 px-3 py-2">Malaclemys terrapin</span>
           </div>
@@ -168,8 +168,6 @@ function AssigneeDocument() {
             <span className="w-1/3 font-medium">보통명(일반명)</span>
             <span className="w-2/3 px-3 py-2">(공란)</span>
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-y-4">
           <div className="flex items-center">
             <span className="w-1/3 font-medium">부속서등급</span>
             <span className="w-2/3 px-3 py-2">II급</span>
@@ -178,8 +176,6 @@ function AssigneeDocument() {
             <label className="w-1/3 font-medium">수량</label>
             <span className="w-2/3 px-3 py-2">1</span>
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-y-4">
           <div className="flex items-center">
             <span className="w-1/3 font-medium">형태</span>
             <span className="w-2/3 px-3 py-2">살아있는 생물</span>
@@ -188,16 +184,14 @@ function AssigneeDocument() {
             <label className="w-1/3 font-medium">용도</label>
             <select
               onChange={(evt) => changeDataHandle("purpose", evt)}
-              className="font-medium bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-2/3 p-2.5 px-5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="font-medium bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-2/3 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
-              <option value="연구">&nbsp;연구</option>
-              <option value="학술">&nbsp;학술</option>
-              <option value="애완">&nbsp;애완</option>
-              <option value="상업">&nbsp;상업</option>
+              <option value="연구">연구</option>
+              <option value="학술">학술</option>
+              <option value="애완">애완</option>
+              <option value="상업">상업</option>
             </select>
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-y-4">
           <div className="flex items-center ">
             <span className="w-1/3 font-medium">양수사유</span>
             <input
