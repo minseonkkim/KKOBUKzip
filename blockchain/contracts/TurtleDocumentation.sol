@@ -2,11 +2,8 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract TurtleDocumentation is Ownable {
-    using Counters for Counters.Counter;
-
     // 인공증식 서류
     struct Multiplication {
         // 기본 정보
@@ -61,7 +58,6 @@ contract TurtleDocumentation is Ownable {
         mapping(bytes32 => Multiplication) multiplicationDoc;
         mapping(bytes32 => Transfer) transferDocs;
         mapping(bytes32 => Death) deathDoc;
-        Counters.Counter transferCount;
         bool exists;
     }
 
@@ -75,9 +71,10 @@ contract TurtleDocumentation is Ownable {
     event TurtleMultiplication(string turtleId, string applicant, bytes32 documentHash);
     event TurtleTransferred(string turtleId, string grantApplicant, string assignApplicant, bytes32 docuemntHash);
     event TurtleDeath(string turtleId, string applicant, bytes32 documentHash);
+    event TurtleOwnerChanged(string turtleId, string oldOwner, string newOwner);
 
     // (관리자용) 거북이 추가
-    function registerTurtle(string memory _turtleId, string memory _applicant) public {
+    function registerTurtle(string memory _turtleId, string memory _applicant) public onlyOwner {
         require(!turtles[_turtleId].exists, "Turtle already registered");
 
         Turtle storage newTurtle = turtles[_turtleId];
@@ -88,7 +85,7 @@ contract TurtleDocumentation is Ownable {
     }
 
     // 거북이 인공증식 서류 등록
-    function registerTutleMultiplicationDocument(
+    function registerTurtleMultiplicationDocument(
         string memory _turtleId,
         string memory _applicant,
         uint8 _count,
@@ -126,38 +123,46 @@ contract TurtleDocumentation is Ownable {
     }
 
     // 거북이 양수 서류 등록
-    function turtleAssigneeDocument(string memory _turtleId, string memory _applicant, string memory _assigneeId, uint8 _count, string memory _transferReason, string memory purpose) public returns (bytes32) {
+    function registerTurtleAssigneeDocument(
+        string memory _turtleId,
+        string memory _applicant,
+        string memory _assigneeId,
+        uint8 _count,
+        string memory _transferReason,
+        string memory _purpose
+    ) public returns (bytes32) {
         bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
 
         turtles[_turtleId].transferDocs[documentHash].assignApplicant = _applicant;
         turtles[_turtleId].transferDocs[documentHash].assigneeId = _assigneeId;
         turtles[_turtleId].transferDocs[documentHash].count = _count;
         turtles[_turtleId].transferDocs[documentHash].transferReason = _transferReason;
-        turtles[_turtleId].transferDocs[documentHash].purpose = purpose;
+        turtles[_turtleId].transferDocs[documentHash].purpose = _purpose;
 
         emit TurtleTransferred(_turtleId, _applicant, _assigneeId, documentHash);
 
         return documentHash;
     }
 
-    /**
-    * 거북이 양도 서류 등록의 경우에는 아래의 경우를 고려하여 함수를 수정해야 할 것으로 판단됨.
-    * => 거북이 양수 서류 등록 과정에 리턴받은 해시값을 양도 서류 등록 함수 매개변수로 전달하여 기등록된 거북이 양수양도 서류에 정보 추가하는 형식으로 구현할 것 고려
-     */
-    
     // 거북이 양도 서류 등록
-    function turtleGrantorDocument(string memory _turtleId, string memory _applicant, string memory _grantorId, string memory _aquisition, string memory _fatherId, string memory _motherId) public returns (bytes32) {
-        bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
+    function registerTurtleGrantorDocument(
+        string memory _turtleId,
+        string memory _applicant,
+        bytes32 _documentHash,
+        string memory _grantorId,
+        string memory _aquisition,
+        string memory _fatherId,
+        string memory _motherId
+    ) public returns (bytes32) {
+        turtles[_turtleId].transferDocs[_documentHash].grantApplicant = _applicant;
+        turtles[_turtleId].transferDocs[_documentHash].grantorId = _grantorId;
+        turtles[_turtleId].transferDocs[_documentHash].aquisition = _aquisition;
+        turtles[_turtleId].transferDocs[_documentHash].fatherId = _fatherId;
+        turtles[_turtleId].transferDocs[_documentHash].motherId = _motherId;
 
-        turtles[_turtleId].transferDocs[documentHash].grantApplicant = _applicant;
-        turtles[_turtleId].transferDocs[documentHash].grantorId = _grantorId;
-        turtles[_turtleId].transferDocs[documentHash].aquisition = _aquisition;
-        turtles[_turtleId].transferDocs[documentHash].fatherId = _fatherId;
-        turtles[_turtleId].transferDocs[documentHash].motherId = _motherId;
+        emit TurtleTransferred(_turtleId, _applicant, _grantorId, _documentHash);
 
-        emit TurtleTransferred(_turtleId, _applicant, _grantorId, documentHash);
-
-        return documentHash;
+        return _documentHash;
     }
 
     // 거북이 양도양수 서류 조회
@@ -166,7 +171,16 @@ contract TurtleDocumentation is Ownable {
     }
 
     // 거북이 폐사질병 서류 등록
-    function registeTurtlerDeathDocument(string memory _turtleId, string memory _applicant, string memory _shelter, uint8 _count, string memory _deathReason, string memory _plan, string memory _deathImage, string memory _diagnosis) public returns (bytes32) {
+    function registerTurtlerDeathDocument(
+        string memory _turtleId,
+        string memory _applicant,
+        string memory _shelter,
+        uint8 _count,
+        string memory _deathReason,
+        string memory _plan,
+        string memory _deathImage,
+        string memory _diagnosis
+    ) public returns (bytes32) {
         bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
 
         turtles[_turtleId].deathDoc[documentHash].applicant = _applicant;
@@ -185,5 +199,35 @@ contract TurtleDocumentation is Ownable {
     // 거북이 폐사질병 서류 조회
     function searchTurtleDeathDocument(string memory _turtleId, bytes32 _documentHash) public view returns (Death memory) {
         return turtles[_turtleId].deathDoc[_documentHash];
+    }
+
+    // 거북이 소유자 변경
+    function changeTurtleOwner(string memory _turtleId, string memory _oldOwner, string memory _newOwner) public {
+        require(turtles[_turtleId].exists, "Turtle does not exist");
+        require(ownerToTurtleIds[_oldOwner].length > 0, "Old owner does not own any turtles");
+
+        // 이전 소유자가 소유한 거북이 중 해당 거북이가 있는지 확인
+        bool found = false;
+        for (uint256 i = 0; i < ownerToTurtleIds[_oldOwner].length; i++) {
+            if (keccak256(abi.encodePacked(ownerToTurtleIds[_oldOwner][i])) == keccak256(abi.encodePacked(_turtleId))) {
+                found = true;
+                break;
+            }
+        }
+        require(found, "Old owner does not own this turtle");
+
+        // 이전 소유자가 소유한 거북이 배열에서 해당 거북이 제거
+        string[] storage oldOwnerTurtles = ownerToTurtleIds[_oldOwner];
+        for (uint256 i = 0; i < oldOwnerTurtles.length; i++) {
+            if (keccak256(abi.encodePacked(oldOwnerTurtles[i])) == keccak256(abi.encodePacked(_turtleId))) {
+                oldOwnerTurtles[i] = oldOwnerTurtles[oldOwnerTurtles.length - 1];
+                oldOwnerTurtles.pop();
+            }
+        }
+
+        // 새로운 소유자가 소유한 거북이 배열에 해당 거북이 추가
+        ownerToTurtleIds[_newOwner].push(_turtleId);
+
+        emit TurtleOwnerChanged(_turtleId, _oldOwner, _newOwner);
     }
 }
