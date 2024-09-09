@@ -26,7 +26,7 @@ function App() {
           {/* 이하 다른 도메인 자유롭게 수정해주세요... path 라던가... */}
           {/* Document Domain */}
           <Route
-            path="/doc-form/transfer-acquisition" // 양수/양도 페이지
+            path="/doc-form/assign-grant" // 양수/양도 페이지
             element={<DocumentFormPage />}
           />
           <Route
