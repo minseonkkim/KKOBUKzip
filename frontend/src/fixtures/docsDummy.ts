@@ -60,7 +60,7 @@ export const adminBreedResultdata: AdminBreedDocumentDataType = {
   documentHash: "0x1231824910237124",
   applicant: {
     name: "김싸피",
-    foreignFlag: "true",
+    foreignFlag: true,
     phonenumber: "010-1234-5678",
     email: "ssafy@ssafy.com",
     birth: "2000-01-01",

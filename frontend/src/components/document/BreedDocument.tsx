@@ -68,7 +68,7 @@ function BreedDocument() {
       {/* 허가 정보 */}
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">허가 정보</h3>
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center">
               <span className="w-1/3 font-medium">학명</span>

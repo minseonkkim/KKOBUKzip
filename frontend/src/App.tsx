@@ -15,7 +15,7 @@ import AdminDocsListPage from "./pages/user/admin/AdminDocsListPage";
 import AdminDocsDetailPage from "./pages/user/admin/AdminDocsDetailPage";
 import ChatList from "./components/chatting/ChatList";
 import BreedDocument from "./components/document/BreedDocument";
-import AssigneeDocument from "./components/document/AssigneeDocument";
+import AssignDocument from "./components/document/AssignDocument";
 import GrantorDocument from "./components/document/GrantorDocument";
 import DeathDocument from "./components/document/DeathDocument";
 
@@ -39,7 +39,7 @@ function App() {
             />
             <Route
               path="/doc-form/assign" // 양수 페이지
-              element={<AssigneeDocument />}
+              element={<AssignDocument />}
             />
             <Route
               path="/doc-form/grant" // 양도 페이지

@@ -10,7 +10,7 @@ function MyDocumentDataForm({ info }: Props) {
   return (
     <div className="mb-8">
       <h3 className="text-xl font-semibold mb-4">신청인 정보</h3>
-      <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+      <div className="grid grid-cols-2 gap-x-8 gap-y-2">
         <div className="flex items-center">
           <span className="w-1/3 font-medium">성명</span>
           <span className="w-2/3 px-3 py-2">{info.name}</span>
