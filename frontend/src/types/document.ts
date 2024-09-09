@@ -5,7 +5,7 @@ interface TurtleData {
 }
 
 // 양수인 문서
-export interface AssigneeDocumentDataType {
+export interface AssignDocumentDataType {
   name: string;
   phoneNumber: string;
   address: string;
@@ -13,7 +13,7 @@ export interface AssigneeDocumentDataType {
 
 export interface AssigneeDocDataType extends TurtleData {
   transferReason: string;
-  assignee?: AssigneeDocumentDataType;
+  assignee?: AssignDocumentDataType;
 }
 
 export interface AssigneeFetchData {
@@ -27,7 +27,7 @@ export interface GrantorFetchDataType {
   docType: "양도신청서";
   applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d";
   detail: {
-    granter: AssigneeDocumentDataType;
+    granter: AssignDocumentDataType;
     turtleUUID: string;
     aquisition: string;
     motherUUID: string;
@@ -133,10 +133,10 @@ export interface AdminBreedDocumentDataType extends baseAdminDocumentType {
 }
 
 // 관리자가 조회하는 양수/양도 문서
-export interface AdminAssigneeDocumentDataType extends baseAdminDocumentType {
+export interface AdminAssignDocumentDataType extends baseAdminDocumentType {
   docType: "양도양수확인서";
-  assignee: AssigneeDocumentDataType;
-  grantor: AssigneeDocumentDataType;
+  assignee: AssignDocumentDataType;
+  grantor: AssignDocumentDataType;
   detail: {
     scientificName: "Malaclemys terrapin";
     count: number;

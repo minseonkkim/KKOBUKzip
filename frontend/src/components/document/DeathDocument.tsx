@@ -2,25 +2,6 @@ import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { DeathDocumentDataType, DeathFetchData } from "../../types/document";
 
-/* 
-{
-	"data" : {
-		"docType" : "폐사질병서류",
-		"applicant" : "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d",
-		"detail" : {
-			"turtleUUID" : "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d",
-			"shelter" : "집안",
-			"count" : 1,
-			"deathReason" : "자연사",
-			"plan" : "연구기증",
-			"registerDate" : "2024-08-20"
-		}
-	},
-	"deathImage" : "--사진--",
-	"diagnosis" : "--사진--"
-}
-  */
-
 function DeathDocument() {
   const [data, setData] = useState<DeathDocumentDataType>({
     turtleUUID: "", // 동적으로 할당할 것
@@ -62,7 +43,7 @@ function DeathDocument() {
       {/* 사육장소 */}
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">사육장소</h3>
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="flex items-center">
             <label className="w-1/4 font-medium">사육장소</label>
             <input
@@ -78,7 +59,7 @@ function DeathDocument() {
       {/* 생물정보 작성 */}
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">허가 정보</h3>
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center">
               <span className="w-1/3 font-medium">학명</span>

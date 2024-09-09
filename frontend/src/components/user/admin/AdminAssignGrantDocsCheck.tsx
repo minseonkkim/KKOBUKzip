@@ -1,10 +1,10 @@
-import { AdminAssigneeDocumentDataType } from "../../../types/document";
+import { AdminAssignDocumentDataType } from "../../../types/document";
 import MyDocumentDataForm from "../../document/MyDocumentDataForm";
 
 function AdminAssignGrantDocsCheck({
   data,
 }: {
-  data: AdminAssigneeDocumentDataType;
+  data: AdminAssignDocumentDataType;
 }) {
   return (
     <>

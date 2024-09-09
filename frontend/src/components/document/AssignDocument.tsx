@@ -2,18 +2,18 @@ import { useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import {
-  AssigneeDocumentDataType,
+  AssignDocumentDataType,
   AssigneeDocDataType,
   AssigneeFetchData,
 } from "../../types/document";
 
 // 양수 서류 컴포넌트
-function AssigneeDocument() {
+function AssignDocument() {
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
 
   // 양수인 정보
-  const [assignee, setAssignee] = useState<AssigneeDocumentDataType>({
+  const [assignee, setAssignee] = useState<AssignDocumentDataType>({
     name: "",
     phoneNumber: "",
     address: "",
@@ -52,7 +52,7 @@ function AssigneeDocument() {
 
   // 양수자 수정 함수
   const changeAssigneeHandle = (
-    key: keyof AssigneeDocumentDataType,
+    key: keyof AssignDocumentDataType,
     evt: React.ChangeEvent<HTMLInputElement>
   ) => {
     setAssignee((prev) => ({ ...prev, [key]: evt.target.value }));
@@ -87,7 +87,7 @@ function AssigneeDocument() {
         </div>
 
         {/* 양수인 정보 */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center">
               <span className="w-1/3 font-medium">성명(상호)</span>
@@ -144,7 +144,7 @@ function AssigneeDocument() {
       {/* 개체 정보 - 사전에 설정된 정보 불러올 것 */}
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">개체 정보 작성</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-2">
           <div className="flex items-center">
             <span className="w-1/3 font-medium">학명</span>
             <span className="w-2/3 px-3 py-2">Malaclemys terrapin</span>
@@ -212,4 +212,4 @@ function AssigneeDocument() {
   );
 }
 
-export default AssigneeDocument;
+export default AssignDocument;

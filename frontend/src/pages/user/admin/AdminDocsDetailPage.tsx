@@ -92,6 +92,7 @@ function AdminDocsDetailPage() {
 
       <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mb-10">
         {layout === "인공증식증명서" && <AdminBreedDocsCheck data={data} />}
+
         {/* 양수&양도는 같은 양식을 사용함. */}
         {(layout === "양도신고서" || layout === "양수신고서") && (
           <AdminAssignGrantDocsCheck data={data} />

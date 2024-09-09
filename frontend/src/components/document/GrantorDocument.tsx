@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import {
-  AssigneeDocumentDataType as GrantorDocumentDataType,
+  AssignDocumentDataType as GrantorDocumentDataType,
   GrantorFetchDataType,
 } from "../../types/document";
 // interface GrantorDocumentDataType {
@@ -75,7 +75,7 @@ function GrantorDocument() {
         </div>
 
         {/* 양도인 정보 */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center">
               <span className="w-1/3 font-medium">성명(상호)</span>
@@ -131,7 +131,7 @@ function GrantorDocument() {
       {/* 양수인 정보 - 불러올 것 */}
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">양수인</h3>
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-2">
           <div className="flex">
             <span className="w-1/3 font-medium">성명</span>
             <span className="w-2/3">사전에 설정된 양수인 정보 불러올 것</span>
@@ -152,7 +152,7 @@ function GrantorDocument() {
       {/* 개체 정보 - 사전에 설정된 정보 불러올 것 */}
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">개체 정보 작성</h3>
-        <div className="grid grid-cols-2 gap-y-4">
+        <div className="grid grid-cols-2 gap-y-2">
           <div className="flex">
             <span className="w-1/3 font-medium">학명</span>
             <span className="w-2/3 px-3 py-2">Malaclemys terrapin</span>
