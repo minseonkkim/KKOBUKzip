@@ -17,6 +17,7 @@ public class AuctionResponseDTO {
     private String title;
     private Double minBid;
     private Double winningBid;
+    private Long sellerId;
     private Long buyerId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
@@ -33,6 +34,7 @@ public class AuctionResponseDTO {
                 auction.getMinBid(),
                 auction.getWinningBid(),
                 auction.getBuyerId(),
+                auction.getSellerId(),
                 auction.getStartTime(),
                 auction.getEndTime(),
                 auction.getContent(),

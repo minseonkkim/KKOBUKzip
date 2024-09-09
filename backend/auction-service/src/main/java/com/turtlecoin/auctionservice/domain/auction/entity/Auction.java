@@ -18,6 +18,10 @@ public class Auction extends BaseEntity {
     @Column(unique=true, nullable=false)
     private Long id;
 
+    //등록한 사람
+    @Column(nullable=false)
+    private Long sellerId;
+
     @Column(nullable = false)
     private String title;
 

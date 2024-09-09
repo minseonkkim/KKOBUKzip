@@ -15,12 +15,12 @@ public class TurtleListener {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    @RabbitListener(queues = "turtleRequestQueue")
-    public void handleTurtleRequest(TurtleRequestDTO request) {
-        TurtleResponseDTO response = new TurtleResponseDTO(
-                request.getTurtleId(), "암컷", 11D, 10000D);
-        )
-
-        rabbitTemplate.convertAndSend("turtleResponseQueue", response);
-    }
+//    @RabbitListener(queues = "turtleRequestQueue")
+//    public void handleTurtleRequest(TurtleRequestDTO request) {
+//        TurtleResponseDTO response = new TurtleResponseDTO(
+//                request.getTurtleId(), "암컷", 11D, 10000D);
+//        )
+//
+//        rabbitTemplate.convertAndSend("turtleResponseQueue", response);
+//    }
 }
