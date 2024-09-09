@@ -24,6 +24,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/join" element={<JoinPage />} />
           {/* 이하 다른 도메인 자유롭게 수정해주세요... path 라던가... */}
+
           {/* Document Domain */}
           <Route
             path="/doc-form/assign-grant" // 양수/양도 페이지
@@ -48,19 +49,17 @@ function App() {
           />
           <Route path="/transaction-list" element={<TransactionListPage />} />
           {/* User Domain - 유저 */}
+          {/* Admin */}
           <Route
             path="/admin/document/list" // 관리자 문서 리스트 조회 페이지
             element={<AdminDocsListPage />}
           />
-
-          {/* routing :  routing*/}
           <Route
-            path="admin/:turtleUUID/:documentHash" // 관리자 문서 디테일 조회
+            path="/admin/:turtleUUID/:documentHash" // 관리자 문서 디테일 조회
             element={<AdminDocsDetailPage />}
           />
 
           <Route path="/mypage" element={<UserPage />} />
-          {/* Admin */}
         </Routes>
       </BrowserRouter>
     </HelmetProvider>

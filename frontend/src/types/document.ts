@@ -86,3 +86,13 @@ export interface AdminDocsListDataType {
   turtleUUID: string;
   documentHash: string;
 }
+
+// 신청인 정보
+export interface ApplicantInfo {
+  name: string; // 성명
+  nationality: string; // 국적
+  phoneNumber: string; // 전화번호
+  birthDate: string; // 생년월일
+  email: string; // 이메일
+  address: string; // 주소
+}

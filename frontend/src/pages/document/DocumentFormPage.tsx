@@ -6,6 +6,7 @@ import AssigneeDocument from "../../components/document/AssigneeDocument";
 import MyDocumentDataForm from "../../components/document/MyDocumentDataForm";
 import { useLocation } from "react-router-dom";
 import DeathDocument from "../../components/document/DeathDocument";
+import { applicant } from "../../fixtures/docsDummy";
 type TabName = "인공증식" | "양도" | "양수" | "폐사/질병" | ""; // 필요한 탭 이름들을 여기에 추가
 
 // 각 컴포넌트의 구비서류 부분 정비할것!!!
@@ -75,7 +76,7 @@ function DocumentFormPage() {
         {/* 선택 탭 끝 */}
 
         {/* 신청인 정보 -데이터 연동되면 할당할 것 */}
-        <MyDocumentDataForm />
+        <MyDocumentDataForm info={applicant} />
         {/* 신청인 정보 끝*/}
 
         {/* 각 세부 페이지들 */}

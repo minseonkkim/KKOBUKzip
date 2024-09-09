@@ -1,47 +1,9 @@
 import { Helmet } from "react-helmet-async";
-import { AdminDocsListDataType } from "../../../types/document";
 import { useNavigate } from "react-router-dom";
+import { generateRandomData } from "../../../fixtures/docsDummy";
 
-const documents = [
-  {
-    docType: "인공증식증명서",
-    scientificName: "Malaclemys terrapin",
-    name: "김싸피",
-    email: "ssafy@ssafy.com",
-    registerDate: "2024-08-20",
-    turtleUUID: "e4eaaaf2-d142-11e1-b3e4-080027620cdd",
-    documentHash: "0x1231824910237124",
-  },
-  {
-    docType: "양도양수확인서",
-    scientificName: "Malaclemys terrapin",
-    name: "김싸피",
-    email: "ssafy@ssafy.com",
-    registerDate: "2024-08-20",
-    turtleUUID: "d271c7d8-3f7b-4d4e-8a9e-d60f896b84cb",
-    documentHash: "0x1231824910237124",
-  },
-  {
-    docType: "폐사질병신고서",
-    scientificName: "Malaclemys terrapin",
-    name: "김싸피",
-    email: "ssafy@ssafy.com",
-    registerDate: "2024-08-20",
-    turtleUUID: "e7c5d4e4-2b55-4d4f-8d53-7d98c6c2a30a",
-    documentHash: "0x1231824910237124",
-  },
-];
-
-const generateRandomData = (source: typeof documents, n: number) => {
-  const randomData = [];
-  for (let i = 0; i < n; i++) {
-    const randomItem = source[Math.floor(Math.random() * source.length)];
-    randomData.push({ ...randomItem, turtleUUID: crypto.randomUUID() });
-  }
-  return randomData;
-};
-
-const dummyData = generateRandomData(documents, 100);
+// 테스트용 더미 데이터
+const dummyData = generateRandomData(100);
 
 function AdminDocsListPage() {
   const navigate = useNavigate();
