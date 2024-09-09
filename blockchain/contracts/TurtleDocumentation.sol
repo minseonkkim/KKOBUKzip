@@ -77,7 +77,7 @@ contract TurtleDocumentation is Ownable {
     event TurtleDeath(string turtleId, string applicant, bytes32 documentHash);
 
     // (관리자용) 거북이 추가
-    function registerTurtle(string memory _turtleId, string memory _applicant) public {
+    function registerTurtle(string memory _turtleId, string memory _applicant) public onlyOwner {
         require(!turtles[_turtleId].exists, "Turtle already registered");
 
         Turtle storage newTurtle = turtles[_turtleId];
@@ -88,7 +88,7 @@ contract TurtleDocumentation is Ownable {
     }
 
     // 거북이 인공증식 서류 등록
-    function registerTutleMultiplicationDocument(
+    function registerTurtleMultiplicationDocument(
         string memory _turtleId,
         string memory _applicant,
         uint8 _count,
@@ -126,7 +126,14 @@ contract TurtleDocumentation is Ownable {
     }
 
     // 거북이 양수 서류 등록
-    function turtleAssigneeDocument(string memory _turtleId, string memory _applicant, string memory _assigneeId, uint8 _count, string memory _transferReason, string memory purpose) public returns (bytes32) {
+    function turtleAssigneeDocument(
+        string memory _turtleId,
+        string memory _applicant,
+        string memory _assigneeId,
+        uint8 _count,
+        string memory _transferReason,
+        string memory purpose
+    ) public returns (bytes32) {
         bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
 
         turtles[_turtleId].transferDocs[documentHash].assignApplicant = _applicant;
@@ -141,12 +148,19 @@ contract TurtleDocumentation is Ownable {
     }
 
     /**
-    * 거북이 양도 서류 등록의 경우에는 아래의 경우를 고려하여 함수를 수정해야 할 것으로 판단됨.
-    * => 거북이 양수 서류 등록 과정에 리턴받은 해시값을 양도 서류 등록 함수 매개변수로 전달하여 기등록된 거북이 양수양도 서류에 정보 추가하는 형식으로 구현할 것 고려
+     * 거북이 양도 서류 등록의 경우에는 아래의 경우를 고려하여 함수를 수정해야 할 것으로 판단됨.
+     * => 거북이 양수 서류 등록 과정에 리턴받은 해시값을 양도 서류 등록 함수 매개변수로 전달하여 기등록된 거북이 양수양도 서류에 정보 추가하는 형식으로 구현할 것 고려
      */
-    
+
     // 거북이 양도 서류 등록
-    function turtleGrantorDocument(string memory _turtleId, string memory _applicant, string memory _grantorId, string memory _aquisition, string memory _fatherId, string memory _motherId) public returns (bytes32) {
+    function turtleGrantorDocument(
+        string memory _turtleId,
+        string memory _applicant,
+        string memory _grantorId,
+        string memory _aquisition,
+        string memory _fatherId,
+        string memory _motherId
+    ) public returns (bytes32) {
         bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
 
         turtles[_turtleId].transferDocs[documentHash].grantApplicant = _applicant;
@@ -166,7 +180,16 @@ contract TurtleDocumentation is Ownable {
     }
 
     // 거북이 폐사질병 서류 등록
-    function registeTurtlerDeathDocument(string memory _turtleId, string memory _applicant, string memory _shelter, uint8 _count, string memory _deathReason, string memory _plan, string memory _deathImage, string memory _diagnosis) public returns (bytes32) {
+    function registerTurtlerDeathDocument(
+        string memory _turtleId,
+        string memory _applicant,
+        string memory _shelter,
+        uint8 _count,
+        string memory _deathReason,
+        string memory _plan,
+        string memory _deathImage,
+        string memory _diagnosis
+    ) public returns (bytes32) {
         bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
 
         turtles[_turtleId].deathDoc[documentHash].applicant = _applicant;
