@@ -27,7 +27,6 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         Refunded
     }
 
-    // 거래 정보를 저장하는 구조체
     /**
      * @dev 거래 정보를 저장하는 구조체
      * @param buyer 구매자 주소
@@ -46,42 +45,20 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         uint256 lockPeriod; // 잠금 기간
     }
 
-    // 거래 ID에 따른 거래 정보 매핑
-    mapping(uint256 => Transaction) public transactions;
-    // 총 거래 수
-    uint256 public transactionCount;
+    mapping(uint256 => Transaction) public transactions; // 거래 ID에 따른 거래 정보 매핑
+    uint256 public transactionCount; // 총 거래 수
 
-    // 중재자 주소
-    address public arbiter;
-    // 기본 잠금 기간 (7일)
-    uint256 public constant LOCK_PERIOD = 7 days;
-    // 사용할 ERC20 토큰
-    IERC20 public token;
-    // TurtleDocumentation 컨트랙트 참조
-    TurtleDocumentation public turtleDocumentation;
+    address public arbiter; // 중재자 주소
+    uint256 public constant LOCK_PERIOD = 7 days; // 기본 잠금 기간 (7일)
+    IERC20 public token; // 사용할 ERC20 토큰
+    TurtleDocumentation public turtleDocumentation; // TurtleDocumentation 컨트랙트 참조
 
     /**
-     * @dev 거래 생성 이벤트
-     * @param transactionId 거래 ID
-     * @param buyer 구매자 주소
-     * @param seller 판매자 주소
-     * @param amount 거래 금액
+     * @dev 이벤트 모음
      */
     event TransactionCreated(uint256 indexed transactionId, address buyer, address seller, uint256 amount);
-    /**
-     * @dev 자금 잠금 이벤트
-     * @param transactionId 거래 ID
-     */
     event FundsLocked(uint256 indexed transactionId);
-    /**
-     * @dev 자금 해제 이벤트
-     * @param transactionId 거래 ID
-     */
     event FundsReleased(uint256 indexed transactionId);
-    /**
-     * @dev 자금 환불 이벤트
-     * @param transactionId 거래 ID
-     */
     event FundsRefunded(uint256 indexed transactionId);
 
     /**
@@ -140,10 +117,9 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * @dev 자금 해제 (판매자에게 전송)
      * @param _transactionId 거래 ID
      * @notice CEI 패턴 적용(Checks-Effects-Interactions)
-     * - Checks: 거래 상태 및 거래 조건 확인
+     * - Checks: 권한 및 상태 확인 수행
      * - Effects: 거래 상태 업데이트
      * - Interactions: 토큰 전송
-     *   => 재진입(reentrancy) 공격과 같은 보안 취약점을 방지하고 코드의 일관성을 유지하는 데 도움을 줌
      */
     function releaseFunds(uint256 _transactionId) external nonReentrant {
         // Checks
@@ -165,7 +141,7 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * @dev 환불 (구매자에게 반환)
      * @param _transactionId 거래 ID
      * @notice CEI 패턴 적용(Checks-Effects-Interactions)
-     * - Checks: 거래 상태 및 거래 조건 확인
+     * - Checks: 권한, 상태, 잠금 기간 확인 수행
      * - Effects: 거래 상태 업데이트
      * - Interactions: 토큰 전송
      */
