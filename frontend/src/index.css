@@ -38,6 +38,7 @@ div::-webkit-scrollbar-track {
 div::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.3); /* 스크롤바 막대 색상 */
     border-radius: 10px; /* 스크롤바 막대 모서리를 둥글게 */
+    cursor:pointer;
 }
 
 /* 스크롤바 막대가 호버되었을 때 */

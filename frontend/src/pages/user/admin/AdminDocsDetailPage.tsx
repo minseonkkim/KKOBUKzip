@@ -33,7 +33,7 @@ function AdminDocsDetailPage() {
     // get uuid and hash from params and data fetch
     console.log(params?.turtleUUID, params?.documentHash);
     const documentType: docType = location.state?.documentType ?? null;
-    // 여기서 대충 data fetch해서, data의 docType에 따라 swtich
+    // 여기서 대충 data fetch해서, data의 docType에 따라 swtich and data set
     if (
       ["인공증식증명서", "양수신고서", "양도신고서", "폐사질병신고서"].includes(
         documentType
