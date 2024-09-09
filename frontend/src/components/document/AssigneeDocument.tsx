@@ -1,26 +1,11 @@
 import { useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
-
-interface AssigneeDocumentDataType {
-  name: string;
-  phoneNumber: string;
-  address: string;
-}
-
-interface DocData {
-  turtleUUID: string;
-  count: number;
-  purpose: string;
-  transferReason: string;
-  assignee?: AssigneeDocumentDataType;
-}
-
-interface FetchData {
-  docType: "양수신청서";
-  applicant: string;
-  detail: DocData;
-}
+import {
+  AssigneeDocumentDataType,
+  AssigneeDocData,
+  AssigneeFetchData,
+} from "../../types/document";
 
 // 양수 서류 컴포넌트
 function AssigneeDocument() {
@@ -34,7 +19,7 @@ function AssigneeDocument() {
     address: "",
   });
 
-  const [data, setData] = useState<DocData>({
+  const [data, setData] = useState<AssigneeDocData>({
     turtleUUID: "",
     count: 1,
     purpose: "연구",
@@ -50,7 +35,7 @@ function AssigneeDocument() {
 
   // 문서 작성 요청 함수
   const sendAssigneeDocRequest = () => {
-    const docs: FetchData = {
+    const docs: AssigneeFetchData = {
       docType: "양수신청서",
       applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d",
       detail: {
@@ -75,7 +60,7 @@ function AssigneeDocument() {
 
   // 양수자 이외의 데이터 수정 함수
   const changeDataHandle = (
-    key: keyof DocData,
+    key: keyof AssigneeDocData,
     evt:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLSelectElement>

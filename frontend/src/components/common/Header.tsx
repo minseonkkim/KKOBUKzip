@@ -1,6 +1,5 @@
 import LogoImg from '../../assets/logo.png';
 import CoinImg from '../../assets/Coin.png';
-import { CgProfile } from "react-icons/cg";
 import { Link, useLocation } from 'react-router-dom';
 
 export default function Header(){
@@ -22,21 +21,21 @@ export default function Header(){
 
         {/* 로그인 안 됐을 때 */}
         {/* <div className="text-[22px] flex flex-row items-center font-bold">
-          <div className="mr-5 cursor-pointer">로그인</div>
-          <div className="cursor-pointer">회원가입</div>
+          <div className="mr-5 cursor-pointer font-stardust">로그인</div>
+          <div className="cursor-pointer font-stardust">회원가입</div>
         </div> */}
 
         {/* 로그인 됐을 때 */}
         <div className="flex flex-row items-center">
           <div className="mr-3 font-bold text-[22px] cursor-pointer font-stardust">꼬북맘님 로그인 중</div>
-          {/* <CgProfile className="mr-5 w-[30px] h-[30px] cursor-pointer" /> */}
-          <div className="mr-3 bg-[#F6CA19] hover:bg-[#DFB509] shadow-[3px_3px_0px_#DFB509] hover:shadow-[3px_3px_0px_#CAA612] rounded-[10px] px-2 py-1.5 flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95">
+          <div className="mr-3 bg-[#F6CA19] hover:bg-[#DFB509] shadow-[3px_3px_0px_#C49B07] hover:shadow-[3px_3px_0px_#CAA612] rounded-[10px] px-2 py-1.5 flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95">
             <img src={CoinImg} className="w-[27px] h-[27px] mr-1"/>
             <span className="font-bold text-white text-[20px] tracking-widest">내 지갑</span>
           </div>
           <div className="bg-[#B9A6E6] hover:bg-[#9B8BC1] shadow-[3px_3px_0px_#8568CB] hover:shadow-[3px_3px_0px_#8E70D3] rounded-[10px] px-2 py-1.5 flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95">
-            {/* <img src={CoinImg} className="w-[27px] h-[27px] mr-1"/> */}
-            <span className="font-bold text-white text-[20px] tracking-widest">마이페이지</span>
+            <Link to="/mypage">
+              <span className="font-bold text-white text-[20px] tracking-widest">마이페이지</span>
+            </Link>
           </div>
         </div>
 

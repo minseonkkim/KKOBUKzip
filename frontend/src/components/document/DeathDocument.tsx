@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { DeathDocumentDataType, DeathFetchData } from "../../types/document";
 
 /* 
 {
@@ -19,24 +20,6 @@ import { Helmet } from "react-helmet-async";
 	"diagnosis" : "--사진--"
 }
   */
-interface DeathDocumentDataType {
-  turtleUUID: string;
-  shelter: string;
-  count: number;
-  deathReason: string;
-  plan: string;
-  registerDate: string;
-}
-
-interface FetchData {
-  data: {
-    detail: DeathDocumentDataType;
-    docType: "폐사질병서류";
-    applicant: string;
-  };
-  deathImage: "--사진--";
-  diagnosis: "--사진--";
-}
 
 function DeathDocument() {
   const [data, setData] = useState<DeathDocumentDataType>({
@@ -58,7 +41,7 @@ function DeathDocument() {
   };
 
   const sendDeathDocRequest = () => {
-    const docs: FetchData = {
+    const docs: DeathFetchData = {
       data: {
         docType: "폐사질병서류",
         applicant: "d271c7d8-3f7b-4d4e-8a9e-d60f896b84cb", // storage에서 읽어올것

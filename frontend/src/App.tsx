@@ -11,7 +11,7 @@ import TransactionListPage from "./pages/transaction/TransactionListPage";
 import AuctionDetailPage from "./pages/auction/AuctionDetailPage";
 import AuctionListPage from "./pages/auction/AuctionListPage";
 import AdminPage from "./pages/user/AdminPage";
-import UserPage from "./pages/user/UserPage";
+import MyPage from "./pages/user/MyPage";
 
 function App() {
   return (
@@ -26,7 +26,7 @@ function App() {
           {/* 이하 다른 도메인 자유롭게 수정해주세요... path 라던가... */}
           {/* Document Domain */}
           <Route
-            path="/doc-form/transfer-acquisition" // 양수/양도 페이지
+            path="/doc-form/assign-grant" // 양수/양도 페이지
             element={<DocumentFormPage />}
           />
           <Route
@@ -52,7 +52,7 @@ function App() {
 
           {/* User Domain - 유저 */}
           <Route path="/admin" element={<AdminPage />} />
-          <Route path="/mypage" element={<UserPage />} />
+          <Route path="/mypage" element={<MyPage />} />
         </Routes>
       </BrowserRouter>
     </HelmetProvider>
