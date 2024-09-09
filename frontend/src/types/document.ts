@@ -110,7 +110,7 @@ interface baseAdminDocumentType {
   turtleUUID: string;
   documentHash: string;
   applicant: ApplicantInfoType;
-  detail: any;
+  detail: object;
 }
 
 // 관리자가 조회하는 인공증식 문서
@@ -129,5 +129,38 @@ export interface AdminBreedDocumentDataType extends baseAdminDocumentType {
     locationSpecification: string;
     multiplicationMethod: string;
     shelterSpecification: string;
+  };
+}
+
+// 관리자가 조회하는 양수/양도 문서
+export interface AdminAssigneeDocumentDataType extends baseAdminDocumentType {
+  docType: "양도양수확인서";
+  assignee: AssigneeDocumentDataType;
+  grantor: AssigneeDocumentDataType;
+  detail: {
+    scientificName: "Malaclemys terrapin";
+    count: number;
+    registerDate: Date;
+    transferReason: string;
+    aquisition: string;
+    motherUUID: string;
+    motherAquisition: string;
+    fatherUUID: string;
+    fatherAquisition: string;
+  };
+}
+
+// 관리자가 조회하는 폐사 문서
+export interface AdminDeathDocumentDataType extends baseAdminDocumentType {
+  docType: "폐사질병서류";
+  detail: {
+    scientificName: "Malaclemys terrapin";
+    shelter: string;
+    count: number;
+    registerDate: Date;
+    deathReason: string;
+    plan: string;
+    deathImage: string;
+    diagnosis: string;
   };
 }

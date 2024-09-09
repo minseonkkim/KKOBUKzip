@@ -1,53 +1,64 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import {
   adminBreedResultdata,
   adminAssignGrantData,
   adminDeathData,
 } from "../../../fixtures/docsDummy";
-import { docType } from "../../../types/document";
+import { AdminBreedDocumentDataType, docType } from "../../../types/document";
 
 // 더미데이터
 import AdminBreedDocsCheck from "../../../components/user/admin/AdminBreedDocsCheck";
 import AdminAssignGrantDocsCheck from "../../../components/user/admin/AdminAssignGrantDocsCheck";
 import AdminDeathDocsCheck from "../../../components/user/admin/AdminDeathDocsCheck";
+const fetchedData = {
+  인공증식증명서: adminBreedResultdata,
+  양수신고서: adminAssignGrantData,
+  양도신고서: adminAssignGrantData,
+  폐사질병신고서: adminDeathData,
+};
+// 더미데이터 끝
 
-let fetchedData = adminBreedResultdata;
+type dataType = AdminBreedDocumentDataType | any;
 
 function AdminDocsDetailPage() {
   const params = useParams();
+  const location = useLocation();
   const [layout, setLayout] = useState<docType | null>(null);
 
-  const [data, setData] = useState<any | null>(null);
+  const [data, setData] = useState<dataType | null>(null);
 
   useEffect(() => {
     // get uuid and hash from params and data fetch
     console.log(params?.turtleUUID, params?.documentHash);
+    const documentType: docType = location.state?.documentType ?? null;
     // 여기서 대충 data fetch해서, data의 docType에 따라 swtich
     if (
       ["인공증식증명서", "양수신고서", "양도신고서", "폐사질병신고서"].includes(
-        fetchedData.docType
+        documentType
       )
     ) {
-      setData(fetchedData);
-      setLayout(fetchedData.docType);
+      setData(fetchedData[documentType]);
+      setLayout(documentType);
     } else {
+      setData(null);
       setLayout(null);
     }
-  }, [layout]);
+  }, []);
 
   return (
     <>
       <Helmet>
         <title>관리자 - 문서 상세 조회</title>
       </Helmet>
+
       {/* 테스트 드라이버 */}
       <div className="space-x-3 text-center">
         <button
           onClick={() => {
             setLayout("인공증식증명서");
-            fetchedData = adminBreedResultdata as unknown as any;
+            setData(adminBreedResultdata);
           }}
         >
           증식
@@ -55,7 +66,7 @@ function AdminDocsDetailPage() {
         <button
           onClick={() => {
             setLayout("양수신고서");
-            fetchedData = adminAssignGrantData as unknown as any;
+            setData(adminAssignGrantData);
           }}
         >
           양수
@@ -63,7 +74,7 @@ function AdminDocsDetailPage() {
         <button
           onClick={() => {
             setLayout("양도신고서");
-            fetchedData = adminAssignGrantData as unknown as any;
+            setData(adminAssignGrantData);
           }}
         >
           양도
@@ -71,7 +82,7 @@ function AdminDocsDetailPage() {
         <button
           onClick={() => {
             setLayout("폐사질병신고서");
-            fetchedData = adminDeathData as unknown as any;
+            setData(adminDeathData);
           }}
         >
           폐사

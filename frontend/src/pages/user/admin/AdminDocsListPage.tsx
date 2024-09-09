@@ -20,7 +20,11 @@ function AdminDocsListPage() {
             <div
               key={index}
               onClick={() => {
-                navigate(`/admin/${doc.turtleUUID}/${doc.documentHash}`);
+                navigate(`/admin/${doc.turtleUUID}/${doc.documentHash}`, {
+                  state: {
+                    documentType: doc.docType,
+                  },
+                });
               }}
               className="border cursor-pointer rounded-lg px-6 py-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
             >
