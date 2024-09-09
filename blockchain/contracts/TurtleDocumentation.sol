@@ -123,7 +123,7 @@ contract TurtleDocumentation is Ownable {
     }
 
     // 거북이 양수 서류 등록
-    function turtleAssigneeDocument(
+    function registerTurtleAssigneeDocument(
         string memory _turtleId,
         string memory _applicant,
         string memory _assigneeId,
@@ -145,7 +145,7 @@ contract TurtleDocumentation is Ownable {
     }
 
     // 거북이 양도 서류 등록
-    function turtleGrantorDocument(
+    function registerTurtleGrantorDocument(
         string memory _turtleId,
         string memory _applicant,
         bytes32 _documentHash,
