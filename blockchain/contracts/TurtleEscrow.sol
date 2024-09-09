@@ -171,13 +171,13 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         return (transaction.buyer, transaction.seller, transaction.amount, transaction.state, transaction.createdAt, transaction.lockPeriod);
     }
 
-    /**
-     * @dev 중재자 주소 변경 (onlyOwner 제한)
-     * @param _newArbiter 새로운 중재자 주소
-     */
-    function setArbiter(address _newArbiter) external onlyOwner {
-        arbiter = _newArbiter;
-    }
+    // /**
+    //  * @dev 중재자 주소 변경 (onlyOwner 제한)
+    //  * @param _newArbiter 새로운 중재자 주소
+    //  */
+    // function setArbiter(address _newArbiter) external onlyOwner {
+    //     arbiter = _newArbiter;
+    // }
 
     /**
      * @dev 잠금 기간 업데이트
