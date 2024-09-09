@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./TurtleDocumentation.sol";
 
 // TurtleEscrow 컨트랙트: ERC20 토큰을 사용한 거북이 거래 에스크로 서비스 제공
-contract TurtleEscrow is Ownable, ReentrancyGuard, TurtleDocumentation {
+contract TurtleEscrow is Ownable, ReentrancyGuard {
     // 거래 상태를 나타내는 열거형
     enum State {
         Created,
@@ -52,6 +52,7 @@ contract TurtleEscrow is Ownable, ReentrancyGuard, TurtleDocumentation {
      * @param _turtleDocumentation TurtleDocumentation 컨트랙트 주소
      */
     constructor(address _token, address _turtleDocumentation) {
+        require(_token != address(0) && _turtleDocumentation != address(0), "Invalid address");
         token = IERC20(_token);
         turtleDocumentation = TurtleDocumentation(_turtleDocumentation);
         arbiter = turtleDocumentation.owner();
