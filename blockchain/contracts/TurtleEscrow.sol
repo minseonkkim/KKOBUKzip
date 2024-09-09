@@ -6,9 +6,20 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./TurtleDocumentation.sol";
 
-// TurtleEscrow 컨트랙트: ERC20 토큰을 사용한 거북이 거래 에스크로 서비스 제공
+/**
+ * @title TurtleEscrow
+ * @author 서규범
+ * @notice 이 컨트랙트는 거북이 거래 에스크로 서비스를 제공합니다.
+ */
 contract TurtleEscrow is Ownable, ReentrancyGuard {
-    // 거래 상태를 나타내는 열거형
+    /**
+     * @dev 거래 상태를 나타내는 열거형
+     * @notice 거래 상태는 다음과 같이 정의됩니다.
+     * - Created: 거래가 생성된 상태
+     * - Locked: 거래가 잠금된 상태
+     * - Released: 거래가 해제된 상태
+     * - Refunded: 거래가 환불된 상태
+     */
     enum State {
         Created,
         Locked,
@@ -17,6 +28,15 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
     }
 
     // 거래 정보를 저장하는 구조체
+    /**
+     * @dev 거래 정보를 저장하는 구조체
+     * @param buyer 구매자 주소
+     * @param seller 판매자 주소
+     * @param amount 거래 금액
+     * @param state 현재 거래 상태
+     * @param createdAt 거래 생성 시간
+     * @param lockPeriod 잠금 기간
+     */
     struct Transaction {
         address buyer; // 구매자 주소
         address seller; // 판매자 주소
@@ -40,10 +60,28 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
     // TurtleDocumentation 컨트랙트 참조
     TurtleDocumentation public turtleDocumentation;
 
-    // 이벤트 정의
+    /**
+     * @dev 거래 생성 이벤트
+     * @param transactionId 거래 ID
+     * @param buyer 구매자 주소
+     * @param seller 판매자 주소
+     * @param amount 거래 금액
+     */
     event TransactionCreated(uint256 indexed transactionId, address buyer, address seller, uint256 amount);
+    /**
+     * @dev 자금 잠금 이벤트
+     * @param transactionId 거래 ID
+     */
     event FundsLocked(uint256 indexed transactionId);
+    /**
+     * @dev 자금 해제 이벤트
+     * @param transactionId 거래 ID
+     */
     event FundsReleased(uint256 indexed transactionId);
+    /**
+     * @dev 자금 환불 이벤트
+     * @param transactionId 거래 ID
+     */
     event FundsRefunded(uint256 indexed transactionId);
 
     /**
