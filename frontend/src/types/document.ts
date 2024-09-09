@@ -11,7 +11,7 @@ export interface AssigneeDocumentDataType {
   address: string;
 }
 
-export interface AssigneeDocData extends TurtleData {
+export interface AssigneeDocDataType extends TurtleData {
   transferReason: string;
   assignee?: AssigneeDocumentDataType;
 }
@@ -19,11 +19,11 @@ export interface AssigneeDocData extends TurtleData {
 export interface AssigneeFetchData {
   docType: "양수신청서";
   applicant: string;
-  detail: AssigneeDocData;
+  detail: AssigneeDocDataType;
 }
 
 // 양도인 문서
-export interface GrantorFetchData {
+export interface GrantorFetchDataType {
   docType: "양도신청서";
   applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d";
   detail: {
@@ -35,12 +35,14 @@ export interface GrantorFetchData {
   };
 }
 
+type purposeType = "연구" | "학술" | "애완" | "상업";
+
 // 인공증식 문서
 export interface BreedDocumentDataType {
   scientificName: "Malaclemys terrapin";
   area: string;
   count: 1;
-  purpose: "연구" | "학술" | "애완" | "상업";
+  purpose: purposeType;
   registerDate: Date | null;
   motherUUID: string;
   fatherUUID: string;
@@ -74,4 +76,58 @@ export interface DeathFetchData {
   };
   deathImage: "--사진--";
   diagnosis: "--사진--";
+}
+
+export type docType =
+  | "인공증식증명서"
+  | "양수신고서"
+  | "양도신고서"
+  | "폐사질병신고서";
+
+// admin document list
+export interface AdminDocsListDataType {
+  docType: docType;
+  scientificName: string;
+  name: string;
+  email: string;
+  registerDate: string;
+  turtleUUID: string;
+  documentHash: string;
+}
+
+// 신청인 정보
+export interface ApplicantInfoType {
+  name: string; // 성명
+  foreignFlag: boolean; // 국적
+  phonenumber: string; // 전화번호
+  birth: string; // 생년월일
+  email: string; // 이메일
+  address: string; // 주소
+}
+
+interface baseAdminDocumentType {
+  docType: string;
+  turtleUUID: string;
+  documentHash: string;
+  applicant: ApplicantInfoType;
+  detail: any;
+}
+
+// 관리자가 조회하는 인공증식 문서
+export interface AdminBreedDocumentDataType extends baseAdminDocumentType {
+  docType: "인공증식증명서";
+  detail: {
+    scientificName: "Malaclemys terrapin";
+    area: string;
+    count: number;
+    purpose: purposeType;
+    registerDate: Date;
+    motherUUID: string;
+    motherAquisition: string;
+    fatherUUID: string;
+    fatherAquisition: string;
+    locationSpecification: string;
+    multiplicationMethod: string;
+    shelterSpecification: string;
+  };
 }
