@@ -1,7 +1,7 @@
-import { ApplicantInfo } from "../../types/document";
+import { ApplicantInfoType } from "../../types/document";
 
 interface Props {
-  info: ApplicantInfo;
+  info: ApplicantInfoType;
 }
 
 function MyDocumentDataForm({ info }: Props) {
@@ -17,15 +17,15 @@ function MyDocumentDataForm({ info }: Props) {
         </div>
         <div className="flex items-center">
           <span className="w-1/3 font-medium">국적</span>
-          <span className="w-2/3 px-3 py-2">{info.nationality}</span>
+          <span className="w-2/3 px-3 py-2">{info.foreignFlag}</span>
         </div>
         <div className="flex items-center">
           <span className="w-1/3 font-medium">전화번호</span>
-          <span className="w-2/3 px-3 py-2">{info.phoneNumber}</span>
+          <span className="w-2/3 px-3 py-2">{info.phonenumber}</span>
         </div>
         <div className="flex items-center">
           <span className="w-1/3 font-medium">생년월일</span>
-          <span className="w-2/3 px-3 py-2">{info.birthDate}</span>
+          <span className="w-2/3 px-3 py-2">{info.birth}</span>
         </div>
         <div className="flex items-center">
           <span className="w-1/3 font-medium">이메일</span>

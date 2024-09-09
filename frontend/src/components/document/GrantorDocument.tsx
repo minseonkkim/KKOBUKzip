@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import {
   AssigneeDocumentDataType as GrantorDocumentDataType,
-  GrantorFetchData,
+  GrantorFetchDataType,
 } from "../../types/document";
 // interface GrantorDocumentDataType {
 //   name: string;
@@ -28,7 +28,7 @@ function GrantorDocument() {
   };
 
   const sendGrantorDocRequest = () => {
-    const docs: GrantorFetchData = {
+    const docs: GrantorFetchDataType = {
       docType: "양도신청서",
       applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d",
       detail: {

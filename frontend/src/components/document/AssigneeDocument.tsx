@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import {
   AssigneeDocumentDataType,
-  AssigneeDocData,
+  AssigneeDocDataType,
   AssigneeFetchData,
 } from "../../types/document";
 
@@ -19,7 +19,7 @@ function AssigneeDocument() {
     address: "",
   });
 
-  const [data, setData] = useState<AssigneeDocData>({
+  const [data, setData] = useState<AssigneeDocDataType>({
     turtleUUID: "",
     count: 1,
     purpose: "연구",
@@ -60,7 +60,7 @@ function AssigneeDocument() {
 
   // 양수자 이외의 데이터 수정 함수
   const changeDataHandle = (
-    key: keyof AssigneeDocData,
+    key: keyof AssigneeDocDataType,
     evt:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLSelectElement>

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import MyDocumentDataForm from "../../../components/document/MyDocumentDataForm";
-import { applicant } from "../../../fixtures/docsDummy";
+import { adminBreedResultdata } from "../../../fixtures/docsDummy";
 
 function AdminDocsDetailPage() {
   const params = useParams();
@@ -18,7 +18,7 @@ function AdminDocsDetailPage() {
       </Helmet>
 
       <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mb-10">
-        <MyDocumentDataForm info={applicant} />
+        <MyDocumentDataForm info={adminBreedResultdata.applicant} />
       </div>
     </>
   );
