@@ -101,14 +101,23 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * @param _seller 판매자 주소
      * @param _amount 거래 금액
      * @return 생성된 거래 ID
+     * @notice CEI 패턴 적용(Checks-Effects-Interactions)
+     * - Checks: 입력 값 검증 먼저 수행
+     * - Effects: 거래 정보 상태에 저장
+     * - Interactions: 토큰 전송
      */
     // 새로운 거래 생성
     function createTransaction(address _seller, uint256 _amount) external returns (uint256) {
-        // 구매자로부터 토큰 전송
-        require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");
+        // Check
+        require(_seller != address(0), "Invalid seller address");
+        require(_amount > 0, "Invalid amount! Amount must be greater than 0");
 
+        // Effects
         uint256 transactionId = transactionCount++;
         transactions[transactionId] = Transaction({buyer: msg.sender, seller: _seller, amount: _amount, state: State.Created, createdAt: block.timestamp, lockPeriod: LOCK_PERIOD});
+
+        // Interactions
+        require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");
 
         emit TransactionCreated(transactionId, msg.sender, _seller, _amount);
         return transactionId;
@@ -137,11 +146,15 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      *   => 재진입(reentrancy) 공격과 같은 보안 취약점을 방지하고 코드의 일관성을 유지하는 데 도움을 줌
      */
     function releaseFunds(uint256 _transactionId) external nonReentrant {
+        // Checks
         Transaction storage transaction = transactions[_transactionId];
         require(msg.sender == transaction.buyer || msg.sender == arbiter, "Unauthorized");
         require(transaction.state == State.Locked, "Invalid state");
 
+        // Effects
         transaction.state = State.Released;
+
+        // Interactions
         bool success = token.transfer(transaction.seller, transaction.amount);
         require(success, "Token transfer failed");
 
@@ -151,14 +164,22 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
     /**
      * @dev 환불 (구매자에게 반환)
      * @param _transactionId 거래 ID
+     * @notice CEI 패턴 적용(Checks-Effects-Interactions)
+     * - Checks: 거래 상태 및 거래 조건 확인
+     * - Effects: 거래 상태 업데이트
+     * - Interactions: 토큰 전송
      */
     function refund(uint256 _transactionId) external nonReentrant {
+        // Checks
         Transaction storage transaction = transactions[_transactionId];
         require(msg.sender == transaction.seller || msg.sender == arbiter, "Unauthorized");
         require(transaction.state == State.Locked, "Invalid state");
         require(block.timestamp >= transaction.createdAt + transaction.lockPeriod, "Lock period not expired");
 
+        // Effects
         transaction.state = State.Refunded;
+
+        // Interactions
         require(token.transfer(transaction.buyer, transaction.amount), "Token transfer failed");
 
         emit FundsRefunded(_transactionId);
