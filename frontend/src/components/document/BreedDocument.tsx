@@ -1,28 +1,8 @@
 import { useRef, useState } from "react";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import { Helmet } from "react-helmet-async";
+import { BreedDocumentDataType, BreedFetchData } from "../../types/document";
 
-interface BreedDocumentDataType {
-  scientificName: "Malaclemys terrapin";
-  area: string;
-  count: 1;
-  purpose: "연구" | "학술" | "애완" | "상업";
-  registerDate: Date | null;
-  motherUUID: string;
-  fatherUUID: string;
-  location: string;
-}
-
-interface FetchData {
-  data: {
-    detail: BreedDocumentDataType;
-    docType: "인공증식증명서";
-    applicant: string;
-  };
-  locationSpecification: "--사진--"; // 로직 작성하고 이미지데이터로 변경할 것
-  multiplicationMethod: "--사진--"; // 로직 작성하고 이미지데이터로 변경할 것
-  shelterSpecification: "--사진--"; // 로직 작성하고 이미지데이터로 변경할 것
-}
 // 특이사항
 // 신청인 정보 동적으로 할당할 것(아마 store에서)
 // 구비서류부터 안했음
@@ -56,7 +36,7 @@ function BreedDocument() {
   };
 
   const sendBreedDocRequest = () => {
-    const docs: FetchData = {
+    const docs: BreedFetchData = {
       // 신청인 정보는 applicant에서 넘어가기에 작성 안 해도 됨
       data: {
         docType: "인공증식증명서",
