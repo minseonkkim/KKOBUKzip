@@ -12,6 +12,7 @@ import AuctionDetailPage from "./pages/auction/AuctionDetailPage";
 import AuctionListPage from "./pages/auction/AuctionListPage";
 import AdminPage from "./pages/user/AdminPage";
 import MyPage from "./pages/user/MyPage";
+import ChatList from "./components/chatting/ChatList";
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/mypage" element={<MyPage />} />
         </Routes>
+        <ChatList/>
       </BrowserRouter>
     </HelmetProvider>
   );
