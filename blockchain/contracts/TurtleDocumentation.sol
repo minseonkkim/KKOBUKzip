@@ -143,31 +143,25 @@ contract TurtleDocumentation is Ownable {
         return documentHash;
     }
 
-    /**
-     * 거북이 양도 서류 등록의 경우에는 아래의 경우를 고려하여 함수를 수정해야 할 것으로 판단됨.
-     * => 거북이 양수 서류 등록 과정에 리턴받은 해시값을 양도 서류 등록 함수 매개변수로 전달하여 기등록된 거북이 양수양도 서류에 정보 추가하는 형식으로 구현할 것 고려
-     */
-
     // 거북이 양도 서류 등록
     function turtleGrantorDocument(
         string memory _turtleId,
         string memory _applicant,
+        bytes32 _documentHash,
         string memory _grantorId,
         string memory _aquisition,
         string memory _fatherId,
         string memory _motherId
     ) public returns (bytes32) {
-        bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
+        turtles[_turtleId].transferDocs[_documentHash].grantApplicant = _applicant;
+        turtles[_turtleId].transferDocs[_documentHash].grantorId = _grantorId;
+        turtles[_turtleId].transferDocs[_documentHash].aquisition = _aquisition;
+        turtles[_turtleId].transferDocs[_documentHash].fatherId = _fatherId;
+        turtles[_turtleId].transferDocs[_documentHash].motherId = _motherId;
 
-        turtles[_turtleId].transferDocs[documentHash].grantApplicant = _applicant;
-        turtles[_turtleId].transferDocs[documentHash].grantorId = _grantorId;
-        turtles[_turtleId].transferDocs[documentHash].aquisition = _aquisition;
-        turtles[_turtleId].transferDocs[documentHash].fatherId = _fatherId;
-        turtles[_turtleId].transferDocs[documentHash].motherId = _motherId;
+        emit TurtleTransferred(_turtleId, _applicant, _grantorId, _documentHash);
 
-        emit TurtleTransferred(_turtleId, _applicant, _grantorId, documentHash);
-
-        return documentHash;
+        return _documentHash;
     }
 
     // 거북이 양도양수 서류 조회
