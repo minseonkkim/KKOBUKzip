@@ -89,6 +89,7 @@ contract TurtleDocumentation is Ownable {
         string memory _turtleId,
         string memory _applicant,
         uint8 _count,
+        string memory _area,
         string memory _purpose,
         string memory _location,
         string memory _fatherId,
@@ -104,6 +105,7 @@ contract TurtleDocumentation is Ownable {
         Turtle storage newTurtle = turtles[_turtleId];
         newTurtle.multiplicationDoc[documentHash].applicant = _applicant;
         newTurtle.multiplicationDoc[documentHash].count = _count;
+        newTurtle.multiplicationDoc[documentHash].area = _area;
         newTurtle.multiplicationDoc[documentHash].purpose = _purpose;
         newTurtle.multiplicationDoc[documentHash].location = _location;
         newTurtle.multiplicationDoc[documentHash].fatherId = _fatherId;
@@ -171,7 +173,7 @@ contract TurtleDocumentation is Ownable {
     }
 
     // 거북이 폐사질병 서류 등록
-    function registerTurtlerDeathDocument(
+    function registerTurtleDeathDocument(
         string memory _turtleId,
         string memory _applicant,
         string memory _shelter,

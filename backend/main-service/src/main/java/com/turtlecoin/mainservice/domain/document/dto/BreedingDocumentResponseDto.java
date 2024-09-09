@@ -2,12 +2,16 @@ package com.turtlecoin.mainservice.domain.document.dto;
 
 import java.time.LocalDate;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class BreedingDocumentResponseDto implements DocumentResponseDto {
 	private String docType;
 	private String turtleUUID;
@@ -16,7 +20,8 @@ public class BreedingDocumentResponseDto implements DocumentResponseDto {
 	private Detail detail;
 
 	@Builder
-	@Getter
+	@Data
+	@AllArgsConstructor
 	public static class Detail {
 		private String scientificName;
 		private String area;

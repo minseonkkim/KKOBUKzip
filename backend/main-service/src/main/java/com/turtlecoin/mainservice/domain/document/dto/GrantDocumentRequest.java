@@ -4,11 +4,16 @@ import java.time.LocalDate;
 
 import com.turtlecoin.mainservice.domain.document.entity.DocType;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Builder
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class GrantDocumentRequest {
 	private String documentHash;
 	private String turtleUUID;
@@ -17,7 +22,8 @@ public class GrantDocumentRequest {
 	private Detail detail;
 
 	@Builder
-	@Getter
+	@Data
+	@AllArgsConstructor
 	public static class Detail {
 		Grantor grantor;
 		String turtleUUID;
@@ -26,8 +32,8 @@ public class GrantDocumentRequest {
 		String fatherUUID;
 	}
 
-	@Builder
-	@Getter
+	@Data
+	@AllArgsConstructor
 	public static class Grantor {
 		String name;
 		String phoneNumber;
