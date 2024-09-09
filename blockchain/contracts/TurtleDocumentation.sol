@@ -71,6 +71,7 @@ contract TurtleDocumentation is Ownable {
     event TurtleMultiplication(string turtleId, string applicant, bytes32 documentHash);
     event TurtleTransferred(string turtleId, string grantApplicant, string assignApplicant, bytes32 docuemntHash);
     event TurtleDeath(string turtleId, string applicant, bytes32 documentHash);
+    event TurtleOwnerChanged(string turtleId, string oldOwner, string newOwner);
 
     // (관리자용) 거북이 추가
     function registerTurtle(string memory _turtleId, string memory _applicant) public onlyOwner {
@@ -198,5 +199,35 @@ contract TurtleDocumentation is Ownable {
     // 거북이 폐사질병 서류 조회
     function searchTurtleDeathDocument(string memory _turtleId, bytes32 _documentHash) public view returns (Death memory) {
         return turtles[_turtleId].deathDoc[_documentHash];
+    }
+
+    // 거북이 소유자 변경
+    function changeTurtleOwner(string memory _turtleId, string memory _oldOwner, string memory _newOwner) public {
+        require(turtles[_turtleId].exists, "Turtle does not exist");
+        require(ownerToTurtleIds[_oldOwner].length > 0, "Old owner does not own any turtles");
+
+        // 이전 소유자가 소유한 거북이 중 해당 거북이가 있는지 확인
+        bool found = false;
+        for (uint256 i = 0; i < ownerToTurtleIds[_oldOwner].length; i++) {
+            if (keccak256(abi.encodePacked(ownerToTurtleIds[_oldOwner][i])) == keccak256(abi.encodePacked(_turtleId))) {
+                found = true;
+                break;
+            }
+        }
+        require(found, "Old owner does not own this turtle");
+
+        // 이전 소유자가 소유한 거북이 배열에서 해당 거북이 제거
+        string[] storage oldOwnerTurtles = ownerToTurtleIds[_oldOwner];
+        for (uint256 i = 0; i < oldOwnerTurtles.length; i++) {
+            if (keccak256(abi.encodePacked(oldOwnerTurtles[i])) == keccak256(abi.encodePacked(_turtleId))) {
+                oldOwnerTurtles[i] = oldOwnerTurtles[oldOwnerTurtles.length - 1];
+                oldOwnerTurtles.pop();
+            }
+        }
+
+        // 새로운 소유자가 소유한 거북이 배열에 해당 거북이 추가
+        ownerToTurtleIds[_newOwner].push(_turtleId);
+
+        emit TurtleOwnerChanged(_turtleId, _oldOwner, _newOwner);
     }
 }
