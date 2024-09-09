@@ -13,6 +13,7 @@ import AuctionListPage from "./pages/auction/AuctionListPage";
 import MyPage from "./pages/user/MyPage";
 import AdminDocsListPage from "./pages/user/admin/AdminDocsListPage";
 import AdminDocsDetailPage from "./pages/user/admin/AdminDocsDetailPage";
+import ChatList from "./components/chatting/ChatList";
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
             element={<AdminDocsDetailPage />}
           />
         </Routes>
+        <ChatList />
       </BrowserRouter>
     </HelmetProvider>
   );
