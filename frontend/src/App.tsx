@@ -11,7 +11,7 @@ import TransactionListPage from "./pages/transaction/TransactionListPage";
 import AuctionDetailPage from "./pages/auction/AuctionDetailPage";
 import AuctionListPage from "./pages/auction/AuctionListPage";
 import AdminPage from "./pages/user/AdminPage";
-import UserPage from "./pages/user/UserPage";
+import MyPage from "./pages/user/MyPage";
 
 function App() {
   return (
@@ -52,7 +52,7 @@ function App() {
 
           {/* User Domain - 유저 */}
           <Route path="/admin" element={<AdminPage />} />
-          <Route path="/mypage" element={<UserPage />} />
+          <Route path="/mypage" element={<MyPage />} />
         </Routes>
       </BrowserRouter>
     </HelmetProvider>

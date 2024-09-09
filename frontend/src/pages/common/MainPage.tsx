@@ -23,12 +23,12 @@ function MainPage() {
     // 텍스트가 깜빡이기 시작하는 시간 조정 (2300ms에 동시 시작)
     const contentTimer = setTimeout(() => {
       setShowContent(true);
-    }, 2300);
+    }, 0);
 
     // 버튼이 나타나는 타이밍 조정 (텍스트가 깜빡인 후 2초 뒤)
     const buttonTimer = setTimeout(() => {
       setShowButtons(true);
-    }, 4300);
+    }, 2000);
 
     return () => {
       clearTimeout(turtleTimer);
