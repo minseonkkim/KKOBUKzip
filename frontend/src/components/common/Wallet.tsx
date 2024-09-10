@@ -6,7 +6,7 @@ import { FaArrowRightArrowLeft } from "react-icons/fa6";
 
 const TURTLE_TOKEN_ABI: AbiItem[] = TurtleTokenAbi.abi as AbiItem[];
 const TURTLE_TOKEN_ADDRESS = "0x5a26D7A93226041900A264d8F216f8216e6e7ef5";
-const EXCHANGE_RATE = 3000000; // 1 ETH = 3,000,000 TURT
+const EXCHANGE_RATE = 5000000; // 1 ETH = 5,000,000 TURT
 
 declare global {
   interface Window {
