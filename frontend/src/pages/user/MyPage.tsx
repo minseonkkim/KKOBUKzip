@@ -14,7 +14,7 @@ function MyPage() {
         <title>마이페이지</title>
       </Helmet>
       <Header />
-      <div className="px-[230px] mt-[85px]">
+      <div className="px-[250px] mt-[85px]">
         <div className="flex flex-row justify-between mt-[120px] px-[30px] py-[20px] h-[215px] bg-gradient-to-r from-[#e7f6d1] via-[#d5e5bd] to-[#e7f6d1] rounded-[20px]">
           <div>
             <div className="font-dnf-bitbit text-[#4B721F] text-[27px] mt-1 mb-5">내 정보</div>

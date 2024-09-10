@@ -1,10 +1,18 @@
-import TmpTurtle from "../../assets/tmp_turtle.jpg";
+import TmpTurtle from "../../assets/tmp_turtle_2.jpg";
 import AuctionStatusTag from "./AuctionStatusTag";
 import TransactionStatusTag from "./AuctionStatusTag";
+import { useNavigate } from 'react-router-dom';
 
 export default function AuctionTurtle(){
+
+    const navigate = useNavigate();
+
+    const goToDetail = () => {
+        navigate('/auction-detail');
+    };
+
     return <>
-        <div className="bg-[#F8F9FA] shadow-lg hover:shadow-xl transition-shadow duration-300 w-full max-w-sm h-[330px] rounded-2xl my-4 flex flex-col cursor-pointer active:scale-95 relative">
+        <div onClick={goToDetail} className="bg-[#F8F9FA] shadow-lg hover:shadow-xl transition-shadow duration-300 w-full max-w-sm h-[330px] rounded-2xl my-4 flex flex-col cursor-pointer active:scale-95 relative">
         <div className="absolute top-4 right-4">
           <AuctionStatusTag progress={"경매중"} />
         </div>

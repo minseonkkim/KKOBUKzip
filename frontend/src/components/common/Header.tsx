@@ -9,7 +9,7 @@ export default function Header(){
 
     return <>
     <div
-      className="fixed top-0 left-0 w-full h-[85px] px-[230px] flex flex-row justify-between items-center shadow-md z-50"
+      className="fixed top-0 left-0 w-full h-[85px] px-[250px] flex flex-row justify-between items-center shadow-md z-50"
       style={{ backgroundColor }}
     >
         <Link to="/">

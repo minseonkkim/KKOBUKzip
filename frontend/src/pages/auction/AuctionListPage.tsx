@@ -19,7 +19,7 @@ function AuctionListPage() {
         <title>경매중인 거북이</title>
       </Helmet>
       <Header/>
-      <div className="px-[230px] mt-[85px]">
+      <div className="px-[250px] mt-[85px]">
         <div className="text-[33px] text-gray-900 font-dnf-bitbit pt-[40px] pb-[13px]">경매중인 거북이</div>
         <div className="flex flex-row justify-between items-center">
           <div className="flex flex-row mb-[10px]">
