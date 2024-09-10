@@ -19,7 +19,6 @@ function DocImgUpload({
       reader.onloadend = () => setPreview(reader.result as string);
       reader.readAsDataURL(file);
     }
-    console.log(preview);
   };
 
   // 드래그 앤 드롭 핸들러
