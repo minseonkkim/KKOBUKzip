@@ -60,7 +60,7 @@ function AuctionDetailPage() {
   // **거북이 위치 애니메이션 설정**
   const turtlePositionSpring = useSpring({
     left: progressSpring.progress.to((val) => {
-      const newPosition = Math.max(val - 9.2, 0.3); // Ensure left is not less than 10
+      const newPosition = Math.max(val - 9.2, 0.2); // Ensure left is not less than 10
       return `${newPosition}%`;
     }),
     config: { tension: 120, friction: 14 },
