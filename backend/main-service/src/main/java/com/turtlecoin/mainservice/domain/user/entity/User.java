@@ -9,11 +9,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@AllArgsConstructor
 public class User extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
@@ -50,7 +50,7 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private Role role=Role.ROLE_USER;;
 
     @OneToMany(mappedBy = "user")
     private List<Turtle> turtles = new ArrayList<>();
@@ -60,5 +60,21 @@ public class User extends BaseEntity {
         if (!passwordEncoder.matches(password, this.password)) {
             throw new IllegalArgumentException("Invalid password");
         }
+    }
+    public User(String email, String password, String nickname, String name,
+                Boolean foreignFlag, LocalDate birth, String phonenumber,
+                String address, Role role, String profileImage, String uuid)  {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.name = name;
+        this.foreignFlag = foreignFlag;
+        this.birth = birth;
+        this.phonenumber = phonenumber;
+        this.address = address;
+        this.role = role;
+        this.profileImage = profileImage;
+        this.uuid = uuid;
+
     }
 }
