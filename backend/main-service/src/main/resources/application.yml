@@ -28,6 +28,30 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  jwt:
+    secret: aaaaaaaaaaabbbbbbbbbbbbbbccccccccccccceeeeeeeeeeeeeeekkkkkk
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: redis6379
+      timeout: 60000
+  mail:
+    host: kkobuk@gmail.com
+    port: 587
+    username: kkobuk@gmail.com
+    password: ssafy1234
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 1800000
 
 eureka:
   instance:

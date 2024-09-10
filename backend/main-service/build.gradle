@@ -50,7 +50,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 	//rabbit mq
 	implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'se
 }
 
 dependencyManagement {
