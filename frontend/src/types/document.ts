@@ -121,7 +121,7 @@ export interface AdminBreedDocumentDataType extends baseAdminDocumentType {
     area: string;
     count: number;
     purpose: purposeType;
-    registerDate: Date;
+    registerDate: string;
     motherUUID: string;
     motherAquisition: string;
     fatherUUID: string;
@@ -140,7 +140,7 @@ export interface AdminAssignDocumentDataType extends baseAdminDocumentType {
   detail: {
     scientificName: "Malaclemys terrapin";
     count: number;
-    registerDate: Date;
+    registerDate: string;
     transferReason: string;
     aquisition: string;
     motherUUID: string;
@@ -157,7 +157,7 @@ export interface AdminDeathDocumentDataType extends baseAdminDocumentType {
     scientificName: "Malaclemys terrapin";
     shelter: string;
     count: number;
-    registerDate: Date;
+    registerDate: string;
     deathReason: string;
     plan: string;
     deathImage: string;
