@@ -123,7 +123,7 @@ function BreedDocument() {
               <select
                 id="purpose"
                 onChange={(evt) => changeHandle("purpose", evt)}
-                className="font-medium bg-gray-50 border border-gray text-gray-900 rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="cursor-pointer font-medium bg-gray-50 border border-gray text-gray-900 rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
                 <option value="연구">연구</option>
                 <option value="학술">학술</option>
@@ -140,7 +140,7 @@ function BreedDocument() {
               <button
                 aria-label="find location"
                 ref={addressBtnRef}
-                className="hover:bg-gray-200 w-1/12 border py-2 ml-1.5 rounded"
+                className="hover:bg-gray-100 w-1/12 border py-2 ml-1.5 rounded"
                 onClick={loadPostcodeSearch}
               >
                 찾기
@@ -148,7 +148,7 @@ function BreedDocument() {
               <input
                 id="location"
                 type="text"
-                className="w-1/3 px-3 ml-2 py-2 border rounded cursor-pointer"
+                className="w-1/3 px-3 ml-2 py-2 border rounded cursor-pointer hover:bg-gray-100"
                 placeholder="기본주소"
                 readOnly
                 onChange={(evt) => changeHandle("location", evt)}
