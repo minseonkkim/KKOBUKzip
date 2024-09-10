@@ -53,19 +53,21 @@ function BreedDocument() {
       alert("보호시설 명세를 확인해주세요");
       return;
     }
-    console.log(data.location);
+
     const formData = new FormData();
     formData.append("locationSpecification", locationImg);
     formData.append("multiplicationMethod", multiplicationImg);
     formData.append("shelterSpecification", shelterImg);
     // 신청인 정보는 applicant에서 넘어가기에 작성 안 해도 됨
     // 마더빠더 UUID 검증할것
+    // 적당히 useEffect 내부에서 detail에 반영하면 될 듯
     const breedData = {
       docType: "인공증식증명서",
       applicant: "d271c7d8-3f7b-4d4e-8a9e-d60f896b84cb", // storage에서 긁어올 것
       detail: {
         ...data,
         location: postcodeData?.roadAddress + " " + detailLocation,
+        registerDate: new Date().toISOString(),
       },
     };
     formData.append("data", JSON.stringify(breedData));
