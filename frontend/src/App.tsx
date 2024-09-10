@@ -18,6 +18,7 @@ import BreedDocument from "./components/document/BreedDocument";
 import AssignDocument from "./components/document/AssignDocument";
 import GrantorDocument from "./components/document/GrantorDocument";
 import DeathDocument from "./components/document/DeathDocument";
+import AuctionSuccessPage from "./pages/auction/AuctionSuccessPage";
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
           {/* Auction Domain - 경매 */}
           <Route path="/auction-detail" element={<AuctionDetailPage />} />
           <Route path="/auction-list" element={<AuctionListPage />} />
+          <Route path="/auction-success" element={<AuctionSuccessPage />} />
           {/* Transaction Domain - 거래 */}
           <Route
             path="/transaction-detail"

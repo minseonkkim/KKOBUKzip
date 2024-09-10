@@ -60,7 +60,7 @@ function AuctionDetailPage() {
   // **거북이 위치 애니메이션 설정**
   const turtlePositionSpring = useSpring({
     left: progressSpring.progress.to((val) => {
-      const newPosition = Math.max(val - 9.2, 0.3); // Ensure left is not less than 10
+      const newPosition = Math.max(val - 9.2, 0.2); // Ensure left is not less than 10
       return `${newPosition}%`;
     }),
     config: { tension: 120, friction: 14 },
@@ -187,15 +187,16 @@ function AuctionDetailPage() {
               </div>
             </div>
           </div>
+          {/* 경매중 */}
           <div className="w-[48%] h-[675px] bg-[#EAF5DD] rounded-[20px] flex flex-col justify-start items-center">
             <div className="w-full bg-[#EAEAEA] rounded-full h-[10px] relative">
-              {/* 부드럽게 움직이는 프로그레스 바 */}
+
               <animated.div
                 className="bg-[#4B721F] h-[10px] rounded-full"
                 style={{ width: progressSpring.progress.to(val => `${val}%`) }}
               ></animated.div>
 
-              {/* 프로그레스 바 위를 움직이는 거북이 */}
+
               <animated.div
                 className="absolute -top-8"
                 style={turtlePositionSpring}
@@ -246,6 +247,16 @@ function AuctionDetailPage() {
               </div>
             </div>
           </div>
+          {/* 경매전 */}
+          {/* <div className="w-[48%] h-[675px] bg-[#F2F2F2] rounded-[20px] flex flex-col justify-center items-center">
+              <div className="text-[#5E5E5E] font-bold text-[23px]">24년 09월 30일 14:30:00 경매 시작</div>
+              <div className="flex flex-row items-center mt-[15px]">
+                  <div className="font-bold text-[27px]">최소 입찰가&nbsp;&nbsp;</div>
+                  <div className="font-bold text-[37px] text-[#4B721F]">
+                    3,000,000원
+                  </div>
+                </div>
+          </div> */}
         </div>
       </div>
     </>
