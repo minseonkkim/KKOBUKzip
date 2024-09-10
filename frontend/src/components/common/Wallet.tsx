@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import { AbiItem } from "web3-utils";
 import TurtleTokenAbi from "../../abi/TurtleToken.json";
+import { FaArrowRightArrowLeft } from "react-icons/fa6";
 
 const TURTLE_TOKEN_ABI: AbiItem[] = TurtleTokenAbi.abi as AbiItem[];
 const TURTLE_TOKEN_ADDRESS = "0x5a26D7A93226041900A264d8F216f8216e6e7ef5";
@@ -142,27 +143,26 @@ const Wallet: React.FC = () => {
   };
 
   return (
-    <div className="bg-yellow-400 text-black p-4 rounded-lg shadow-md w-[300px]">
-      <h2 className="font-bold text-xl mb-4">내 지갑</h2>
-      <div className="mb-4">
-        <div className="truncate">활성 지갑 주소: {account}</div>
-        <div>보유 ETH: {parseFloat(ethBalance).toFixed(4)} ETH</div>
-        <div>보유 TURT: {parseFloat(balance).toFixed()} TURT</div>
+    <div className="bg-yellow-400 text-black p-6 rounded-[10px] w-[400px] shadow-md">
+      <div className="mt-4 mb-4">
+        <div className="truncate"><span className="font-semibold">활성 지갑 주소 |</span> {account}</div>
+        <div><span className="font-semibold">보유 ETH |</span> {parseFloat(ethBalance).toFixed(4)} ETH</div>
+        <div><span className="font-semibold">보유 TURT |</span> {parseFloat(balance).toFixed()} TURT</div>
       </div>
-      <div className="flex flex-col space-y-2 mb-4">
+      <div className="flex space-x-2 mb-4">
         <div className="relative">
-          <input type="number" value={fromAmount} onChange={(e) => handleFromAmountChange(e.target.value)} step={fromCurrency === "ETH" ? "0.001" : "1"} min="0" className="w-full p-2 pr-16 border border-gray-300 rounded bg-white" placeholder="0" />
+          <input type="number" value={fromAmount} onChange={(e) => handleFromAmountChange(e.target.value)} step={fromCurrency === "ETH" ? "0.001" : "1"} min="0" className="w-full p-2 pr-16 border-2 border-yellow-600 rounded bg-white focus:outline-none focus:ring-4 focus:ring-yellow-300" placeholder="0" />
           <span className="absolute right-2 top-1/2 transform -translate-y-1/2 font-semibold">{fromCurrency}</span>
         </div>
-        <button onClick={handleSwap} className="self-center p-1 bg-white rounded-full shadow-md hover:bg-gray-100">
-          ⇅
+        <button onClick={handleSwap} className="self-center p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
+          <FaArrowRightArrowLeft />
         </button>
         <div className="relative">
-          <input type="text" value={toAmount} readOnly className="w-full p-2 pr-16 border border-gray-300 rounded bg-white" placeholder="0" />
+          <input type="text" value={toAmount} readOnly className="w-full p-2 pr-16 border-2 border-gray-300 rounded bg-slate-200 focus:outline-none" placeholder="0" />
           <span className="absolute right-2 top-1/2 transform -translate-y-1/2 font-semibold">{toCurrency}</span>
         </div>
       </div>
-      <button onClick={fromCurrency === "ETH" ? handleBuyTurt : handleSellTurt} className="w-full bg-white text-black py-2 px-4 rounded hover:bg-gray-100 transition duration-200 font-semibold">
+      <button onClick={fromCurrency === "ETH" ? handleBuyTurt : handleSellTurt} className="w-full bg-white text-black py-2 px-4 rounded transition duration-200 font-semibold hover:ring-4 hover:ring-yellow-300">
         환전하기
       </button>
     </div>
