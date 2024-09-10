@@ -30,12 +30,12 @@ function DocumentFormPage() {
       case "/doc-form/grant":
         setActiveTab("양도");
         // 추후에 동적 할당
-        setTabNameList(["양도", "양수"]);
+        setTabNameList(["양수", "양도"]);
         break;
       case "/doc-form/assign":
         setActiveTab("양수");
         // 추후에 동적 할당
-        setTabNameList(["양도", "양수"]);
+        setTabNameList(["양수", "양도"]);
         break;
       case "/doc-form/breed":
         setActiveTab("인공증식");
