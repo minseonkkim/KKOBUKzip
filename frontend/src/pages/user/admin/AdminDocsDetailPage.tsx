@@ -36,7 +36,6 @@ function AdminDocsDetailPage() {
   const [data, setData] = useState<dataType | null>(null);
 
   useEffect(() => {
-    console.log(location.state);
     // get uuid and hash from params and data fetch
     console.log(params?.turtleUUID, params?.documentHash);
     const documentType: AdminDocType = location.state?.documentType ?? null;
@@ -89,8 +88,7 @@ function AdminDocsDetailPage() {
         </button>
       </div>
       {/* 테스트 드라이버 끝 */}
-
-      <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mb-10">
+      <>
         {layout === "인공증식증명서" && (
           <AdminBreedDocsCheck data={data as AdminBreedDocumentDataType} />
         )}
@@ -104,7 +102,7 @@ function AdminDocsDetailPage() {
         {layout === "폐사질병신고서" && (
           <AdminDeathDocsCheck data={data as AdminDeathDocumentDataType} />
         )}
-      </div>
+      </>
     </>
   );
 }
