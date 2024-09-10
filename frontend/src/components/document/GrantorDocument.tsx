@@ -34,7 +34,7 @@ function GrantorDocument() {
       detail: {
         granter: {
           ...grantor,
-          address: grantor.address + " " + detailLocation,
+          address: postcodeData?.roadAddress + " " + detailLocation,
         },
 
         // UUID 부분 데이터 들어오면 할당할 것

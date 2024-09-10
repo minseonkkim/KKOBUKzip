@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import { Helmet } from "react-helmet-async";
-import { BreedDocumentDataType, BreedFetchData } from "../../types/document";
+import { BreedDocumentDataType } from "../../types/document";
 import DocImgUpload from "./DocImgUpload";
 
 // 특이사항
@@ -53,6 +53,7 @@ function BreedDocument() {
       alert("보호시설 명세를 확인해주세요");
       return;
     }
+    console.log(data.location);
     const formData = new FormData();
     formData.append("locationSpecification", locationImg);
     formData.append("multiplicationMethod", multiplicationImg);
@@ -62,7 +63,10 @@ function BreedDocument() {
     const breedData = {
       docType: "인공증식증명서",
       applicant: "d271c7d8-3f7b-4d4e-8a9e-d60f896b84cb", // storage에서 긁어올 것
-      detail: { ...data, location: data.location + " " + detailLocation },
+      detail: {
+        ...data,
+        location: postcodeData?.roadAddress + " " + detailLocation,
+      },
     };
     formData.append("data", JSON.stringify(breedData));
     // 데이터 보낼때 multipart로 적당히 던질것
