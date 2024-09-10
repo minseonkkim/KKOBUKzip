@@ -1,6 +1,8 @@
 import {
   ApplicantInfoType,
   AdminBreedDocumentDataType,
+  AdminAssignDocumentDataType,
+  AdminDeathDocumentDataType,
 } from "../types/document";
 
 // 유저 더미데이터
@@ -71,7 +73,7 @@ export const adminBreedResultdata: AdminBreedDocumentDataType = {
     area: "150X60X80",
     count: 1,
     purpose: "연구",
-    registerDate: new Date("2024-08-20"),
+    registerDate: "2024-08-20",
     motherUUID: "d271c7d8-3f7b-4d4e-8a9e-d60f896b84cb",
     motherAquisition: "0x123469451035610",
     fatherUUID: "e7c5d4e4-2b55-4d4f-8d53-7d98c6c2a30a",
@@ -83,13 +85,13 @@ export const adminBreedResultdata: AdminBreedDocumentDataType = {
 };
 
 // 관리자가 조회한 양도양수확인서 데이터
-export const adminAssignGrantData = {
+export const adminAssignGrantData: AdminAssignDocumentDataType = {
   docType: "양도양수확인서",
   turtleUUID: "e4eaaaf2-d142-11e1-b3e4-080027620cdd",
   documentHash: "0x1231824910237124",
   applicant: {
     name: "김싸피",
-    foreignFlag: "true",
+    foreignFlag: true,
     phonenumber: "010-1234-5678",
     email: "ssafy@ssafy.com",
     birth: "2000-01-01",
@@ -119,13 +121,13 @@ export const adminAssignGrantData = {
 };
 
 // 관리자가 조회한 폐사질병서류 데이터
-export const adminDeathData = {
+export const adminDeathData: AdminDeathDocumentDataType = {
   docType: "폐사질병서류",
   turtleUUID: "e4eaaaf2-d142-11e1-b3e4-080027620cdd",
   documentHash: "0x1231824910237124",
   applicant: {
     name: "김싸피",
-    foreignFlag: "true",
+    foreignFlag: true,
     phonenumber: "010-1234-5678",
     email: "ssafy@ssafy.com",
     birth: "2000-01-01",

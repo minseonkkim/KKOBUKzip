@@ -6,7 +6,6 @@ import DocImgUpload from "./DocImgUpload";
 
 // 특이사항
 // 신청인 정보 동적으로 할당할 것(아마 store에서)
-// 구비서류부터 안했음
 
 function BreedDocument() {
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
