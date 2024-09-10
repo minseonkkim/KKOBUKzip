@@ -113,7 +113,7 @@ interface baseAdminDocumentType {
   detail: object;
 }
 
-// 관리자가 조회하는 인공증식 문서
+// 완성된 인공증식 문서 양식
 export interface AdminBreedDocumentDataType extends baseAdminDocumentType {
   docType: "인공증식증명서";
   detail: {
@@ -132,7 +132,7 @@ export interface AdminBreedDocumentDataType extends baseAdminDocumentType {
   };
 }
 
-// 관리자가 조회하는 양수/양도 문서
+// 완성된 양수/양도 문서 양식
 export interface AdminAssignDocumentDataType extends baseAdminDocumentType {
   docType: "양도양수확인서";
   assignee: AssignDocumentDataType;
@@ -150,7 +150,7 @@ export interface AdminAssignDocumentDataType extends baseAdminDocumentType {
   };
 }
 
-// 관리자가 조회하는 폐사 문서
+// 완성된 폐사 문서 양식
 export interface AdminDeathDocumentDataType extends baseAdminDocumentType {
   docType: "폐사질병서류";
   detail: {

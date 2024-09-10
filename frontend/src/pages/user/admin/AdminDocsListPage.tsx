@@ -1,12 +1,17 @@
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { generateRandomData } from "../../../fixtures/docsDummy";
+import { useEffect } from "react";
 
 // 테스트용 더미 데이터
 const dummyData = generateRandomData(100);
 
 function AdminDocsListPage() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // 데이터 fetch
+  }, []);
   return (
     <>
       <Helmet>
