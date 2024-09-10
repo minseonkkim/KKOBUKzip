@@ -41,7 +41,7 @@ function AssignDocument() {
       detail: {
         assignee: {
           ...assignee,
-          address: assignee.address + " " + detailLocation,
+          address: postcodeData?.roadAddress + " " + detailLocation,
         },
         ...data,
       },
