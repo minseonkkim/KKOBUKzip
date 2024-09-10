@@ -59,7 +59,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String role = jwtUtil.getRoleFromToken(token);
 
         // username으로 UserService에서 사용자 정보 조회
-        User userEntity = userRepository.findByusername(username);
+        User userEntity = userRepository.findByname(username);
 
         // 사용자 정보를 바탕으로 CustomUserDetails 생성 & 인증 설정
         CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
