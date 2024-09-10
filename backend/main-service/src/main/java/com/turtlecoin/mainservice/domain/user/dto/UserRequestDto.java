@@ -18,7 +18,6 @@ public class UserRequestDto {
     private String phonenumber;
     private String address;
     private String profileImage;
-    private String uuid;
     private Role role;
 
     public Role getRole() {
