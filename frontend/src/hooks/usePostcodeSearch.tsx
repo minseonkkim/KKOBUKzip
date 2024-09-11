@@ -19,7 +19,7 @@ export const usePostcodeSearch = () => {
   const [guideText, setGuideText] = useState<string>("");
 
   const loadPostcodeSearch = () => {
-    new (window as any).daum.Postcode({
+    new window.daum.Postcode({
       oncomplete: (data: PostcodeData) => {
         const roadAddr = data.roadAddress;
         let extraRoadAddr = "";
