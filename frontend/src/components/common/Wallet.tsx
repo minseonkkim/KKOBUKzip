@@ -5,7 +5,7 @@ import TurtleTokenAbi from "../../abi/TurtleToken.json";
 import { FaArrowRightArrowLeft } from "react-icons/fa6";
 
 const TURTLE_TOKEN_ABI: AbiItem[] = TurtleTokenAbi.abi as AbiItem[];
-const TURTLE_TOKEN_ADDRESS = "0x5a26D7A93226041900A264d8F216f8216e6e7ef5";
+const TURTLE_TOKEN_ADDRESS = "0x73b0697A8A69193e5842497Cc010cB1F34A93a0a";
 const EXCHANGE_RATE = 5000000; // 1 ETH = 5,000,000 TURT
 
 declare global {

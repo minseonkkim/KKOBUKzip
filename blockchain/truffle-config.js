@@ -1,3 +1,6 @@
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+require('dotenv').config()
+
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -69,6 +72,18 @@ module.exports = {
       port: 7545, // Standard Ethereum port (default: none)
       network_id: "*", // Any network (default: none)
     },
+
+    holesky : {
+      provider: () => new HDWalletProvider(
+        process.env.PRIVATE_KEY,  // Metamask 지갑의 비공개 키
+        "https://1rpc.io/holesky"  // Holesky RPC URL
+      ),
+      network_id: 17000,      // Holesky 체인 ID
+      gas: 5000000,           // 사용할 가스 양 설정
+      gasPrice: 20000000000,  // 가스 가격 (wei 단위)
+      confirmations: 2,       // 블록 확인 횟수 (테스트 환경에서 2개로 설정)
+      timeoutBlocks: 200,     // 블록 타임아웃
+    }
     //
     // An additional network, but with some advanced options…
     // advanced: {
