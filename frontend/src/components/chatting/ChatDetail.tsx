@@ -1,5 +1,5 @@
 import { IoClose } from "react-icons/io5";
-import TmpProfileImg from "../../assets/tmp_profile.png";
+import TmpProfileImg from "../../assets/tmp_profile.gif";
 
 interface Chat {
     name: string;

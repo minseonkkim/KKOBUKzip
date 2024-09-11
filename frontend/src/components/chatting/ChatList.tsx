@@ -24,7 +24,7 @@ export default function ChatList() {
     return (
         <>
             <div
-                className={`cursor-pointer fixed w-[380px] bottom-0 right-0 z-1000 bg-[#D7E7F7] rounded-[10px] flex flex-col justify-between items-center transition-all duration-500 ${isOpen ? 'h-[480px]' : 'h-[60px]'} animate-float`}
+                className={`cursor-pointer fixed w-[380px] bottom-0 right-0 z-[1000] bg-[#D7E7F7] rounded-[10px] flex flex-col justify-between items-center transition-all duration-500 ${isOpen ? 'h-[480px]' : 'h-[60px]'} animate-float`}
                 style={{
                     boxShadow: '15px 8px 20px rgba(0, 0, 0, 0.3)',
                     border: '2px solid #88B3D9',

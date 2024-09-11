@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
-import TmpProfileImg from "../../assets/tmp_profile.png";
+import TmpProfileImg from "../../assets/tmp_profile.gif";
 import { useState } from "react";
 import TransactionHistory from "../../components/user/TransactionHistory";
 import MyTurtle from "../../components/user/MyTurtle";
@@ -60,6 +60,7 @@ function MyPage() {
         {/* 나의 거북이 */}
         {selectedMenu === 1 && 
         <div className="flex flex-row flex-wrap mb-[20px] gap-[2%]">
+          
         <MyTurtle />
         <MyTurtle />
         <MyTurtle />
