@@ -5,14 +5,12 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
-import com.turtlecoin.auctionservice.domain.auction.entity.QAuction;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
-import com.turtlecoin.auctionservice.domain.turtle.dto.TurtleResponse;
+import com.turtlecoin.auctionservice.domain.turtle.dto.TurtleResponseDTO;
 import com.turtlecoin.auctionservice.domain.turtle.service.TurtleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,11 +28,12 @@ public class AuctionService {
     private final AuctionRepository auctionRepository;
     private final ImageUploadService imageUploadService;  // ImageUploadService도 주입합니다.
     private final TurtleService turtleService;
+//    private final JPAQueryFactory queryFactory;
 
     @Transactional
     public Auction registerAuction(RegisterAuctionDTO registerAuctionDTO, List<MultipartFile> images) throws IOException {
         List<String> uploadedImagePaths = new ArrayList<>();
-        List<AuctionPhoto> auctionPhotos = new ArrayList<>();
+        List<AuctionPhoto> auctionPhotos = new  ArrayList<>();
 
         try {
             // 이미지 업로드
@@ -62,10 +61,23 @@ public class AuctionService {
         Optional<Auction> auction = auctionRepository.findById(auctionId);
 
         auction.ifPresent(a -> {
-            TurtleResponse turtleInfo = turtleService.getTurtleInfo(a.getTurtleId());
+            TurtleResponseDTO turtleInfo = turtleService.getTurtleInfo(a.getTurtleId());
             log.info("Turtle Info: {}", turtleInfo);
         });
 
         return auction;
     }
+            // main-service와 통신 필요
+//    public List<Auction> getFilteredAuctions(String gender, Double minSize, Double maxSize, Double minPrice, Double maxPrice, AuctionProgress progress, int page) {
+//        QAuction auction = QAuction.auction;
+//
+
+//        return queryFactory.selectFrom(auction)
+//                .where(
+//                        gender != null ? auction.turtle.gender.eq(gender) : null,
+//                        minSize != null && maxSize != null ? auction.turtle.size.between(minSize, maxSize) : null,
+//                        minPrice != null && maxPrice != null ? auction.minBid.between(minPrice, maxPrice) : null,
+//                        progress != null ? auction.progress.eq(progress) : null
+//                )
+//    }
 }

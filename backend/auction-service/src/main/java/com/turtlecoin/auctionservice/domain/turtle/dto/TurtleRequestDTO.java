@@ -5,9 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class TurtleResponse {
+public class TurtleRequestDTO {
     private Long id;
-    private String gender;
-    private Double size;
-    private Double price;
 }
