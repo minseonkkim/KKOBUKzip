@@ -96,6 +96,7 @@ function LoginPage() {
 
               <button
                 className="flex items-center m-auto justify-center w-full bg-[#fae300]
+                py-2 rounded text-white
                 "
                 // hover:bg-[#fae300]/80 transition-all duration-300 ease-in-out
                 // border border-yellow-500
@@ -106,8 +107,7 @@ function LoginPage() {
                 // hover:scale-105
                 // hover:rotate-1
                 // active:scale-100
-                // active:rotate-0
-                // py-2 rounded text-white"
+                // active:rotate-0"
               >
                 <img
                   src={kakao_logo}
