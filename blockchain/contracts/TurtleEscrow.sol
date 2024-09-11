@@ -90,7 +90,10 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         require(_amount > 0, "Invalid amount! Amount must be greater than 0");
 
         // Effects
-        uint256 transactionId = transactionCount++;
+        uint256 transactionId;
+        unchecked {  // 오버픞로우 검사 생략
+            transactionId = transactionCount++;
+        }
         transactions[transactionId] = Transaction({buyer: msg.sender, seller: _seller, amount: _amount, state: State.Created, createdAt: block.timestamp, lockPeriod: LOCK_PERIOD});
 
         // Interactions
@@ -104,7 +107,7 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * @dev 자금 잠금
      * @param _transactionId 거래 ID
      */
-    function lockFunds(uint256 _transactionId) external {
+    function lockFunds(uint256 _transactionId) external nonReentrant {
         Transaction storage transaction = transactions[_transactionId];
         require(msg.sender == transaction.buyer, "Only buyer can lock funds");
         require(transaction.state == State.Created, "Invalid state");
@@ -150,7 +153,7 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         Transaction storage transaction = transactions[_transactionId];
         require(msg.sender == transaction.seller || msg.sender == arbiter, "Unauthorized");
         require(transaction.state == State.Locked, "Invalid state");
-        require(block.timestamp >= transaction.createdAt + transaction.lockPeriod, "Lock period not expired");
+        require(block.timestamp >= transaction.createdAt + transaction.lockPeriod || msg.sender == arbiter, "Lock period not expired");
 
         // Effects
         transaction.state = State.Refunded;
@@ -171,13 +174,13 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         return (transaction.buyer, transaction.seller, transaction.amount, transaction.state, transaction.createdAt, transaction.lockPeriod);
     }
 
-    // /**
-    //  * @dev 중재자 주소 변경 (onlyOwner 제한)
-    //  * @param _newArbiter 새로운 중재자 주소
-    //  */
-    // function setArbiter(address _newArbiter) external onlyOwner {
-    //     arbiter = _newArbiter;
-    // }
+    /**
+     * @dev 중재자 주소 변경
+     * @param _newArbiter 새로운 중재자 주소
+     */
+    function setArbiter(address _newArbiter) external onlyOwner {
+        arbiter = _newArbiter;
+    }
 
     /**
      * @dev 잠금 기간 업데이트
