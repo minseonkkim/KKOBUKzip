@@ -27,7 +27,7 @@ export default function Header(){
         <Link to="/">
           <div className="text-[40px] font-dnf-bitbit flex flex-row items-center cursor-pointer">
               <img src={LogoImg} className="w-[60px] h-[60px] mr-3" draggable="false" />
-              <div><span className="text-[#4B721F]">꼬북</span><span className="text[#43493A]">ZIP</span></div>
+              <div><span className="text-[#4B721F]">꼬북</span>ZIP</div>
           </div>
         </Link>
 
