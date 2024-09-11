@@ -49,7 +49,7 @@ function AuctionDetailPage() {
   const [auctionEnded, setAuctionEnded] = useState(false);
 
   // **Progress bar 애니메이션 설정**
-  const [progress, setProgress] = useState(100);
+  const [_, setProgress] = useState(100);
 
   // 애니메이션으로 부드럽게 진행되는 프로그레스 바
   const progressSpring = useSpring({

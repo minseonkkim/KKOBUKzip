@@ -12,14 +12,14 @@ spring:
   datasource:
     main:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://localhost:3306/kkobuk_main
-      username: turtlecoin
-      password: turtlecoin
+      jdbc-url: jdbc:mysql://43.201.17.253:3306/kkobuk_main
+      username: kkobuk
+      password: rjqnr107
     meta:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://localhost:3306/meta
-      username: turtlecoin
-      password: turtlecoin
+      jdbc-url: jdbc:mysql://43.201.17.253:3306/meta
+      username: kkobuk
+      password: rjqnr107
 
   jpa:
     hibernate:

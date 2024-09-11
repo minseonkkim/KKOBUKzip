@@ -60,6 +60,7 @@ function MyPage() {
         {/* 나의 거북이 */}
         {selectedMenu === 1 && 
         <div className="flex flex-row flex-wrap mb-[20px] gap-[2%]">
+          
         <MyTurtle />
         <MyTurtle />
         <MyTurtle />

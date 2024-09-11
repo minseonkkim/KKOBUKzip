@@ -19,6 +19,7 @@ import AssignDocument from "./components/document/AssignDocument";
 import GrantorDocument from "./components/document/GrantorDocument";
 import DeathDocument from "./components/document/DeathDocument";
 import AuctionSuccessPage from "./pages/auction/AuctionSuccessPage";
+import AuctionRegisterPage from "./pages/auction/AuctionRegisterPage";
 import NotFoundPage from "./pages/common/NotFoundPage";
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
           <Route path="/auction-detail" element={<AuctionDetailPage />} />
           <Route path="/auction-list" element={<AuctionListPage />} />
           <Route path="/auction-success" element={<AuctionSuccessPage />} />
+          <Route path="/auction-register" element={<AuctionRegisterPage />} />
           {/* Transaction Domain - 거래 */}
           <Route
             path="/transaction-detail"
