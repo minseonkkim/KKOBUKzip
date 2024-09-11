@@ -68,11 +68,11 @@ function LoginPage() {
             </div>
 
             <div className="mt-6 space-y-2">
-              <button className="flex w-2/3 justify-center m-auto bg-black text-white py-2 rounded">
+              <button className="flex w-full justify-center m-auto bg-black text-white py-2 rounded">
                 이메일 로그인
               </button>
               <button
-                className="flex items-center m-auto justify-center w-2/3 bg-[#03C75A]
+                className="flex items-center m-auto justify-center w-full bg-[#03C75A]
                 py-2 rounded text-white
                 "
                 // hover:bg-[#03C75A]/80 transition-all duration-300 ease-in-out
@@ -84,7 +84,7 @@ function LoginPage() {
                 // active:scale-100
                 // active:rotate-0
                 // border border-green-500
-                // hover:border-green-600
+                // hover:border-green-600"
               >
                 <img
                   src={naver_logo}
@@ -95,18 +95,19 @@ function LoginPage() {
               </button>
 
               <button
-                className="flex items-center m-auto justify-center w-2/3 bg-[#fae300]
-                hover:bg-[#fae300]/80 transition-all duration-300 ease-in-out
-                border border-yellow-500
-                hover:border-yellow-600
-                hover:text-yellow-600
-                hover:shadow-lg
-                hover:shadow-yellow-500/50
-                hover:scale-105
-                hover:rotate-1
-                active:scale-100
-                active:rotate-0
-                py-2 rounded text-white"
+                className="flex items-center m-auto justify-center w-full bg-[#fae300]
+                "
+                // hover:bg-[#fae300]/80 transition-all duration-300 ease-in-out
+                // border border-yellow-500
+                // hover:border-yellow-600
+                // hover:text-yellow-600
+                // hover:shadow-lg
+                // hover:shadow-yellow-500/50
+                // hover:scale-105
+                // hover:rotate-1
+                // active:scale-100
+                // active:rotate-0
+                // py-2 rounded text-white"
               >
                 <img
                   src={kakao_logo}
