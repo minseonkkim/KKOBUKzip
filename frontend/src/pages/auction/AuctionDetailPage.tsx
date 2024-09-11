@@ -4,7 +4,7 @@ import Header from "../../components/common/Header";
 import { useNavigate } from "react-router-dom";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import TmpTurtleImg2 from "../../assets/tmp_turtle_2.jpg";
-import tmpProfileImg from "../../assets/tmp_profile.png";
+import tmpProfileImg from "../../assets/tmp_profile.gif";
 import { useSpring, animated } from "@react-spring/web";
 import MovingTurtle from "../../assets/moving_turtle.gif";
 
@@ -201,7 +201,7 @@ function AuctionDetailPage() {
                 className="absolute -top-8"
                 style={turtlePositionSpring}
               >
-                <img src={MovingTurtle} className="w-[57px]"/>
+                <img src={MovingTurtle} className="w-[57px]" draggable="false"/>
               </animated.div>
             </div>
             <div className="w-full mb-3">
@@ -221,7 +221,7 @@ function AuctionDetailPage() {
                 </div>
                 <button
                   onClick={handleBid}
-                  className="mt-5 cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] font-bold text-[30px]"
+                  className="mt-5 cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] active:scale-90 text-[30px] font-dnf-bitbit"
                   disabled={auctionEnded}
                 >
                   {auctionEnded ? "낙찰 완료" : "👋🏻 입찰하기"}

@@ -1,4 +1,4 @@
-import TmpProfileImg from "../../assets/tmp_profile.png";
+import TmpProfileImg from "../../assets/tmp_profile.gif";
 
 interface Chat{
     name: string;
