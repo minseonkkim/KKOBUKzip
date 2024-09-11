@@ -20,7 +20,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
   return ReactDOM.createPortal(
     <div className="fixed inset-0 z-1000 pointer-events-none">
-      <div className="absolute top-[90px] right-[85px] pointer-events-auto">
+      <div className="absolute top-[90px] right-[100px] pointer-events-auto">
         <div className="relative border-2 border-yellow-500 bg-yellow-400 rounded-[10px] shadow-md">
           <button 
             className="absolute top-2 right-2 text-gray-500 hover:text-gray-700" 
