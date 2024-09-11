@@ -4,7 +4,11 @@ pragma solidity >=0.8.0 <0.9.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+
 import "./TurtleDocumentation.sol";
+
+using SafeERC20 for IERC20;
 
 /**
  * @title TurtleEscrow
@@ -91,13 +95,15 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
 
         // Effects
         uint256 transactionId;
-        unchecked {  // 오버픞로우 검사 생략
+        unchecked {
+            // 오버픞로우 검사 생략
             transactionId = transactionCount++;
         }
         transactions[transactionId] = Transaction({buyer: msg.sender, seller: _seller, amount: _amount, state: State.Created, createdAt: block.timestamp, lockPeriod: LOCK_PERIOD});
 
         // Interactions
-        require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");
+        // require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");  // 변경 이전 코드
+        token.safeTransferFrom(msg.sender, address(this), _amount); // 변경 후 : SafeERC20 라이브러리를 사용해 안전한 전송
 
         emit TransactionCreated(transactionId, msg.sender, _seller, _amount);
         return transactionId;
