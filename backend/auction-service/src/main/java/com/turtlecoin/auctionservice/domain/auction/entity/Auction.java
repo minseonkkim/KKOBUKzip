@@ -53,5 +53,5 @@ public class Auction extends BaseEntity {
 
     @OneToMany(mappedBy = "auction")
     @Builder.Default
-    private List<AuctionTag> tags = new ArrayList<>();
+    private List<AuctionTag> auctionTags = new ArrayList<>();
 }

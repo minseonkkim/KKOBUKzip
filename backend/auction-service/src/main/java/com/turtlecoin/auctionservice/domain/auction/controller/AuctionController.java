@@ -2,8 +2,11 @@ package com.turtlecoin.auctionservice.domain.auction.controller;
 
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
+import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.auction.service.AuctionService;
+import com.turtlecoin.auctionservice.domain.turtle.dto.TurtleResponseDTO;
+import com.turtlecoin.auctionservice.domain.turtle.service.TurtleService;
 import com.turtlecoin.auctionservice.global.ResponseVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/api/auction")
 public class AuctionController {
+
+    private final TurtleService turtleService;
+
+    @GetMapping("/info")
+    public TurtleResponseDTO getTurtleInfo() {
+        // turtleId는 1로 고정
+        Long turtleId = 1L;
+        return turtleService.getTurtleInfo(turtleId);
+    }
 
     private final AuctionService auctionService;
     private final AuctionRepository auctionRepository;
@@ -45,6 +57,20 @@ public class AuctionController {
             return new ResponseEntity<>(ResponseVO.failure("경매 등록에 실패했습니다.", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
+
+//    @GetMapping
+//    public ResponseEntity<List<Auction>> getAuctions(
+//            @RequestParam(value = "gender", required = false) String gender,
+//            @RequestParam(value = "minSize", required = false) Double minSize,
+//            @RequestParam(value = "maxSize", required = false) Double maxSize,
+//            @RequestParam(value = "minPrice", required = false) Double minPrice,
+//            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+//            @RequestParam(value = "progress", required = false) AuctionProgress progress,
+//            @RequestParam(value = "page", defaultValue = "1") int page
+//    ) {
+//        List<Auction> filteredAuctions = auctionService.getFilteredAuctions(gender, minSize, maxSize, minPrice, maxPrice, progress, page);
+//        return new ResponseEntity<>(auctionRepository.findAll(), HttpStatus.OK);
+//    }
 
     @GetMapping("/{auctionId}")
     public ResponseEntity<?> getAuctionById(@PathVariable Long auctionId) {
