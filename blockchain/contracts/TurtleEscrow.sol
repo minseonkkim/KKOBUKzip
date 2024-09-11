@@ -4,7 +4,11 @@ pragma solidity >=0.8.0 <0.9.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+
 import "./TurtleDocumentation.sol";
+
+using SafeERC20 for IERC20;
 
 /**
  * @title TurtleEscrow
@@ -90,11 +94,16 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         require(_amount > 0, "Invalid amount! Amount must be greater than 0");
 
         // Effects
-        uint256 transactionId = transactionCount++;
+        uint256 transactionId;
+        unchecked {
+            // 오버픞로우 검사 생략
+            transactionId = transactionCount++;
+        }
         transactions[transactionId] = Transaction({buyer: msg.sender, seller: _seller, amount: _amount, state: State.Created, createdAt: block.timestamp, lockPeriod: LOCK_PERIOD});
 
         // Interactions
-        require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");
+        // require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");  // 변경 이전 코드
+        token.safeTransferFrom(msg.sender, address(this), _amount); // 변경 후 : SafeERC20 라이브러리를 사용해 안전한 전송
 
         emit TransactionCreated(transactionId, msg.sender, _seller, _amount);
         return transactionId;
@@ -104,7 +113,7 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * @dev 자금 잠금
      * @param _transactionId 거래 ID
      */
-    function lockFunds(uint256 _transactionId) external {
+    function lockFunds(uint256 _transactionId) external nonReentrant {
         Transaction storage transaction = transactions[_transactionId];
         require(msg.sender == transaction.buyer, "Only buyer can lock funds");
         require(transaction.state == State.Created, "Invalid state");
@@ -150,7 +159,7 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         Transaction storage transaction = transactions[_transactionId];
         require(msg.sender == transaction.seller || msg.sender == arbiter, "Unauthorized");
         require(transaction.state == State.Locked, "Invalid state");
-        require(block.timestamp >= transaction.createdAt + transaction.lockPeriod, "Lock period not expired");
+        require(block.timestamp >= transaction.createdAt + transaction.lockPeriod || msg.sender == arbiter, "Lock period not expired");
 
         // Effects
         transaction.state = State.Refunded;
@@ -171,13 +180,13 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         return (transaction.buyer, transaction.seller, transaction.amount, transaction.state, transaction.createdAt, transaction.lockPeriod);
     }
 
-    // /**
-    //  * @dev 중재자 주소 변경 (onlyOwner 제한)
-    //  * @param _newArbiter 새로운 중재자 주소
-    //  */
-    // function setArbiter(address _newArbiter) external onlyOwner {
-    //     arbiter = _newArbiter;
-    // }
+    /**
+     * @dev 중재자 주소 변경
+     * @param _newArbiter 새로운 중재자 주소
+     */
+    function setArbiter(address _newArbiter) external onlyOwner {
+        arbiter = _newArbiter;
+    }
 
     /**
      * @dev 잠금 기간 업데이트
