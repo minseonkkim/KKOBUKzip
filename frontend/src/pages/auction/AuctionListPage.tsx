@@ -23,10 +23,9 @@ function AuctionListPage() {
   };
 
   const toggleFilterDiv = () => {
-    setIsFilterOpen(!isFilterOpen); // Toggle filter div visibility
+    setIsFilterOpen(!isFilterOpen);
   };
 
-  // Update the selected filter
   const updateFilter = (filterType: FilterType, value: string) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
@@ -46,7 +45,6 @@ function AuctionListPage() {
 
         </div>
         
-        {/* New Search Bar for Species and Filter Toggle */}
         <div className="flex flex-row items-center justify-between mb-4">
         <div className="text-[23px] font-bold flex flex-row items-center">
             <label className="flex items-center">
@@ -89,7 +87,6 @@ function AuctionListPage() {
           </div>
         </div>
 
-        {/* Collapsible Search Filter Div */}
         {isFilterOpen && (
           <div className="border-[2px] border-[#DADADA] rounded-[20px] px-6 py-4 mb-4 transition-all ease-in-out duration-300">
             <div className="mb-4 flex flex-row items-center">
