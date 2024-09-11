@@ -4,7 +4,7 @@ function JoinPage() {
   return (
     <>
       <Helmet>
-        <title>Join Page</title>
+        <title>꼬북ZIP: 회원가입</title>
       </Helmet>
     </>
   );
