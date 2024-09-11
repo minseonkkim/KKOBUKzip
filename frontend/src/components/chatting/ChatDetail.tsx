@@ -12,7 +12,7 @@ interface ChatDetailProps {
     toggleChat: () => void;  // toggleChat 함수의 타입 추가
 }
 
-export default function ChatDetail({ closeChatDetail, chat, toggleChat }: ChatDetailProps) {
+export default function ChatDetail({ chat, toggleChat }: ChatDetailProps) {
     return (
         <>
             <div className="text-black bg-gray-100 rounded-[10px] flex flex-col justify-between w-full h-full">

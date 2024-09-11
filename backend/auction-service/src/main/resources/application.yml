@@ -15,10 +15,9 @@ spring:
     username: guest
     password: guest
   datasource:
-    url: jdbc:mysql://localhost:3306/kkobuk_auction
-    username: root
-    password: ssafy
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://43.201.17.253:3306/kkobuk_auction
+    username: kkobuk
+    password: rjqnr107
   jpa:
     hibernate:
       ddl-auto: create

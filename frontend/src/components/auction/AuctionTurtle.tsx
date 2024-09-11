@@ -1,6 +1,6 @@
 import TmpTurtle from "../../assets/tmp_turtle_2.jpg";
 import AuctionStatusTag from "./AuctionStatusTag";
-import TransactionStatusTag from "./AuctionStatusTag";
+// import TransactionStatusTag from "./AuctionStatusTag";
 import { useNavigate } from 'react-router-dom';
 
 export default function AuctionTurtle(){

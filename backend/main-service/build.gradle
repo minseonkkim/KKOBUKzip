@@ -28,6 +28,14 @@ ext {
 	set('springCloudVersion', "2023.0.3")
 }
 
+bootJar {
+	enabled = true
+}
+
+jar {
+	enabled = false
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -50,7 +58,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 	//rabbit mq
 	implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'se
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'
 }
 
 dependencyManagement {

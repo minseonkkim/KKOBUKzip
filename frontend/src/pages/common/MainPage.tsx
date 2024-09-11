@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import useDeviceStore from "../../store/useDeviceStore";
+// import useDeviceStore from "../../store/useDeviceStore";
 import Header from "../../components/common/Header";
 import BackgroundImg from "../../assets/Side_View_Scene.gif";
 import TurtleMoving from "../../assets/turtle_moving.png";
@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function MainPage() {
-  const isMobile = useDeviceStore((state) => state.isMobile);
+  // const isMobile = useDeviceStore((state) => state.isMobile);
 
   const [showTurtleMoving, setShowTurtleMoving] = useState(true);
   const [showContent, setShowContent] = useState(false);
