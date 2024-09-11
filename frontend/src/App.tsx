@@ -19,6 +19,7 @@ import AssignDocument from "./components/document/AssignDocument";
 import GrantorDocument from "./components/document/GrantorDocument";
 import DeathDocument from "./components/document/DeathDocument";
 import AuctionSuccessPage from "./pages/auction/AuctionSuccessPage";
+import NotFoundPage from "./pages/common/NotFoundPage";
 
 function App() {
   return (
@@ -74,6 +75,7 @@ function App() {
             path="/admin/:turtleUUID/:documentHash" // 관리자 문서 디테일 조회
             element={<AdminDocsDetailPage />}
           />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
         <ChatList />
       </BrowserRouter>
