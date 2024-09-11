@@ -11,12 +11,8 @@ export default function Header(){
 
   const backgroundColor = location.pathname === '/' ? '#AAE0F2' : '#fff';
 
-  const openWallet = () => {
-    setIsWalletOpen(true);
-  }
-
-  const closeWallet = () => {
-    setIsWalletOpen(false)
+  const toggleWallet = () => {
+    setIsWalletOpen((prev) => !prev);
   }
 
     return <>
@@ -40,7 +36,7 @@ export default function Header(){
         {/* 로그인 됐을 때 */}
         <div className="flex flex-row items-center">
           <div className="mr-3 font-bold text-[22px] cursor-pointer font-stardust">꼬북맘님 로그인 중</div>
-          <div className="mr-3 bg-[#F6CA19] hover:bg-[#DFB509] shadow-[3px_3px_0px_#C49B07] hover:shadow-[3px_3px_0px_#CAA612] rounded-[10px] px-2 py-1.5 flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95" onClick={openWallet}>
+          <div className="mr-3 bg-[#F6CA19] hover:bg-[#DFB509] shadow-[3px_3px_0px_#C49B07] hover:shadow-[3px_3px_0px_#CAA612] rounded-[10px] px-2 py-1.5 flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95" onClick={toggleWallet}>
             <img src={CoinImg} className="w-[27px] h-[27px] mr-1" draggable="false"/>
             <span className="text-white text-[20px] tracking-widest">내 지갑</span>
           </div>
@@ -51,7 +47,7 @@ export default function Header(){
           </Link>
         </div>
 
-        <Modal isOpen={isWalletOpen} onClose={closeWallet}>
+        <Modal isOpen={isWalletOpen} onClose={toggleWallet}>
           <Wallet />
         </Modal>
 
