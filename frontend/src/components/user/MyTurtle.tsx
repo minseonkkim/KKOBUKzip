@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 
 export default function MyTurtle(){

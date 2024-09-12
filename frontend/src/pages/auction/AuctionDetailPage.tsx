@@ -49,7 +49,7 @@ function AuctionDetailPage() {
   const [auctionEnded, setAuctionEnded] = useState(false);
 
   // **Progress bar 애니메이션 설정**
-  const [_, setProgress] = useState(100);
+  const [, setProgress] = useState(100);
 
   // 애니메이션으로 부드럽게 진행되는 프로그레스 바
   const progressSpring = useSpring({
@@ -205,7 +205,7 @@ function AuctionDetailPage() {
               </animated.div>
             </div>
             <div className="w-full mb-3">
-              <div className="text-center text-[33px] text-right font-bold m-3">
+              <div className="text-right text-[33px] font-bold m-3">
                 {`${timeLeft}`}
               </div>
             </div>
