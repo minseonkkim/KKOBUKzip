@@ -34,12 +34,7 @@ const Wallet: React.FC = () => {
 
   // 모바일 MetaMask 연결 함수
   const connectToMetaMaskMobile = useCallback(() => {
-    const dappUrl = process.env.REACT_APP_DAPP_URL;
-    if (!dappUrl) {
-      setError("dApp URL이 설정되지 않았습니다");
-      return;
-    }
-    const metamaskAppDeepLink = `https://metamask.app.link/dapp/${dappUrl}`;
+    const metamaskAppDeepLink = `https://metamask.app.link/dapp/${window.location.host}`;
     window.location.href = metamaskAppDeepLink;
   }, []);
 
