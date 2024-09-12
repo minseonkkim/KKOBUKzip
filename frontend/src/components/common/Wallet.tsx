@@ -63,10 +63,10 @@ const Wallet: React.FC = () => {
 
           try {
             await window.ethereum.request({ method: "eth_requestAccounts" });
-            const accounts = await web3Instance.eh.getAccounts();
+            const accounts = await web3Instance.eth.getAccounts();
             setAccount(accounts[0]);
 
-            const tokenContract = new web3Instance.eh.Contract(TURTLE_TOKEN_ABI, TURTLE_TOKEN_ADDRESS);
+            const tokenContract = new web3Instance.eth.Contract(TURTLE_TOKEN_ABI, TURTLE_TOKEN_ADDRESS);
             setContract(tokenContract);
           } catch (error) {
             setError("사용자가 계정 접근을 거부했거나 오류가 발생했습니다");
@@ -101,7 +101,7 @@ const Wallet: React.FC = () => {
           const turtBalance = await contract.methods.balanceOf(account).call();
           setBalance(Web3.utils.fromWei(turtBalance, "ether"));
 
-          const ethBalance = await web3.eh.getBalance(account);
+          const ethBalance = await web3.eth.getBalance(account);
           setEthBalance(Web3.utils.fromWei(ethBalance, "ether"));
         } catch (error) {
           setError("잔액을 불러오는 중 오류가 발생했습니다");
@@ -182,7 +182,7 @@ const Wallet: React.FC = () => {
       try {
         const newBalance = await contract.methods.balanceOf(account).call();
         setBalance(Web3.utils.fromWei(newBalance, "ether"));
-        const newEthBalance = await web3.eh.getBalance(account);
+        const newEthBalance = await web3.eth.getBalance(account);
         setEthBalance(Web3.utils.fromWei(newEthBalance, "ether"));
         setFromAmount("");
         setToAmount("");
