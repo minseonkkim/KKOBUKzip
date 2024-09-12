@@ -105,7 +105,7 @@ function AssignDocument() {
                 type="number"
                 placeholder="전화번호"
                 onChange={(evt) => changeAssigneeHandle("phoneNumber", evt)}
-                className="w-2/3 px-3 py-2 border rounded"
+                className="w-2/3 px-3 py-2 border rounded [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
             </div>
           </div>
