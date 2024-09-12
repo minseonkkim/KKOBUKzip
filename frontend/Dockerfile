@@ -10,6 +10,7 @@ COPY . .
 # 종속성 설치 및 빌드
 RUN npm install
 RUN npm run build
+RUN npm start
 
 # 2단계: 실행 환경 설정
 FROM nginx:alpine
