@@ -59,13 +59,28 @@ const Wallet: React.FC = () => {
   }, []);
 
   // 계정 변경 처리 함수
-  const handleAccountChanged = useCallback((accounts: string[]) => {
+  const handleAccountChanged = useCallback(async (accounts: string[]) => {
     if (accounts.length > 0) {
       setAccount(accounts[0]);
+      // 새 계정에 대한 잔액 업데이트
+      if (web3 && contract) {
+        try {
+          const turtBalance: number = await contract.methods.balanceOf(accounts[0]).call();
+          setBalance(Web3.utils.fromWei(turtBalance, "ether"));
+
+          const ethBalance: bigint = await web3.eth.getBalance(accounts[0]);
+          setEthBalance(Web3.utils.fromWei(ethBalance, "ether"));
+        } catch (error) {
+          console.error("Error updating balances:", error);
+          setError("잔액을 업데이트하는 중 오류가 발생했습니다");
+        }
+      }
     } else {
       setAccount("");
+      setBalance("0");
+      setEthBalance("0");
     }
-  }, []);
+  }, [web3, contract]);
 
   // 컴포넌트 초기화 및 MetaMask 연결
   useEffect(() => {
@@ -82,10 +97,12 @@ const Wallet: React.FC = () => {
           try {
             await window.ethereum.request({ method: "eth_requestAccounts" });
             const accounts = await web3Instance.eth.getAccounts();
-            setAccount(accounts[0]);
-
+            
             const tokenContract = new web3Instance.eth.Contract(TURTLE_TOKEN_ABI as AbiItem[], TURTLE_TOKEN_ADDRESS) as unknown as Contract<typeof TURTLE_TOKEN_ABI>;
             setContract(tokenContract);
+
+            // 초기 계정 설정 및 잔액 로드
+            await handleAccountChanged(accounts);
           } catch (error) {
             setError("사용자가 계정 접근을 거부했거나 오류가 발생했습니다");
             console.error(error);
@@ -100,9 +117,7 @@ const Wallet: React.FC = () => {
 
     // MetaMask 이벤트 리스너 설정
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", (accounts) => {
-        handleAccountChanged(accounts as string[]);
-      });
+      window.ethereum.on("accountsChanged", handleAccountChanged as any);
     }
 
     // 컴포넌트 언마운트 시 이벤트 리스너 제거
