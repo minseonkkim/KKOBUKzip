@@ -188,7 +188,7 @@ function AuctionListPage() {
             <div className="flex flex-row justify-between">
               <div className="flex flex-row items-center">
                 <label className="block mb-2 font-bold text-lg w-[100px]">가격</label>
-                <div className="flex space-x-4 flex items-center">
+                <div className="flex space-x-4 items-center">
                   <input className="w-[180px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1" placeholder="최소 가격"/>
                   <span className="text-[22px]">~</span>
                   <input className="w-[180px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1" placeholder="최대 가격"/>

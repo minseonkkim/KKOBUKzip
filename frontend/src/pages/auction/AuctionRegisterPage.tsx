@@ -3,7 +3,6 @@ import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import { IoMdAddCircle } from "react-icons/io";
 import { useState } from "react";
-import { TiDelete } from "react-icons/ti";
 import { IoClose } from "react-icons/io5";
 
 export default function AuctionRegisterPage() {
