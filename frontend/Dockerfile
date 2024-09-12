@@ -5,12 +5,11 @@ WORKDIR /app
 
 # 앱 소스 코드 복사
 COPY package*.json ./
+RUN npm install
 COPY . .
 
-# 종속성 설치 및 빌드
-RUN npm install
+# 앱 빌드
 RUN npm run build
-# RUN npm start
 
 # 2단계: 실행 환경 설정
 FROM nginx:alpine
@@ -18,8 +17,8 @@ FROM nginx:alpine
 # 빌드된 파일 복사
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Nginx 실행
-CMD ["npm", "start"]
+# Nginx 포트 노출
+EXPOSE 80
 
-# 포트 노출
-EXPOSE 3000
+# Nginx 실행
+CMD ["nginx", "-g", "daemon off;"]
