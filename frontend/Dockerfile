@@ -19,7 +19,7 @@ FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Nginx 실행
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]
 
 # 포트 노출
 EXPOSE 3000
