@@ -34,8 +34,28 @@ const Wallet: React.FC = () => {
 
   // 모바일 MetaMask 연결 함수
   const connectToMetaMaskMobile = useCallback(() => {
+    // MetaMask 앱 스토어 URL
+    const iOSAppStoreURL = "https://apps.apple.com/us/app/metamask/id1438144202";
+    const androidPlayStoreURL = "https://play.google.com/store/apps/details?id=io.metamask";
+
+    // 운영 체제 감지
+    const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
+
     const metamaskAppDeepLink = `https://metamask.app.link/dapp/${window.location.host}`;
+
+    // 타임아웃을 사용하여 딥 링크 실패 시 앱 스토어로 리다이렉트
+    const redirectTimer = setTimeout(() => {
+      window.location.href = isIOS ? iOSAppStoreURL : androidPlayStoreURL;
+    }, 3000); // 3초 후 앱 스토어로 리다이렉트
+
+    // 딥 링크 시도
     window.location.href = metamaskAppDeepLink;
+
+    // 페이지를 떠나기 전에 타이머 취소
+    window.onblur = () => {
+      clearTimeout(redirectTimer);
+    };
   }, []);
 
   // 계정 변경 처리 함수
@@ -205,23 +225,6 @@ const Wallet: React.FC = () => {
       setIsLoading(false);
     }
   };
-
-  // // 잔액 업데이트
-  // const updateBalances = async () => {
-  //   if (web3 && contract && account) {
-  //     try {
-  //       const newBalance: number = await contract.methods.balanceOf(account).call();
-  //       setBalance(Web3.utils.fromWei(newBalance, "ether"));
-  //       const newEthBalance = await web3.eth.getBalance(account);
-  //       setEthBalance(Web3.utils.fromWei(newEthBalance, "ether"));
-  //       setFromAmount("");
-  //       setToAmount("");
-  //     } catch (error) {
-  //       setError("잔액 업데이트 중 오류가 발생했습니다");
-  //       console.error(error);
-  //     }
-  //   }
-  // };
 
   return (
     <div className="bg-yellow-400 text-black p-6 rounded-[10px] w-full max-w-[400px] shadow-md">
