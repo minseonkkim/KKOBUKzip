@@ -2,7 +2,15 @@ import { AdminBreedDocumentDataType } from "../../../types/document";
 import CompleteBreedDocument from "../../document/complete/CompleteBreedDocument";
 import CheckButonSet from "./CheckButtonSet";
 
-function AdminBreedDocsCheck({ data }: { data: AdminBreedDocumentDataType }) {
+function AdminBreedDocsCheck({
+  data,
+  onAccept,
+  onDeny,
+}: {
+  data: AdminBreedDocumentDataType;
+  onAccept: (turtleUUID: string, documentHash: string) => void;
+  onDeny: (turtleUUID: string, documentHash: string) => void;
+}) {
   const handleAcceptSubmit = () => {
     alert("증식승인버튼");
   };

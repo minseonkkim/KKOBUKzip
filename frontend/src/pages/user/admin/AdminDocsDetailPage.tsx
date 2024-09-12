@@ -53,6 +53,12 @@ function AdminDocsDetailPage() {
     }
   }, []);
 
+  const handleAcceptSubmit = (turtleUUID: string, documentHash: string) => {
+    console.log(turtleUUID, documentHash);
+  };
+  const handleDenySubmit = (turtleUUID: string, documentHash: string) => {
+    console.log(turtleUUID, documentHash);
+  };
   return (
     <>
       <Helmet>
@@ -90,17 +96,27 @@ function AdminDocsDetailPage() {
       {/* 테스트 드라이버 끝 */}
       <>
         {layout === "인공증식증명서" && (
-          <AdminBreedDocsCheck data={data as AdminBreedDocumentDataType} />
+          <AdminBreedDocsCheck
+            onAccept={handleAcceptSubmit}
+            onDeny={handleDenySubmit}
+            data={data as AdminBreedDocumentDataType}
+          />
         )}
 
         {/* 양수&양도는 같은 양식을 사용함. */}
         {layout === "양도양수확인서" && (
           <AdminAssignGrantDocsCheck
+            onAccept={handleAcceptSubmit}
+            onDeny={handleDenySubmit}
             data={data as AdminAssignDocumentDataType}
           />
         )}
         {layout === "폐사질병신고서" && (
-          <AdminDeathDocsCheck data={data as AdminDeathDocumentDataType} />
+          <AdminDeathDocsCheck
+            onAccept={handleAcceptSubmit}
+            onDeny={handleDenySubmit}
+            data={data as AdminDeathDocumentDataType}
+          />
         )}
       </>
     </>
