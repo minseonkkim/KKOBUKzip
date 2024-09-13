@@ -3,15 +3,21 @@ import CompleteAssignGrantDocument from "../../document/complete/CompleteAssignG
 import CheckButonSet from "./CheckButtonSet";
 
 function AdminAssignGrantDocsCheck({
+  onAccept,
+  onDeny,
   data,
 }: {
   data: AdminAssignDocumentDataType;
+  onAccept: (turtleUUID: string, documentHash: string) => void;
+  onDeny: (turtleUUID: string, documentHash: string) => void;
 }) {
   const handleAcceptSubmit = () => {
+    onAccept(data.turtleUUID, data.documentHash);
     alert("양수양도승인버튼");
   };
 
   const handleDenySubmit = () => {
+    onDeny(data.turtleUUID, data.documentHash);
     alert("양수양도거절버튼");
   };
   return (

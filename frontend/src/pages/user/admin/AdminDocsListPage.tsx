@@ -1,16 +1,26 @@
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { generateRandomData } from "../../../fixtures/docsDummy";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getAllDocumentDataForAdmin } from "../../../apis/documentApis";
+import { AdminDocsListDataType } from "../../../types/document";
 
 // 테스트용 더미 데이터
 const dummyData = generateRandomData(100);
 
 function AdminDocsListPage() {
   const navigate = useNavigate();
+  const [documents, setDocuments] = useState<AdminDocsListDataType[]>([]);
 
   useEffect(() => {
-    // 데이터 fetch
+    const getData = async () => {
+      const { success, data } = await getAllDocumentDataForAdmin();
+      if (success && data) {
+        console.log(data);
+        setDocuments(data);
+      }
+    };
+    getData();
   }, []);
   return (
     <>
@@ -21,7 +31,7 @@ function AdminDocsListPage() {
       <div className="max-w-screen-md mx-auto p-4 h-[100vh] flex flex-col">
         <h1 className="text-2xl font-bold mb-4">서류 신청 목록</h1>
         <div className="grid gap-4 grid-cols-1 overflow-y-auto">
-          {dummyData.map((doc, index) => (
+          {documents.map((doc, index) => (
             <div
               key={index}
               onClick={() => {

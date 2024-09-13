@@ -1,10 +1,12 @@
 import { useRef, useState } from "react";
 
 function DocImgUpload({
+  id,
   setImage,
 }: {
   //   image: HTMLInputElement | null;
   setImage: React.Dispatch<React.SetStateAction<File | null>>;
+  id: string;
 }) {
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false); // 드래그 상태 관리
@@ -81,7 +83,7 @@ function DocImgUpload({
            `}
         >
           <label
-            htmlFor="dropzone-file"
+            htmlFor={id}
             className={`flex flex-col justify-center items-center w-full h-64 rounded-lg border-2
            border-gray-300 border-dashed cursor-pointer 
            `}
@@ -115,54 +117,11 @@ function DocImgUpload({
               className="hidden"
               ref={fileInputRef}
               onChange={handleFileChange}
-              id="dropzone-file"
+              id={id}
             />
           </label>
         </div>
       )}
-      {/* <div>
-        <div
-          className={`w-full px-3 py-2 border rounded flex items-center justify-between transition-colors duration-200 
-            ${
-              isDragging
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-300 bg-gray-50"
-            }`}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-        >
-          {preview ? (
-            <div className="relative w-full h-32 flex justify-center items-center">
-              <img
-                src={preview}
-                alt="미리보기"
-                className="object-contain h-full"
-              />
-              <button
-                onClick={handleDelete}
-                className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full text-xs"
-              >
-                X
-              </button>
-            </div>
-          ) : (
-            <>
-              <span className="text-gray-500 flex-grow">선택된 파일 없음</span>
-              <input
-                type="file"
-                className="hidden"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                id="file1"
-              />
-              <label htmlFor="file1" className="cursor-pointer flex-shrink">
-                파일 선택
-              </label>
-            </>
-          )}
-        </div>
-      </div> */}
     </div>
   );
 }

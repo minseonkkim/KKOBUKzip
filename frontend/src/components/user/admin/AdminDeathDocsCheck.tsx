@@ -2,12 +2,22 @@ import { AdminDeathDocumentDataType } from "../../../types/document";
 import CompleteDeathDocument from "../../document/complete/CompleteDeathDocument";
 import CheckButonSet from "./CheckButtonSet";
 
-function AdminDeathDocsCheck({ data }: { data: AdminDeathDocumentDataType }) {
+function AdminDeathDocsCheck({
+  onAccept,
+  onDeny,
+  data,
+}: {
+  onAccept: (turtleUUID: string, documentHash: string) => void;
+  onDeny: (turtleUUID: string, documentHash: string) => void;
+  data: AdminDeathDocumentDataType;
+}) {
   const handleAcceptSubmit = () => {
+    onAccept(data.turtleUUID, data.documentHash);
     alert("폐사승인버튼");
   };
 
   const handleDenySubmit = () => {
+    onDeny(data.turtleUUID, data.documentHash);
     alert("폐사거절버튼");
   };
   return (
