@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@types/daum-postcode": "^2.0.3",
+    "axios": "^1.7.7",
     "react": "^18.3.1",
     "react-chrome-dino-ts": "^0.1.2",
     "react-confetti": "6.1.0",
