@@ -56,8 +56,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())  // CSRF 비활성화
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // CORS 설정 추가
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/", "/join").permitAll()
-                        .requestMatchers("/jwt/refresh", "/jwt/access").permitAll()  // /jwt/access에 대한 접근 허용
+                        .requestMatchers("/login", "/", "/api/main/join").permitAll()
+                        .requestMatchers("/api/main/jwt/refresh", "/api/main/jwt/access").permitAll()  // /jwt/access에 대한 접근 허용
                         .anyRequest().authenticated()  // 다른 요청은 인증 필요
                 )
                 .addFilterBefore(new JWTFilter(jwtUtil,userRepository), UsernamePasswordAuthenticationFilter.class)  // JWT 필터 추가
