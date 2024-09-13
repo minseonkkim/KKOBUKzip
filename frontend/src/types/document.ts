@@ -83,10 +83,11 @@ export type docType =
   | "양수신고서"
   | "양도신고서"
   | "폐사질병신고서";
+type AdminDocType = "인공증식증명서" | "양도양수확인서" | "폐사질병신고서";
 
 // admin document list
 export interface AdminDocsListDataType {
-  docType: docType;
+  docType: AdminDocType;
   scientificName: string;
   name: string;
   email: string;

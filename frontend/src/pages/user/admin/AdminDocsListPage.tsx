@@ -16,7 +16,6 @@ function AdminDocsListPage() {
     const getData = async () => {
       const { success, data } = await getAllDocumentDataForAdmin();
       if (success && data) {
-        console.log(data);
         setDocuments(data);
       }
     };

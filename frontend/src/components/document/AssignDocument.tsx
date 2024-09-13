@@ -6,6 +6,7 @@ import {
   AssigneeDocDataType,
   AssigneeFetchData,
 } from "../../types/document";
+import { createAssignDocumentRequest } from "../../apis/documentApis";
 
 // 양수 서류 컴포넌트
 function AssignDocument() {
@@ -34,7 +35,7 @@ function AssignDocument() {
   };
 
   // 문서 작성 요청 함수
-  const sendAssigneeDocRequest = () => {
+  const sendAssigneeDocRequest = async () => {
     const docs: AssigneeFetchData = {
       docType: "양수신청서",
       applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d",
@@ -46,8 +47,12 @@ function AssignDocument() {
         ...data,
       },
     };
-
-    console.log(docs);
+    const result = await createAssignDocumentRequest(docs);
+    if (result.success) {
+      console.log("성공 후 로직");
+    } else {
+      console.log("실패 후 로직");
+    }
   };
 
   // 양수자 수정 함수

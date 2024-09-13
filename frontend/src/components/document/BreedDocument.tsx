@@ -3,7 +3,7 @@ import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import { Helmet } from "react-helmet-async";
 import { BreedDocumentDataType, BreedFetchData } from "../../types/document";
 import DocImgUpload from "./DocImgUpload";
-import { postBreedDocument } from "../../apis/documentApis";
+import { createBreedDocumentRequest } from "../../apis/documentApis";
 
 // 특이사항
 // 신청인 정보 동적으로 할당할 것(아마 store에서)
@@ -77,7 +77,7 @@ function BreedDocument() {
     // 데이터 보낼때 multipart로 적당히 던질것
     console.log(breedData);
 
-    const result = await postBreedDocument(formData);
+    const result = await createBreedDocumentRequest(formData);
   };
 
   return (

@@ -67,8 +67,10 @@ function App() {
             element={<TransactionDetailPage />}
           />
           <Route path="/transaction-list" element={<TransactionListPage />} />
-          <Route path="/transaction-register" element={<TransactionRegisterPage
-           />} />
+          <Route
+            path="/transaction-register"
+            element={<TransactionRegisterPage />}
+          />
           {/* User Domain - 유저 */}
           <Route path="/mypage" element={<MyPage />} />
           {/* Admin */}
