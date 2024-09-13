@@ -4,8 +4,12 @@ import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 export default function MyTurtle(){
     const navigate = useNavigate();
 
-    const goToRegister = () => {
+    const goToAuctionRegister = () => {
         navigate('/auction-register');
+    };
+
+    const goToTransactionRegister = () => {
+        navigate('/transaction-register');
     };
 
     return <>
@@ -22,8 +26,8 @@ export default function MyTurtle(){
                 <button className="w-[48%] h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]">서류 조회</button>
             </div>
             <div className="flex flex-row justify-between mt-3 text-[18px]">
-                <button className="w-[48%] h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]">판매 등록</button>
-                <button onClick={goToRegister} className="w-[48%] h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]">경매 등록</button>
+                <button onClick={goToTransactionRegister} className="w-[48%] h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]">판매 등록</button>
+                <button onClick={goToAuctionRegister} className="w-[48%] h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]">경매 등록</button>
             </div>
         </div>
     </>

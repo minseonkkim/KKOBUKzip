@@ -21,6 +21,7 @@ import DeathDocument from "./components/document/DeathDocument";
 import AuctionSuccessPage from "./pages/auction/AuctionSuccessPage";
 import AuctionRegisterPage from "./pages/auction/AuctionRegisterPage";
 import NotFoundPage from "./pages/common/NotFoundPage";
+import TransactionRegisterPage from "./pages/transaction/TransactionRegisterPage";
 
 function App() {
   return (
@@ -66,6 +67,8 @@ function App() {
             element={<TransactionDetailPage />}
           />
           <Route path="/transaction-list" element={<TransactionListPage />} />
+          <Route path="/transaction-register" element={<TransactionRegisterPage
+           />} />
           {/* User Domain - 유저 */}
           <Route path="/mypage" element={<MyPage />} />
           {/* Admin */}
