@@ -123,9 +123,6 @@ function JoinPage() {
     evt: React.ChangeEvent<HTMLInputElement>
   ) => {
     setConfirmPassword(evt.target.value);
-    console.log(evt.target.value);
-    console.log(data.password);
-    console.log(evt.target.value === data.password);
 
     if (data.password !== evt.target.value) {
       setErrStat((prev) => ({

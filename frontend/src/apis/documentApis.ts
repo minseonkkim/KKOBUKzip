@@ -1,7 +1,15 @@
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import guestAxios from "./http-commons/guestAxios";
 import authAxios from "./http-commons/authAxios";
-import { AdminDocsListDataType, BreedFetchData } from "../types/document";
+import {
+  AdminAssignDocumentDataType,
+  AdminBreedDocumentDataType,
+  AdminDeathDocumentDataType,
+  AdminDocsListDataType,
+  AssigneeFetchData,
+  DeathFetchData,
+  GrantorFetchData,
+} from "../types/document";
 
 interface ApiResponse<T> {
   success: boolean;
@@ -27,7 +35,6 @@ export const apiHelper = async <T>(
 ): Promise<ApiResponse<T>> => {
   try {
     const response = await requestFn();
-    console.log(response.data);
     return {
       success: true,
       data: response.data.data,
@@ -60,9 +67,12 @@ export const getDetailDocumentData = async (
   turtleUUID: string,
   documentHash: string
 ) => {
-  const response = await apiHelper<AdminDocsListDataType>(() =>
-    authAxios.get(path + `/detail/${turtleUUID}/${documentHash}`)
-  );
+  const response = await apiHelper<
+    | AdminBreedDocumentDataType
+    | AdminAssignDocumentDataType
+    | AdminDeathDocumentDataType
+  >(() => authAxios.get(path + `/${turtleUUID}/${documentHash}`));
+  console.log(response);
   return response;
 };
 
@@ -84,13 +94,50 @@ export const approveDocumentRequest = async (
 };
 
 // 인공증식서류 등록
-export const postBreedDocument = async (data: FormData) => {
+export const createBreedDocumentRequest = async (data: FormData) => {
   // 필요하다면 이 함수 오기 직전에 폼데이터 유효성 검증(역할분리)
-  console.log(data);
+  // for (let [key, value] of data.entries()) {
+  //   console.log("key : ", key, value);
+  // }
   const response = await apiHelper<boolean>(() =>
     authAxios.post(path + `/register/breed`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      timeout: 10000,
+    })
+  );
+  return response;
+};
+
+// assign(양수) 서류 등록
+export const createAssignDocumentRequest = async (data: AssigneeFetchData) => {
+  const response = await apiHelper<boolean>(() =>
+    authAxios.post(path + `/register/assign`, { data })
+  );
+  return response;
+};
+
+// grant(양도) 서류 등록
+export const createGrantDocumentRequest = async (data: GrantorFetchData) => {
+  const response = await apiHelper<boolean>(() =>
+    authAxios.post(path + `/register/grant`, { data })
+  );
+  return response;
+};
+
+// death(폐사) 서류 등록
+export const createDeathDocumentRequest = async (data: FormData) => {
+  // 필요하다면 이 함수 오기 직전에 폼데이터 유효성 검증(역할분리)
+  // for (let [key, value] of data.entries()) {
+  //   console.log("key : ", key, value);
+  // }
+  const response = await apiHelper<boolean>(() =>
+    authAxios.post(path + `/register/death`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
       timeout: 10000,
     })
