@@ -8,6 +8,8 @@ import axios, {
 // const BASE_URL = import.meta.env.VITE_BASE_URL;
 const BASE_URL =
   "https://7529ce6e-dc11-40ce-bb94-9812611cbeb3.mock.pstmn.io/api/main";
+// 포스트맨 mock-server주소 -> 필요시 자기껄로 변경
+
 const REFRESH_URL = BASE_URL + "/jwt/refresh";
 
 const authAxios = axios.create({
@@ -24,9 +26,10 @@ const authAxios = axios.create({
 2. 그럼에도 토큰 만료 혹은 에러라면 응답 인터셉터에서 2차적으로 재발송
 
 3. 한 후에 기존의 요청을 다시 전송
++ 테스트해볼것
 */
-// 요청 인터셉터
 
+// 요청 인터셉터
 authAxios.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem("accessToken");

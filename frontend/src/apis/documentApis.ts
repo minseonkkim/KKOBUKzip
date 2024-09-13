@@ -10,7 +10,7 @@ interface ApiResponse<T> {
 }
 
 /**
- * 공통 API 요청 헬퍼 함수
+ * 문서 공통 API 요청 헬퍼 함수
  * @param requestFn - 요청을 수행하는 콜백 함수
  * @returns - ApiResponse 객체
  */
