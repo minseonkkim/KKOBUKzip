@@ -1,35 +1,18 @@
 server:
   port: 8000
 
+spring:
+  application:
+    name: gateway-service
+  config:
+    import: optional:config-service:http://localhost:8888  # Config Server에서 설정을 가져오도록 설정
+
 eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://43.201.17.253:8761/eureka
-  instance:
-    instance-id: ${spring.cloud.client.ip-address}:${spring.application.instance_id:${random.value}}
-    prefer-ip-address: true
-
-spring:
-  application:
-    name: gateway-service
-  rabbitmq:
-    host: 43.201.17.253
-    port: 5672
-    username: guest
-    password: guest
-  cloud:
-    gateway:
-      routes:
-        - id: main-service
-          uri: lb://MAIN-SERVICE
-          predicates:
-            - Path=/api/main/**
-        - id: auction-service
-          uri: lb://AUCTION-SERVICE
-          predicates:
-            - Path=/api/auction/**
+      defaultZone: http://localhost:8761/eureka
 
 management:
   endpoints:

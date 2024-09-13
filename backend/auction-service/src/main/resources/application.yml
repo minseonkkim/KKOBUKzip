@@ -9,22 +9,8 @@ spring:
       max-request-size: 10MB
   application:
     name: auction-service
-  rabbitmq:
-    host: 43.201.17.253
-    port: 5672
-    username: guest
-    password: guest
-  datasource:
-    url: jdbc:mysql://43.201.17.253:3306/kkobuk_auction
-    username: kkobuk
-    password: rjqnr107
-  jpa:
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        format_sql: true
-
+  config:
+    import: optional:config-service:http://localhost:8888
 
 eureka:
   instance:
@@ -41,8 +27,3 @@ management:
     web:
       exposure:
         include: '*'
-
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
