@@ -16,6 +16,7 @@ import {
 import AdminBreedDocsCheck from "../../../components/user/admin/AdminBreedDocsCheck";
 import AdminAssignGrantDocsCheck from "../../../components/user/admin/AdminAssignGrantDocsCheck";
 import AdminDeathDocsCheck from "../../../components/user/admin/AdminDeathDocsCheck";
+import { approveDocumentRequest } from "../../../apis/documentApis";
 const fetchedData = {
   인공증식증명서: adminBreedResultdata as AdminBreedDocumentDataType,
   양도양수확인서: adminAssignGrantData as AdminAssignDocumentDataType,
@@ -55,8 +56,10 @@ function AdminDocsDetailPage() {
 
   const handleAcceptSubmit = (turtleUUID: string, documentHash: string) => {
     console.log(turtleUUID, documentHash);
+    approveDocumentRequest(turtleUUID, documentHash, true);
   };
   const handleDenySubmit = (turtleUUID: string, documentHash: string) => {
+    approveDocumentRequest(turtleUUID, documentHash, false);
     console.log(turtleUUID, documentHash);
   };
   return (

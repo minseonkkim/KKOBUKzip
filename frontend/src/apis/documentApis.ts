@@ -60,7 +60,7 @@ export const getDetailDocumentData = async (
 
 // 관리자 서류 승인
 // true or false
-export const approveDocument = async (
+export const approveDocumentRequest = async (
   turtleUUID: string,
   documentHash: string,
   approval: boolean

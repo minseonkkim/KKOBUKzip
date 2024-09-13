@@ -12,10 +12,12 @@ function AdminAssignGrantDocsCheck({
   onDeny: (turtleUUID: string, documentHash: string) => void;
 }) {
   const handleAcceptSubmit = () => {
+    onAccept(data.turtleUUID, data.documentHash);
     alert("양수양도승인버튼");
   };
 
   const handleDenySubmit = () => {
+    onDeny(data.turtleUUID, data.documentHash);
     alert("양수양도거절버튼");
   };
   return (

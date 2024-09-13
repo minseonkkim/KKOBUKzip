@@ -12,10 +12,12 @@ function AdminBreedDocsCheck({
   onDeny: (turtleUUID: string, documentHash: string) => void;
 }) {
   const handleAcceptSubmit = () => {
+    onAccept(data.turtleUUID, data.documentHash);
     alert("증식승인버튼");
   };
 
   const handleDenySubmit = () => {
+    onDeny(data.turtleUUID, data.documentHash);
     alert("증식거절버튼");
   };
   return (
