@@ -13,13 +13,13 @@ spring:
     main:
       driver-class-name: com.mysql.cj.jdbc.Driver
       jdbc-url: jdbc:mysql://43.201.17.253:3306/kkobuk_main
-      username: kkobuk
-      password: rjqnr107
+      username: ${DB_MAIN_USERNAME}
+      password: ${DB_MAIN_PASSWORD}
     meta:
       driver-class-name: com.mysql.cj.jdbc.Driver
       jdbc-url: jdbc:mysql://43.201.17.253:3306/meta
-      username: kkobuk
-      password: rjqnr107
+      username: ${DB_META_USERNAME}
+      password: ${DB_META_PASSWORD}
 
   jpa:
     hibernate:
@@ -29,18 +29,18 @@ spring:
       hibernate:
         format_sql: true
   jwt:
-    secret: aaaaaaaaaaabbbbbbbbbbbbbbccccccccccccceeeeeeeeeeeeeeekkkkkk
+    secret: ${JWT_SECRET}
   data:
     redis:
       host: localhost
       port: 6379
-      password: redis6379
+      password: ${REDIS_PASSWORD}
       timeout: 60000
   mail:
-    host: kkobuk@gmail.com
+    host: ${MAIL_HOST}
     port: 587
-    username: kkobuk@gmail.com
-    password: ssafy1234
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
