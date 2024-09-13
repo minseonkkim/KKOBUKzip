@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { DeathDocumentDataType, DeathFetchData } from "../../types/document";
+import { createDeathDocumentRequest } from "../../apis/documentApis";
+import DocImgUpload from "./DocImgUpload";
 
 function DeathDocument() {
   const [data, setData] = useState<DeathDocumentDataType>({
@@ -12,6 +14,9 @@ function DeathDocument() {
     registerDate: "",
   });
 
+  const [deathImage, setDeathImage] = useState<File | null>(null);
+  const [diagnosis, setDiagnosis] = useState<File | null>(null);
+
   const changeHandle = (
     type: keyof DeathDocumentDataType,
     evt:
@@ -21,18 +26,38 @@ function DeathDocument() {
     setData({ ...data, [type]: evt.target.value });
   };
 
-  const sendDeathDocRequest = () => {
-    const docs: DeathFetchData = {
-      data: {
-        docType: "폐사질병서류",
-        applicant: "d271c7d8-3f7b-4d4e-8a9e-d60f896b84cb", // storage에서 읽어올것
-        detail: data,
+  const sendDeathDocRequest = async () => {
+    // the data check for validate input
+    if (data.shelter === "" || data.deathReason === "" || data.plan === "") {
+      alert("모든 항목을 입력해주세요.");
+      return;
+    }
+    if (!deathImage || !diagnosis) {
+      alert("사진을 업로드해주세요");
+      return;
+    }
+    const deathData = {
+      docType: "폐사질병서류",
+      applicant: "d271c7d8-3f7b-4d4e-8a9e-d60f896b84cb", // storage에서 읽어올것
+      detail: {
+        ...data,
+        registerDate: new Date().toISOString().substring(0, 10),
       },
-      deathImage: "--사진--",
-      diagnosis: "--사진--",
-    };
 
-    console.log(docs);
+      // deathImage: "--사진--",
+      // diagnosis: "--사진--",
+    };
+    const formData = new FormData();
+    formData.append("deathImage", deathImage);
+    formData.append("multiplicationMethod", diagnosis);
+    formData.append("data", JSON.stringify(deathData));
+    const { success } = await createDeathDocumentRequest(formData);
+
+    if (success) {
+      alert("성공");
+    } else {
+      alert("실패");
+    }
   };
   return (
     <>
@@ -110,7 +135,15 @@ function DeathDocument() {
         <h3 className="text-xl font-semibold mb-4">구비서류</h3>
         <div className="space-y-4">
           <div>
-            <label className="block font-semibold mb-1">
+            <p
+              aria-labelledby="보호시설 명세서"
+              className="block font-semibold pt-4 "
+            >
+              폐사를 증명할 수 있는 사진{" "}
+            </p>
+            <DocImgUpload id="setDeathImage" setImage={setDeathImage} />
+
+            {/* <label className="block font-semibold mb-1">
               폐사를 증명할 수 있는 사진
             </label>
             <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center">
@@ -119,10 +152,19 @@ function DeathDocument() {
               <label htmlFor="file1" className="cursor-pointer flex-shrink">
                 파일 선택
               </label>
-            </div>
+            </div> */}
           </div>
 
           <div>
+            <p
+              aria-labelledby="보호시설 명세서"
+              className="block font-semibold pt-4 "
+            >
+              폐사를 증명할 수 있는 사진{" "}
+            </p>
+            <DocImgUpload id="setDiagnosis" setImage={setDiagnosis} />
+
+            {/* 
             <label className="block font-semibold mb-1">수의사 진단서</label>
             <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center">
               <span className="text-gray-500 flex-grow">선택된 파일 없음</span>
@@ -130,7 +172,7 @@ function DeathDocument() {
               <label htmlFor="file1" className="cursor-pointer flex-shrink">
                 파일 선택
               </label>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ import {
   AdminDeathDocumentDataType,
   AdminDocsListDataType,
   AssigneeFetchData,
+  DeathFetchData,
   GrantorFetchData,
 } from "../types/document";
 
@@ -122,6 +123,24 @@ export const createAssignDocumentRequest = async (data: AssigneeFetchData) => {
 export const createGrantDocumentRequest = async (data: GrantorFetchData) => {
   const response = await apiHelper<boolean>(() =>
     authAxios.post(path + `/register/grant`, { data })
+  );
+  return response;
+};
+
+// death(폐사) 서류 등록
+export const createDeathDocumentRequest = async (data: FormData) => {
+  // 필요하다면 이 함수 오기 직전에 폼데이터 유효성 검증(역할분리)
+  // for (let [key, value] of data.entries()) {
+  //   console.log("key : ", key, value);
+  // }
+  const response = await apiHelper<boolean>(() =>
+    authAxios.post(path + `/register/death`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      timeout: 10000,
+    })
   );
   return response;
 };
