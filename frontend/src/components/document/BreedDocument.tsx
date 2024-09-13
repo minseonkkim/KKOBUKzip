@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { FormEventHandler, useRef, useState } from "react";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import { Helmet } from "react-helmet-async";
-import { BreedDocumentDataType } from "../../types/document";
+import { BreedDocumentDataType, BreedFetchData } from "../../types/document";
 import DocImgUpload from "./DocImgUpload";
+import { postBreedDocument } from "../../apis/documentApis";
 
 // 특이사항
 // 신청인 정보 동적으로 할당할 것(아마 store에서)
@@ -39,7 +40,10 @@ function BreedDocument() {
     }));
   };
 
-  const sendBreedDocRequest = () => {
+  const sendBreedDocRequest = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
     if (!locationImg) {
       alert("시설 명세를 확인해주세요");
       return;
@@ -72,6 +76,8 @@ function BreedDocument() {
     formData.append("data", JSON.stringify(breedData));
     // 데이터 보낼때 multipart로 적당히 던질것
     console.log(breedData);
+
+    const result = await postBreedDocument(formData);
   };
 
   return (
@@ -81,7 +87,7 @@ function BreedDocument() {
       </Helmet>
 
       {/* 허가 정보 */}
-      <form>
+      <form onSubmit={sendBreedDocRequest}>
         <div className="mb-8">
           <h3 className="text-xl font-semibold mb-4">허가 정보</h3>
           <div className="space-y-2">
@@ -140,6 +146,7 @@ function BreedDocument() {
 
               <button
                 aria-label="find location"
+                type="button"
                 ref={addressBtnRef}
                 className="hover:bg-gray-100 w-1/12 border py-2 ml-1.5 rounded"
                 onClick={loadPostcodeSearch}
@@ -203,7 +210,7 @@ function BreedDocument() {
             >
               인공증식 시설의 명세서
             </p>
-            <DocImgUpload setImage={setShelterImg} />
+            <DocImgUpload id="setShelterImg" setImage={setShelterImg} />
 
             <p
               aria-labelledby="인공증식 명세서"
@@ -211,7 +218,10 @@ function BreedDocument() {
             >
               인공증식의 방법{" "}
             </p>
-            <DocImgUpload setImage={setMultiplicationImg} />
+            <DocImgUpload
+              id="setMultiplicationImg"
+              setImage={setMultiplicationImg}
+            />
 
             <p
               aria-labelledby="보호시설 명세서"
@@ -219,7 +229,7 @@ function BreedDocument() {
             >
               보호시설 명세서{" "}
             </p>
-            <DocImgUpload setImage={setLocationImg} />
+            <DocImgUpload id="setLocationImg" setImage={setLocationImg} />
 
             {/* <div>
             <label className="block font-semibold mb-1">인공증식의 방법</label>
@@ -247,7 +257,7 @@ function BreedDocument() {
 
         <div className="flex justify-end space-x-4">
           <button
-            onClick={sendBreedDocRequest}
+            type="submit"
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
             신청서 제출

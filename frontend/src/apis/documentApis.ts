@@ -5,7 +5,7 @@ import { AdminDocsListDataType, BreedFetchData } from "../types/document";
 
 interface ApiResponse<T> {
   success: boolean;
-  data?: T;
+  data?: T | null;
   error?: string;
 }
 
@@ -15,7 +15,15 @@ interface ApiResponse<T> {
  * @returns - ApiResponse 객체
  */
 export const apiHelper = async <T>(
-  requestFn: () => Promise<AxiosResponse<{ data: T }>>
+  requestFn: () => Promise<
+    // response 객체 타입
+    AxiosResponse<{
+      data: T;
+      status: string | number;
+      message?: string;
+      error?: string;
+    }>
+  >
 ): Promise<ApiResponse<T>> => {
   try {
     const response = await requestFn();
@@ -70,6 +78,21 @@ export const approveDocumentRequest = async (
       turtleUUID,
       documentHash,
       approval,
+    })
+  );
+  return response;
+};
+
+// 인공증식서류 등록
+export const postBreedDocument = async (data: FormData) => {
+  // 필요하다면 이 함수 오기 직전에 폼데이터 유효성 검증(역할분리)
+  console.log(data);
+  const response = await apiHelper<boolean>(() =>
+    authAxios.post(path + `/register/breed`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      timeout: 10000,
     })
   );
   return response;
