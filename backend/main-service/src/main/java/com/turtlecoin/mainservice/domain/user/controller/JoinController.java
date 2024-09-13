@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.HashMap;
 import java.util.Map;
 
-@RequestMapping("/api/main")
+@RequestMapping("/api/main/user")
 @Controller
 @ResponseBody
 public class JoinController {
@@ -28,6 +28,7 @@ public class JoinController {
     @PostMapping("/join")
     public ResponseEntity<?> joinProcess(@RequestBody UserRequestDto userDto) {
         //비밀번호 유효성 먼저 검사하는 로직 구현
+        System.out.println(userDto);
         return joinService.joinProcess(userDto);
     }
 }
