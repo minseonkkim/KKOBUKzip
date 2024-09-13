@@ -59,7 +59,7 @@ public class TurtleDocumentation extends Contract {
 
     public static final String FUNC_SEARCHTURTLETRANSFERDOCUMENT = "searchTurtleTransferDocument";
 
-    public static final String FUNC_REGISTERTURTLEDEATHDOCUMENT = "registerTurtleDeathDocument";
+    public static final String FUNC_REGISTERTURTLERDEATHDOCUMENT = "registerTurtlerDeathDocument";
 
     public static final String FUNC_SEARCHTURTLEDEATHDOCUMENT = "searchTurtleDeathDocument";
 
@@ -432,11 +432,11 @@ public class TurtleDocumentation extends Contract {
         return executeRemoteCallSingleValueReturn(function, Transfer.class);
     }
 
-    public RemoteFunctionCall<TransactionReceipt> registerTurtleDeathDocument(String _turtleId,
+    public RemoteFunctionCall<TransactionReceipt> registerTurtlerDeathDocument(String _turtleId,
             String _applicant, String _shelter, BigInteger _count, String _deathReason,
             String _plan, String _deathImage, String _diagnosis) {
         final Function function = new Function(
-                FUNC_REGISTERTURTLEDEATHDOCUMENT, 
+                FUNC_REGISTERTURTLERDEATHDOCUMENT, 
                 Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
                 new org.web3j.abi.datatypes.Utf8String(_applicant), 
                 new org.web3j.abi.datatypes.Utf8String(_shelter), 

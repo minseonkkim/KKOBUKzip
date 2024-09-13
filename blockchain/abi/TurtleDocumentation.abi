@@ -554,7 +554,7 @@
           "type": "string"
         }
       ],
-      "name": "registerTurtleDeathDocument",
+      "name": "registerTurtlerDeathDocument",
       "outputs": [
         {
           "internalType": "bytes32",
@@ -650,4 +650,4 @@
       "stateMutability": "nonpayable",
       "type": "function"
     }
-]
+  ]

@@ -1,6 +1,5 @@
 package com.turtlecoin.mainservice.domain.document.controller;
 
-import java.io.DataInput;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.turtlecoin.mainservice.domain.document.dto.AssignDocumentRequest;
 import com.turtlecoin.mainservice.domain.document.dto.BreedingDocumentRequest;
 import com.turtlecoin.mainservice.domain.document.dto.DeathDocumentRequest;
@@ -57,8 +55,6 @@ public class DocumentController {
 		@RequestPart("multiplicationMethod") MultipartFile multiplicationMethod,
 		@RequestPart("shelterSpecification") MultipartFile shelterSpecification) {
 
-		System.out.println(requestData.getDocType());
-
 		String locationSpecificationAddress = "";
 		String multiplicationAddress = "";
 		String shelterSpecificationAddress = "";
@@ -80,7 +76,7 @@ public class DocumentController {
 
 		String hash = "";
 		String turtleUUID = "";
-		// 블록체인에 업로드 ( 미구현 )
+		// 블록체인에 업로드
 		try{
 			turtleUUID = UUID.randomUUID().toString();
 			hash = contractService.registerTurtleMultiplicationDocument(
@@ -90,7 +86,7 @@ public class DocumentController {
 			);
 		}
 		catch(Exception e){
-			//e.printStackTrace();
+			e.printStackTrace();
 			// 로직중 에러가 발생하면 모두 처음으로 복구시킨다.
 			imageUploadService.deleteS3(locationSpecificationAddress);
 			imageUploadService.deleteS3(multiplicationAddress);
@@ -135,7 +131,12 @@ public class DocumentController {
 		// 블록체인에 업로드 ( 미구현 )
 		try{
 			turtleUUID = UUID.randomUUID().toString();
-			hash = null;
+			String userUUID = UUID.randomUUID().toString();
+			// 유저 서비스 완료되면 유저 검색해서 UUID 가져오는거 만들어줘야 함
+			hash = contractService.registerTurtleAssigneeDocument(
+				turtleUUID, requestData.getApplicant(), userUUID, BigInteger.valueOf(requestData.getDetail().getCount()),
+				requestData.getDetail().getTransferReason(), requestData.getDetail().getPurpose()
+			);
 		}
 		catch(Exception e){
 			//e.printStackTrace();
@@ -185,7 +186,12 @@ public class DocumentController {
 		// 블록체인에 업로드 ( 미구현 )
 		try{
 			turtleUUID = UUID.randomUUID().toString();
-			hash = null;
+			String userUUID = UUID.randomUUID().toString();
+			// 유저 서비스 완료되면 유저 검색해서 UUID 가져오는거 만들어줘야 함
+			hash = contractService.registerTurtleGrantorDocument(
+				turtleUUID, requestData.getApplicant(), requestData.getDocumentHash(), userUUID, requestData.getDetail().getAquisition(),
+				requestData.getDetail().getTurtleUUID(), requestData.getDetail().getMotherUUID()
+			);
 		}
 		catch(Exception e){
 			//e.printStackTrace();
@@ -259,7 +265,10 @@ public class DocumentController {
 		// 블록체인에 업로드 ( 미구현 )
 		try{
 			turtleUUID = UUID.randomUUID().toString();
-			hash = null;
+			hash = contractService.registerTurtleDeathDocument(
+				turtleUUID, requestData.getApplicant(), requestData.getDetail().getShelter(), BigInteger.valueOf(requestData.getDetail().getCount()), requestData.getDetail().getDeathReason(),
+				requestData.getDetail().getPlan(), deathImageAddress, deathImageAddress
+			);
 		}
 		catch(Exception e){
 			//e.printStackTrace();
@@ -323,6 +332,13 @@ public class DocumentController {
 	public ResponseEntity<?> getDocument(
 		@PathVariable(value = "turtleUUID") String turtleUUID,
 		@PathVariable(value = "documentHash") String documentHash) {
+
+		try{
+			contract.TurtleDocumentation.Multiplication document = contractService.searchTurtleMultiplicationDocument(turtleUUID, documentHash);
+
+		}catch(Exception e){
+
+		}
 
 		DocumentResponseDto documentResponseDto;
 

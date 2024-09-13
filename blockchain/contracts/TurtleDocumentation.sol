@@ -173,7 +173,7 @@ contract TurtleDocumentation is Ownable {
     }
 
     // 거북이 폐사질병 서류 등록
-    function registerTurtleDeathDocument(
+    function registerTurtlerDeathDocument(
         string memory _turtleId,
         string memory _applicant,
         string memory _shelter,
