@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import {
@@ -29,6 +29,15 @@ function AssignDocument() {
 
   const [detailLocation, setDetailLocation] = useState<string>("");
 
+  useEffect(() => {
+    if (postcodeData?.jibunAddress) {
+      setAssignee((prev) => ({
+        ...prev,
+        address: postcodeData.jibunAddress,
+      }));
+    }
+  }, [postcodeData?.jibunAddress]);
+
   // 유저데이터 로드하는 함수
   const loadUserData = () => {
     console.log("loadUserData");
@@ -36,6 +45,11 @@ function AssignDocument() {
 
   // 문서 작성 요청 함수
   const sendAssigneeDocRequest = async () => {
+    if (!assignee.name || !assignee.phoneNumber || !assignee.address) {
+      alert("양수인 정보를 모두 입력해주세요.");
+      return;
+    }
+
     const docs: AssigneeFetchData = {
       docType: "양수신청서",
       applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d",
@@ -129,7 +143,7 @@ function AssignDocument() {
               className="w-1/3 px-3 ml-2 py-2 border rounded cursor-pointer hover:bg-gray-100"
               placeholder="기본주소"
               readOnly
-              onChange={(evt) => changeAssigneeHandle("address", evt)}
+              // onChange={(evt) => changeAssigneeHandle("address", evt)}
               value={postcodeData?.roadAddress || ""}
               onClick={() => addressBtnRef.current?.click()}
             />

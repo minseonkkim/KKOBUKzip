@@ -23,11 +23,11 @@ export interface AssigneeFetchData {
 }
 
 // 양도인 문서
-export interface GrantorFetchDataType {
+export interface GrantorFetchData {
   docType: "양도신청서";
-  applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d";
+  applicant: string;
   detail: {
-    granter: AssignDocumentDataType;
+    granter: AssignDocumentDataType; // 동일 형식
     turtleUUID: string;
     aquisition: string;
     motherUUID: string;

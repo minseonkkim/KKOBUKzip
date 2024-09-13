@@ -70,7 +70,7 @@ function BreedDocument() {
       detail: {
         ...data,
         location: postcodeData?.roadAddress + " " + detailLocation,
-        registerDate: new Date().toISOString(),
+        registerDate: new Date().toISOString().substring(0, 10),
       },
     };
     formData.append("data", JSON.stringify(breedData));

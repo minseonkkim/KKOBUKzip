@@ -7,6 +7,7 @@ import {
   AdminDeathDocumentDataType,
   AdminDocsListDataType,
   AssigneeFetchData,
+  GrantorFetchData,
 } from "../types/document";
 
 interface ApiResponse<T> {
@@ -112,7 +113,15 @@ export const createBreedDocumentRequest = async (data: FormData) => {
 // assign(양수) 서류 등록
 export const createAssignDocumentRequest = async (data: AssigneeFetchData) => {
   const response = await apiHelper<boolean>(() =>
-    authAxios.post(path + `/register/assign`, data)
+    authAxios.post(path + `/register/assign`, { data })
+  );
+  return response;
+};
+
+// grant(양도) 서류 등록
+export const createGrantDocumentRequest = async (data: GrantorFetchData) => {
+  const response = await apiHelper<boolean>(() =>
+    authAxios.post(path + `/register/grant`, { data })
   );
   return response;
 };
