@@ -73,6 +73,8 @@ function AdminDocsDetailPage() {
       // 실패했을 시에 실패 알림 추가할 것
     };
     // getData();
+    // 네트워크 붙이고 dummy 정리할 것
+    // search keyword : dummy
     if (
       ["인공증식증명서", "양도양수확인서", "폐사질병신고서"].includes(
         documentType

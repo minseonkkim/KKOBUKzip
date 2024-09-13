@@ -78,6 +78,7 @@ function DocumentFormPage() {
         {/* 선택 탭 끝 */}
 
         {/* 신청인 정보 -데이터 연동되면 할당할 것 */}
+        {/* search keyword : dummy */}
         <MyDocumentDataForm info={applicant} />
         {/* 신청인 정보 끝*/}
 
