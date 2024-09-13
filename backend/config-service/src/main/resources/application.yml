@@ -1,21 +1,21 @@
 server:
   port: 8888
+
 spring:
   application:
-    name: config-service
-  rabbitmq:
-    host: 127.0.0.1
-    port: 5672
-    username: guest
-    password: guest
-#  cloud:
-#    config:
-#      server:
-#        git:
-#          uri: file:///C:\Users\SSAFY\Desktop\repo
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/junjunclub/kkobukzipconfig
+          default-label: master
 
 management:
   endpoints:
     web:
       exposure:
-        include: '*'
+        include: "*"
+  endpoint:
+    shutdown:
+      enabled: true
