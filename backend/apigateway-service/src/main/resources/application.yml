@@ -3,9 +3,11 @@ server:
 
 spring:
   application:
-    name: gateway-service
+    name: apigatewayservice
+  profiles:
+    active: local
   config:
-    import: optional:config-service:http://localhost:8888  # Config Server에서 설정을 가져오도록 설정
+    import: optional:configserver:http://localhost:8888
 
 eureka:
   client:
