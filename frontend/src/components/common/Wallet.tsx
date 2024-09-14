@@ -59,13 +59,33 @@ const Wallet: React.FC = () => {
   }, []);
 
   // 계정 변경 처리 함수
-  const handleAccountChanged = useCallback((accounts: string[]) => {
-    if (accounts.length > 0) {
-      setAccount(accounts[0]);
+  const handleAccountChanged = useCallback(async (accounts: unknown) => {
+    const accountList = accounts as string[];
+
+    if (accountList.length > 0) {
+      setAccount(accountList[0]);
     } else {
       setAccount("");
+      setBalance("0");
+      setEthBalance("0");
     }
   }, []);
+
+  // 잔액 로드 함수
+  const loadBalances = useCallback(async () => {
+    if (web3 && contract && account) {
+      try {
+        const turtBalance: number = await contract.methods.balanceOf(account).call();
+        setBalance(Web3.utils.fromWei(turtBalance, "ether"));
+
+        const ethBalance: bigint = await web3.eth.getBalance(account);
+        setEthBalance(Web3.utils.fromWei(ethBalance, "ether"));
+      } catch (error) {
+        console.error("Error updating balances:", error);
+        setError("잔액을 업데이트하는 중 오류가 발생했습니다");
+      }
+    }
+  }, [web3, contract, account]);
 
   // 컴포넌트 초기화 및 MetaMask 연결
   useEffect(() => {
@@ -73,6 +93,10 @@ const Wallet: React.FC = () => {
       if (isMobile) {
         // 모바일: MetaMask 앱으로 연결 시도
         connectToMetaMaskMobile();
+
+        /**
+         * 여기에 모바일 MetaMask 지갑 정보 연계하는 코드 작성 필요!!!
+         */
       } else {
         // 데스크톱: MetaMask 브라우저 확장 프로그램 연결
         if (typeof window.ethereum !== "undefined") {
@@ -82,10 +106,14 @@ const Wallet: React.FC = () => {
           try {
             await window.ethereum.request({ method: "eth_requestAccounts" });
             const accounts = await web3Instance.eth.getAccounts();
-            setAccount(accounts[0]);
-
+            
             const tokenContract = new web3Instance.eth.Contract(TURTLE_TOKEN_ABI as AbiItem[], TURTLE_TOKEN_ADDRESS) as unknown as Contract<typeof TURTLE_TOKEN_ABI>;
             setContract(tokenContract);
+
+            // 초기 계정 설정
+            await handleAccountChanged(accounts);
+
+            setError(null)
           } catch (error) {
             setError("사용자가 계정 접근을 거부했거나 오류가 발생했습니다");
             console.error(error);
@@ -100,9 +128,7 @@ const Wallet: React.FC = () => {
 
     // MetaMask 이벤트 리스너 설정
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", (accounts) => {
-        handleAccountChanged(accounts as string[]);
-      });
+      window.ethereum.on("accountsChanged", handleAccountChanged);
     }
 
     // 컴포넌트 언마운트 시 이벤트 리스너 제거
@@ -113,25 +139,10 @@ const Wallet: React.FC = () => {
     };
   }, [isMobile, connectToMetaMaskMobile, handleAccountChanged]);
 
-  // 잔액 로드
+  // 잔액 로드 효과
   useEffect(() => {
-    const loadBalances = async () => {
-      if (web3 && contract && account) {
-        try {
-          const turtBalance: number = await contract.methods.balanceOf(account).call();
-          setBalance(Web3.utils.fromWei(turtBalance, "ether"));
-
-          const ethBalance: bigint = await web3.eth.getBalance(account);
-          setEthBalance(Web3.utils.fromWei(ethBalance, "ether"));
-        } catch (error) {
-          setError("잔액을 불러오는 중 오류가 발생했습니다");
-          console.error(error);
-        }
-      }
-    };
-
     loadBalances();
-  }, [web3, contract, account]);
+  }, [loadBalances]);
 
   // 입력 금액 변경 처리
   const handleFromAmountChange = (value: string) => {
