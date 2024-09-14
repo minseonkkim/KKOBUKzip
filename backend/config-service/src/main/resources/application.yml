@@ -1,21 +1,30 @@
 server:
   port: 8888
+
 spring:
   application:
-    name: config-service
-  rabbitmq:
-    host: 127.0.0.1
-    port: 5672
-    username: guest
-    password: guest
-#  cloud:
-#    config:
-#      server:
-#        git:
-#          uri: file:///C:\Users\SSAFY\Desktop\repo
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: git@github.com:junjunclub/kkobukzipconfig.git
+          default-label: master
+          ignore-local-ssh-settings: true
+          host-key: AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg=
+          host-key-algorithm: ecdsa-sha2-nistp256
+          private-key: |
+            -----BEGIN EC PRIVATE KEY-----
+            MHcCAQEEIA2eLUesjFGMJafy1m2Enqj2rgiwARUJvTan6jz1lr/GoAoGCCqGSM49
+            AwEHoUQDQgAEa8w2A2bRODWvibDTOWvXJ9WH2NngImDr2HFCK2Aw6aYTJYV1O16i
+            LXCkWyGQe27S2GrA5Ld2NOB5LB2QEY09MQ==
+            -----END EC PRIVATE KEY-----
 
 management:
   endpoints:
     web:
       exposure:
-        include: '*'
+        include: "*"
+  endpoint:
+    shutdown:
+      enabled: true

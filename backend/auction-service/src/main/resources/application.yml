@@ -8,23 +8,11 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
   application:
-    name: auction-service
-  rabbitmq:
-    host: 43.201.17.253
-    port: 5672
-    username: guest
-    password: guest
-  datasource:
-    url: jdbc:mysql://43.201.17.253:3306/kkobuk_auction
-    username: kkobuk
-    password: rjqnr107
-  jpa:
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        format_sql: true
-
+    name: auctionservice
+  profiles:
+    active: local
+  config:
+    import: optional:configserver:http://localhost:8888
 
 eureka:
   instance:
@@ -34,15 +22,10 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://43.201.17.253:8761/eureka
+      defaultZone: http://localhost:8761/eureka
 
 management:
   endpoints:
     web:
       exposure:
         include: '*'
-
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
