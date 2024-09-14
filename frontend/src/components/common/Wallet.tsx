@@ -64,25 +64,28 @@ const Wallet: React.FC = () => {
 
     if (accountList.length > 0) {
       setAccount(accountList[0]);
-      // 새 계정에 대한 잔액 업데이트
-      if (web3 && contract) {
-        try {
-          const turtBalance: number = await contract.methods.balanceOf(accountList[0]).call();
-          setBalance(Web3.utils.fromWei(turtBalance, "ether"));
-
-          const ethBalance: bigint = await web3.eth.getBalance(accountList[0]);
-          setEthBalance(Web3.utils.fromWei(ethBalance, "ether"));
-        } catch (error) {
-          console.error("Error updating balances:", error);
-          setError("잔액을 업데이트하는 중 오류가 발생했습니다");
-        }
-      }
     } else {
       setAccount("");
       setBalance("0");
       setEthBalance("0");
     }
-  }, [web3, contract]);
+  }, []);
+
+  // 잔액 로드 함수
+  const loadBalances = useCallback(async () => {
+    if (web3 && contract && account) {
+      try {
+        const turtBalance: number = await contract.methods.balanceOf(account).call();
+        setBalance(Web3.utils.fromWei(turtBalance, "ether"));
+
+        const ethBalance: bigint = await web3.eth.getBalance(account);
+        setEthBalance(Web3.utils.fromWei(ethBalance, "ether"));
+      } catch (error) {
+        console.error("Error updating balances:", error);
+        setError("잔액을 업데이트하는 중 오류가 발생했습니다");
+      }
+    }
+  }, [web3, contract, account]);
 
   // 컴포넌트 초기화 및 MetaMask 연결
   useEffect(() => {
@@ -107,8 +110,10 @@ const Wallet: React.FC = () => {
             const tokenContract = new web3Instance.eth.Contract(TURTLE_TOKEN_ABI as AbiItem[], TURTLE_TOKEN_ADDRESS) as unknown as Contract<typeof TURTLE_TOKEN_ABI>;
             setContract(tokenContract);
 
-            // 초기 계정 설정 및 잔액 로드
+            // 초기 계정 설정
             await handleAccountChanged(accounts);
+
+            setError(null)
           } catch (error) {
             setError("사용자가 계정 접근을 거부했거나 오류가 발생했습니다");
             console.error(error);
@@ -134,25 +139,10 @@ const Wallet: React.FC = () => {
     };
   }, [isMobile, connectToMetaMaskMobile, handleAccountChanged]);
 
-  // 잔액 로드
+  // 잔액 로드 효과
   useEffect(() => {
-    const loadBalances = async () => {
-      if (web3 && contract && account) {
-        try {
-          const turtBalance: number = await contract.methods.balanceOf(account).call();
-          setBalance(Web3.utils.fromWei(turtBalance, "ether"));
-
-          const ethBalance: bigint = await web3.eth.getBalance(account);
-          setEthBalance(Web3.utils.fromWei(ethBalance, "ether"));
-        } catch (error) {
-          setError("잔액을 불러오는 중 오류가 발생했습니다");
-          console.error(error);
-        }
-      }
-    };
-
     loadBalances();
-  }, [web3, contract, account]);
+  }, [loadBalances]);
 
   // 입력 금액 변경 처리
   const handleFromAmountChange = (value: string) => {
