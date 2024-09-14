@@ -2,8 +2,17 @@ server:
   port: 8081
 
 spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
   application:
-    name: main-service
+    name: mainservice
+  profiles:
+    active: local
+  config:
+    import: optional:configserver:http://localhost:8888
 
 eureka:
   instance:

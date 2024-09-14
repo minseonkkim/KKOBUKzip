@@ -8,9 +8,11 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
   application:
-    name: auction-service
+    name: auctionservice
+  profiles:
+    active: local
   config:
-    import: optional:config-service:http://localhost:8888
+    import: optional:configserver:http://localhost:8888
 
 eureka:
   instance:
