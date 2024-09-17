@@ -1,69 +1,87 @@
-version: '3'
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # AMQP 프로토콜 포트
+      - "15672:15672"   # 관리 콘솔 포트
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - test-network
+
   eureka-service:
-    image: 1202yjk/eureka-service:latest  # Docker Hub 경로
+    image: 1202yjk/eureka-service:latest
+    container_name: eureka-service
     ports:
-      - 8761:8761
+      - "8761:8761"
     networks:
       - test-network
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://eureka-service:8761/actuator/health || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-
-  apigateway-service:
-    image: 1202yjk/apigateway-service:latest  # Docker Hub 경로
-    ports:
-      - 8000:8000
-    environment:
-      - DISCOVERY_SERVICE_URL=http://eureka-service:8761/eureka/
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://apigateway-service:8000/actuator/health || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-    depends_on:
-      eureka-service:
-        condition: service_healthy
-    networks:
-      - test-network
-    restart: on-failure
-
-  auction-service:
-    image: 1202yjk/auction-service:latest  # Docker Hub 경로
-    ports:
-      - 8082:8082
-    environment:
-      - DISCOVERY_SERVICE_URL=http://eureka-service:8761/eureka/
-    depends_on:
-      eureka-service:
-        condition: service_healthy
-    networks:
-      - test-network
-    restart: on-failure
-
-  main-service:
-    image: 1202yjk/main-service:latest  # Docker Hub 경로
-    ports:
-      - 8081:8081
-    environment:
-      - DISCOVERY_SERVICE_URL=http://eureka-service:8761/eureka/
-    depends_on:
-      eureka-service:
-        condition: service_healthy
-    networks:
-      - test-network
-    restart: on-failure
+    # restart: on-failure
 
   config-service:
-    image: 1202yjk/config-service:latest  # Docker Hub 경로
+    image: 1202yjk/config-service:latest
+    container_name: config-service
     ports:
-      - 8888:8888
+      - "8888:8888"
     networks:
       - test-network
-    restart: on-failure
+    # restart: on-failure
+
+  apigateway-service:
+    image: 1202yjk/apigateway-service:latest
+    container_name: apigateway-service
+    ports:
+      - "8000:8000"
+    environment:
+      SPRING_CLOUD_CONFIG_URI: http://config-service:8888
+      DISCOVERY_SERVICE_URL: http://eureka-service:8761/eureka/
+    depends_on:
+      eureka-service:
+        condition: service_started
+      config-service:
+        condition: service_started
+    networks:
+      - test-network
+    # restart: on-failure
+
+  auction-service:
+    image: 1202yjk/auction-service:latest
+    container_name: auction-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_CLOUD_CONFIG_URI: http://config-service:8888
+      DISCOVERY_SERVICE_URL: http://eureka-service:8761/eureka/
+    depends_on:
+      eureka-service:
+        condition: service_started
+      config-service:
+        condition: service_started
+      apigateway-service:
+        condition: service_started
+    networks:
+      - test-network
+    # restart: on-failure
+
+  # main-service:
+  #   image: 1202yjk/main-service:latest
+  #   container_name: main-service
+  #   ports:
+  #     - "8081:8081"
+  #   environment:
+  #     SPRING_CLOUD_CONFIG_URI: http://config-service:8888
+  #     DISCOVERY_SERVICE_URL: http://eureka-service:8761/eureka/
+  #   depends_on:
+  #     eureka-service:
+  #       condition: service_started
+  #     config-service:
+  #       condition: service_started
+  #   networks:
+  #     - test-network
+  #   restart: on-failure
 
 networks:
   test-network:
-    driver: bridge  # 기본적으로 bridge 네트워크 사용
+    driver: bridge
