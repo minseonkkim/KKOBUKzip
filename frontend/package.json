@@ -11,6 +11,7 @@
     "start": "vite"
   },
   "dependencies": {
+    "@metamask/sdk": "^0.28.4",
     "@types/daum-postcode": "^2.0.3",
     "axios": "^1.7.7",
     "react": "^18.3.1",
