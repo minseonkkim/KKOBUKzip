@@ -79,6 +79,9 @@ public class DocumentController {
 		// 블록체인에 업로드
 		try{
 			turtleUUID = UUID.randomUUID().toString();
+
+
+
 			hash = contractService.registerTurtleMultiplicationDocument(
 				turtleUUID, requestData.getApplicant(), BigInteger.valueOf(requestData.getDetail().getCount()), requestData.getDetail().getArea(),
 				requestData.getDetail().getPurpose(), requestData.getDetail().getLocation(), requestData.getDetail().getFatherUUID(),

@@ -2,22 +2,16 @@ package com.turtlecoin.mainservice.domain.document.service;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.tx.Contract;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.StaticGasProvider;
-import org.web3j.utils.Numeric;
 
-import contract.TurtleDocumentation;
-import io.reactivex.Flowable;
 import lombok.RequiredArgsConstructor;
 
 @Service

@@ -40,7 +40,7 @@ public class MainDBConfig {
 		factory.setPackagesToScan("com.turtlecoin.mainservice.domain"); // 엔티티 패키지 경로
 		factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 		Properties jpaProperties = new Properties();
-		jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+		//jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
 		jpaProperties.put("hibernate.hbm2ddl.auto", "update");
 		factory.setJpaProperties(jpaProperties);
 
