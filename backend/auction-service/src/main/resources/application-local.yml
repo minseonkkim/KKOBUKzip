@@ -7,12 +7,6 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
-  application:
-    name: auctionservice
-  profiles:
-    active: local
-  config:
-    import: optional:configserver:http://localhost:8888
 
 eureka:
   instance:
@@ -22,7 +16,13 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone : http://127.0.0.1:8761/eureka
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
 
 management:
   endpoints:
