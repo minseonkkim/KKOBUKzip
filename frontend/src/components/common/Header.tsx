@@ -2,7 +2,7 @@ import { useState } from 'react';
 import useDeviceStore from "../../store/useDeviceStore";
 import LogoImg from '../../assets/logo.png';
 import CoinImg from '../../assets/Coin.png';
-import MyPageImg from '../../assets/MyPage.png';
+import MyPageImg from '../../assets/mypage.png';
 import { Link, useLocation } from 'react-router-dom';
 import Wallet from './Wallet';
 import Modal from './Modal';
