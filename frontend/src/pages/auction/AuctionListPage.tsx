@@ -12,7 +12,8 @@ import { getAuctionDatas } from "../../apis/auctionApi";
 type FilterType = "gender" | "size" | "minPrice" | "maxPrice";
 
 // 해야할것 -> 스크롤 구현(귀찮...)
-// api 연동하면 더미데이터 -> 실제데이터
+// 해야할 것 : 필터 조회 적용
+// api 연동하면 더미데이터 -> 실제데이터, AuctionTurtle 내부 데이터 연동하기
 
 function AuctionListPage() {
   const [auctionData, setAuctionDatas] = useState<AuctionItemDataType[]>([]);
@@ -20,8 +21,8 @@ function AuctionListPage() {
   const [isChecked, setIsChecked] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false); // State to handle opening and closing of the filter div
   const [filters, setFilters] = useState({
-    gender: "",
-    size: "전체",
+    gender: "all",
+    size: "all",
     minPrice: "",
     maxPrice: "",
   });
@@ -35,7 +36,6 @@ function AuctionListPage() {
         setAuctionDatas(response.data.auctions);
       }
     };
-    console.log(filters);
     getData();
   }, []);
 
@@ -55,8 +55,17 @@ function AuctionListPage() {
     }));
   };
 
-  const searchHandle = () => {
+  const filterApplyHandle = () => {
     console.log(filters);
+  };
+
+  const resetFilter = () => {
+    setFilters({
+      gender: "all",
+      size: "all",
+      minPrice: "",
+      maxPrice: "",
+    });
   };
   return (
     <>
@@ -110,7 +119,10 @@ function AuctionListPage() {
               <IoFilterOutline className="text-[22px] mr-2" />
               <span className="text-[18px]">필터</span>
             </div>
-            <div className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[360px] w-[42px] h-[42px] cursor-pointer font-bold hover:text-[#4B721F]">
+            <div
+              onClick={resetFilter}
+              className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[360px] w-[42px] h-[42px] cursor-pointer font-bold hover:text-[#4B721F]"
+            >
               <GrPowerReset className="text-[20px]" />
             </div>
           </div>
@@ -128,6 +140,7 @@ function AuctionListPage() {
                     type="radio"
                     name="gender"
                     value="all"
+                    checked={filters.gender === "all"}
                     onChange={(e) => updateFilter("gender", e.target.value)}
                   />
                   <span className="radio-mark"></span>
@@ -160,7 +173,7 @@ function AuctionListPage() {
                     type="radio"
                     name="gender"
                     value="undifferentiated"
-                    checked={filters.gender === ""}
+                    checked={filters.gender === "undifferentiated"}
                     onChange={(e) => updateFilter("gender", e.target.value)}
                   />
                   <span className="radio-mark"></span>
@@ -178,6 +191,7 @@ function AuctionListPage() {
                     type="radio"
                     name="size"
                     value="all"
+                    checked={filters.size === "all"}
                     onChange={(e) => updateFilter("size", e.target.value)}
                   />
                   <span className="radio-mark"></span>
@@ -241,7 +255,7 @@ function AuctionListPage() {
               </div>
               <button
                 type="button"
-                onClick={searchHandle}
+                onClick={filterApplyHandle}
                 className="bg-[#4B721F] rounded-[5px] px-3 py-1 text-white font-bold"
               >
                 검색
@@ -251,14 +265,12 @@ function AuctionListPage() {
         )}
 
         <div className="grid grid-cols-3 gap-4 mb-[30px] mt-[10px]">
-          {auctionData.map((item, index) => (
+          {/* {auctionData.map((item, index) => (
             <AuctionTurtle key={index} data={item} />
+          ))} */}
+          {[...Array(10)].map((_, i) => (
+            <AuctionTurtle key={i} />
           ))}
-          {/* <AuctionTurtle />
-          <AuctionTurtle />
-          <AuctionTurtle />
-          <AuctionTurtle />
-          <AuctionTurtle /> */}
         </div>
       </div>
 

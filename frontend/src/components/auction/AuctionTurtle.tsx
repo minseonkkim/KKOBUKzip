@@ -3,7 +3,11 @@ import { AuctionItemDataType } from "../../types/auction";
 import AuctionStatusTag from "./AuctionStatusTag";
 import { useNavigate } from "react-router-dom";
 
-export default function AuctionTurtle({ data }: { data: AuctionItemDataType }) {
+export default function AuctionTurtle({
+  data,
+}: {
+  data?: AuctionItemDataType;
+}) {
   const navigate = useNavigate();
 
   const goToDetail = () => {
