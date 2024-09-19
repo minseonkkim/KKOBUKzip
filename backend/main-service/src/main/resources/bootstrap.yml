@@ -1,9 +1,5 @@
 spring:
-  application:
-    name: main-service
-  profiles:
-    active: local
   cloud:
     config:
-      uri: http://localhost:8888  # Config Server URI 설정
-      name: main-service           # 서비스 이름
+      uri: http:/localhost:8888
+      name: mainservice
