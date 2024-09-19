@@ -1,4 +1,6 @@
 // 거래, 경매의 옵션 필터
+// custom hook 의 useTradeFilter.tsx와 종속성이 있음, 수정 시 같이 수정 필요
+// 뭔가 빠진듯한 옵션 -> 경매 시작 전/ 경매중/유찰/낙찰 필터?
 type FilterType = "gender" | "size" | "minPrice" | "maxPrice";
 
 function OptionFilter({
