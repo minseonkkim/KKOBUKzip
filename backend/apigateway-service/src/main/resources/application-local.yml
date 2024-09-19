@@ -14,7 +14,7 @@ eureka:
     register-with-eureka: true          # Eureka 등록
     fetch-registry: true                # 레지스트리 가져오기
     service-url:
-      defaultZone: http://127.0.0.1:8761/eureka
+      defaultZone: http://0.0.0.0:8761/eureka
 
 management:
   endpoints:

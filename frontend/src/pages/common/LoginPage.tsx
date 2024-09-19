@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
-import BackgroundImg from "../../assets/Side_View_Scene.gif";
-import BackgroundImage from "../../assets/login_background.jpg";
 import naver_logo from "../../assets/login/naver_logo2.png";
 import kakao_logo from "../../assets/login/kakao_logo.png";
 import Header from "../../components/common/Header";
 import StopTurtleImg from "../../assets/turtle_home_stop.png";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import { login } from "../../apis/userApi";
+
+// 해야할 것 : api 요청 결과에 따라 분기처리
+// 히야할 것 : api 요청 직전에 입력값 확인
+// role 값에 따라서 처리할 것
+// 유저는 user 관리자는 admin
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -29,16 +33,11 @@ function LoginPage() {
         <title>로그인</title>
       </Helmet>
       <Header/>
-      {/* <img
-        src={BackgroundImg}
-        className="w-full h-full object-cover min-h-screen"
-        draggable="false"
-      /> */}
-      <div className="absolute top-0 left-0 right-0 px-[250px] mt-[85px] flex justify-center items-center" style={{ height: 'calc(100vh - 85px)' }}>
+      <div className="absolute top-0 left-0 right-0 px-[250px] flex justify-center items-center h-full">
 
 
       {/* 로그인 컴포넌트 */}
-      <div className="relative w-full h-[570px] bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex flex-row">
+      <div className="relative w-full h-[600px] bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex flex-row">
           <div className="rounded-l-[20px] w-1/2">
             <img src={StopTurtleImg} className="rounded-l-[20px] h-full object-cover"/>
           </div>
