@@ -71,7 +71,7 @@ function MainPage() {
       )}
 
       {showButtons && (
-        <div className={ isMobile ? "absolute top-[150px] left-0 w-full text-center flex flex-col items-center" : "absolute top-[230px] left-0 w-full text-center flex flex-col items-center mt-5"}>
+        <div className={ isMobile ? "absolute top-[calc(50vh-60px)] w-full text-center flex flex-col items-center" : "absolute top-[230px] left-0 w-full text-center flex flex-col items-center mt-5"}>
           <div className={ isMobile ? "flex flex-col gap-4" : "flex flex-row gap-[1.5rem]"}>
             <Link to="/transaction-list">
               <div className="bg-[#dfdfdf] shadow-[3px_3px_0px_#858585] rounded-[10px] px-4 py-2 flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95">
