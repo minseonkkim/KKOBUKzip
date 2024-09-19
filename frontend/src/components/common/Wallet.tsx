@@ -133,6 +133,16 @@ const Wallet: React.FC = () => {
     }
   };
 
+  // 지갑 연결 함수
+  const handleConnectWallet = async () => {
+    if (window.ethereum) {
+      await connectWallet();
+    } else {
+      // MetaMask가 없는 경우 안내 메시지 표시
+      setError("MetaMask가 설치되어 있지 않습니다. 모바일에서는 MetaMask 앱을 설치해주세요.");
+    }
+  };
+
   return (
     <div className="bg-yellow-400 text-black p-6 rounded-[10px] w-full max-w-[400px] shadow-md">
       {/* 계정 정보 및 잔액 표시 */}
@@ -201,7 +211,7 @@ const Wallet: React.FC = () => {
       ) : (
         // 지갑 연결 버튼
         <button
-          onClick={connectWallet}
+          onClick={handleConnectWallet}
           className="w-full bg-white text-black py-2 px-4 rounded transition duration-200 font-semibold hover:ring-4 hover:ring-yellow-300"
         >
           MetaMask 연결
