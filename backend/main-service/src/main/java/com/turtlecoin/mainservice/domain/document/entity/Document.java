@@ -1,5 +1,7 @@
 package com.turtlecoin.mainservice.domain.document.entity;
 
+import com.turtlecoin.mainservice.domain.global.entity.BaseEntity;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import jakarta.persistence.*;
@@ -11,12 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Document {
+public class Document extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = true)
+	@Column(nullable = false)
 	private String documentHash;
 
 	@Enumerated(EnumType.STRING)

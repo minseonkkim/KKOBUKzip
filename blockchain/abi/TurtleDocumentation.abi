@@ -22,19 +22,19 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "string",
           "name": "turtleId",
           "type": "string"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "string",
           "name": "applicant",
           "type": "string"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "bytes32",
           "name": "documentHash",
           "type": "bytes32"
@@ -47,19 +47,19 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "string",
           "name": "turtleId",
           "type": "string"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "string",
           "name": "applicant",
           "type": "string"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "bytes32",
           "name": "documentHash",
           "type": "bytes32"
@@ -72,19 +72,19 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "string",
           "name": "turtleId",
           "type": "string"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "string",
           "name": "oldOwner",
           "type": "string"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "string",
           "name": "newOwner",
           "type": "string"
@@ -97,13 +97,13 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "string",
           "name": "turtleId",
           "type": "string"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "string",
           "name": "applicant",
           "type": "string"
@@ -116,7 +116,7 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "string",
           "name": "turtleId",
           "type": "string"
@@ -134,7 +134,7 @@
           "type": "string"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "bytes32",
           "name": "docuemntHash",
           "type": "bytes32"
@@ -554,7 +554,7 @@
           "type": "string"
         }
       ],
-      "name": "registerTurtlerDeathDocument",
+      "name": "registerTurtleDeathDocument",
       "outputs": [
         {
           "internalType": "bytes32",

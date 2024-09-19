@@ -59,7 +59,7 @@ public class TurtleDocumentation extends Contract {
 
     public static final String FUNC_SEARCHTURTLETRANSFERDOCUMENT = "searchTurtleTransferDocument";
 
-    public static final String FUNC_REGISTERTURTLERDEATHDOCUMENT = "registerTurtlerDeathDocument";
+    public static final String FUNC_REGISTERTURTLEDEATHDOCUMENT = "registerTurtleDeathDocument";
 
     public static final String FUNC_SEARCHTURTLEDEATHDOCUMENT = "searchTurtleDeathDocument";
 
@@ -70,23 +70,23 @@ public class TurtleDocumentation extends Contract {
     ;
 
     public static final Event TURTLEDEATH_EVENT = new Event("TurtleDeath", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Bytes32>() {}));
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>(true) {}, new TypeReference<Utf8String>(true) {}, new TypeReference<Bytes32>(true) {}));
     ;
 
     public static final Event TURTLEMULTIPLICATION_EVENT = new Event("TurtleMultiplication", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Bytes32>() {}));
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>(true) {}, new TypeReference<Utf8String>(true) {}, new TypeReference<Bytes32>(true) {}));
     ;
 
     public static final Event TURTLEOWNERCHANGED_EVENT = new Event("TurtleOwnerChanged", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}));
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>(true) {}, new TypeReference<Utf8String>(true) {}, new TypeReference<Utf8String>(true) {}));
     ;
 
     public static final Event TURTLEREGISTERED_EVENT = new Event("TurtleRegistered", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}));
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>(true) {}, new TypeReference<Utf8String>(true) {}));
     ;
 
     public static final Event TURTLETRANSFERRED_EVENT = new Event("TurtleTransferred", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Bytes32>() {}));
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>(true) {}, new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Bytes32>(true) {}));
     ;
 
     @Deprecated
@@ -153,9 +153,9 @@ public class TurtleDocumentation extends Contract {
         for (Contract.EventValuesWithLog eventValues : valueList) {
             TurtleDeathEventResponse typedResponse = new TurtleDeathEventResponse();
             typedResponse.log = eventValues.getLog();
-            typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-            typedResponse.applicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
-            typedResponse.documentHash = (byte[]) eventValues.getNonIndexedValues().get(2).getValue();
+            typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+            typedResponse.applicant = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+            typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(2).getValue();
             responses.add(typedResponse);
         }
         return responses;
@@ -165,9 +165,9 @@ public class TurtleDocumentation extends Contract {
         Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(TURTLEDEATH_EVENT, log);
         TurtleDeathEventResponse typedResponse = new TurtleDeathEventResponse();
         typedResponse.log = log;
-        typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-        typedResponse.applicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
-        typedResponse.documentHash = (byte[]) eventValues.getNonIndexedValues().get(2).getValue();
+        typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+        typedResponse.applicant = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+        typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(2).getValue();
         return typedResponse;
     }
 
@@ -189,9 +189,9 @@ public class TurtleDocumentation extends Contract {
         for (Contract.EventValuesWithLog eventValues : valueList) {
             TurtleMultiplicationEventResponse typedResponse = new TurtleMultiplicationEventResponse();
             typedResponse.log = eventValues.getLog();
-            typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-            typedResponse.applicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
-            typedResponse.documentHash = (byte[]) eventValues.getNonIndexedValues().get(2).getValue();
+            typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+            typedResponse.applicant = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+            typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(2).getValue();
             responses.add(typedResponse);
         }
         return responses;
@@ -201,9 +201,9 @@ public class TurtleDocumentation extends Contract {
         Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(TURTLEMULTIPLICATION_EVENT, log);
         TurtleMultiplicationEventResponse typedResponse = new TurtleMultiplicationEventResponse();
         typedResponse.log = log;
-        typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-        typedResponse.applicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
-        typedResponse.documentHash = (byte[]) eventValues.getNonIndexedValues().get(2).getValue();
+        typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+        typedResponse.applicant = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+        typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(2).getValue();
         return typedResponse;
     }
 
@@ -226,9 +226,9 @@ public class TurtleDocumentation extends Contract {
         for (Contract.EventValuesWithLog eventValues : valueList) {
             TurtleOwnerChangedEventResponse typedResponse = new TurtleOwnerChangedEventResponse();
             typedResponse.log = eventValues.getLog();
-            typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-            typedResponse.oldOwner = (String) eventValues.getNonIndexedValues().get(1).getValue();
-            typedResponse.newOwner = (String) eventValues.getNonIndexedValues().get(2).getValue();
+            typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+            typedResponse.oldOwner = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+            typedResponse.newOwner = (byte[]) eventValues.getIndexedValues().get(2).getValue();
             responses.add(typedResponse);
         }
         return responses;
@@ -238,9 +238,9 @@ public class TurtleDocumentation extends Contract {
         Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(TURTLEOWNERCHANGED_EVENT, log);
         TurtleOwnerChangedEventResponse typedResponse = new TurtleOwnerChangedEventResponse();
         typedResponse.log = log;
-        typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-        typedResponse.oldOwner = (String) eventValues.getNonIndexedValues().get(1).getValue();
-        typedResponse.newOwner = (String) eventValues.getNonIndexedValues().get(2).getValue();
+        typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+        typedResponse.oldOwner = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+        typedResponse.newOwner = (byte[]) eventValues.getIndexedValues().get(2).getValue();
         return typedResponse;
     }
 
@@ -263,8 +263,8 @@ public class TurtleDocumentation extends Contract {
         for (Contract.EventValuesWithLog eventValues : valueList) {
             TurtleRegisteredEventResponse typedResponse = new TurtleRegisteredEventResponse();
             typedResponse.log = eventValues.getLog();
-            typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-            typedResponse.applicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
+            typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+            typedResponse.applicant = (byte[]) eventValues.getIndexedValues().get(1).getValue();
             responses.add(typedResponse);
         }
         return responses;
@@ -274,8 +274,8 @@ public class TurtleDocumentation extends Contract {
         Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(TURTLEREGISTERED_EVENT, log);
         TurtleRegisteredEventResponse typedResponse = new TurtleRegisteredEventResponse();
         typedResponse.log = log;
-        typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-        typedResponse.applicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
+        typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+        typedResponse.applicant = (byte[]) eventValues.getIndexedValues().get(1).getValue();
         return typedResponse;
     }
 
@@ -297,10 +297,10 @@ public class TurtleDocumentation extends Contract {
         for (Contract.EventValuesWithLog eventValues : valueList) {
             TurtleTransferredEventResponse typedResponse = new TurtleTransferredEventResponse();
             typedResponse.log = eventValues.getLog();
-            typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-            typedResponse.grantApplicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
-            typedResponse.assignApplicant = (String) eventValues.getNonIndexedValues().get(2).getValue();
-            typedResponse.docuemntHash = (byte[]) eventValues.getNonIndexedValues().get(3).getValue();
+            typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+            typedResponse.docuemntHash = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+            typedResponse.grantApplicant = (String) eventValues.getNonIndexedValues().get(0).getValue();
+            typedResponse.assignApplicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
             responses.add(typedResponse);
         }
         return responses;
@@ -310,10 +310,10 @@ public class TurtleDocumentation extends Contract {
         Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(TURTLETRANSFERRED_EVENT, log);
         TurtleTransferredEventResponse typedResponse = new TurtleTransferredEventResponse();
         typedResponse.log = log;
-        typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-        typedResponse.grantApplicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
-        typedResponse.assignApplicant = (String) eventValues.getNonIndexedValues().get(2).getValue();
-        typedResponse.docuemntHash = (byte[]) eventValues.getNonIndexedValues().get(3).getValue();
+        typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+        typedResponse.docuemntHash = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+        typedResponse.grantApplicant = (String) eventValues.getNonIndexedValues().get(0).getValue();
+        typedResponse.assignApplicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
         return typedResponse;
     }
 
@@ -432,11 +432,11 @@ public class TurtleDocumentation extends Contract {
         return executeRemoteCallSingleValueReturn(function, Transfer.class);
     }
 
-    public RemoteFunctionCall<TransactionReceipt> registerTurtlerDeathDocument(String _turtleId,
+    public RemoteFunctionCall<TransactionReceipt> registerTurtleDeathDocument(String _turtleId,
             String _applicant, String _shelter, BigInteger _count, String _deathReason,
             String _plan, String _deathImage, String _diagnosis) {
         final Function function = new Function(
-                FUNC_REGISTERTURTLERDEATHDOCUMENT, 
+                FUNC_REGISTERTURTLEDEATHDOCUMENT, 
                 Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
                 new org.web3j.abi.datatypes.Utf8String(_applicant), 
                 new org.web3j.abi.datatypes.Utf8String(_shelter), 
@@ -671,42 +671,42 @@ public class TurtleDocumentation extends Contract {
     }
 
     public static class TurtleDeathEventResponse extends BaseEventResponse {
-        public String turtleId;
+        public byte[] turtleId;
 
-        public String applicant;
+        public byte[] applicant;
 
         public byte[] documentHash;
     }
 
     public static class TurtleMultiplicationEventResponse extends BaseEventResponse {
-        public String turtleId;
+        public byte[] turtleId;
 
-        public String applicant;
+        public byte[] applicant;
 
         public byte[] documentHash;
     }
 
     public static class TurtleOwnerChangedEventResponse extends BaseEventResponse {
-        public String turtleId;
+        public byte[] turtleId;
 
-        public String oldOwner;
+        public byte[] oldOwner;
 
-        public String newOwner;
+        public byte[] newOwner;
     }
 
     public static class TurtleRegisteredEventResponse extends BaseEventResponse {
-        public String turtleId;
+        public byte[] turtleId;
 
-        public String applicant;
+        public byte[] applicant;
     }
 
     public static class TurtleTransferredEventResponse extends BaseEventResponse {
-        public String turtleId;
+        public byte[] turtleId;
+
+        public byte[] docuemntHash;
 
         public String grantApplicant;
 
         public String assignApplicant;
-
-        public byte[] docuemntHash;
     }
 }

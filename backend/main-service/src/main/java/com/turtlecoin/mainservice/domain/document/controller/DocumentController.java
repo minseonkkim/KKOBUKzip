@@ -1,6 +1,7 @@
 package com.turtlecoin.mainservice.domain.document.controller;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -79,9 +80,6 @@ public class DocumentController {
 		// 블록체인에 업로드
 		try{
 			turtleUUID = UUID.randomUUID().toString();
-
-
-
 			hash = contractService.registerTurtleMultiplicationDocument(
 				turtleUUID, requestData.getApplicant(), BigInteger.valueOf(requestData.getDetail().getCount()), requestData.getDetail().getArea(),
 				requestData.getDetail().getPurpose(), requestData.getDetail().getLocation(), requestData.getDetail().getFatherUUID(),
@@ -106,8 +104,10 @@ public class DocumentController {
 				.docType(DocType.BREEDING)
 				.applicant(requestData.getApplicant())
 				.build();
+
 			documentService.save(document);
 		}catch(Exception e){
+			e.printStackTrace();
 			// 에러가 발생했을 경우 DB에 null 인 상태로라도 저장해야 함
 			Document document = Document.builder()
 				.documentHash(null)
@@ -336,17 +336,18 @@ public class DocumentController {
 		@PathVariable(value = "turtleUUID") String turtleUUID,
 		@PathVariable(value = "documentHash") String documentHash) {
 
+		contract.TurtleDocumentation.Multiplication documentDetail = null;
+		// 블록체인에서 서류 정보 가져오기
 		try{
-			contract.TurtleDocumentation.Multiplication document = contractService.searchTurtleMultiplicationDocument(turtleUUID, documentHash);
-
+			documentDetail = contractService.searchTurtleMultiplicationDocument(turtleUUID, documentHash);
 		}catch(Exception e){
-
+			e.printStackTrace();
 		}
 
 		DocumentResponseDto documentResponseDto;
 
 		try{
-			documentResponseDto = documentService.getDocument(documentHash, turtleUUID);
+			documentResponseDto = documentService.responseDocument(documentHash, turtleUUID, documentDetail);
 		}catch(Exception e){
 			return new ResponseEntity<>(ResponseVO.failure("서류 조회에 실패했습니다.", e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
