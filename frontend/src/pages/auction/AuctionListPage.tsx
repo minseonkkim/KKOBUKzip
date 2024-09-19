@@ -8,6 +8,8 @@ import { IoFilterOutline } from "react-icons/io5";
 import AuctionTurtle from "../../components/auction/AuctionTurtle";
 import { AuctionItemDataType } from "../../types/auction";
 import { getAuctionDatas } from "../../apis/auctionApi";
+import OptionFilter from "../../components/common/OptionFilter";
+import useTradeFilter from "../../hooks/useTradeFilter";
 
 type FilterType = "gender" | "size" | "minPrice" | "maxPrice";
 
@@ -20,13 +22,10 @@ function AuctionListPage() {
 
   const [isChecked, setIsChecked] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false); // State to handle opening and closing of the filter div
-  const [filters, setFilters] = useState({
-    gender: "all",
-    size: "all",
-    minPrice: "",
-    maxPrice: "",
-  });
+
   const [pages, setPages] = useState(1); // 페이지네이션용
+
+  const { filters, updateFilter, filterResetHandle } = useTradeFilter();
 
   useEffect(() => {
     // getAuctionDatas and setAuctionDatas
@@ -48,25 +47,10 @@ function AuctionListPage() {
     setIsFilterOpen(!isFilterOpen);
   };
 
-  const updateFilter = (filterType: FilterType, value: string) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [filterType]: value,
-    }));
-  };
-
   const filterApplyHandle = () => {
     console.log(filters);
   };
 
-  const resetFilter = () => {
-    setFilters({
-      gender: "all",
-      size: "all",
-      minPrice: "",
-      maxPrice: "",
-    });
-  };
   return (
     <>
       <Helmet>
@@ -120,7 +104,7 @@ function AuctionListPage() {
               <span className="text-[18px]">필터</span>
             </div>
             <div
-              onClick={resetFilter}
+              onClick={filterResetHandle}
               className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[360px] w-[42px] h-[42px] cursor-pointer font-bold hover:text-[#4B721F]"
             >
               <GrPowerReset className="text-[20px]" />
@@ -129,139 +113,11 @@ function AuctionListPage() {
         </div>
 
         {isFilterOpen && (
-          <div className="border-[2px] border-[#DADADA] rounded-[20px] px-6 py-4 mb-4 transition-all ease-in-out duration-300">
-            <div className="mb-4 flex flex-row items-center">
-              <label className="block mb-2 font-bold text-lg w-[100px]">
-                성별
-              </label>
-              <div className="flex space-x-3">
-                <label className="custom-radio">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="all"
-                    checked={filters.gender === "all"}
-                    onChange={(e) => updateFilter("gender", e.target.value)}
-                  />
-                  <span className="radio-mark"></span>
-                  전체
-                </label>
-                <label className="custom-radio">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="male"
-                    checked={filters.gender === "male"}
-                    onChange={(e) => updateFilter("gender", e.target.value)}
-                  />
-                  <span className="radio-mark"></span>
-                  암컷
-                </label>
-                <label className="custom-radio">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="female"
-                    checked={filters.gender === "female"}
-                    onChange={(e) => updateFilter("gender", e.target.value)}
-                  />
-                  <span className="radio-mark"></span>
-                  수컷
-                </label>
-                <label className="custom-radio">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="undifferentiated"
-                    checked={filters.gender === "undifferentiated"}
-                    onChange={(e) => updateFilter("gender", e.target.value)}
-                  />
-                  <span className="radio-mark"></span>
-                  미구분
-                </label>
-              </div>
-            </div>
-            <div className="mb-4 flex flex-row items-center">
-              <label className="block mb-2 font-bold text-lg w-[100px]">
-                크기
-              </label>
-              <div className="flex space-x-4">
-                <label className="custom-radio">
-                  <input
-                    type="radio"
-                    name="size"
-                    value="all"
-                    checked={filters.size === "all"}
-                    onChange={(e) => updateFilter("size", e.target.value)}
-                  />
-                  <span className="radio-mark"></span>
-                  전체
-                </label>
-                <label className="custom-radio">
-                  <input
-                    type="radio"
-                    name="size"
-                    value="baby"
-                    checked={filters.size === "baby"}
-                    onChange={(e) => updateFilter("size", e.target.value)}
-                  />
-                  <span className="radio-mark"></span>
-                  베이비
-                </label>
-                <label className="custom-radio">
-                  <input
-                    type="radio"
-                    name="size"
-                    value="subadult"
-                    checked={filters.size === "subadult"}
-                    onChange={(e) => updateFilter("size", e.target.value)}
-                  />
-                  <span className="radio-mark"></span>
-                  아성체
-                </label>
-                <label className="custom-radio">
-                  <input
-                    type="radio"
-                    name="size"
-                    value="adult"
-                    checked={filters.size === "adult"}
-                    onChange={(e) => updateFilter("size", e.target.value)}
-                  />
-                  <span className="radio-mark"></span>
-                  성체
-                </label>
-              </div>
-            </div>
-            <div className="flex flex-row justify-between">
-              <div className="flex flex-row items-center">
-                <label className="block mb-2 font-bold text-lg w-[100px]">
-                  가격
-                </label>
-                <div className="flex space-x-4 items-center">
-                  <input
-                    value={filters.minPrice}
-                    onChange={(e) => updateFilter("minPrice", e.target.value)}
-                    className="w-[180px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
-                    placeholder="최소 가격"
-                  />
-                  <span className="text-[22px]">~</span>
-                  <input
-                    value={filters.maxPrice}
-                    onChange={(e) => updateFilter("maxPrice", e.target.value)}
-                    className="w-[180px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
-                    placeholder="최대 가격"
-                  />
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={filterApplyHandle}
-                className="bg-[#4B721F] rounded-[5px] px-3 py-1 text-white font-bold"
-              >
-                검색
-              </button>
-            </div>
-          </div>
+          <OptionFilter
+            filterApplyHandle={filterApplyHandle}
+            filters={filters}
+            updateFilter={updateFilter}
+          />
         )}
 
         <div className="grid grid-cols-3 gap-4 mb-[30px] mt-[10px]">
