@@ -1,24 +1,27 @@
+version: '2.4'
+
 services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
-    ports:
-      - "5672:5672"     # AMQP 프로토콜 포트
-      - "15672:15672"   # 관리 콘솔 포트
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
     networks:
-      - test-network
+      - kkobuk-network
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
 
   eureka-service:
-    image: 1202yjk/eureka-service:latest
+    image: 1202yjk/eureka-service
     container_name: eureka-service
+    networks:
+      - kkobuk-network
     ports:
       - "8761:8761"
-    networks:
-      - test-network
-    # restart: on-failure
+    environment:
+      - spring.cloud.config.uri=http://config-service:8888
 
   config-service:
     image: 1202yjk/config-service:latest
@@ -26,25 +29,32 @@ services:
     ports:
       - "8888:8888"
     networks:
-      - test-network
-    # restart: on-failure
+      - kkobuk-network
+    environment:
+      - spring.rabbitmq.host=rabbitmq
+      - spring.profiles.active=local
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
   apigateway-service:
     image: 1202yjk/apigateway-service:latest
     container_name: apigateway-service
+    networks:
+      - kkobuk-network
     ports:
       - "8000:8000"
     environment:
-      SPRING_CLOUD_CONFIG_URI: http://config-service:8888
-      DISCOVERY_SERVICE_URL: http://eureka-service:8761/eureka/
+      - spring.cloud.config.uri=http://config-service:8888
+      - spring.rabbitmq.host=rabbitmq
+      - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
     depends_on:
+      config-service:
+        condition: service_healthy
       eureka-service:
         condition: service_started
-      config-service:
-        condition: service_started
-    networks:
-      - test-network
-    # restart: on-failure
 
   auction-service:
     image: 1202yjk/auction-service:latest
@@ -52,36 +62,38 @@ services:
     ports:
       - "8082:8082"
     environment:
-      SPRING_CLOUD_CONFIG_URI: http://config-service:8888
-      DISCOVERY_SERVICE_URL: http://eureka-service:8761/eureka/
+      - spring.cloud.config.uri=http://config-service:8888
+      - spring.rabbitmq.host=rabbitmq
+      - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
     depends_on:
-      eureka-service:
-        condition: service_started
       config-service:
+        condition: service_healthy
+      eureka-service:
         condition: service_started
       apigateway-service:
         condition: service_started
     networks:
-      - test-network
-    # restart: on-failure
+      - kkobuk-network
 
-  # main-service:
-  #   image: 1202yjk/main-service:latest
-  #   container_name: main-service
-  #   ports:
-  #     - "8081:8081"
-  #   environment:
-  #     SPRING_CLOUD_CONFIG_URI: http://config-service:8888
-  #     DISCOVERY_SERVICE_URL: http://eureka-service:8761/eureka/
-  #   depends_on:
-  #     eureka-service:
-  #       condition: service_started
-  #     config-service:
-  #       condition: service_started
-  #   networks:
-  #     - test-network
-  #   restart: on-failure
+  main-service:
+    image: 1202yjk/main-service:latest
+    container_name: main-service
+    ports:
+      - "8081:8081"
+    environment:
+      - spring.cloud.config.uri=http://config-service:8888
+      - spring.rabbitmq.host=rabbitmq
+      - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_started
+      apigateway-service:
+        condition: service_started
+    networks:
+      - kkobuk-network
 
 networks:
-  test-network:
+  kkobuk-network:
     driver: bridge
