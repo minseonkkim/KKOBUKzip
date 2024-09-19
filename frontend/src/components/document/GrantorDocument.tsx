@@ -1,7 +1,11 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
-import { AssignDocumentDataType as GrantorDocumentDataType } from "../../types/document";
+import {
+  AssignDocumentDataType as GrantorDocumentDataType,
+  GrantorFetchData,
+} from "../../types/document";
+import { createGrantDocumentRequest } from "../../apis/documentApis";
 
 // 양도 서류 컴포넌트
 function GrantorDocument() {
@@ -15,12 +19,27 @@ function GrantorDocument() {
   });
 
   const [detailLocation, setDetailLocation] = useState<string>("");
+  useEffect(() => {
+    if (postcodeData?.jibunAddress) {
+      setGrantor((prev) => ({
+        ...prev,
+        address: postcodeData.jibunAddress,
+      }));
+    }
+  }, [postcodeData?.jibunAddress]);
   const loadUserData = () => {
     console.log("loadUserData");
   };
 
-  const sendGrantorDocRequest = () => {
-    const docs = {
+  const sendGrantorDocRequest = async () => {
+    // grantor status check logic
+    console.log(grantor.address);
+    if (!grantor.name || !grantor.phoneNumber || !grantor.address) {
+      alert("양도인 정보를 모두 입력해주세요.");
+      return;
+    }
+
+    const docs: GrantorFetchData = {
       docType: "양도신청서",
       applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d", // storage에서 가져올 것
       detail: {
@@ -36,6 +55,13 @@ function GrantorDocument() {
         fatherUUID: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
       },
     };
+    const { success } = await createGrantDocumentRequest(docs);
+
+    if (success) {
+      alert("양도성공후로직");
+    } else {
+      alert("양도실패후로직");
+    }
     console.log(docs);
   };
 
@@ -45,6 +71,7 @@ function GrantorDocument() {
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLSelectElement>
   ) => {
+    console.log(evt.target.value);
     setGrantor((prev) => ({ ...prev, [key]: evt.target.value }));
   };
 
@@ -104,7 +131,7 @@ function GrantorDocument() {
               className="w-1/3 px-3 ml-2 py-2 border rounded cursor-pointer hover:bg-gray-100"
               placeholder="기본주소"
               readOnly
-              onChange={(evt) => changeHandle("address", evt)}
+              // onChange={(evt) => changeHandle("address", evt)}
               value={postcodeData?.roadAddress || ""}
               onClick={() => addressBtnRef.current?.click()}
             />

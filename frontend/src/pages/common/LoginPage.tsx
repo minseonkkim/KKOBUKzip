@@ -16,9 +16,10 @@ function LoginPage() {
 
   const navigate = useNavigate();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     alert("로그인 핸들");
     console.log(email, password);
+    await login(email, password);
     navigate("/login");
   };
 

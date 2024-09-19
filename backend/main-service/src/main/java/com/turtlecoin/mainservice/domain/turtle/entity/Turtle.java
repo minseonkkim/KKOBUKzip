@@ -50,8 +50,8 @@ public class Turtle extends BaseEntity {
     @Column(nullable = false)
     private String uuid;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Transaction transaction;
+    @OneToMany(mappedBy = "turtle", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Transaction> transaction;
 
     @OneToMany(mappedBy = "turtle", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TurtlePhoto> turtlePhotos = new ArrayList<>();

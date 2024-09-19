@@ -1,69 +1,99 @@
-version: '3'
+version: '2.4'
+
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    networks:
+      - kkobuk-network
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
   eureka-service:
-    image: 1202yjk/eureka-service:latest  # Docker Hub 경로
-    ports:
-      - 8761:8761
+    image: 1202yjk/eureka-service
+    container_name: eureka-service
     networks:
-      - test-network
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://eureka-service:8761/actuator/health || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-
-  apigateway-service:
-    image: 1202yjk/apigateway-service:latest  # Docker Hub 경로
+      - kkobuk-network
     ports:
-      - 8000:8000
+      - "8761:8761"
     environment:
-      - DISCOVERY_SERVICE_URL=http://eureka-service:8761/eureka/
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://apigateway-service:8000/actuator/health || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-    depends_on:
-      eureka-service:
-        condition: service_healthy
-    networks:
-      - test-network
-    restart: on-failure
-
-  auction-service:
-    image: 1202yjk/auction-service:latest  # Docker Hub 경로
-    ports:
-      - 8082:8082
-    environment:
-      - DISCOVERY_SERVICE_URL=http://eureka-service:8761/eureka/
-    depends_on:
-      eureka-service:
-        condition: service_healthy
-    networks:
-      - test-network
-    restart: on-failure
-
-  main-service:
-    image: 1202yjk/main-service:latest  # Docker Hub 경로
-    ports:
-      - 8081:8081
-    environment:
-      - DISCOVERY_SERVICE_URL=http://eureka-service:8761/eureka/
-    depends_on:
-      eureka-service:
-        condition: service_healthy
-    networks:
-      - test-network
-    restart: on-failure
+      - spring.cloud.config.uri=http://config-service:8888
 
   config-service:
-    image: 1202yjk/config-service:latest  # Docker Hub 경로
+    image: 1202yjk/config-service:latest
+    container_name: config-service
     ports:
-      - 8888:8888
+      - "8888:8888"
     networks:
-      - test-network
-    restart: on-failure
+      - kkobuk-network
+    environment:
+      - spring.rabbitmq.host=rabbitmq
+      - spring.profiles.active=local
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  apigateway-service:
+    image: 1202yjk/apigateway-service:latest
+    container_name: apigateway-service
+    networks:
+      - kkobuk-network
+    ports:
+      - "8000:8000"
+    environment:
+      - spring.cloud.config.uri=http://config-service:8888
+      - spring.rabbitmq.host=rabbitmq
+      - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_started
+
+  auction-service:
+    image: 1202yjk/auction-service:latest
+    container_name: auction-service
+    ports:
+      - "8082:8082"
+    environment:
+      - spring.cloud.config.uri=http://config-service:8888
+      - spring.rabbitmq.host=rabbitmq
+      - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_started
+      apigateway-service:
+        condition: service_started
+    networks:
+      - kkobuk-network
+
+  main-service:
+    image: 1202yjk/main-service:latest
+    container_name: main-service
+    ports:
+      - "8081:8081"
+    environment:
+      - spring.cloud.config.uri=http://config-service:8888
+      - spring.rabbitmq.host=rabbitmq
+      - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_started
+      apigateway-service:
+        condition: service_started
+    networks:
+      - kkobuk-network
 
 networks:
-  test-network:
-    driver: bridge  # 기본적으로 bridge 네트워크 사용
+  kkobuk-network:
+    driver: bridge

@@ -12,12 +12,15 @@ function AdminDocsListPage() {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<AdminDocsListDataType[]>([]);
 
+  // 네트워크 붙이고 더미 치울것
+  // search : dummy
   useEffect(() => {
     const getData = async () => {
       const { success, data } = await getAllDocumentDataForAdmin();
       if (success && data) {
-        console.log(data);
         setDocuments(data);
+      } else {
+        setDocuments(dummyData as AdminDocsListDataType[]);
       }
     };
     getData();

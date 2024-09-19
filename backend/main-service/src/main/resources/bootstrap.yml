@@ -1,5 +1,9 @@
 spring:
+  application:
+    name: main-service
+  profiles:
+    active: local
   cloud:
     config:
-      uri: http://127.0.0.1:8888
-      name: member-service
+      uri: http://config-service:8888
+      name: main-service
