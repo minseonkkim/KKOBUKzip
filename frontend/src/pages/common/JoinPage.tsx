@@ -3,20 +3,12 @@ import JoinPageBackground from "../../assets/login_background.jpg";
 import { useCallback, useEffect, useState } from "react";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import ErrorMessage from "../../components/common/join/ErrorMessage";
+import { JoinDataType } from "../../types/join";
+import { register } from "../../apis/userApi";
 
 // 해야할 것 : 이메일유효성검증
-
-interface JoinDataType {
-  email: string;
-  password: string;
-  korean: boolean;
-  name: string;
-  nickname: string;
-  birthday: string;
-  phoneNumber: string;
-  address: string;
-  detailedAddress: string;
-}
+// 해야할 것 : 프로필사진 등록
+// 해야할 것 : api 요청 후 return값에 따라서 분기처리
 
 interface ErrorStateType {
   email: string;
@@ -35,14 +27,15 @@ function JoinPage() {
   const [data, setData] = useState<JoinDataType>({
     email: "",
     password: "",
-    korean: true,
+    foreignFlag: true,
     name: "",
     nickname: "",
     birthday: "",
     phoneNumber: "",
     address: "",
-    detailedAddress: "",
+    // detailedAddress: "",
   });
+  const [detailedAddress, setDetailAddress] = useState("");
 
   const [birth, setBirth] = useState<{
     y: number | null;
@@ -101,7 +94,7 @@ function JoinPage() {
   }, [loadDaumPostcodeScript]);
 
   const handleChangeKorean = (tf: boolean) => {
-    setData((prev) => ({ ...prev, korean: tf }));
+    setData((prev) => ({ ...prev, foreignFlag: tf }));
   };
 
   const handleChangeBirth = (
@@ -181,7 +174,8 @@ function JoinPage() {
     );
   };
 
-  const handleJoinSubmit = () => {
+  // 회원가입 요청 함수
+  const handleJoinSubmit = async () => {
     let isValid = true;
     const newErrStat: ErrorStateType = {
       email: "",
@@ -237,7 +231,7 @@ function JoinPage() {
       isValid = false;
     }
 
-    if (data.detailedAddress.trim().length === 0) {
+    if (detailedAddress.trim().length === 0) {
       newErrStat.detailedAddress = "상세 주소를 입력해주세요.";
       isValid = false;
     }
@@ -247,6 +241,11 @@ function JoinPage() {
     if (isValid) {
       console.log("회원가입 성공!", data);
       // TODO: API 호출 또는 다음 단계로 진행
+
+      await register({
+        ...data,
+        address: data.address + " " + detailedAddress,
+      });
     } else {
       console.log("회원가입 실패. 입력값을 확인해주세요.");
     }
@@ -339,18 +338,18 @@ function JoinPage() {
                   <input
                     type="radio"
                     name="option"
-                    checked={data.korean}
-                    onChange={() => handleChangeKorean(true)}
+                    checked={!data.foreignFlag}
+                    onChange={() => handleChangeKorean(false)}
                     className="absolute opacity-0 cursor-pointer"
                   />
                   <span
                     className={`w-6 h-6 rounded-full border-2 transition-colors duration-300 ${
-                      data.korean === true
+                      data.foreignFlag === false
                         ? "border-blue-500 bg-blue-500"
                         : "border-gray-300"
                     }`}
                   >
-                    {data.korean === true && (
+                    {data.foreignFlag === false && (
                       <span className="block w-3 h-3 rounded-full bg-white mx-auto mt-1 transition-transform duration-300"></span>
                     )}
                   </span>
@@ -361,18 +360,18 @@ function JoinPage() {
                   <input
                     type="radio"
                     name="option"
-                    checked={!data.korean}
-                    onChange={() => handleChangeKorean(false)}
+                    checked={data.foreignFlag}
+                    onChange={() => handleChangeKorean(true)}
                     className="absolute opacity-0 cursor-pointer"
                   />
                   <span
                     className={`w-6 h-6 rounded-full border-2 transition-colors duration-300 ${
-                      data.korean === false
+                      data.foreignFlag === true
                         ? "border-blue-500 bg-blue-500"
                         : "border-gray-300"
                     }`}
                   >
-                    {data.korean === false && (
+                    {data.foreignFlag === true && (
                       <span className="block w-3 h-3 rounded-full bg-white mx-auto mt-1 transition-transform duration-300"></span>
                     )}
                   </span>
@@ -533,8 +532,8 @@ function JoinPage() {
                   <input
                     type="text"
                     id="addressDetail"
-                    value={data.detailedAddress}
-                    onChange={onChangeHandle("detailedAddress")}
+                    value={detailedAddress}
+                    onChange={(evt) => setDetailAddress(evt.target.value)}
                     placeholder="상세주소를 입력해주세요."
                     className="w-2/3 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-green-500"
                   />

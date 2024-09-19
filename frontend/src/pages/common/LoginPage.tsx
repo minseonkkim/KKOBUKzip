@@ -4,6 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import BackgroundImage from "../../assets/login_background.jpg";
 import naver_logo from "../../assets/login/naver_logo2.png";
 import kakao_logo from "../../assets/login/kakao_logo.png";
+import { login } from "../../apis/userApi";
+
+// 해야할 것 : api 요청 결과에 따라 분기처리
+// 히야할 것 : api 요청 직전에 입력값 확인
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -11,9 +15,10 @@ function LoginPage() {
 
   const navigate = useNavigate();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     alert("로그인 핸들");
     console.log(email, password);
+    await login(email, password);
     navigate("/login");
   };
 
@@ -53,6 +58,7 @@ function LoginPage() {
                 className="w-full p-3 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
               <button
+                type="button"
                 onClick={handleLogin}
                 className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
               >

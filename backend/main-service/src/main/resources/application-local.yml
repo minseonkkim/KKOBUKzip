@@ -16,7 +16,13 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: ${DISCOVERY_SERVICE_URL:http://eureka-service:8761/eureka}
+      defaultZone : http://127.0.0.1:8761/eureka
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
 
 management:
   endpoints:
