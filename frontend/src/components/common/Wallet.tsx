@@ -1,87 +1,29 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { MetaMaskSDK } from "@metamask/sdk";
 import Web3 from "web3";
-import { Contract } from "web3-eth-contract";
-import { AbiItem } from "web3-utils";
-import TurtleTokenAbi from "../../abi/TurtleToken.json";
 import { FaArrowRightArrowLeft, FaSpinner } from "react-icons/fa6";
+import { useMetaMaskSDKStore } from "../../store/useMetaMaskSDKStore";
 
-// 토큰 컨트랙트 관련 정보
-const TURTLE_TOKEN_ABI: AbiItem[] = TurtleTokenAbi.abi as AbiItem[];
-const TURTLE_TOKEN_ADDRESS = "0x73b0697A8A69193e5842497Cc010cB1F34A93a0a";
+// 토큰 교환 비율 설정
 const EXCHANGE_RATE = 5000000; // 1 ETH = 5,000,000 TURT
 
 const Wallet: React.FC = () => {
-  const [MMSDK, setMMSDK] = useState<MetaMaskSDK | null>(null);    // - MetaMask SDK 인스턴스
-  const [web3, setWeb3] = useState<Web3 | null>(null);    // - Web3 인스턴스
-  const [account, setAccount] = useState<string>("");    // - 연결된 계정 주소
-  const [contract, setContract] = useState<Contract<typeof TURTLE_TOKEN_ABI> | null>(null);    // - TurtleToken 컨트랙트 인스턴스
-  const [balance, setBalance] = useState<string>("0");    // - TURT 토큰 잔액
-  const [ethBalance, setEthBalance] = useState<string>("0");    // - ETH 잔액
-  const [fromCurrency, setFromCurrency] = useState<"ETH" | "TURT">("ETH");    // - 환전 시 출발 통화 (ETH 또는 TURT)
-  const [toCurrency, setToCurrency] = useState<"ETH" | "TURT">("TURT");    // - 환전 시 도착 통화 (ETH 또는 TURT)
-  const [fromAmount, setFromAmount] = useState<string>("");    // - 환전할 금액 (출발 통화 기준)
-  const [toAmount, setToAmount] = useState<string>("");    // - 환전 결과 금액 (도착 통화 기준)
-  const [error, setError] = useState<string | null>(null);    // - 오류 메시지
-  const [isLoading, setIsLoading] = useState(false);    // - 로딩 상태
+  // Zustand 스토어에서 필요한 상태와 함수 가져오기
+  const { web3, account, contract, error: sdkError, initializeSDK, connectWallet } = useMetaMaskSDKStore();
 
-  // MetaMask SDK 초기화 및 연결 설정
+  // 지갑 관련 상태 관리
+  const [balance, setBalance] = useState<string>("0");
+  const [ethBalance, setEthBalance] = useState<string>("0");
+  const [fromCurrency, setFromCurrency] = useState<"ETH" | "TURT">("ETH");
+  const [toCurrency, setToCurrency] = useState<"ETH" | "TURT">("TURT");
+  const [fromAmount, setFromAmount] = useState<string>("");
+  const [toAmount, setToAmount] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 컴포넌트 마운트 시 MetaMask SDK 초기화
   useEffect(() => {
-    const initSDK = async () => {
-      try {
-        // MetaMask SDK 인스턴스 생성
-        const MMSDK = new MetaMaskSDK({
-          dappMetadata: {
-            name: "KkobukZIP",
-            url: window.location.href,
-          },
-        });
-        setMMSDK(MMSDK);
-        
-        // SDK 초기화
-        await MMSDK.init();
-        
-        // Web3 인스턴스 생성
-        const provider = MMSDK.getProvider();
-        const web3Instance = new Web3(provider);
-        setWeb3(web3Instance);
-        
-        // TurtleToken 컨트랙트 인스턴스 생성
-        const tokenContract = new web3Instance.eth.Contract(TURTLE_TOKEN_ABI, TURTLE_TOKEN_ADDRESS) as unknown as Contract<typeof TURTLE_TOKEN_ABI>;
-        setContract(tokenContract);
-        
-        // 연결된 계정 확인
-        const accounts = await web3Instance.eth.getAccounts();
-        if (accounts.length > 0) {
-          setAccount(accounts[0]);
-        }
-      } catch (error) {
-        console.error("Failed to initialize MetaMask SDK:", error);
-        setError("MetaMask 초기화에 실패했습니다.");
-      }
-    };
-
-    initSDK();
-  }, []);
-
-  // MetaMask 지갑 연결 함수
-  const connectWallet = async () => {
-    if (!MMSDK) {
-      setError("MetaMask SDK가 초기화되지 않았습니다.");
-      return;
-    }
-
-    try {
-      const accounts = await MMSDK.connect();
-      if (accounts.length > 0) {
-        setAccount(accounts[0]);
-        setError(null);
-      }
-    } catch (error) {
-      console.error("Failed to connect wallet:", error);
-      setError("지갑 연결에 실패했습니다.");
-    }
-  };
+    initializeSDK();
+  }, [initializeSDK]);
 
   // 잔액 로드 함수
   const loadBalances = useCallback(async () => {
@@ -101,10 +43,10 @@ const Wallet: React.FC = () => {
     }
   }, [web3, contract, account]);
 
-  // 계정이 변경될 때마다 잔액 업데이트
+  // 계정 변경 시 잔액 업데이트
   useEffect(() => {
     loadBalances();
-  }, [loadBalances]);
+  }, [loadBalances, account]);
 
   // 환전 금액 입력 처리 함수
   const handleFromAmountChange = (value: string) => {
@@ -206,7 +148,7 @@ const Wallet: React.FC = () => {
         </div>
       </div>
       {/* 오류 메시지 표시 */}
-      {error && <div className="text-red-500 mb-4">{error}</div>}
+      {(error || sdkError) && <div className="text-red-500 mb-4">{error || sdkError}</div>}
       {account ? (
         <>
           {/* 환전 입력 필드 */}

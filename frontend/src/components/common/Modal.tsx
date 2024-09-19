@@ -39,7 +39,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   const animationClass = isClosing ? "animate-modal-up" : "animate-modal-down";
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 z-1000 pointer-events-none">
+    <div className="fixed inset-0 z-[40] pointer-events-none">
       <div className={`${
         isMobile
           ? "absolute top-[68px] w-full pointer-events-auto transition"
