@@ -18,10 +18,10 @@ import authAxios from "./http-commons/authAxios";
 */
 // 헬퍼 함수: API 요청 처리
 const apiRequest = async <T>(
-  request: () => Promise<AxiosResponse<T>>
+  requestFn: () => Promise<AxiosResponse<T>>
 ): Promise<{ success: boolean; data?: T; error?: string }> => {
   try {
-    const response = await request();
+    const response = await requestFn();
     return { success: true, data: response.data };
   } catch (error) {
     let errorMessage = "알 수 없는 오류가 발생했습니다.";
@@ -44,13 +44,13 @@ const login = async (
   password: string
 ): Promise<{ success: boolean; data?: LoginResponseData; error?: string }> => {
   return apiRequest(() =>
-    guestAxios.post<LoginResponseData>("/user/login", { email, password })
+    guestAxios.post<LoginResponseData>("/main/user/login", { email, password })
   );
 };
 
 // 로그아웃
 const logout = async (): Promise<{ success: boolean; error?: string }> => {
-  return apiRequest(() => authAxios.post("/user/logout"));
+  return apiRequest(() => authAxios.post("/main/user/logout"));
 };
 
 // 회원가입
@@ -62,7 +62,7 @@ const register = async (
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<RegisterResponseData>("/user/signup", user, {
+    guestAxios.post<RegisterResponseData>("/main/user/signup", user, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -76,7 +76,7 @@ const checkToken = async (): Promise<{
   data?: TokenResponseData;
   error?: string;
 }> => {
-  return apiRequest(() => authAxios.get<TokenResponseData>("jwa/access"));
+  return apiRequest(() => authAxios.get<TokenResponseData>("/main/jwa/access"));
 };
 
 // 이메일 인증 확인
@@ -88,7 +88,9 @@ const checkEmail = async (
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<EmailCheckResponseData>(`user/email/request?email=${email}`)
+    guestAxios.post<EmailCheckResponseData>(
+      `/main/user/email/request?email=${email}`
+    )
   );
 };
 
@@ -101,9 +103,10 @@ const createEmailRequest = async (
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<CreateEmailRequestResponseData>("/create-email-request", {
-      email,
-    })
+    guestAxios.post<CreateEmailRequestResponseData>(
+      `/main/user/email/request/${email}`,
+      {}
+    )
   );
 };
 

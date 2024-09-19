@@ -7,8 +7,12 @@ import { IoIosSearch } from "react-icons/io";
 import { IoFilterOutline } from "react-icons/io5";
 import AuctionTurtle from "../../components/auction/AuctionTurtle";
 import { AuctionItemDataType } from "../../types/auction";
+import { getAuctionDatas } from "../../apis/auctionApi";
 
-type FilterType = "gender" | "size" | "price";
+type FilterType = "gender" | "size" | "minPrice" | "maxPrice";
+
+// 해야할것 -> 스크롤 구현(귀찮...)
+// api 연동하면 더미데이터 -> 실제데이터
 
 function AuctionListPage() {
   const [auctionData, setAuctionDatas] = useState<AuctionItemDataType[]>([]);
@@ -17,15 +21,26 @@ function AuctionListPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false); // State to handle opening and closing of the filter div
   const [filters, setFilters] = useState({
     gender: "",
-    size: "",
-    price: "",
+    size: "전체",
+    minPrice: "",
+    maxPrice: "",
   });
+  const [pages, setPages] = useState(1); // 페이지네이션용
 
   useEffect(() => {
     // getAuctionDatas and setAuctionDatas
+    const getData = async () => {
+      const response = await getAuctionDatas({ page: pages });
+      if (response.success) {
+        setAuctionDatas(response.data.auctions);
+      }
+    };
+    console.log(filters);
+    getData();
   }, []);
 
   const handleCheckboxChange = () => {
+    // 경매중인 거북이만 보기 -> progress : "DURING_AUCTION"
     setIsChecked(!isChecked);
   };
 
@@ -40,6 +55,9 @@ function AuctionListPage() {
     }));
   };
 
+  const searchHandle = () => {
+    console.log(filters);
+  };
   return (
     <>
       <Helmet>
@@ -56,7 +74,12 @@ function AuctionListPage() {
         <div className="flex flex-row items-center justify-between mb-4">
           <div className="text-[23px] font-bold flex flex-row items-center">
             <label className="flex items-center">
-              <input type="checkbox" className="hidden" checked={isChecked} />
+              <input
+                type="checkbox"
+                className="hidden"
+                readOnly
+                checked={isChecked}
+              />
               <div
                 className={`w-6 h-6 border-2 border-gray-500 rounded-[5px] p-1 mr-2 cursor-pointer flex justify-center items-center ${
                   isChecked ? "bg-[#FFD9D9]" : "bg-[#fff]"
@@ -202,17 +225,25 @@ function AuctionListPage() {
                 </label>
                 <div className="flex space-x-4 items-center">
                   <input
+                    value={filters.minPrice}
+                    onChange={(e) => updateFilter("minPrice", e.target.value)}
                     className="w-[180px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
                     placeholder="최소 가격"
                   />
                   <span className="text-[22px]">~</span>
                   <input
+                    value={filters.maxPrice}
+                    onChange={(e) => updateFilter("maxPrice", e.target.value)}
                     className="w-[180px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
                     placeholder="최대 가격"
                   />
                 </div>
               </div>
-              <button className="bg-[#4B721F] rounded-[5px] px-3 py-1 text-white font-bold">
+              <button
+                type="button"
+                onClick={searchHandle}
+                className="bg-[#4B721F] rounded-[5px] px-3 py-1 text-white font-bold"
+              >
                 검색
               </button>
             </div>

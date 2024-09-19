@@ -55,7 +55,7 @@ export const apiHelper = async <T>(
   }
 };
 
-const path = "/document";
+const path = "/main/document";
 // 관리자의 서류 목록 전체 조회
 export const getAllDocumentDataForAdmin = async () => {
   const response = await apiHelper<AdminDocsListDataType[]>(() =>
