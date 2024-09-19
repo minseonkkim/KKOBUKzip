@@ -39,14 +39,17 @@ const apiRequest = async <T>(
 
 // 로그인
 const login = async (
-  user: any
+  email: string,
+  password: string
 ): Promise<{ success: boolean; data?: LoginResponseData; error?: string }> => {
-  return apiRequest(() => guestAxios.post<LoginResponseData>("/login", user));
+  return apiRequest(() =>
+    guestAxios.post<LoginResponseData>("/user/login", { email, password })
+  );
 };
 
 // 로그아웃
 const logout = async (): Promise<{ success: boolean; error?: string }> => {
-  return apiRequest(() => guestAxios.post("/logout"));
+  return apiRequest(() => guestAxios.post("/user/logout"));
 };
 
 // 회원가입
@@ -58,7 +61,7 @@ const register = async (
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<RegisterResponseData>("/register", user, {
+    guestAxios.post<RegisterResponseData>("/user/register", user, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -106,8 +109,13 @@ const createEmailRequest = async (
 // 응답 데이터 타입 정의
 interface LoginResponseData {
   // 로그인 성공 시 반환되는 데이터 타입을 정의합니다.
-  // 예시로 작성한 것이므로 실제 API 문서에 따라 수정해주세요.
-  token: string;
+  status: number;
+  message: string;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    role: string; // 유저는 user 관리자는 admin
+  };
 }
 
 interface RegisterResponseData {

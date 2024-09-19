@@ -8,6 +8,7 @@ import { register } from "../../apis/userApi";
 
 // 해야할 것 : 이메일유효성검증
 // 해야할 것 : 프로필사진 등록
+// 해야할 것 : api 요청 후 return값에 따라서 분기처리
 
 interface ErrorStateType {
   email: string;
