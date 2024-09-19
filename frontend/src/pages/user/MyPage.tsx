@@ -4,6 +4,7 @@ import TmpProfileImg from "../../assets/tmp_profile.gif";
 import { useState } from "react";
 import TransactionHistory from "../../components/user/TransactionHistory";
 import MyTurtle from "../../components/user/MyTurtle";
+import NoImage from "../../assets/no_image.png";
 
 function MyPage() {
   const [selectedMenu, setSelectedMenu] = useState(0);  // 0은 거래 내역, 1은 나의 거북이
@@ -50,22 +51,40 @@ function MyPage() {
 
         {/* 거래내역 */}
         {selectedMenu === 0 && 
-        <div className="flex flex-col mb-[20px]">
-          <TransactionHistory/>
-          <TransactionHistory/>
-          <TransactionHistory/>
-        </div>
+
+        // 거래 내역이 있을 경우
+        // <div className="flex flex-col mb-[20px]">
+        //   <TransactionHistory/>
+        //   <TransactionHistory/>
+        //   <TransactionHistory/>
+        // </div>
+
+        // 거래내역이 없을 경우
+      <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
+        <img src={NoImage} className="w-[200px] mb-7"/>
+        <div className="text-[25px] font-bold text-center">거래 내역이 없어요.</div>
+      </div>
         }
 
         {/* 나의 거북이 */}
         {selectedMenu === 1 && 
-        <div className="flex flex-row flex-wrap mb-[20px] gap-[2%]">
+
+        // 나의 거북이가 있을 경우
+      //   <div className="flex flex-row flex-wrap mb-[20px] gap-[2%]">
           
-        <MyTurtle />
-        <MyTurtle />
-        <MyTurtle />
-        <MyTurtle />
-      </div>}
+      //   <MyTurtle />
+      //   <MyTurtle />
+      //   <MyTurtle />
+      //   <MyTurtle />
+      // </div>
+
+      // 나의 거북이가 없을 경우
+      <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
+        <img src={NoImage} className="w-[200px] mb-7"/>
+        <div className="text-[25px] font-bold text-center">나의 거북이가 없어요.</div>
+      </div>
+      
+      }
       </div>
     </>
   );
