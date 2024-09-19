@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import guestAxios from "./http-commons/guestAxios";
 import { JoinDataType } from "../types/join";
+import authAxios from "./http-commons/authAxios";
 
 /*
 성공 형식
@@ -49,7 +50,7 @@ const login = async (
 
 // 로그아웃
 const logout = async (): Promise<{ success: boolean; error?: string }> => {
-  return apiRequest(() => guestAxios.post("/user/logout"));
+  return apiRequest(() => authAxios.post("/user/logout"));
 };
 
 // 회원가입
@@ -61,7 +62,7 @@ const register = async (
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<RegisterResponseData>("/user/register", user, {
+    guestAxios.post<RegisterResponseData>("/user/signup", user, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -75,7 +76,7 @@ const checkToken = async (): Promise<{
   data?: TokenResponseData;
   error?: string;
 }> => {
-  return apiRequest(() => guestAxios.get<TokenResponseData>("/check-token"));
+  return apiRequest(() => authAxios.get<TokenResponseData>("/check-token"));
 };
 
 // 이메일 인증 확인
