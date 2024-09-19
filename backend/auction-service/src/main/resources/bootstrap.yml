@@ -1,5 +1,9 @@
 spring:
+  application:
+    name: auction-service
+  profiles:
+    active: local
   cloud:
     config:
-      uri: http://127.0.0.1:8888
-      name: auctionservice
+      uri: http://config-service:8888  # Config Server URI 설정
+      name: auction-service         # 서비스 이름

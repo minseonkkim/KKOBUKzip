@@ -1,23 +1,23 @@
 server:
-  port: 8000
+  port: 8000                          # 로컬에서 사용할 포트
 
 spring:
   application:
-    name: apigatewayservice
-  profiles:
-    active: local
-  config:
-    import: optional:configserver:http://localhost:8888
+    name: apigateway-service
+
 
 eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
   client:
-    register-with-eureka: true
-    fetch-registry: true
+    register-with-eureka: true          # Eureka 등록
+    fetch-registry: true                # 레지스트리 가져오기
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://0.0.0.0:8761/eureka
 
 management:
   endpoints:
     web:
       exposure:
-        include: '*'
+        include: '*'                    # 모든 관리 엔드포인트 노출
