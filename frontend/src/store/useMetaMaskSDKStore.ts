@@ -39,14 +39,18 @@ export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
           url: window.location.href,
         },
         // 모바일 지원을 위한 추가 옵션
-        checkInstallationImmediately: false
+        checkInstallationImmediately: true,
       };
 
       // MetaMask SDK 인스턴스 생성 및 초기화
       const MMSDK = new MetaMaskSDK(options);
       await MMSDK.init();
 
-      const provider = MMSDK.getProvider()!;
+      const provider = MMSDK.getProvider();
+      if (!provider) {
+        throw new Error("MetaMask 프로바이더를 가져올 수 없습니다.");
+      }
+
       const web3Instance = new Web3(provider);
 
       // 토큰 컨트랙트 인스턴스 생성
@@ -76,26 +80,32 @@ export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
       });
     } catch (error) {
       console.error("Failed to initialize MetaMask SDK:", error);
-      set({ error: "MetaMask 초기화에 실패했습니다." });
+      set({ error: `MetaMask 초기화에 실패했습니다: ${(error as Error).message}` });
     }
   },
 
   connectWallet: async () => {
-    const { MMSDK } = get();
-    if (!MMSDK) {
-      set({ error: "MetaMask SDK가 초기화되지 않았습니다." });
-      return;
+    const { MMSDK, isInitialized } = get();
+    if (!MMSDK || !isInitialized) {
+      try {
+        await get().initializeSDK();
+      } catch (error) {
+        set({ error: `MetaMask SDK 초기화 실패: ${(error as Error).message}` });
+        return;
+      }
     }
 
     try {
       // MetaMask 연결 요청
-      const accounts = await MMSDK.connect();
-      if (accounts.length > 0) {
+      const accounts = await get().MMSDK!.connect();
+      if (accounts && accounts.length > 0) {
         set({ account: accounts[0], error: null });
+      } else {
+        throw new Error("연결된 계정이 없습니다.");
       }
     } catch (error) {
       console.error("Failed to connect wallet:", error);
-      set({ error: "지갑 연결에 실패했습니다." });
+      set({ error: `지갑 연결에 실패했습니다: ${(error as Error).message}` });
     }
   },
 
