@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,14 +58,15 @@ public class AuctionController {
             }
 
             Auction registeredAuction = auctionService.registerAuction(registerAuctionDTO, multipartFiles);
-            return new ResponseEntity<>(ResponseVO.success("경매 등록에 성공했습니다."), HttpStatus.OK);
+            AuctionResponseDTO responseDTO = auctionService.convertToDTO(registeredAuction);
+            return new ResponseEntity<>(ResponseVO.success("경매 등록에 성공했습니다.", "auction", responseDTO), HttpStatus.OK);
         } catch (IOException e) {
             return new ResponseEntity<>(ResponseVO.failure("경매 등록에 실패했습니다.", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping
-    public ResponseEntity<List<Auction>> getAuctions(
+    public ResponseEntity<?> getAuctions(
             @RequestParam(value = "gender", required = false) Gender gender,
             @RequestParam(value = "minSize", required = false) Double minSize,
             @RequestParam(value = "maxSize", required = false) Double maxSize,
@@ -73,8 +75,15 @@ public class AuctionController {
             @RequestParam(value = "progress", required = false) AuctionProgress progress,
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
-        List<Auction> filteredAuctions = auctionService.getFilteredAuctions(gender, minSize, maxSize, minPrice, maxPrice, progress, page);
-        return new ResponseEntity<>(filteredAuctions, HttpStatus.OK);
+        List<AuctionResponseDTO> auctionDTOs = auctionService.getFilteredAuctions(gender, minSize, maxSize, minPrice, maxPrice, progress, page)
+                .stream()
+                .map(auctionService::convertToDTO)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+                ResponseVO.success("경매 목록 조회에 성공했습니다.", "auctions", auctionDTOs),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("/{auctionId}")
