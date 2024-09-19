@@ -67,11 +67,11 @@ contract TurtleDocumentation is Ownable {
     mapping(string => string[]) private ownerToTurtleIds;
 
     // event 모음
-    event TurtleRegistered(string turtleId, string applicant);
-    event TurtleMultiplication(string turtleId, string applicant, bytes32 documentHash);
-    event TurtleTransferred(string turtleId, string grantApplicant, string assignApplicant, bytes32 docuemntHash);
-    event TurtleDeath(string turtleId, string applicant, bytes32 documentHash);
-    event TurtleOwnerChanged(string turtleId, string oldOwner, string newOwner);
+    event TurtleRegistered(string indexed turtleId, string indexed applicant);
+    event TurtleMultiplication(string indexed turtleId, string indexed applicant, bytes32 indexed documentHash);
+    event TurtleTransferred(string indexed turtleId, string grantApplicant, string assignApplicant, bytes32 indexed docuemntHash);
+    event TurtleDeath(string indexed turtleId, string indexed applicant, bytes32 indexed documentHash);
+    event TurtleOwnerChanged(string indexed turtleId, string indexed oldOwner, string indexed newOwner);
 
     // (관리자용) 거북이 추가
     function registerTurtle(string memory _turtleId, string memory _applicant) public onlyOwner {
@@ -173,7 +173,7 @@ contract TurtleDocumentation is Ownable {
     }
 
     // 거북이 폐사질병 서류 등록
-    function registerTurtlerDeathDocument(
+    function registerTurtleDeathDocument(
         string memory _turtleId,
         string memory _applicant,
         string memory _shelter,

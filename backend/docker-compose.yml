@@ -1,0 +1,69 @@
+version: '3'
+services:
+  eureka-service:
+    image: 1202yjk/eureka-service:latest  # Docker Hub 경로
+    ports:
+      - 8761:8761
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://eureka-service:8761/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  apigateway-service:
+    image: 1202yjk/apigateway-service:latest  # Docker Hub 경로
+    ports:
+      - 8000:8000
+    environment:
+      - DISCOVERY_SERVICE_URL=http://eureka-service:8761/eureka/
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://apigateway-service:8000/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      eureka-service:
+        condition: service_healthy
+    networks:
+      - test-network
+    restart: on-failure
+
+  auction-service:
+    image: 1202yjk/auction-service:latest  # Docker Hub 경로
+    ports:
+      - 8082:8082
+    environment:
+      - DISCOVERY_SERVICE_URL=http://eureka-service:8761/eureka/
+    depends_on:
+      eureka-service:
+        condition: service_healthy
+    networks:
+      - test-network
+    restart: on-failure
+
+  main-service:
+    image: 1202yjk/main-service:latest  # Docker Hub 경로
+    ports:
+      - 8081:8081
+    environment:
+      - DISCOVERY_SERVICE_URL=http://eureka-service:8761/eureka/
+    depends_on:
+      eureka-service:
+        condition: service_healthy
+    networks:
+      - test-network
+    restart: on-failure
+
+  config-service:
+    image: 1202yjk/config-service:latest  # Docker Hub 경로
+    ports:
+      - 8888:8888
+    networks:
+      - test-network
+    restart: on-failure
+
+networks:
+  test-network:
+    driver: bridge  # 기본적으로 bridge 네트워크 사용

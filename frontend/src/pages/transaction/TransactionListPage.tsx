@@ -1,16 +1,43 @@
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
-import TransactionTurtle from "../../components/transaction/TransactionTurtle";
-import { IoIosArrowDown } from "react-icons/io";
 import { GrPowerReset } from "react-icons/gr";
 import { FaCheck } from "react-icons/fa6";
 import { useState } from "react";
+import TransactionTurtle from "../../components/transaction/TransactionTurtle";
+import { IoIosSearch } from "react-icons/io";
+import { IoFilterOutline } from "react-icons/io5";
+import TmpTurtle1 from "../../assets/tmp_turtle.jpg";
+import TmpTurtle2 from "../../assets/tmp_turtle_2.jpg";
+import TmpTurtle3 from "../../assets/tmp_turtle_3.jpg";
+import TmpTurtle4 from "../../assets/tmp_turtle_4.jpg";
+import TmpTurtle5 from "../../assets/tmp_turtle_5.jpg";
+import TmpTurtle6 from "../../assets/tmp_turtle_6.jpg";
+
+type FilterType = 'gender' | 'size' | 'price';
 
 function TransactionListPage() {
   const [isChecked, setIsChecked] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false); // State to handle opening and closing of the filter div
+  const [filters, setFilters] = useState({
+    gender: '',
+    size: '',
+    price: '',
+  });
 
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
+  };
+
+  const toggleFilterDiv = () => {
+    setIsFilterOpen(!isFilterOpen); // Toggle filter div visibility
+  };
+
+  // Update the selected filter
+  const updateFilter = (filterType: FilterType, value: string) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [filterType]: value,
+    }));
   };
 
   return (
@@ -18,59 +45,223 @@ function TransactionListPage() {
       <Helmet>
         <title>판매중인 거북이</title>
       </Helmet>
-      <Header/>
-      <div className="px-[230px] mt-[85px]">
-        <div className="text-[33px] text-gray-900 font-dnf-bitbit pt-[40px] pb-[13px]">판매중인 거북이</div>
-        <div className="flex flex-row justify-between items-center">
-          <div className="flex flex-row mb-[10px]">
-            <div className="flex flex-row items-center border-[2px] border-[#C6C6C6] rounded-[360px] px-3 py-2 w-[50px] cursor-pointer mr-2 ">
-              <GrPowerReset className="text-[23px]"/>
-            </div>
-            <div className="flex flex-row items-center border-[2px] border-[#C6C6C6] rounded-[15px] px-3 py-2 w-[90px] cursor-pointer mr-2 ">
-              <IoIosArrowDown className="mr-2 text-[20px]"/>
-              <span className="text-[19px]">성별</span>
-            </div>
-            <div className="flex flex-row items-center border-[2px] border-[#C6C6C6] rounded-[15px] px-3 py-2 w-[90px] cursor-pointer mr-2">
-              <IoIosArrowDown className="mr-2 text-[20px]"/>
-              <span className="text-[19px]">크기</span>
-            </div>
-            <div className="flex flex-row items-center border-[2px] border-[#C6C6C6] rounded-[15px] px-3 py-2 w-[90px] cursor-pointer">
-              <IoIosArrowDown className="mr-2 text-[20px]"/>
-              <span className="text-[19px]">가격</span>
-            </div>
-          </div>
-          <div className="text-[23px] font-bold flex flex-row items-center">
-            <label className="flex items-center space-x-3">
+      <Header />
+      <div className="px-[250px] mt-[85px]">
+        <div className="flex flex-row items-center justify-between pt-[40px] pb-[13px]">
+          <div className="text-[33px] text-gray-900 font-dnf-bitbit mr-3">판매중인 거북이</div>
+        </div>
+        
+        <div className="flex flex-row items-center justify-between mb-4">
+        <div className="text-[23px] font-bold flex flex-row items-center">
+            <label className="flex items-center">
               <input
                 type="checkbox"
                 className="hidden"
                 checked={isChecked}
               />
               <div
-                className={`w-7 h-7 border-2 border-gray-500 rounded-[5px] p-1 cursor-pointer flex justify-center items-center ${
+                className={`w-6 h-6 border-2 border-gray-500 rounded-[5px] p-1 mr-2 cursor-pointer flex justify-center items-center ${
                   isChecked ? 'bg-[#FFD9D9]' : 'bg-[#fff]'
                 }`}
                 onClick={handleCheckboxChange}
               >
                 {isChecked && <FaCheck />}
               </div>
-              <span>거래가능한 거북이만 보기</span>
+              <span onClick={handleCheckboxChange} className="cursor-pointer">거래가능한 거북이만 보기</span>
             </label>
           </div>
+          <div className="flex flex-row">
+            <div className="flex items-center w-[320px] h-[38px] bg-[#f2f2f2] rounded-[10px] p-1 mr-4">
+              <IoIosSearch className="text-gray-400 mx-2 text-[30px]" />
+              <input 
+                type="text" 
+                placeholder="종을 검색하세요" 
+                className="w-full h-full bg-[#f2f2f2] text-[19px] focus:outline-none p-1" 
+              />
+            </div>
+          
+            <div 
+              className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[30px] w-[90px] h-[42px] cursor-pointer hover:text-[#4B721F] mr-2"
+              onClick={toggleFilterDiv}
+            >
+              <IoFilterOutline className="text-[22px] mr-2" />
+              <span className="text-[18px]">필터</span>
+            </div>
+            <div className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[360px] w-[42px] h-[42px] cursor-pointer font-bold hover:text-[#4B721F]">
+              <GrPowerReset className="text-[20px]" />
+            </div>
+          </div>
         </div>
-        
-        <div className="flex flex-row flex-wrap justify-between mb-[30px]">
-          <TransactionTurtle/>
-          <TransactionTurtle/>
-          <TransactionTurtle/>
-          <TransactionTurtle/>
-          <TransactionTurtle/>
-          <TransactionTurtle/>
-          <TransactionTurtle/>
+
+
+        {isFilterOpen && (
+          <div className="border-[2px] border-[#DADADA] rounded-[20px] px-6 py-4 mb-4 transition-all ease-in-out duration-300">
+            <div className="mb-4 flex flex-row items-center">
+              <label className="block mb-2 font-bold text-lg w-[100px]">성별</label>
+              <div className="flex space-x-3">
+                <label className="custom-radio">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="all"
+                    onChange={(e) => updateFilter('gender', e.target.value)}
+                  />
+                  <span className="radio-mark"></span>
+                  전체
+                </label>
+                <label className="custom-radio">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="male"
+                    checked={filters.gender === 'male'}
+                    onChange={(e) => updateFilter('gender', e.target.value)}
+                  />
+                  <span className="radio-mark"></span>
+                  암컷
+                </label>
+                <label className="custom-radio">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="female"
+                    checked={filters.gender === 'female'}
+                    onChange={(e) => updateFilter('gender', e.target.value)}
+                  />
+                  <span className="radio-mark"></span>
+                  수컷
+                </label>
+                <label className="custom-radio">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="undifferentiated"
+                    checked={filters.gender === ''}
+                    onChange={(e) => updateFilter('gender', e.target.value)}
+                  />
+                  <span className="radio-mark"></span>
+                  미구분
+                </label>
+              </div>
+            </div>
+            <div className="mb-4 flex flex-row items-center">
+              <label className="block mb-2 font-bold text-lg w-[100px]">크기</label>
+              <div className="flex space-x-4">
+                <label className="custom-radio">
+                  <input
+                    type="radio"
+                    name="size"
+                    value="all"
+                    onChange={(e) => updateFilter('size', e.target.value)}
+                  />
+                  <span className="radio-mark"></span>
+                  전체
+                </label>
+                <label className="custom-radio">
+                  <input
+                    type="radio"
+                    name="size"
+                    value="baby"
+                    checked={filters.size === 'baby'}
+                    onChange={(e) => updateFilter('size', e.target.value)}
+                  />
+                  <span className="radio-mark"></span>
+                  베이비
+                </label>
+                <label className="custom-radio">
+                  <input
+                    type="radio"
+                    name="size"
+                    value="subadult"
+                    checked={filters.size === 'subadult'}
+                    onChange={(e) => updateFilter('size', e.target.value)}
+                  />
+                  <span className="radio-mark"></span>
+                  아성체
+                </label>
+                <label className="custom-radio">
+                  <input
+                    type="radio"
+                    name="size"
+                    value="adult"
+                    checked={filters.size === 'adult'}
+                    onChange={(e) => updateFilter('size', e.target.value)}
+                  />
+                  <span className="radio-mark"></span>
+                  성체
+                </label>
+              </div>
+            </div>
+            <div className="flex flex-row justify-between">
+              <div className="flex flex-row items-center">
+                <label className="block mb-2 font-bold text-lg w-[100px]">가격</label>
+                <div className="flex space-x-4 flex items-center">
+                  <input className="w-[180px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1" placeholder="최소 가격"/>
+                  <span className="text-[22px]">~</span>
+                  <input className="w-[180px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1" placeholder="최대 가격"/>
+                </div>
+              </div>
+              <button className="bg-[#4B721F] rounded-[5px] px-3 py-1 text-white font-bold">검색</button>
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-3 gap-4 mb-[30px] mt-[10px]">
+          <TransactionTurtle scientific_name="지오프리 사이드 넥 터틀" price={300000000} transaction_tag={["암컷", "성체"]} transaction_image={[TmpTurtle1]} progress="거래가능"/>
+          <TransactionTurtle scientific_name="레이저 백 거북" price={94000000} transaction_tag={["수컷", "베이비"]} transaction_image={[TmpTurtle2]} progress="거래가능"/>
+          <TransactionTurtle scientific_name="아프리카 사이드 넥" price={110000000} transaction_tag={["암컷", "베이비"]} transaction_image={[TmpTurtle3]} progress="거래가능"/>
+          <TransactionTurtle scientific_name="미시시피 지도 거북이" price={700000000} transaction_tag={["암컷", "아성체"]} transaction_image={[TmpTurtle4]} progress="거래가능"/>
+          <TransactionTurtle scientific_name="지오프리 사이드 넥 터틀" price={67200000} transaction_tag={["암컷", "성체"]} transaction_image={[TmpTurtle5]} progress="거래가능"/>
+          <TransactionTurtle scientific_name="암보니아 상자 거북" price={43000000} transaction_tag={["수컷", "성체"]} transaction_image={[TmpTurtle6]} progress="거래완료"/>
         </div>
-        
       </div>
-      
+
+      {/* Custom Radio Button Styling */}
+      <style>{`
+        .custom-radio {
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+          position: relative;
+        }
+
+        .custom-radio input {
+          position: absolute;
+          opacity: 0;
+          cursor: pointer;
+        }
+
+        .radio-mark {
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background-color: #fff;
+          border: 2px solid #DADADA;
+          margin-right: 10px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          transition: all 0.3s ease;
+        }
+
+        .custom-radio input:checked ~ .radio-mark {
+          background-color: #4B721F;
+          border-color: #4B721F;
+        }
+
+        .radio-mark:after {
+          content: "";
+          display: none;
+          width: 10px;
+          height: 10px;
+          background-color: white;
+          border-radius: 50%;
+        }
+
+        .custom-radio input:checked ~ .radio-mark:after {
+          display: block;
+        }
+      `}</style>
     </>
   );
 }

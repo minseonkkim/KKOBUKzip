@@ -1,5 +1,4 @@
 @charset "UTF-8";
-@layer;
 @import "//cdn.jsdelivr.net/npm/font-kopub@1.0/kopubdotum.min.css";
 
 @tailwind base;
@@ -22,4 +21,38 @@
 
 body {
     @apply font-KoPubDotum;
+    user-select: none;
+}
+
+/* 전체 스크롤바 스타일링 */
+div::-webkit-scrollbar {
+    width: 6px; /* 스크롤바의 너비 */
+}
+
+/* 스크롤바 트랙 (배경) 스타일링 */
+div::-webkit-scrollbar-track {
+    background: transparent; /* 트랙 배경을 투명하게 설정 */
+}
+
+/* 스크롤바의 실제 막대 스타일링 */
+div::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3); /* 스크롤바 막대 색상 */
+    border-radius: 10px; /* 스크롤바 막대 모서리를 둥글게 */
+    cursor:pointer;
+}
+
+/* 스크롤바 막대가 호버되었을 때 */
+div::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.5); /* 호버 시 색상 변경 */
+}
+
+
+.line-clamp {
+    height: 8.6em;
+    max-height: 8.6em; 
+    overflow-y: auto;
+    border: 2px solid;
+    border-color: #E1E1E1;
+    border-radius: 10px;
+    padding: 10px;
 }

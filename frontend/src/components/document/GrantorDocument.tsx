@@ -1,15 +1,11 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import {
-  AssigneeDocumentDataType as GrantorDocumentDataType,
+  AssignDocumentDataType as GrantorDocumentDataType,
   GrantorFetchData,
 } from "../../types/document";
-// interface GrantorDocumentDataType {
-//   name: string;
-//   phoneNumber: string;
-//   address: string;
-// }
+import { createGrantDocumentRequest } from "../../apis/documentApis";
 
 // 양도 서류 컴포넌트
 function GrantorDocument() {
@@ -23,18 +19,33 @@ function GrantorDocument() {
   });
 
   const [detailLocation, setDetailLocation] = useState<string>("");
+  useEffect(() => {
+    if (postcodeData?.jibunAddress) {
+      setGrantor((prev) => ({
+        ...prev,
+        address: postcodeData.jibunAddress,
+      }));
+    }
+  }, [postcodeData?.jibunAddress]);
   const loadUserData = () => {
     console.log("loadUserData");
   };
 
-  const sendGrantorDocRequest = () => {
+  const sendGrantorDocRequest = async () => {
+    // grantor status check logic
+    console.log(grantor.address);
+    if (!grantor.name || !grantor.phoneNumber || !grantor.address) {
+      alert("양도인 정보를 모두 입력해주세요.");
+      return;
+    }
+
     const docs: GrantorFetchData = {
       docType: "양도신청서",
-      applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d",
+      applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d", // storage에서 가져올 것
       detail: {
         granter: {
           ...grantor,
-          address: grantor.address + " " + detailLocation,
+          address: postcodeData?.roadAddress + " " + detailLocation,
         },
 
         // UUID 부분 데이터 들어오면 할당할 것
@@ -44,15 +55,23 @@ function GrantorDocument() {
         fatherUUID: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
       },
     };
+    const { success } = await createGrantDocumentRequest(docs);
 
+    if (success) {
+      alert("양도성공후로직");
+    } else {
+      alert("양도실패후로직");
+    }
     console.log(docs);
   };
+
   const changeHandle = (
     key: keyof GrantorDocumentDataType,
     evt:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLSelectElement>
   ) => {
+    console.log(evt.target.value);
     setGrantor((prev) => ({ ...prev, [key]: evt.target.value }));
   };
 
@@ -75,11 +94,12 @@ function GrantorDocument() {
         </div>
 
         {/* 양도인 정보 */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center">
               <span className="w-1/3 font-medium">성명(상호)</span>
               <input
+                onChange={(evt) => changeHandle("name", evt)}
                 type="text"
                 placeholder="성명(상호)"
                 className="w-2/3 px-3 py-2 border rounded"
@@ -101,17 +121,17 @@ function GrantorDocument() {
 
             <button
               ref={addressBtnRef}
-              className="w-1/12"
+              className="hover:bg-gray-100 w-1/12 border py-2 ml-1.5 rounded"
               onClick={loadPostcodeSearch}
             >
               찾기
             </button>
             <input
               type="text"
-              className="w-1/3 px-3 py-2 border rounded ml-2"
+              className="w-1/3 px-3 ml-2 py-2 border rounded cursor-pointer hover:bg-gray-100"
               placeholder="기본주소"
               readOnly
-              onChange={(evt) => changeHandle("address", evt)}
+              // onChange={(evt) => changeHandle("address", evt)}
               value={postcodeData?.roadAddress || ""}
               onClick={() => addressBtnRef.current?.click()}
             />
@@ -131,7 +151,7 @@ function GrantorDocument() {
       {/* 양수인 정보 - 불러올 것 */}
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">양수인</h3>
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-2">
           <div className="flex">
             <span className="w-1/3 font-medium">성명</span>
             <span className="w-2/3">사전에 설정된 양수인 정보 불러올 것</span>
@@ -152,7 +172,7 @@ function GrantorDocument() {
       {/* 개체 정보 - 사전에 설정된 정보 불러올 것 */}
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">개체 정보 작성</h3>
-        <div className="grid grid-cols-2 gap-y-4">
+        <div className="grid grid-cols-2 gap-y-2">
           <div className="flex">
             <span className="w-1/3 font-medium">학명</span>
             <span className="w-2/3 px-3 py-2">Malaclemys terrapin</span>
@@ -204,25 +224,11 @@ function GrantorDocument() {
               수입허가증 등 양도하려는 국제적 멸종위기종의 입수 경위 및 이를
               증명하는 서류
             </label>
-
             <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center">
               <span className="text-gray-500 flex-grow">서류 번호</span>
               <input type="file" className="hidden" id="file1" />
               <label htmlFor="file1" className="cursor-pointer flex-shrink">
                 서류 찾기
-              </label>
-            </div>
-          </div>
-
-          <div>
-            <label className="block font-semibold mb-1">
-              인공증식 시설의 명세서
-            </label>
-            <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center">
-              <span className="text-gray-500 flex-grow">선택된 파일 없음</span>
-              <input type="file" className="hidden" id="file1" />
-              <label htmlFor="file1" className="cursor-pointer flex-shrink">
-                파일 선택
               </label>
             </div>
           </div>

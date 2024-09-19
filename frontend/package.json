@@ -11,11 +11,18 @@
     "start": "vite"
   },
   "dependencies": {
+    "@metamask/sdk": "^0.28.4",
+    "@types/daum-postcode": "^2.0.3",
+    "axios": "^1.7.7",
     "react": "^18.3.1",
+    "react-chrome-dino-ts": "^0.1.2",
+    "react-confetti": "6.1.0",
     "react-dom": "^18.3.1",
     "react-helmet-async": "^2.0.5",
     "react-icons": "5.3.0",
     "react-router-dom": "^6.26.1",
+    "react-spring": "9.7.4",
+    "react-use": "17.5.1",
     "web3": "^4.12.1",
     "zustand": "^4.5.5"
   },
