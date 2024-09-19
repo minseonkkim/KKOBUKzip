@@ -76,19 +76,19 @@ const checkToken = async (): Promise<{
   data?: TokenResponseData;
   error?: string;
 }> => {
-  return apiRequest(() => authAxios.get<TokenResponseData>("/check-token"));
+  return apiRequest(() => authAxios.get<TokenResponseData>("jwa/access"));
 };
 
 // 이메일 인증 확인
 const checkEmail = async (
-  token: string
+  email: string
 ): Promise<{
   success: boolean;
   data?: EmailCheckResponseData;
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.get<EmailCheckResponseData>(`/check-email/${token}`)
+    guestAxios.post<EmailCheckResponseData>(`user/email/request?email=${email}`)
   );
 };
 

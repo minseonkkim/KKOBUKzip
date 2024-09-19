@@ -7,14 +7,13 @@ import {
   AdminDeathDocumentDataType,
   AdminDocsListDataType,
   AssigneeFetchData,
-  DeathFetchData,
   GrantorFetchData,
 } from "../types/document";
 
 interface ApiResponse<T> {
   success: boolean;
   data?: T | null;
-  error?: string;
+  message: string;
 }
 
 /**
@@ -38,17 +37,20 @@ export const apiHelper = async <T>(
     return {
       success: true,
       data: response.data.data,
+      message: response.data.message || "Success",
     };
   } catch (error: unknown) {
     // 오류 메시지 추출
     let errorMessage = "Unknown error";
+    let errorCode = 0;
     if (error instanceof AxiosError) {
-      errorMessage = error.response?.data?.message || error.message;
+      errorMessage = error.message;
+      errorCode = ~~error?.code!;
     }
 
     return {
       success: false,
-      error: errorMessage,
+      message: errorMessage,
     };
   }
 };
@@ -72,7 +74,6 @@ export const getDetailDocumentData = async (
     | AdminAssignDocumentDataType
     | AdminDeathDocumentDataType
   >(() => authAxios.get(path + `/${turtleUUID}/${documentHash}`));
-  console.log(response);
   return response;
 };
 
