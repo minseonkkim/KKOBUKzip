@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-// import useDeviceStore from "../../store/useDeviceStore";
+import useDeviceStore from "../../store/useDeviceStore";
 import Header from "../../components/common/Header";
 import BackgroundImg from "../../assets/Side_View_Scene.gif";
 import TurtleMoving from "../../assets/turtle_moving.png";
@@ -8,11 +8,11 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function MainPage() {
-  // const isMobile = useDeviceStore((state) => state.isMobile);
+  const isMobile = useDeviceStore((state) => state.isMobile);
 
   const [showTurtleMoving, setShowTurtleMoving] = useState(true);
   const [showContent, setShowContent] = useState(false);
-  const [showButtons, setShowButtons] = useState(false); 
+  const [showButtons, setShowButtons] = useState(false);
 
   useEffect(() => {
     // 거북이 애니메이션과 텍스트 애니메이션을 동시에 시작
@@ -25,6 +25,13 @@ function MainPage() {
       setShowContent(true);
     }, 0);
 
+    let contentCloseTimer: NodeJS.Timeout;
+    if (isMobile) {
+      contentCloseTimer = setTimeout(() => {
+        setShowContent(false);
+      }, 2000);
+    }
+
     // 버튼이 나타나는 타이밍 조정 (텍스트가 깜빡인 후 2초 뒤)
     const buttonTimer = setTimeout(() => {
       setShowButtons(true);
@@ -33,9 +40,12 @@ function MainPage() {
     return () => {
       clearTimeout(turtleTimer);
       clearTimeout(contentTimer);
+      if (isMobile) {
+        clearTimeout(contentCloseTimer);
+      }
       clearTimeout(buttonTimer);
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <>
@@ -43,40 +53,28 @@ function MainPage() {
         <title>꼬북ZIP</title>
       </Helmet>
       <Header />
-      <img
-        src={BackgroundImg}
-        className="w-full h-full object-cover min-h-screen"
-        draggable="false"
-      />
+      <img src={BackgroundImg} className="w-full h-full object-cover min-h-screen" draggable="false" />
 
-      {showTurtleMoving ? (
-        <img
-          src={TurtleStop}
-          className="w-[380px] absolute"
-          style={{ bottom: "15px", right: "200px" }}
-          draggable="false"
-        />
-      ) : (
-        <img
-          src={TurtleMoving}
-          className="w-[380px] absolute turtle-animation"
-          draggable="false"
-        />
-      )}
+      {showTurtleMoving ? <img src={TurtleStop} className="w-[380px] absolute" style={{ bottom: "15px", right: "200px" }} draggable="false" /> : <img src={TurtleMoving} className="w-[380px] absolute turtle-animation" draggable="false" />}
 
       {showContent && (
         <div className="absolute top-[160px] left-0 w-full text-center flex flex-col items-center">
-          <span className="font-dnf-bitbit text-[46px] text-white mb-[25px] blinking-text">
-            당신만의 거북이를 찾아보세요!
-          </span>
+          {isMobile ? (
+            <div>
+              <p className="font-dnf-bitbit text-[35px] text-white blinking-text">당신만의 거북이를</p>
+              <p className="font-dnf-bitbit text-[35px] text-white blinking-text">찾아보세요!</p>
+            </div>
+          ) : (
+            <span className="font-dnf-bitbit text-[46px] text-white blinking-text">당신만의 거북이를 찾아보세요!</span>
+          )}
         </div>
       )}
 
       {showButtons && (
-        <div className="absolute top-[230px] left-0 w-full text-center flex flex-col items-center mt-5">
-          <div className="flex flex-row">
+        <div className={ isMobile ? "absolute top-[150px] left-0 w-full text-center flex flex-col items-center" : "absolute top-[230px] left-0 w-full text-center flex flex-col items-center mt-5"}>
+          <div className={ isMobile ? "flex flex-col gap-4" : "flex flex-row gap-[1.5rem]"}>
             <Link to="/transaction-list">
-              <div className="bg-[#dfdfdf] shadow-[3px_3px_0px_#858585] rounded-[10px] px-4 py-2 flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95 mr-6">
+              <div className="bg-[#dfdfdf] shadow-[3px_3px_0px_#858585] rounded-[10px] px-4 py-2 flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95">
                 <span className="text-gray-500 text-[25px]">판매중인 거북이 →</span>
               </div>
             </Link>
@@ -89,7 +87,7 @@ function MainPage() {
         </div>
       )}
 
-<style>{`
+      <style>{`
   .turtle-animation {
     animation: moveTurtle 3s forwards ease-in-out;
   }
@@ -169,7 +167,6 @@ function MainPage() {
     }
   }
 `}</style>
-
     </>
   );
 }
