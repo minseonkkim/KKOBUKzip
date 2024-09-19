@@ -39,7 +39,7 @@ export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
           url: window.location.href,
         },
         // 모바일 지원을 위한 추가 옵션
-        checkInstallationImmediately: true,
+        checkInstallationImmediately: false
       };
 
       // MetaMask SDK 인스턴스 생성 및 초기화
