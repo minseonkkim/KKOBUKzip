@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import guestAxios from "./http-commons/guestAxios";
 import { JoinDataType } from "../types/join";
+import authAxios from "./http-commons/authAxios";
 
 /*
 성공 형식
@@ -17,10 +18,10 @@ import { JoinDataType } from "../types/join";
 */
 // 헬퍼 함수: API 요청 처리
 const apiRequest = async <T>(
-  request: () => Promise<AxiosResponse<T>>
+  requestFn: () => Promise<AxiosResponse<T>>
 ): Promise<{ success: boolean; data?: T; error?: string }> => {
   try {
-    const response = await request();
+    const response = await requestFn();
     return { success: true, data: response.data };
   } catch (error) {
     let errorMessage = "알 수 없는 오류가 발생했습니다.";
@@ -43,13 +44,13 @@ const login = async (
   password: string
 ): Promise<{ success: boolean; data?: LoginResponseData; error?: string }> => {
   return apiRequest(() =>
-    guestAxios.post<LoginResponseData>("/user/login", { email, password })
+    guestAxios.post<LoginResponseData>("/main/user/login", { email, password })
   );
 };
 
 // 로그아웃
 const logout = async (): Promise<{ success: boolean; error?: string }> => {
-  return apiRequest(() => guestAxios.post("/user/logout"));
+  return apiRequest(() => authAxios.post("/main/user/logout"));
 };
 
 // 회원가입
@@ -61,7 +62,7 @@ const register = async (
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<RegisterResponseData>("/user/register", user, {
+    guestAxios.post<RegisterResponseData>("/main/user/signup", user, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -75,19 +76,21 @@ const checkToken = async (): Promise<{
   data?: TokenResponseData;
   error?: string;
 }> => {
-  return apiRequest(() => guestAxios.get<TokenResponseData>("/check-token"));
+  return apiRequest(() => authAxios.get<TokenResponseData>("/main/jwa/access"));
 };
 
 // 이메일 인증 확인
 const checkEmail = async (
-  token: string
+  email: string
 ): Promise<{
   success: boolean;
   data?: EmailCheckResponseData;
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.get<EmailCheckResponseData>(`/check-email/${token}`)
+    guestAxios.post<EmailCheckResponseData>(
+      `/main/user/email/request?email=${email}`
+    )
   );
 };
 
@@ -100,9 +103,10 @@ const createEmailRequest = async (
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<CreateEmailRequestResponseData>("/create-email-request", {
-      email,
-    })
+    guestAxios.post<CreateEmailRequestResponseData>(
+      `/main/user/email/request/${email}`,
+      {}
+    )
   );
 };
 

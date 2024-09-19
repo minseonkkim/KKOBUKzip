@@ -8,6 +8,11 @@ import StopTurtleImg from "../../assets/turtle_home_stop.png";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { login } from "../../apis/userApi";
 
+// 해야할 것 : api 요청 결과에 따라 분기처리
+// 히야할 것 : api 요청 직전에 입력값 확인
+// role 값에 따라서 처리할 것
+// 유저는 user 관리자는 admin
+
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
