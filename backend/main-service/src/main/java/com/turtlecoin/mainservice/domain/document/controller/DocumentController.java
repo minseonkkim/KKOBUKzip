@@ -29,7 +29,7 @@ import com.turtlecoin.mainservice.domain.document.entity.Progress;
 import com.turtlecoin.mainservice.domain.document.service.ContractService;
 import com.turtlecoin.mainservice.domain.document.service.DocumentService;
 import com.turtlecoin.mainservice.domain.s3.service.ImageUploadService;
-import com.turtlecoin.mainservice.global.ResponseVO;
+import com.turtlecoin.mainservice.global.response.ResponseVO;
 
 import lombok.RequiredArgsConstructor;
 

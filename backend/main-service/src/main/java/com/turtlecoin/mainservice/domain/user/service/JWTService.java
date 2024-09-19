@@ -16,7 +16,6 @@ import java.util.Map;
 public class JWTService {
     private final JWTUtil jwtUtil;
     private final RedisTemplate<String,String> redisTemplate;
-
     @Autowired
     JWTService(JWTUtil jwtUtil, RedisTemplate<String, String> redisTemplate) {
         this.jwtUtil = jwtUtil;
