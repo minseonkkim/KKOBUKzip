@@ -107,3 +107,11 @@ export const getAuctionDatas = async ({
   }>(() => guestAxios.get(`/auction?${query}`));
   return response;
 };
+
+// 경매 단일 상품 조회
+export const getAuctionDetailItemData = async (auctionUUID: string) => {
+  const response = await apiRequest<AuctionItemDataType>(() =>
+    guestAxios.get(`/auction/${auctionUUID}`)
+  );
+  return response;
+};
