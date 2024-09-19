@@ -26,7 +26,7 @@ body {
 
 /* 전체 스크롤바 스타일링 */
 div::-webkit-scrollbar {
-    width: 6px; /* 스크롤바의 너비 */
+    width: 10px; /* 스크롤바의 너비 */
 }
 
 /* 스크롤바 트랙 (배경) 스타일링 */
@@ -36,7 +36,7 @@ div::-webkit-scrollbar-track {
 
 /* 스크롤바의 실제 막대 스타일링 */
 div::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.3); /* 스크롤바 막대 색상 */
+    background-color: rgba(170, 170, 170, 0.3); /* 스크롤바 막대 색상 */
     border-radius: 10px; /* 스크롤바 막대 모서리를 둥글게 */
     cursor:pointer;
 }
