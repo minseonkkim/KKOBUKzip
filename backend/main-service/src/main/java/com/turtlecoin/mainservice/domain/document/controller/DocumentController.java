@@ -17,7 +17,7 @@ import com.turtlecoin.mainservice.domain.document.dto.BreedingDocumentRequest;
 import com.turtlecoin.mainservice.domain.document.dto.TempDto;
 import com.turtlecoin.mainservice.domain.document.service.DocumentService;
 import com.turtlecoin.mainservice.domain.s3.service.ImageUploadService;
-import com.turtlecoin.mainservice.global.ResponseVO;
+import com.turtlecoin.mainservice.global.response.ResponseVO;
 
 import lombok.RequiredArgsConstructor;
 
