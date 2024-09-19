@@ -70,36 +70,36 @@ public class AuctionService {
 
         return auction;
     }
-    public List<Auction> getFilteredAuctions(String gender, Double minSize, Double maxSize, Double minPrice, Double maxPrice, AuctionProgress progress, int page) {
-        QAuction auction = QAuction.auction;
-
-        BooleanBuilder whereClause = new BooleanBuilder();
-
-        // 성별 필터
-        if (gender != null && !gender.isEmpty()) {
-            whereClause.and(auction.turtle.gender.eq(gender));
-        }
-
-        // 거북이 크기 필터 (minSize ~ maxSize)
-        if (minSize != null && maxSize != null) {
-            whereClause.and(auction.turtle.size.between(minSize, maxSize));
-        }
-
-        // 가격 필터 (minPrice ~ maxPrice)
-        if (minPrice != null && maxPrice != null) {
-            whereClause.and(auction.minBid.between(minPrice, maxPrice));
-        }
-
-        // 경매 진행 상태 필터
-        if (progress != null) {
-            whereClause.and(auction.auctionProgress.eq(progress));
-        }
-
-        // 페이징 처리
-        return queryFactory.selectFrom(auction)
-                .where(whereClause)
-                .offset((page - 1) * 10)  // 페이지 설정
-                .limit(10)  // 한 페이지에 10개의 결과
-                .fetch();
-    }
+//    public List<Auction> getFilteredAuctions(String gender, Double minSize, Double maxSize, Double minPrice, Double maxPrice, AuctionProgress progress, int page) {
+//        QAuction auction = QAuction.auction;
+//
+//        BooleanBuilder whereClause = new BooleanBuilder();
+//
+//        // 성별 필터
+//        if (gender != null && !gender.isEmpty()) {
+//            whereClause.and(auction.turtle.gender.eq(gender));
+//        }
+//
+//        // 거북이 크기 필터 (minSize ~ maxSize)
+//        if (minSize != null && maxSize != null) {
+//            whereClause.and(auction.turtle.size.between(minSize, maxSize));
+//        }
+//
+//        // 가격 필터 (minPrice ~ maxPrice)
+//        if (minPrice != null && maxPrice != null) {
+//            whereClause.and(auction.minBid.between(minPrice, maxPrice));
+//        }
+//
+//        // 경매 진행 상태 필터
+//        if (progress != null) {
+//            whereClause.and(auction.auctionProgress.eq(progress));
+//        }
+//
+//        // 페이징 처리
+//        return queryFactory.selectFrom(auction)
+//                .where(whereClause)
+//                .offset((page - 1) * 10)  // 페이지 설정
+//                .limit(10)  // 한 페이지에 10개의 결과
+//                .fetch();
+//    }
 }
