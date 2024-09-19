@@ -1,20 +1,18 @@
 package com.turtlecoin.mainservice.domain.document.dto;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BreedingDocumentRequest {
+public class DeathDocumentRequest {
 	private String docType;
 	private String applicant;
 	private Detail detail;
@@ -22,14 +20,10 @@ public class BreedingDocumentRequest {
 	@Data
 	@AllArgsConstructor
 	public static class Detail {
-		String scientificName;
-		String area;
+		String shelter;
 		int count;
-		String purpose;
-		String location;
+		String deathReason;
+		String plan;
 		LocalDate registerDate;
-		String motherUUID;
-		String fatherUUID;
 	}
 }
-

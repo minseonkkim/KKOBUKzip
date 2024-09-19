@@ -74,7 +74,6 @@ public class ImageUploadService {
 			// 파일이 존재하는지 확인
 			if (amazonS3.doesObjectExist(bucket, fileName)) {
 				amazonS3.deleteObject(bucket, fileName);
-				System.out.println("삭제" + fileName);
 			} else {
 				return;
 			}

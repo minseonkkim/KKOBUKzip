@@ -34,7 +34,8 @@ public class Transaction extends BaseEntity {
     @Column(nullable = false)
     private Category category;
 
-    @OneToOne(mappedBy = "transaction", fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "turtle_id")
     private Turtle turtle;
 
     private String documentHash;
