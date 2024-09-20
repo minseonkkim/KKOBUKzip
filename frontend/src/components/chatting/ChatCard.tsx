@@ -6,7 +6,7 @@ interface Chat{
 }
 
 interface ChatCardProps{
-    openChatDetail: (chat: any) => void;
+    openChatDetail: (chat: Chat) => void;
     chat: Chat;
 
 }
