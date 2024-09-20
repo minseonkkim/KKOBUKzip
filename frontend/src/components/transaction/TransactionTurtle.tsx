@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import TransactionStatusTag from "./TransactionStatusTag";
 
 interface TransactionTurtleProps {
@@ -15,9 +16,16 @@ export default function TransactionTurtle({
   transaction_tag,
   progress,
 }: TransactionTurtleProps) {
+  const navigate = useNavigate();
+
+  const goToDetail = () => {
+    navigate("/transaction-detail");
+  };
+
   return (
     <>
-      <div className="bg-[#F8F9FA] shadow-lg transition-shadow duration-300 w-full max-w-sm h-[300px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative">
+      <div onClick={goToDetail}
+        className="bg-[#F8F9FA] shadow-lg transition-shadow duration-300 w-full max-w-sm h-[300px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative">
         <div className="absolute top-4 right-4 z-10">
           <TransactionStatusTag progress={progress} />
         </div>
