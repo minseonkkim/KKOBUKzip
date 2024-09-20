@@ -49,7 +49,7 @@ div::-webkit-scrollbar-thumb:hover {
 }
 
 .line-clamp {
-  height: 8.6em;
+  height: 6.6em;
   max-height: 8.6em;
   overflow-y: auto;
   border: 2px solid;

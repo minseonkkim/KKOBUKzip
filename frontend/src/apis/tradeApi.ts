@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { AuctionItemDataType } from "../types/auction";
 import authAxios from "./http-commons/authAxios";
 import guestAxios from "./http-commons/guestAxios";
+import { TransactionItemDataType } from "../types/transaction";
 
 interface AuctionResponseData<T> {
   success: true;
@@ -20,7 +21,7 @@ interface ErrorResponse {
  *
  * @param requestFunction - API 요청을 수행하는 함수
  * @param params - 요청에 필요한 파라미터
- * @returns 성공 시 경매 데이터, 실패 시 에러 응답
+ * @returns 성공 시 데이터, 실패 시 에러 응답
  */
 const apiRequest = async <T>(
   requestFn: () => Promise<AxiosResponse<T>>
@@ -104,6 +105,7 @@ export const getAuctionDatas = async ({
     status: number;
     cnt: number;
     auctions: AuctionItemDataType[];
+    total_pages: number;
   }>(() => guestAxios.get(`/auction?${query}`));
   return response;
 };
@@ -113,5 +115,44 @@ export const getAuctionDetailItemData = async (auctionUUID: string) => {
   const response = await apiRequest<AuctionItemDataType>(() =>
     guestAxios.get(`/auction/${auctionUUID}`)
   );
+  return response;
+};
+
+// 거래 데이터 조회
+
+export const getTransactionData = async ({
+  page,
+  gender,
+  sizeStart,
+  sizeEnd,
+  priceEnd,
+  priceStart,
+  progress,
+}: {
+  page?: number;
+  gender?: string;
+  sizeStart?: number;
+  sizeEnd?: number;
+  priceStart?: number;
+  priceEnd?: number;
+  progress?: number;
+}) => {
+  const pageQuery = page ? `page=${page}` : "page=1";
+  const genderQuery = gender ? `&gender=${gender}` : "";
+  const sizeQuery =
+    sizeStart && sizeEnd ? `&size=${sizeStart}between${sizeEnd}` : "";
+  const priceQuery =
+    priceStart && priceEnd ? `&price=${priceStart}between${priceEnd}` : "";
+  const progressQuery = progress ? `&progress=${progress}` : "";
+
+  const query =
+    pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
+
+  const response = await apiRequest<{
+    status: number;
+    cnt: number;
+    transactions: TransactionItemDataType[];
+    total_pages: number;
+  }>(() => guestAxios.get(`/transaction?${query}`));
   return response;
 };

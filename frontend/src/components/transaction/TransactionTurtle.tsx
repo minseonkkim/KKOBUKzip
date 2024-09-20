@@ -1,10 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import TransactionStatusTag from "./TransactionStatusTag";
 
 interface TransactionTurtleProps {
   scientific_name: string;
   price: number;
   transaction_tag: string[];
-  transaction_image: string[];
+  transaction_image: string;
   progress: string;
 }
 
@@ -15,17 +16,23 @@ export default function TransactionTurtle({
   transaction_tag,
   progress,
 }: TransactionTurtleProps) {
+  const navigate = useNavigate();
+
+  const goToDetail = () => {
+    navigate("/transaction-detail");
+  };
 
   return (
     <>
-      <div className="bg-[#F8F9FA] shadow-lg transition-shadow duration-300 w-full max-w-sm h-[300px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative">
+      <div onClick={goToDetail}
+        className="bg-[#F8F9FA] shadow-lg transition-shadow duration-300 w-full max-w-sm h-[300px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative">
         <div className="absolute top-4 right-4 z-10">
           <TransactionStatusTag progress={progress} />
         </div>
 
         <div className="overflow-hidden rounded-t-2xl relative">
           <img
-            src={transaction_image[0]}
+            src={transaction_image}
             className={`w-full h-[200px] object-cover transition-transform duration-300 hover:scale-110 ${
               progress !== "거래가능" ? "filter brightness-50" : ""
             }`}

@@ -1,7 +1,6 @@
 package com.turtlecoin.auctionservice.domain.auction.dto;
 
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
-import com.turtlecoin.auctionservice.domain.auction.entity.AuctionTag;
 import com.turtlecoin.auctionservice.domain.turtle.dto.TurtleResponseDTO;
 import lombok.*;
 
@@ -19,6 +18,7 @@ public class AuctionResponseDTO {
     private TurtleResponseDTO turtleInfo;
     private String title;
     private Double minBid;
+    private Double nowBid;
     private Double winningBid;
     private Long sellerId;
     private Long buyerId;
@@ -36,6 +36,7 @@ public class AuctionResponseDTO {
                 .turtleInfo(turtleInfo)
                 .title(auction.getTitle())
                 .minBid(auction.getMinBid())
+                .nowBid(auction.getNowBid())
                 .winningBid(auction.getWinningBid())
                 .buyerId(auction.getBuyerId())
                 .startTime(auction.getStartTime())
