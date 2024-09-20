@@ -56,15 +56,27 @@ function AuctionListPage() {
   // 다음 페이지를 불러오는 함수
   const loadMore = async () => {
     if (itemLoading) return;
+    setItemLoading(true);
+
     try {
       if (pages + 1 > maxPage) return;
-      setItemLoading(true);
+      setPages((c) => c + 1);
+      const response = await getAuctionDatas({
+        page: pages,
+        ...filters,
+      });
+
+      if (response.success) {
+        setAuctionDatas((prev) => [...prev, ...response.data.auctions]);
+      }
+      // setMaxPage(response.data.maxPage);
     } finally {
       setItemLoading(false);
     }
   };
 
   useEffect(() => {
+    console.log(inView);
     if (loadMore && inView) {
       loadMore();
     }
