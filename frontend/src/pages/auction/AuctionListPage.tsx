@@ -10,12 +10,14 @@ import { AuctionItemDataType } from "../../types/auction";
 import { getAuctionDatas } from "../../apis/auctionApi";
 import OptionFilter from "../../components/common/OptionFilter";
 import useTradeFilter from "../../hooks/useTradeFilter";
+import AuctionTurtleSkeleton from "../../components/auction/AuctionTurtleSkeleton";
+import { useInView } from "react-intersection-observer";
 
 type FilterType = "gender" | "size" | "minPrice" | "maxPrice";
 
 // 해야할것 -> 스크롤 구현(귀찮...)
 // 해야할 것 : 필터 조회 적용
-// api 연동하면 더미데이터 -> 실제데이터, AuctionTurtle 내부 데이터 연동하기
+// api 연동하면 더미데이터 -> 실제데이터, AuctionTurtle 내부 데이터 연동하기, 스켈레톤 이미지 활성화까지 할 것 -> 대부분 주석걸려있음
 
 function AuctionListPage() {
   const [auctionData, setAuctionDatas] = useState<AuctionItemDataType[]>([]);
@@ -23,20 +25,50 @@ function AuctionListPage() {
   const [isChecked, setIsChecked] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false); // State to handle opening and closing of the filter div
 
+  const [itemLoading, setItemLoading] = useState(false);
   const [pages, setPages] = useState(1); // 페이지네이션용
+  const [maxPage, setMaxPage] = useState(-1); // 페이지네이션용
+  const [ref, inView] = useInView({
+    threshold: 1,
+  }); // infinity-scroll observer
 
   const { filters, updateFilter, filterResetHandle } = useTradeFilter();
 
   useEffect(() => {
     // getAuctionDatas and setAuctionDatas
     const getData = async () => {
-      const response = await getAuctionDatas({ page: pages });
-      if (response.success) {
-        setAuctionDatas(response.data.auctions);
+      try {
+        setItemLoading(true);
+
+        const response = await getAuctionDatas({ page: pages });
+        if (response.success) {
+          setAuctionDatas(response.data.auctions);
+        }
+      } finally {
+        setItemLoading(false);
+        setPages(pages + 1);
       }
     };
+
     getData();
   }, []);
+
+  // 다음 페이지를 불러오는 함수
+  const loadMore = async () => {
+    if (itemLoading) return;
+    try {
+      if (pages + 1 > maxPage) return;
+      setItemLoading(true);
+    } finally {
+      setItemLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (loadMore && inView) {
+      loadMore();
+    }
+  }, [inView, loadMore]);
 
   const handleCheckboxChange = () => {
     // 경매중인 거북이만 보기 -> progress : "DURING_AUCTION"
@@ -56,14 +88,13 @@ function AuctionListPage() {
       <Helmet>
         <title>경매중인 거북이</title>
       </Helmet>
-      <Header />
-      <div className="px-[250px] mt-[85px]">
+      <div className="page-container h-screen flex flex-col">
+        <Header />
         <div className="flex flex-row items-center justify-between pt-[40px] pb-[13px]">
           <div className="text-[33px] text-gray-900 font-dnf-bitbit mr-3">
             경매중인 거북이
           </div>
         </div>
-
         <div className="flex flex-row items-center justify-between mb-4">
           <div className="text-[23px] font-bold flex flex-row items-center">
             <label className="flex items-center">
@@ -111,22 +142,35 @@ function AuctionListPage() {
             </div>
           </div>
         </div>
-
-        {isFilterOpen && (
-          <OptionFilter
-            filterApplyHandle={filterApplyHandle}
-            filters={filters}
-            updateFilter={updateFilter}
-          />
-        )}
-
-        <div className="grid grid-cols-3 gap-4 mb-[30px] mt-[10px]">
-          {/* {auctionData.map((item, index) => (
-            <AuctionTurtle key={index} data={item} />
-          ))} */}
-          {[...Array(10)].map((_, i) => (
+        <div
+          className={`transition-all duration-300 ease-in-out transform ${
+            isFilterOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          } overflow-hidden`}
+        >
+          {isFilterOpen && (
+            <OptionFilter
+              filterApplyHandle={filterApplyHandle}
+              filters={filters}
+              updateFilter={updateFilter}
+            />
+          )}
+        </div>
+        <div className="grid flex-1 overflow-y-auto grid-cols-3 gap-4 mb-[30px] mt-[10px] ">
+          {[...Array(50)].map((_, i) => (
             <AuctionTurtle key={i} />
           ))}
+
+          {/* {auctionData.map((item, index) => (
+            <AuctionTurtle key={index} data={item} />
+          ))}
+          {
+            // 스켈레톤 컴포넌트, grid 의 개수(1줄)만큼 적용
+            itemLoading &&
+              [...Array(3)].map((_, i) => <AuctionTurtleSkeleton key={i} />)
+          } */}
+
+          {/* observer div */}
+          <div ref={ref} />
         </div>
       </div>
 
