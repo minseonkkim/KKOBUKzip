@@ -104,11 +104,17 @@ public class AuctionController {
         Long userId = bidRequestdto.getUserId();
 
         Map<Object, Object> currentBidData = auctionService.getCurrentBid(auctionId);
+        Long currentBid = (Long) currentBidData.get("nowBid");
+        Long currentUserId = (Long) currentBidData.get("userId");
 
-
-
-        if (currentBid == null || newBidAmount > currentBid) {
-            auctionService.updateBid(auctionId, );
+        if ((currentBid == null || newBidAmount > currentBid) &&
+                (currentUserId == null || !currentUserId.equals(userId))) {
+            auctionService.updateBid(auctionId, currentUserId, newBidAmount);
+            return ResponseEntity.ok("입찰에 성공했습니다.");
+        } else if (currentUserId != null && currentUserId.equals(userId)) {
+            return ResponseEntity.badRequest().body("당신의 입찰에 다시 입찰할 수 없습니다.");
+        } else {
+            return ResponseEntity.badRequest().body("현재 입찰가가 더 높습니다.");
         }
 
         return new ResponseEntity<>(HttpStatus.OK);
