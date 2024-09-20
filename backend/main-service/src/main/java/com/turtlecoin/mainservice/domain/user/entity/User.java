@@ -31,7 +31,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "foreign_flag")
     private Boolean foreignFlag;
 
     @Column(nullable = false)
@@ -43,6 +43,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String address;
 
+    @Column(name = "profile_image")
     private String profileImage;
 
     @Column(nullable = false)
