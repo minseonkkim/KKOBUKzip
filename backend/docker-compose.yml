@@ -14,7 +14,7 @@ services:
       - RABBITMQ_DEFAULT_PASS=guest
 
   eureka-service:
-    image: 1202yjk/eureka-service
+    image: 1202yjk/eureka-service:${BUILD_TAG}  # 빌드 번호로 대체
     container_name: eureka-service
     networks:
       - kkobuk-network
@@ -22,7 +22,7 @@ services:
       - "8761:8761"
 
   config-service:
-    image: 1202yjk/config-service:latest
+    image: 1202yjk/config-service:${BUILD_TAG}  # 빌드 번호로 대체
     container_name: config-service
     ports:
       - "8888:8888"
@@ -38,7 +38,7 @@ services:
       retries: 5
 
   apigateway-service:
-    image: 1202yjk/apigateway-service:latest
+    image: 1202yjk/apigateway-service:${BUILD_TAG}  # 빌드 번호로 대체
     container_name: apigateway-service
     networks:
       - kkobuk-network
@@ -58,7 +58,7 @@ services:
         condition: service_healthy
 
   auction-service:
-    image: 1202yjk/auction-service:latest
+    image: 1202yjk/auction-service:${BUILD_TAG}  # 빌드 번호로 대체
     container_name: auction-service
     ports:
       - "8082:8082"
@@ -75,7 +75,7 @@ services:
       - kkobuk-network
 
   main-service:
-    image: 1202yjk/main-service:latest
+    image: 1202yjk/main-service:${BUILD_TAG}  # 빌드 번호로 대체
     container_name: main-service
     ports:
       - "8081:8081"
