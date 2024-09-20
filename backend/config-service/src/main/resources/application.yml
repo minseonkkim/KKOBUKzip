@@ -2,6 +2,11 @@ server:
   port: 8888
 
 spring:
+  rabbitmq:
+    host: 0.0.0.0
+    port: 5672
+    username: guest
+    password: guest
   application:
     name: config-service
   cloud:

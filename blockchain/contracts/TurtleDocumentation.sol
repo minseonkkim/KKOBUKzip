@@ -58,6 +58,8 @@ contract TurtleDocumentation is Ownable {
         mapping(bytes32 => Multiplication) multiplicationDoc;
         mapping(bytes32 => Transfer) transferDocs;
         mapping(bytes32 => Death) deathDoc;
+        bytes32 beforeDocumentHash;
+        bytes32 currentDocumentHash;
         bool exists;
     }
 
@@ -72,6 +74,7 @@ contract TurtleDocumentation is Ownable {
     event TurtleTransferred(string indexed turtleId, string grantApplicant, string assignApplicant, bytes32 indexed docuemntHash);
     event TurtleDeath(string indexed turtleId, string indexed applicant, bytes32 indexed documentHash);
     event TurtleOwnerChanged(string indexed turtleId, string indexed oldOwner, string indexed newOwner);
+    event CurrentTurttleDocument(string indexed turtleId, bytes32 indexed documentHash);
 
     // (관리자용) 거북이 추가
     function registerTurtle(string memory _turtleId, string memory _applicant) public onlyOwner {
@@ -88,6 +91,7 @@ contract TurtleDocumentation is Ownable {
     function registerTurtleMultiplicationDocument(
         string memory _turtleId,
         string memory _applicant,
+        bytes32 _documentHash,
         uint8 _count,
         string memory _area,
         string memory _purpose,
@@ -99,24 +103,33 @@ contract TurtleDocumentation is Ownable {
         string memory _shelterSpecification
     ) public returns (bytes32) {
         require(!turtles[_turtleId].exists, "Turtle already registered");
+        if (!turtles[_turtleId].exists) {
+            Turtle storage newTurtle = turtles[_turtleId];
+            newTurtle.multiplicationDoc[_documentHash].applicant = _applicant;
+            newTurtle.multiplicationDoc[_documentHash].count = _count;
+            newTurtle.multiplicationDoc[_documentHash].area = _area;
+            newTurtle.multiplicationDoc[_documentHash].purpose = _purpose;
+            newTurtle.multiplicationDoc[_documentHash].location = _location;
+            newTurtle.multiplicationDoc[_documentHash].fatherId = _fatherId;
+            newTurtle.multiplicationDoc[_documentHash].motherId = _motherId;
+            newTurtle.multiplicationDoc[_documentHash].locationSpecification = _locationSpecification;
+            newTurtle.multiplicationDoc[_documentHash].multiplicationMethod = _multiplicationMethod;
+            newTurtle.multiplicationDoc[_documentHash].shelterSpecification = _shelterSpecification;
+        } else {
+            turtles[_turtleId].multiplicationDoc[_documentHash].applicant = _applicant;
+            turtles[_turtleId].multiplicationDoc[_documentHash].count = _count;
+            turtles[_turtleId].multiplicationDoc[_documentHash].area = _area;
+            turtles[_turtleId].multiplicationDoc[_documentHash].purpose = _purpose;
+            turtles[_turtleId].multiplicationDoc[_documentHash].location = _location;
+            turtles[_turtleId].multiplicationDoc[_documentHash].fatherId = _fatherId;
+            turtles[_turtleId].multiplicationDoc[_documentHash].motherId = _motherId;
+            turtles[_turtleId].multiplicationDoc[_documentHash].locationSpecification = _locationSpecification;
+            turtles[_turtleId].multiplicationDoc[_documentHash].multiplicationMethod = _multiplicationMethod;
+            turtles[_turtleId].multiplicationDoc[_documentHash].shelterSpecification = _shelterSpecification;
+        }
+        emit TurtleMultiplication(_turtleId, _applicant, _documentHash);
 
-        bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
-
-        Turtle storage newTurtle = turtles[_turtleId];
-        newTurtle.multiplicationDoc[documentHash].applicant = _applicant;
-        newTurtle.multiplicationDoc[documentHash].count = _count;
-        newTurtle.multiplicationDoc[documentHash].area = _area;
-        newTurtle.multiplicationDoc[documentHash].purpose = _purpose;
-        newTurtle.multiplicationDoc[documentHash].location = _location;
-        newTurtle.multiplicationDoc[documentHash].fatherId = _fatherId;
-        newTurtle.multiplicationDoc[documentHash].motherId = _motherId;
-        newTurtle.multiplicationDoc[documentHash].locationSpecification = _locationSpecification;
-        newTurtle.multiplicationDoc[documentHash].multiplicationMethod = _multiplicationMethod;
-        newTurtle.multiplicationDoc[documentHash].shelterSpecification = _shelterSpecification;
-
-        emit TurtleMultiplication(_turtleId, _applicant, documentHash);
-
-        return documentHash;
+        return _documentHash;
     }
 
     // 거북이 인공증식 서류 조회
@@ -128,22 +141,21 @@ contract TurtleDocumentation is Ownable {
     function registerTurtleAssigneeDocument(
         string memory _turtleId,
         string memory _applicant,
+        bytes32 _documentHash,
         string memory _assigneeId,
         uint8 _count,
         string memory _transferReason,
         string memory _purpose
     ) public returns (bytes32) {
-        bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
+        turtles[_turtleId].transferDocs[_documentHash].assignApplicant = _applicant;
+        turtles[_turtleId].transferDocs[_documentHash].assigneeId = _assigneeId;
+        turtles[_turtleId].transferDocs[_documentHash].count = _count;
+        turtles[_turtleId].transferDocs[_documentHash].transferReason = _transferReason;
+        turtles[_turtleId].transferDocs[_documentHash].purpose = _purpose;
 
-        turtles[_turtleId].transferDocs[documentHash].assignApplicant = _applicant;
-        turtles[_turtleId].transferDocs[documentHash].assigneeId = _assigneeId;
-        turtles[_turtleId].transferDocs[documentHash].count = _count;
-        turtles[_turtleId].transferDocs[documentHash].transferReason = _transferReason;
-        turtles[_turtleId].transferDocs[documentHash].purpose = _purpose;
+        emit TurtleTransferred(_turtleId, _applicant, _assigneeId, _documentHash);
 
-        emit TurtleTransferred(_turtleId, _applicant, _assigneeId, documentHash);
-
-        return documentHash;
+        return _documentHash;
     }
 
     // 거북이 양도 서류 등록
@@ -176,6 +188,7 @@ contract TurtleDocumentation is Ownable {
     function registerTurtleDeathDocument(
         string memory _turtleId,
         string memory _applicant,
+        bytes32 _documentHash,
         string memory _shelter,
         uint8 _count,
         string memory _deathReason,
@@ -183,19 +196,17 @@ contract TurtleDocumentation is Ownable {
         string memory _deathImage,
         string memory _diagnosis
     ) public returns (bytes32) {
-        bytes32 documentHash = keccak256(abi.encodePacked(_turtleId, _applicant, block.timestamp));
+        turtles[_turtleId].deathDoc[_documentHash].applicant = _applicant;
+        turtles[_turtleId].deathDoc[_documentHash].shelter = _shelter;
+        turtles[_turtleId].deathDoc[_documentHash].count = _count;
+        turtles[_turtleId].deathDoc[_documentHash].deathReason = _deathReason;
+        turtles[_turtleId].deathDoc[_documentHash].plan = _plan;
+        turtles[_turtleId].deathDoc[_documentHash].deathImage = _deathImage;
+        turtles[_turtleId].deathDoc[_documentHash].diagnosis = _diagnosis;
 
-        turtles[_turtleId].deathDoc[documentHash].applicant = _applicant;
-        turtles[_turtleId].deathDoc[documentHash].shelter = _shelter;
-        turtles[_turtleId].deathDoc[documentHash].count = _count;
-        turtles[_turtleId].deathDoc[documentHash].deathReason = _deathReason;
-        turtles[_turtleId].deathDoc[documentHash].plan = _plan;
-        turtles[_turtleId].deathDoc[documentHash].deathImage = _deathImage;
-        turtles[_turtleId].deathDoc[documentHash].diagnosis = _diagnosis;
+        emit TurtleDeath(_turtleId, _applicant, _documentHash);
 
-        emit TurtleDeath(_turtleId, _applicant, documentHash);
-
-        return documentHash;
+        return _documentHash;
     }
 
     // 거북이 폐사질병 서류 조회
@@ -231,5 +242,29 @@ contract TurtleDocumentation is Ownable {
         ownerToTurtleIds[_newOwner].push(_turtleId);
 
         emit TurtleOwnerChanged(_turtleId, _oldOwner, _newOwner);
+    }
+
+    // 서류 검수자 함수 영역
+    // 인공증식 서류 승인
+    function approveMultiplicationDocByReviewer(string memory _turtleId, bytes32 _documentHash) public returns (bytes32) {
+        turtles[_turtleId].beforeDocumentHash = _documentHash;
+        turtles[_turtleId].currentDocumentHash = _documentHash;
+
+        return _documentHash;
+    }
+
+    // 양도양수 서류 승인
+    function approveTransferDocByReviewer(string memory _turtleId, bytes32 _documentHash) public returns (bytes32) {
+        turtles[_turtleId].beforeDocumentHash = turtles[_turtleId].currentDocumentHash;
+        turtles[_turtleId].currentDocumentHash = _documentHash;
+
+        return _documentHash;
+    }
+
+    // 가장 최근 서류 조회(양도 및 양수 기록이 없는 경우에는 인공증식 서류 해시값 반환)
+    function searchCurrentDocumentHash(string memory _turtleId) public returns (bytes32) {
+        emit CurrentTurttleDocument(_turtleId, turtles[_turtleId].currentDocumentHash);
+
+        return turtles[_turtleId].currentDocumentHash;
     }
 }

@@ -1,4 +1,4 @@
-package com.turtlecoin.mainservice.global;
+package com.turtlecoin.mainservice.global.response;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,38 +12,36 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ResponseVO<T> {
-	private boolean success;
+	private String status;
 	private Map<String, T> data;
 	private String message;
-	private String error;
 
 	public ResponseVO() {
 	}
 
-	public ResponseVO(boolean success, String message, Map<String, T> data, String error) {
-		this.success = success;
+	public ResponseVO(String status, String message, Map<String, T> data) {
+		this.status = status;
 		this.message = message;
 		this.data = data;
-		this.error = error;
 	}
 
 	public static <T> ResponseVO<T> success(String message) {
-		return new ResponseVO<>(true, message, null, null);
+		return new ResponseVO<>("200", message, null);
 	}
 
 	public static <T> ResponseVO<T> success(String message, String name, T data) {
 		Map<String, T> dataMap = new HashMap<>();
 		dataMap.put(name, data);
-		return new ResponseVO<>(true, message, dataMap, null);
+		return new ResponseVO<>("200", message, dataMap);
 	}
 
 	public static <T> ResponseVO<T> success(String name, T data) {
 		Map<String, T> dataMap = new HashMap<>();
 		dataMap.put(name, data);
-		return new ResponseVO<>(true, "Success", dataMap, null);
+		return new ResponseVO<>("200", "Success", dataMap);
 	}
 
-	public static <T> ResponseVO<T> failure(String message, String error) {
-		return new ResponseVO<>(false, message, null, error);
+	public static <T> ResponseVO<T> failure(String status,String message) {
+		return new ResponseVO<>(status, message, null);
 	}
 }

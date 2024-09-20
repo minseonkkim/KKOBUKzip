@@ -6,53 +6,60 @@
 @tailwind utilities;
 
 @font-face {
-    font-family: 'DNFBitBitv2';
-    font-style: normal;
-    font-weight: 300;
-    src: url('//cdn.df.nexon.com/img/common/font/DNFBitBitv2.otf') format('opentype');
+  font-family: "DNFBitBitv2";
+  font-style: normal;
+  font-weight: 300;
+  src: url("//cdn.df.nexon.com/img/common/font/DNFBitBitv2.otf")
+    format("opentype");
 }
 
 @font-face {
-    font-family: 'PFStardust';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/PFStardust.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
+  font-family: "PFStardust";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/PFStardust.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
 }
 
 body {
-    @apply font-KoPubDotum;
-    user-select: none;
+  @apply font-KoPubDotum;
+  user-select: none;
 }
 
 /* 전체 스크롤바 스타일링 */
 div::-webkit-scrollbar {
-    width: 6px; /* 스크롤바의 너비 */
+  width: 10px; /* 스크롤바의 너비 */
 }
 
 /* 스크롤바 트랙 (배경) 스타일링 */
 div::-webkit-scrollbar-track {
-    background: transparent; /* 트랙 배경을 투명하게 설정 */
+  background: transparent; /* 트랙 배경을 투명하게 설정 */
 }
 
 /* 스크롤바의 실제 막대 스타일링 */
 div::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.3); /* 스크롤바 막대 색상 */
-    border-radius: 10px; /* 스크롤바 막대 모서리를 둥글게 */
-    cursor:pointer;
+  background-color: rgba(170, 170, 170, 0.3); /* 스크롤바 막대 색상 */
+  border-radius: 10px; /* 스크롤바 막대 모서리를 둥글게 */
+  cursor: pointer;
 }
 
 /* 스크롤바 막대가 호버되었을 때 */
 div::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(0, 0, 0, 0.5); /* 호버 시 색상 변경 */
+  background-color: rgba(0, 0, 0, 0.5); /* 호버 시 색상 변경 */
 }
 
-
 .line-clamp {
-    height: 8.6em;
-    max-height: 8.6em; 
-    overflow-y: auto;
-    border: 2px solid;
-    border-color: #E1E1E1;
-    border-radius: 10px;
-    padding: 10px;
+  height: 8.6em;
+  max-height: 8.6em;
+  overflow-y: auto;
+  border: 2px solid;
+  border-color: #e1e1e1;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.page-container {
+  padding-left: 250px;
+  padding-right: 250px;
+  /* margin-top: 85px; */
 }

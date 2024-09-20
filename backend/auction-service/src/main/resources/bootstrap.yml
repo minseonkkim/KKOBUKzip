@@ -5,5 +5,5 @@ spring:
     active: local
   cloud:
     config:
-      uri: http://localhost:8888  # Config Server URI 설정
-      name: auction-service           # 서비스 이름
+      uri: http://config-service:8888  # Config Server URI 설정
+      name: auction-service         # 서비스 이름
