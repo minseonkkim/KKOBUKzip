@@ -27,7 +27,7 @@ function AuctionListPage() {
   const [pages, setPages] = useState(1); // 페이지네이션용
   const [maxPage, setMaxPage] = useState(-1); // 페이지네이션용
   const [ref, inView] = useInView({
-    threshold: 1,
+    threshold: 0.5,
   }); // infinity-scroll observer
 
   const { filters, updateFilter, filterResetHandle } = useTradeFilter();
@@ -101,8 +101,8 @@ function AuctionListPage() {
         <title>경매중인 거북이</title>
       </Helmet>
 
-      <div className="page-container h-screen flex flex-col">
-        <Header />
+      <Header />
+      <div className="page-container h-screen flex flex-col pt-[85px]">
         <div className="flex flex-row items-center justify-between pt-[40px] pb-[13px]">
           <div className="text-[33px] text-gray-900 font-dnf-bitbit mr-3">
             경매중인 거북이
@@ -189,7 +189,7 @@ function AuctionListPage() {
           } */}
 
           {/* observer div */}
-          <div ref={ref} />
+          <div ref={ref} className="w-full h-[1px] col-span-full" />
         </div>
         {/* 그리드 아이템 영역 끝 */}
       </div>
