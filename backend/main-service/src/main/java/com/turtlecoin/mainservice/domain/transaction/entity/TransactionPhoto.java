@@ -13,7 +13,7 @@ public class TransactionPhoto extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "image_address")
     private String imageAddress;
 
     @ManyToOne(fetch = FetchType.LAZY)

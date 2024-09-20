@@ -15,10 +15,12 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
+
     @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createDate;
+    @Column(updatable = false, name = "create_date")
+    private LocalDateTime createDate;  // 필드명과 매핑할 컬럼명을 다르게 설정
 
     @LastModifiedDate
+    @Column(name = "last_modified_date")
     private LocalDateTime lastModifiedDate;
 }

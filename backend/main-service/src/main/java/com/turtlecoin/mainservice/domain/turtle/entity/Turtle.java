@@ -20,7 +20,7 @@ public class Turtle extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "scientific_name")
     private String scientificName;
 
     @Enumerated(EnumType.STRING)
@@ -54,5 +54,6 @@ public class Turtle extends BaseEntity {
     private List<Transaction> transaction;
 
     @OneToMany(mappedBy = "turtle", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "turtle_photos")
     private List<TurtlePhoto> turtlePhotos = new ArrayList<>();
 }
