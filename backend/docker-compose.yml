@@ -32,10 +32,10 @@ services:
       - spring.rabbitmq.host=rabbitmq
       - spring.profiles.active=local
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://j11c107.p.ssafy.io:8888/actuator/health"]
-      interval: 20s
+      test: ["CMD", "curl", "-f", "http://config-service:8888/actuator/health"]
+      interval: 10s
       timeout: 10s
-      retries: 10
+      retries: 5
 
   apigateway-service:
     image: 1202yjk/apigateway-service:latest
@@ -49,7 +49,7 @@ services:
       - spring.rabbitmq.host=rabbitmq
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://j11c107.p.ssafy.io:8000/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://apigateway-service:8000/actuator/health"]
       interval: 20s
       timeout: 10s
       retries: 10
