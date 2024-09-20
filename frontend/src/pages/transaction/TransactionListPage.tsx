@@ -35,6 +35,26 @@ function TransactionListPage() {
   }); // infinity-scroll observer
 
   const { filters, filterResetHandle, updateFilter } = useTradeFilter();
+  useEffect(() => {
+    // getAuctionDatas and setAuctionData
+    const getData = async () => {
+      try {
+        setItemLoading(true);
+
+        const response = await getTransactionData({ page: pages });
+        if (response.success) {
+          setTransactionData(response.data.transactions);
+          setMaxPage(response.data.total_pages);
+        }
+      } finally {
+        setItemLoading(false);
+        setPages(pages + 1);
+      }
+    };
+
+    getData();
+  }, []);
+
   // 다음 페이지를 불러오는 함수
   const loadMore = async () => {
     if (itemLoading) return;
@@ -84,7 +104,7 @@ function TransactionListPage() {
         <title>판매중인 거북이</title>
       </Helmet>
 
-      <div className="page-container">
+      <div className="page-container h-screen flex flex-col">
         <Header />
         <div className="flex flex-row items-center justify-between pt-[40px] pb-[13px]">
           <div className="text-[33px] text-gray-900 font-dnf-bitbit mr-3">
@@ -114,6 +134,7 @@ function TransactionListPage() {
               </span>
             </label>
           </div>
+
           <div className="flex flex-row">
             <div className="flex items-center w-[320px] h-[38px] bg-[#f2f2f2] rounded-[10px] p-1 mr-4">
               <IoIosSearch className="text-gray-400 mx-2 text-[30px]" />
@@ -157,47 +178,57 @@ function TransactionListPage() {
         {/* 필터 영역 끝 */}
 
         {/* 아이템 영역 */}
-        <div className="grid grid-cols-3 gap-4 mb-[30px] mt-[10px]">
+        <div className="grid flex-1 overflow-y-auto grid-cols-3 gap-4 mb-[30px] mt-[10px]">
+          {/* {transactionData.map((item, index) => (
+            <TransactionTurtle
+              key={index}
+              scientific_name={item.turtle.scientific_name}
+              price={item.price}
+              transaction_tag={item.transaction_tag}
+              transaction_image={item.thumbnail}
+              progress={item.progress}
+            />
+          ))} */}
           <TransactionTurtle
             scientific_name="지오프리 사이드 넥 터틀"
             price={300000000}
             transaction_tag={["암컷", "성체"]}
-            transaction_image={[TmpTurtle1]}
+            transaction_image={TmpTurtle1}
             progress="거래가능"
           />
           <TransactionTurtle
             scientific_name="레이저 백 거북"
             price={94000000}
             transaction_tag={["수컷", "베이비"]}
-            transaction_image={[TmpTurtle2]}
+            transaction_image={TmpTurtle2}
             progress="거래가능"
           />
           <TransactionTurtle
             scientific_name="아프리카 사이드 넥"
             price={110000000}
             transaction_tag={["암컷", "베이비"]}
-            transaction_image={[TmpTurtle3]}
+            transaction_image={TmpTurtle3}
             progress="거래가능"
           />
           <TransactionTurtle
             scientific_name="미시시피 지도 거북이"
             price={700000000}
             transaction_tag={["암컷", "아성체"]}
-            transaction_image={[TmpTurtle4]}
+            transaction_image={TmpTurtle4}
             progress="거래가능"
           />
           <TransactionTurtle
             scientific_name="지오프리 사이드 넥 터틀"
             price={67200000}
             transaction_tag={["암컷", "성체"]}
-            transaction_image={[TmpTurtle5]}
+            transaction_image={TmpTurtle5}
             progress="거래가능"
           />
           <TransactionTurtle
             scientific_name="암보니아 상자 거북"
             price={43000000}
             transaction_tag={["수컷", "성체"]}
-            transaction_image={[TmpTurtle6]}
+            transaction_image={TmpTurtle6}
             progress="거래완료"
           />
         </div>

@@ -4,7 +4,7 @@ interface TransactionTurtleProps {
   scientific_name: string;
   price: number;
   transaction_tag: string[];
-  transaction_image: string[];
+  transaction_image: string;
   progress: string;
 }
 
@@ -15,7 +15,6 @@ export default function TransactionTurtle({
   transaction_tag,
   progress,
 }: TransactionTurtleProps) {
-
   return (
     <>
       <div className="bg-[#F8F9FA] shadow-lg transition-shadow duration-300 w-full max-w-sm h-[300px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative">
@@ -25,7 +24,7 @@ export default function TransactionTurtle({
 
         <div className="overflow-hidden rounded-t-2xl relative">
           <img
-            src={transaction_image[0]}
+            src={transaction_image}
             className={`w-full h-[200px] object-cover transition-transform duration-300 hover:scale-110 ${
               progress !== "거래가능" ? "filter brightness-50" : ""
             }`}

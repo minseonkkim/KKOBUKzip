@@ -108,6 +108,7 @@ function AuctionListPage() {
             경매중인 거북이
           </div>
         </div>
+
         <div className="flex flex-row items-center justify-between mb-4">
           <div className="text-[23px] font-bold flex flex-row items-center">
             <label className="flex items-center">
