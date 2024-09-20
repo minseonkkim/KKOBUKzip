@@ -50,7 +50,7 @@ services:
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/actuator/health"]
-      interval: 10s
+      interval: 20s
       timeout: 10s
       retries: 5
     depends_on:
