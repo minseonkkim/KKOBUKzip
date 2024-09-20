@@ -1,5 +1,8 @@
 package com.turtlecoin.mainservice.global.config;
 
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -45,28 +48,5 @@ public class MetaDBConfig {
 	@Bean(name = "metaTransactionManager")
 	public PlatformTransactionManager metaTransactionManager(@Qualifier("metaDataSource") DataSource metaDataSource) {
 		return new DataSourceTransactionManager(metaDataSource);
-	}
-
-	@Bean(name = "metaJobRepository")
-	public JobRepository jobRepository(@Qualifier("metaDataSource") DataSource metaDataSource, @Qualifier("metaTransactionManager") PlatformTransactionManager transactionManager) throws Exception {
-		JobRepositoryFactoryBean factoryBean = new JobRepositoryFactoryBean();
-
-		factoryBean.setDatabaseType(DatabaseType.MYSQL.getProductName());
-
-		// 데이터 생성 시 트랜잭션 격리 레벨 설정 factoryBean.setIsolcationLevelForCreate("ISOLATION_REPEATABLE_READ");
-		factoryBean.setDataSource(metaDataSource);
-
-		factoryBean.setTransactionManager(transactionManager);
-
-		// 스프링 컨테이너가 빈 정의로 직접 호출하지 않음. 개발자가 직접 호출해야 한다.
-		factoryBean.afterPropertiesSet();
-		return factoryBean.getObject();
-	}
-
-	@Bean(name = "metaJobLauncher")
-	public JobLauncher jobLauncher(@Qualifier("metaJobRepository") JobRepository jobRepository) {
-		TaskExecutorJobLauncher jobLauncher = new TaskExecutorJobLauncher();
-		jobLauncher.setJobRepository(jobRepository);
-		return jobLauncher;
 	}
 }
