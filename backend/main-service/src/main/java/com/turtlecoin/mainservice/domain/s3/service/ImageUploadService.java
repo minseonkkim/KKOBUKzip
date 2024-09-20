@@ -32,6 +32,9 @@ public class ImageUploadService {
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
+	@Value("cloud.aws.cloudFront")
+	private String cloudFront;
+
 	// MultipartFile을 받아 S3에 업로드하는 메서드
 	public String upload(MultipartFile multipartFile, String dirName) throws IOException {
 		// MultipartFile을 File 객체로 변환
@@ -64,7 +67,8 @@ public class ImageUploadService {
 		amazonS3.putObject(new PutObjectRequest(bucket, fileName, uploadFile)
 			.withCannedAcl(CannedAccessControlList.PublicRead));
 		// 업로드된 파일의 URL 반환
-		return amazonS3.getUrl(bucket, fileName).toString();
+		return cloudFront + fileName;
+		//return amazonS3.getUrl(bucket, fileName).toString();
 	}
 
 	// S3에서 파일 삭제하는 메서드

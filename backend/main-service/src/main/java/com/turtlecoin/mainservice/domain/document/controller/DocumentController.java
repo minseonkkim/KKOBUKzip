@@ -94,7 +94,6 @@ public class DocumentController {
 			);
 		}
 		catch(Exception e){
-			e.printStackTrace();
 			// 로직중 에러가 발생하면 모두 처음으로 복구시킨다.
 			imageUploadService.deleteS3(locationSpecificationAddress);
 			imageUploadService.deleteS3(multiplicationAddress);
@@ -114,7 +113,6 @@ public class DocumentController {
 
 			documentService.save(document);
 		}catch(Exception e){
-			e.printStackTrace();
 			// 에러가 발생했을 경우 DB에 null 인 상태로라도 저장해야 함
 			Document document = Document.builder()
 				.documentHash(documentHash)
