@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 import { GrPowerReset } from "react-icons/gr";
 import { FaCheck } from "react-icons/fa6";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TransactionTurtle from "../../components/transaction/TransactionTurtle";
 import { IoIosSearch } from "react-icons/io";
 import { IoFilterOutline } from "react-icons/io5";
@@ -14,26 +14,84 @@ import TmpTurtle5 from "../../assets/tmp_turtle_5.jpg";
 import TmpTurtle6 from "../../assets/tmp_turtle_6.jpg";
 import useTradeFilter from "../../hooks/useTradeFilter";
 import OptionFilter from "../../components/common/OptionFilter";
-
-type FilterType = "gender" | "size" | "price";
+import { useInView } from "react-intersection-observer";
+import { TransactionItemDataType } from "../../types/transaction";
+import { getTransactionData } from "../../apis/tradeApi";
 
 function TransactionListPage() {
+  const [transactionData, setTransactionData] = useState<
+    TransactionItemDataType[]
+  >([]);
+
   const [isChecked, setIsChecked] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false); // State to handle opening and closing of the filter div
 
+  const [itemLoading, setItemLoading] = useState(false);
+  const [pages, setPages] = useState(1); // 페이지네이션용
+  const [maxPage, setMaxPage] = useState(-1); // 페이지네이션용
+
+  const [ref, inView] = useInView({
+    threshold: 1,
+  }); // infinity-scroll observer
+
   const { filters, filterResetHandle, updateFilter } = useTradeFilter();
-  // const [filters, setFilters] = useState({
-  //   gender: '',
-  //   size: '',
-  //   price: '',
-  // });
+  useEffect(() => {
+    // getAuctionDatas and setAuctionData
+    const getData = async () => {
+      try {
+        setItemLoading(true);
+
+        const response = await getTransactionData({ page: pages });
+        if (response.success) {
+          setTransactionData(response.data.transactions);
+          setMaxPage(response.data.total_pages);
+        }
+      } finally {
+        setItemLoading(false);
+        setPages(pages + 1);
+      }
+    };
+
+    getData();
+  }, []);
+
+  // 다음 페이지를 불러오는 함수
+  const loadMore = async () => {
+    if (itemLoading) return;
+    setItemLoading(true);
+
+    try {
+      if (pages + 1 > maxPage) return;
+      setPages((c) => c + 1);
+      const response = await getTransactionData({
+        page: pages,
+        ...filters,
+      });
+
+      if (response.success) {
+        setTransactionData((prev) => [...prev, ...response.data.transactions]);
+        setMaxPage(response.data.total_pages ?? -1);
+      }
+    } finally {
+      setItemLoading(false);
+    }
+  };
+
+  // 스크롤을 인식해서 load
+  useEffect(() => {
+    console.log(inView);
+    if (loadMore && inView) {
+      loadMore();
+    }
+  }, [inView, loadMore]);
 
   const handleCheckboxChange = () => {
+    // 경매중인 거북이만 보기 -> progress : "DURING_AUCTION"
     setIsChecked(!isChecked);
   };
 
   const toggleFilterDiv = () => {
-    setIsFilterOpen(!isFilterOpen); // Toggle filter div visibility
+    setIsFilterOpen(!isFilterOpen);
   };
 
   const filterApplyHandle = () => {
@@ -45,8 +103,9 @@ function TransactionListPage() {
       <Helmet>
         <title>판매중인 거북이</title>
       </Helmet>
-      <Header />
-      <div className="px-[250px] mt-[85px]">
+
+      <div className="page-container h-screen flex flex-col">
+        <Header />
         <div className="flex flex-row items-center justify-between pt-[40px] pb-[13px]">
           <div className="text-[33px] text-gray-900 font-dnf-bitbit mr-3">
             판매중인 거북이
@@ -75,6 +134,7 @@ function TransactionListPage() {
               </span>
             </label>
           </div>
+
           <div className="flex flex-row">
             <div className="flex items-center w-[320px] h-[38px] bg-[#f2f2f2] rounded-[10px] p-1 mr-4">
               <IoIosSearch className="text-gray-400 mx-2 text-[30px]" />
@@ -102,57 +162,73 @@ function TransactionListPage() {
         </div>
 
         {/* 필터 영역 */}
-        {isFilterOpen && (
-          <OptionFilter
-            filterApplyHandle={filterApplyHandle}
-            filters={filters}
-            updateFilter={updateFilter}
-          />
-        )}
+        <div
+          className={`transition-all duration-300 ease-in-out transform ${
+            isFilterOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          } overflow-hidden`}
+        >
+          {isFilterOpen && (
+            <OptionFilter
+              filterApplyHandle={filterApplyHandle}
+              filters={filters}
+              updateFilter={updateFilter}
+            />
+          )}
+        </div>
         {/* 필터 영역 끝 */}
 
         {/* 아이템 영역 */}
-        <div className="grid grid-cols-3 gap-4 mb-[30px] mt-[10px]">
+        <div className="grid flex-1 overflow-y-auto grid-cols-3 gap-4 mb-[30px] mt-[10px]">
+          {/* {transactionData.map((item, index) => (
+            <TransactionTurtle
+              key={index}
+              scientific_name={item.turtle.scientific_name}
+              price={item.price}
+              transaction_tag={item.transaction_tag}
+              transaction_image={item.thumbnail}
+              progress={item.progress}
+            />
+          ))} */}
           <TransactionTurtle
             scientific_name="지오프리 사이드 넥 터틀"
             price={300000000}
             transaction_tag={["암컷", "성체"]}
-            transaction_image={[TmpTurtle1]}
+            transaction_image={TmpTurtle1}
             progress="거래가능"
           />
           <TransactionTurtle
             scientific_name="레이저 백 거북"
             price={94000000}
             transaction_tag={["수컷", "베이비"]}
-            transaction_image={[TmpTurtle2]}
+            transaction_image={TmpTurtle2}
             progress="거래가능"
           />
           <TransactionTurtle
             scientific_name="아프리카 사이드 넥"
             price={110000000}
             transaction_tag={["암컷", "베이비"]}
-            transaction_image={[TmpTurtle3]}
+            transaction_image={TmpTurtle3}
             progress="거래가능"
           />
           <TransactionTurtle
             scientific_name="미시시피 지도 거북이"
             price={700000000}
             transaction_tag={["암컷", "아성체"]}
-            transaction_image={[TmpTurtle4]}
+            transaction_image={TmpTurtle4}
             progress="거래가능"
           />
           <TransactionTurtle
             scientific_name="지오프리 사이드 넥 터틀"
             price={67200000}
             transaction_tag={["암컷", "성체"]}
-            transaction_image={[TmpTurtle5]}
+            transaction_image={TmpTurtle5}
             progress="거래가능"
           />
           <TransactionTurtle
             scientific_name="암보니아 상자 거북"
             price={43000000}
             transaction_tag={["수컷", "성체"]}
-            transaction_image={[TmpTurtle6]}
+            transaction_image={TmpTurtle6}
             progress="거래완료"
           />
         </div>

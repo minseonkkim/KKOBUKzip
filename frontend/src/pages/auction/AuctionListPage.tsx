@@ -7,20 +7,18 @@ import { IoIosSearch } from "react-icons/io";
 import { IoFilterOutline } from "react-icons/io5";
 import AuctionTurtle from "../../components/auction/AuctionTurtle";
 import { AuctionItemDataType } from "../../types/auction";
-import { getAuctionDatas } from "../../apis/auctionApi";
+import { getAuctionDatas } from "../../apis/tradeApi";
 import OptionFilter from "../../components/common/OptionFilter";
 import useTradeFilter from "../../hooks/useTradeFilter";
 import AuctionTurtleSkeleton from "../../components/auction/AuctionTurtleSkeleton";
 import { useInView } from "react-intersection-observer";
-
-type FilterType = "gender" | "size" | "minPrice" | "maxPrice";
 
 // 해야할것 -> 스크롤 구현(귀찮...)
 // 해야할 것 : 필터 조회 적용
 // api 연동하면 더미데이터 -> 실제데이터, AuctionTurtle 내부 데이터 연동하기, 스켈레톤 이미지 활성화까지 할 것 -> 대부분 주석걸려있음
 
 function AuctionListPage() {
-  const [auctionData, setAuctionDatas] = useState<AuctionItemDataType[]>([]);
+  const [auctionData, setAuctionData] = useState<AuctionItemDataType[]>([]);
 
   const [isChecked, setIsChecked] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false); // State to handle opening and closing of the filter div
@@ -35,14 +33,15 @@ function AuctionListPage() {
   const { filters, updateFilter, filterResetHandle } = useTradeFilter();
 
   useEffect(() => {
-    // getAuctionDatas and setAuctionDatas
+    // getAuctionDatas and setAuctionData
     const getData = async () => {
       try {
         setItemLoading(true);
 
         const response = await getAuctionDatas({ page: pages });
         if (response.success) {
-          setAuctionDatas(response.data.auctions);
+          setAuctionData(response.data.auctions);
+          setMaxPage(response.data.total_pages);
         }
       } finally {
         setItemLoading(false);
@@ -67,7 +66,7 @@ function AuctionListPage() {
       });
 
       if (response.success) {
-        setAuctionDatas((prev) => [...prev, ...response.data.auctions]);
+        setAuctionData((prev) => [...prev, ...response.data.auctions]);
       }
       // setMaxPage(response.data.maxPage);
     } finally {
@@ -75,6 +74,7 @@ function AuctionListPage() {
     }
   };
 
+  // 스크롤을 인식해서 load
   useEffect(() => {
     console.log(inView);
     if (loadMore && inView) {
@@ -100,6 +100,7 @@ function AuctionListPage() {
       <Helmet>
         <title>경매중인 거북이</title>
       </Helmet>
+
       <div className="page-container h-screen flex flex-col">
         <Header />
         <div className="flex flex-row items-center justify-between pt-[40px] pb-[13px]">
@@ -107,6 +108,7 @@ function AuctionListPage() {
             경매중인 거북이
           </div>
         </div>
+
         <div className="flex flex-row items-center justify-between mb-4">
           <div className="text-[23px] font-bold flex flex-row items-center">
             <label className="flex items-center">
@@ -154,6 +156,8 @@ function AuctionListPage() {
             </div>
           </div>
         </div>
+
+        {/* 필터 영역 */}
         <div
           className={`transition-all duration-300 ease-in-out transform ${
             isFilterOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
@@ -167,6 +171,9 @@ function AuctionListPage() {
             />
           )}
         </div>
+        {/* 필터 영역 끝 */}
+
+        {/* 그리드 아이템 영역 */}
         <div className="grid flex-1 overflow-y-auto grid-cols-3 gap-4 mb-[30px] mt-[10px] ">
           {[...Array(50)].map((_, i) => (
             <AuctionTurtle key={i} />
@@ -184,6 +191,7 @@ function AuctionListPage() {
           {/* observer div */}
           <div ref={ref} />
         </div>
+        {/* 그리드 아이템 영역 끝 */}
       </div>
 
       {/* Custom Radio Button Styling */}
