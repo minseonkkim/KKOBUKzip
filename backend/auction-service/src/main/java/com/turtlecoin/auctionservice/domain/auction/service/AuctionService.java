@@ -3,6 +3,7 @@ package com.turtlecoin.auctionservice.domain.auction.service;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 //import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
+import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
@@ -10,8 +11,11 @@ import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
 import com.turtlecoin.auctionservice.domain.auction.entity.QAuction;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
+import com.turtlecoin.auctionservice.domain.turtle.dto.AuctionTurtleInfoDTO;
 import com.turtlecoin.auctionservice.domain.turtle.dto.TurtleResponseDTO;
+import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.domain.turtle.service.TurtleService;
+import com.turtlecoin.auctionservice.global.client.TurtleClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -31,8 +36,10 @@ public class AuctionService {
     private final AuctionRepository auctionRepository;
     private final ImageUploadService imageUploadService;  // ImageUploadService도 주입합니다.
     private final TurtleService turtleService;
+    private final TurtleClient turtleClient;
     private final JPAQueryFactory queryFactory;
 
+    // 경매 등록
     @Transactional
     public Auction registerAuction(RegisterAuctionDTO registerAuctionDTO, List<MultipartFile> images) throws IOException {
         List<String> uploadedImagePaths = new ArrayList<>();
@@ -60,6 +67,7 @@ public class AuctionService {
         }
     }
 
+    // 거북이 정보로 경매 조회
     public Optional<Auction> getAuctionWithTurtleInfo(Long auctionId) {
         Optional<Auction> auction = auctionRepository.findById(auctionId);
 
@@ -70,36 +78,40 @@ public class AuctionService {
 
         return auction;
     }
-//    public List<Auction> getFilteredAuctions(String gender, Double minSize, Double maxSize, Double minPrice, Double maxPrice, AuctionProgress progress, int page) {
-//        QAuction auction = QAuction.auction;
-//
-//        BooleanBuilder whereClause = new BooleanBuilder();
-//
-//        // 성별 필터
-//        if (gender != null && !gender.isEmpty()) {
-//            whereClause.and(auction.turtle.gender.eq(gender));
-//        }
-//
-//        // 거북이 크기 필터 (minSize ~ maxSize)
-//        if (minSize != null && maxSize != null) {
-//            whereClause.and(auction.turtle.size.between(minSize, maxSize));
-//        }
-//
-//        // 가격 필터 (minPrice ~ maxPrice)
-//        if (minPrice != null && maxPrice != null) {
-//            whereClause.and(auction.minBid.between(minPrice, maxPrice));
-//        }
-//
-//        // 경매 진행 상태 필터
-//        if (progress != null) {
-//            whereClause.and(auction.auctionProgress.eq(progress));
-//        }
-//
-//        // 페이징 처리
-//        return queryFactory.selectFrom(auction)
-//                .where(whereClause)
-//                .offset((page - 1) * 10)  // 페이지 설정
-//                .limit(10)  // 한 페이지에 10개의 결과
-//                .fetch();
-//    }
+
+    // 경매 필터링 후 조회
+    public List<Auction> getFilteredAuctions(Gender gender, Double minSize, Double maxSize, Double minPrice, Double maxPrice, AuctionProgress progress, int page) {
+        QAuction auction = QAuction.auction;
+
+        BooleanBuilder whereClause = new BooleanBuilder();
+
+        // 가격 필터 (minPrice ~ maxPrice)
+        if (minPrice != null && maxPrice != null) {
+            whereClause.and(auction.minBid.between(minPrice, maxPrice));
+        }
+
+        // 경매 진행 상태 필터
+        if (progress != null) {
+            whereClause.and(auction.auctionProgress.eq(progress));
+        }
+
+        List<AuctionTurtleInfoDTO> filteredTurtles = turtleClient.getFilteredTurtles(gender, minSize, maxSize);
+
+        List<Auction> filteredAuctions = queryFactory.selectFrom(auction)
+                .where(whereClause.and(auction.turtleId.in(
+                        filteredTurtles.stream().map(AuctionTurtleInfoDTO::getId).collect(Collectors.toList()))))
+                .offset((page-1) * 10)
+                .limit(10)
+                .fetch();
+
+
+        // 페이징 처리
+        return filteredAuctions;
+    }
+
+    public AuctionResponseDTO convertToDTO(Auction auction) {
+        TurtleResponseDTO turtleInfo = turtleService.getTurtleInfo(auction.getTurtleId());
+
+        return AuctionResponseDTO.from(auction, turtleInfo);
+    }
 }

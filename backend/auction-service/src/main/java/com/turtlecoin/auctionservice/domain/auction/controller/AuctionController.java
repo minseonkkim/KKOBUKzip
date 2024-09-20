@@ -1,11 +1,13 @@
 package com.turtlecoin.auctionservice.domain.auction.controller;
 
+import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.auction.service.AuctionService;
 import com.turtlecoin.auctionservice.domain.turtle.dto.TurtleResponseDTO;
+import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.domain.turtle.service.TurtleService;
 import com.turtlecoin.auctionservice.global.ResponseVO;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class AuctionController {
 
     private final TurtleService turtleService;
 
+    //거북이 정보 조회
     @GetMapping("/info")
     public TurtleResponseDTO getTurtleInfo() {
         // turtleId는 1로 고정
@@ -36,12 +39,14 @@ public class AuctionController {
     private final AuctionService auctionService;
     private final AuctionRepository auctionRepository;
 
+    // 테스트
     @GetMapping("/test")
     public ResponseEntity<String> test () {
         return ResponseEntity.status(HttpStatus.OK).body("OK");
     }
 
-    @PostMapping("/regist")
+    // 경매 등록
+    @PostMapping
     public ResponseEntity<?> registerAuction(
             @RequestPart("data") RegisterAuctionDTO registerAuctionDTO,
             @RequestPart(value = "images", required = false) List<MultipartFile> multipartFiles) {
@@ -58,24 +63,28 @@ public class AuctionController {
         }
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<Auction>> getAuctions(
-//            @RequestParam(value = "gender", required = false) String gender,
-//            @RequestParam(value = "minSize", required = false) Double minSize,
-//            @RequestParam(value = "maxSize", required = false) Double maxSize,
-//            @RequestParam(value = "minPrice", required = false) Double minPrice,
-//            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
-//            @RequestParam(value = "progress", required = false) AuctionProgress progress,
-//            @RequestParam(value = "page", defaultValue = "1") int page
-//    ) {
-//        List<Auction> filteredAuctions = auctionService.getFilteredAuctions(gender, minSize, maxSize, minPrice, maxPrice, progress, page);
-//        return new ResponseEntity<>(auctionRepository.findAll(), HttpStatus.OK);
-//    }
+    @GetMapping
+    public ResponseEntity<List<Auction>> getAuctions(
+            @RequestParam(value = "gender", required = false) Gender gender,
+            @RequestParam(value = "minSize", required = false) Double minSize,
+            @RequestParam(value = "maxSize", required = false) Double maxSize,
+            @RequestParam(value = "minPrice", required = false) Double minPrice,
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "progress", required = false) AuctionProgress progress,
+            @RequestParam(value = "page", defaultValue = "1") int page
+    ) {
+        List<Auction> filteredAuctions = auctionService.getFilteredAuctions(gender, minSize, maxSize, minPrice, maxPrice, progress, page);
+        return new ResponseEntity<>(filteredAuctions, HttpStatus.OK);
+    }
 
     @GetMapping("/{auctionId}")
     public ResponseEntity<?> getAuctionById(@PathVariable Long auctionId) {
-        Optional<Auction> auction = auctionService.getAuctionWithTurtleInfo(auctionId);
-        return auction.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return auctionService.getAuctionWithTurtleInfo(auctionId)
+                .map(auction -> {
+                    AuctionResponseDTO responseDTO = auctionService.convertToDTO(auction);
+                    return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+                })
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }
 

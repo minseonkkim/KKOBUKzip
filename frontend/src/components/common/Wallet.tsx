@@ -8,7 +8,8 @@ const EXCHANGE_RATE = 5000000; // 1 ETH = 5,000,000 TURT
 
 const Wallet: React.FC = () => {
   // Zustand 스토어에서 필요한 상태와 함수 가져오기
-  const { web3, account, contract, error: sdkError, initializeSDK, connectWallet } = useMetaMaskSDKStore();
+  const { web3, account, contract, error: sdkError, initializeSDK, connectWallet, isMobile, checkAndPromptForMetaMask } = useMetaMaskSDKStore();
+
 
   // 지갑 관련 상태 관리
   const [balance, setBalance] = useState<string>("0");
@@ -135,12 +136,11 @@ const Wallet: React.FC = () => {
 
   // 지갑 연결 함수
   const handleConnectWallet = async () => {
-    if (window.ethereum) {
-      await connectWallet();
-    } else {
-      // MetaMask가 없는 경우 안내 메시지 표시
-      setError("MetaMask가 설치되어 있지 않습니다. 모바일에서는 MetaMask 앱을 설치해주세요.");
+    if (isMobile) {
+      const isMetaMaskInstalled = await checkAndPromptForMetaMask();
+      if (!isMetaMaskInstalled) return;
     }
+    await connectWallet();
   };
 
   return (
@@ -158,7 +158,18 @@ const Wallet: React.FC = () => {
         </div>
       </div>
       {/* 오류 메시지 표시 */}
-      {(error || sdkError) && <div className="text-red-500 mb-4">{error || sdkError}</div>}
+      {(error || sdkError) && (
+        <div className="text-red-500 mb-4">
+          {error || sdkError}
+          {isMobile && !account && (
+            <div>
+              <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
+                MetaMask 설치하기
+              </a>
+            </div>
+          )}
+        </div>
+      )}
       {account ? (
         <>
           {/* 환전 입력 필드 */}

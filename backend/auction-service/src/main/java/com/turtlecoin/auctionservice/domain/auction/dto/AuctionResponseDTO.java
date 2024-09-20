@@ -2,7 +2,7 @@ package com.turtlecoin.auctionservice.domain.auction.dto;
 
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionTag;
-import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
+import com.turtlecoin.auctionservice.domain.turtle.dto.TurtleResponseDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class AuctionResponseDTO {
     private Long id;
     private Long turtleId;
+    private TurtleResponseDTO turtleInfo;
     private String title;
     private Double minBid;
     private Double winningBid;
@@ -25,13 +26,14 @@ public class AuctionResponseDTO {
     private LocalDateTime endTime;
     private String content;
     private String progress;
-    private List<AuctionTag> tags;
-    private List<AuctionPhoto> images;
+    private List<AuctionTagDTO> tags;
+    private List<AuctionPhotoDTO> images;
 
-    public static AuctionResponseDTO from(Auction auction) {
+    public static AuctionResponseDTO from(Auction auction, TurtleResponseDTO turtleInfo) {
         return AuctionResponseDTO.builder()
                 .id(auction.getId())
                 .turtleId(auction.getTurtleId())
+                .turtleInfo(turtleInfo)
                 .title(auction.getTitle())
                 .minBid(auction.getMinBid())
                 .winningBid(auction.getWinningBid())
@@ -40,8 +42,12 @@ public class AuctionResponseDTO {
                 .endTime(auction.getEndTime())
                 .content(auction.getContent())
                 .progress(auction.getAuctionProgress().toString())
-                .tags(auction.getAuctionTags())
-                .images(auction.getAuctionPhotos())
+                .tags(auction.getAuctionTags().stream()
+                        .map(AuctionTagDTO::from)
+                        .collect(Collectors.toList()))
+                .images(auction.getAuctionPhotos().stream()
+                        .map(AuctionPhotoDTO::from)
+                        .collect(Collectors.toList()))
                 .build();
     }
 }

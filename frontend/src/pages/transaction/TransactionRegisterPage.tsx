@@ -3,10 +3,12 @@ import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg"
 import { IoClose } from "react-icons/io5";
 import { IoMdAddCircle } from "react-icons/io";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 export default function TransactionRegisterPage(){
     const [images, setImages] = useState<File[]>([]);
+    const [selectedGender, setSelectedGender] = useState<string | null>(null);
+    const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []); // 파일 리스트를 배열로 변환
@@ -19,6 +21,26 @@ export default function TransactionRegisterPage(){
 
     const handleRemoveImage = (index: number) => {
         setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    };
+
+    const handleGenderClick = (tag: string) => {
+      setSelectedGender(selectedGender === tag ? null : tag);
+    };
+
+    const handleSizeClick = (tag: string) => {
+      setSelectedSize(selectedSize === tag ? null : tag);
+    };
+
+    const formatNumberWithCommas = (value: string): string => {
+      const numberValue = value.replace(/,/g, '');
+      if (!isNaN(Number(numberValue)) && numberValue !== '') {
+        return Number(numberValue).toLocaleString();
+      }
+      return '';
+    };
+
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+      e.target.value = formatNumberWithCommas(e.target.value);
     };
 
     return <>
@@ -40,10 +62,25 @@ export default function TransactionRegisterPage(){
             <label className="w-[120px]">판매가</label>
             <input
               className="w-[350px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
-              type="number"
-              name="min_bid"
+              type="text"
+              name="bid"
+              onInput={handleInputChange}
               required
             />
+          </div>
+          <div className="flex flex-row items-center">
+            <label className="w-[120px]">체중</label>
+            <input
+              className="mr-1 w-[350px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
+              type="number"
+              name="weight"
+              required
+              onInput={(e) => {
+                const target = e.target as HTMLInputElement;
+                target.value = target.value.replace(/[^0-9]/g, '');
+              }}
+            />
+            kg
           </div>
           <div className="flex flex-row items-start">
             <label className="w-[120px]">상세 설명</label>
@@ -89,17 +126,44 @@ export default function TransactionRegisterPage(){
             </div>
             <div className="flex flex-col gap-3 items-start w-[35%]">
               <label className="w-[120px]">태그</label>
-              <div className="flex flex-row">
+              <div className="flex flex-row items-center space-x-2">
                 <span className="text-[17px] w-[50px]">성별</span>
-                <div className="text-[16px] text-gray-700">
-                  <span className="bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full">#태그</span>
-                </div>
+                <span
+                  className={`px-2 py-1 rounded-full cursor-pointer text-[17px] ${
+                    selectedGender === "#암컷"
+                      ? "bg-[#D5F0DD] text-[#065F46]"
+                      : "bg-gray-300 text-gray-600"
+                  }`}
+                  onClick={() => handleGenderClick("#암컷")}
+                >
+                  #암컷
+                </span>
+                <span
+                  className={`px-2 py-1 rounded-full cursor-pointer text-[17px] ${
+                    selectedGender === "#수컷"
+                      ? "bg-[#D5F0DD] text-[#065F46]"
+                      : "bg-gray-300 text-gray-600"
+                  }`}
+                  onClick={() => handleGenderClick("#수컷")}
+                >
+                  #수컷
+                </span>
               </div>
-              <div className="flex flex-row">
+              <div className="flex flex-row items-center space-x-2">
                 <span className="text-[17px] w-[50px]">크기</span>
-                <div className="text-[16px] text-gray-700">
-                  <span className="bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full">#태그</span>
-                </div>
+                {["#베이비", "#아성체", "#준성체", "#성체"].map((tag) => (
+                  <span
+                    key={tag}
+                    className={`px-2 py-1 rounded-full cursor-pointer text-[17px] ${
+                      selectedSize === tag
+                        ? "bg-[#D5F0DD] text-[#065F46]"
+                        : "bg-gray-300 text-gray-600"
+                    }`}
+                    onClick={() => handleSizeClick(tag)}
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
             </div>
           </div>

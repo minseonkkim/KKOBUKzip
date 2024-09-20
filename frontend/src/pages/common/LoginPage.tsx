@@ -39,7 +39,7 @@ function LoginPage() {
       {/* 로그인 컴포넌트 */}
       <div className="relative w-full h-[600px] bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex flex-row">
           <div className="rounded-l-[20px] w-1/2">
-            <img src={StopTurtleImg} className="rounded-l-[20px] h-full object-cover"/>
+            <img src={StopTurtleImg} className="rounded-l-[20px] h-full object-cover" draggable="false"/>
           </div>
           
           <div className="w-1/2 h-full rounded-r-[20px] m-auto flex justify-center items-center">
@@ -92,6 +92,7 @@ function LoginPage() {
                     src={naver_logo}
                     alt="Naver Logo"
                     className="w-6 h-6"
+                    draggable="false"
                   />
 
                   </div>
@@ -101,6 +102,7 @@ function LoginPage() {
                     src={kakao_logo}
                     alt="Kakao Logo"
                     className="w-6 h-6"
+                    draggable="false"
                   />
 
                   </div>

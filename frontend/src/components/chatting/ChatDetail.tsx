@@ -24,7 +24,7 @@ export default function ChatDetail({ chat, toggleChat }: ChatDetailProps) {
                     <div className="p-[10px] flex flex-col-reverse">
                         {/* 받은 메세지 */}
                         <div className="flex flex-row my-2 items-end">
-                            <img src={TmpProfileImg} className="rounded-full w-[40px] h-[40px] mr-2" />
+                            <img src={TmpProfileImg} className="rounded-full w-[40px] h-[40px] mr-2" draggable="false"/>
                             <div className="p-2.5 bg-white rounded-[10px] w-fit max-w-[230px] break-words mr-1">
                                 {chat.message}
                             </div>

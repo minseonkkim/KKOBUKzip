@@ -30,7 +30,7 @@ function MyPage() {
           </div>
         </div>
 
-        <div className="mt-[25px] text-[23px] flex flex-row cursor-pointer mb-[10px]">
+        <div className="mt-[25px] text-[23px] flex flex-row cursor-pointer mb-[10px] font-stardust">
           <div
             className={`w-[125px] h-[42px] border-b-[4px] text-center ${
               selectedMenu === 0 && "border-[#4B721F] font-bold"
@@ -61,8 +61,8 @@ function MyPage() {
 
         // 거래내역이 없을 경우
       <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
-        <img src={NoImage} className="w-[200px] mb-7"/>
-        <div className="text-[25px] font-bold text-center">거래 내역이 없어요.</div>
+        <img src={NoImage} className="w-[200px] mb-7" draggable="false"/>
+        <div className="text-[25px] font-bold text-center font-stardust">거래 내역이 없어요.</div>
       </div>
         }
 
@@ -70,19 +70,18 @@ function MyPage() {
         {selectedMenu === 1 && 
 
         // 나의 거북이가 있을 경우
-      //   <div className="flex flex-row flex-wrap mb-[20px] gap-[2%]">
-          
-      //   <MyTurtle />
-      //   <MyTurtle />
-      //   <MyTurtle />
-      //   <MyTurtle />
-      // </div>
+        <div className="flex flex-row flex-wrap mb-[20px] gap-[2%]">            
+          <MyTurtle />
+          <MyTurtle />
+          <MyTurtle />
+          <MyTurtle />
+        </div>
 
       // 나의 거북이가 없을 경우
-      <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
-        <img src={NoImage} className="w-[200px] mb-7"/>
-        <div className="text-[25px] font-bold text-center">나의 거북이가 없어요.</div>
-      </div>
+      // <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
+      //   <img src={NoImage} className="w-[200px] mb-7" draggable="false"/>
+      //   <div className="text-[25px] font-bold text-center font-stardust">나의 거북이가 없어요.</div>
+      // </div>
       
       }
       </div>
