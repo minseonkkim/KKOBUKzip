@@ -17,7 +17,7 @@ export default function ChatCard({ openChatDetail, chat }:ChatCardProps) {
             onClick={() => openChatDetail(chat)}
         >
             <div className="flex flex-row">
-                <img src={TmpProfileImg} className="rounded-full w-[52px] h-[52px] mr-3" />
+                <img src={TmpProfileImg} className="rounded-full w-[52px] h-[52px] mr-3" draggable="false"/>
                 <div className="flex flex-col justify-between">
                     <div className="flex flex-row justify-between mb-1">
                         <div className="text-[16px]">{chat.name}</div>

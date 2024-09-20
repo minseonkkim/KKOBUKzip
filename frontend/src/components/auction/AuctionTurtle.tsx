@@ -43,7 +43,7 @@ export default function AuctionTurtle({
           </div>
           {/* 가격, 시간 라이브러리 쓰기 */}
           <div className="flex flex-col">
-            <div className="font-extrabold text-3xl text-[#4B721F] my-1">
+            <div className="font-extrabold text-3xl text-[#4B721F] my-1 font-stardust">
               3,000,000원↑
             </div>
           </div>
