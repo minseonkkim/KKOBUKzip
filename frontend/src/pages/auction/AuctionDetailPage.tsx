@@ -213,7 +213,7 @@ function AuctionDetailPage() {
               <div className="flex flex-col justify-center items-center mb-4">
                 <div className="flex flex-row items-center">
                   <div className="font-bold text-[27px]">현재 입찰가&nbsp;&nbsp;</div>
-                  <animated.div className="font-bold text-[37px] text-[#4B721F]">
+                  <animated.div className="font-bold text-[39px] text-[#4B721F] font-stardust">
                     {springProps.price.to((price) =>
                       `${Math.floor(price).toLocaleString()}원`
                     )}
