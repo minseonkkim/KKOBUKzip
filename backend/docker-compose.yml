@@ -33,9 +33,9 @@ services:
       - spring.profiles.active=local
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
-      interval: 10s
+      interval: 20s
       timeout: 10s
-      retries: 5
+      retries: 10
 
   apigateway-service:
     image: 1202yjk/apigateway-service:latest
@@ -52,7 +52,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8000/actuator/health"]
       interval: 20s
       timeout: 10s
-      retries: 5
+      retries: 10
     depends_on:
       config-service:
         condition: service_healthy
