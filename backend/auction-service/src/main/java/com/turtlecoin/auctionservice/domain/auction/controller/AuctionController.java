@@ -1,6 +1,7 @@
 package com.turtlecoin.auctionservice.domain.auction.controller;
 
 import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
+import com.turtlecoin.auctionservice.domain.auction.dto.BidRequestDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -94,6 +96,22 @@ public class AuctionController {
                     return new ResponseEntity<>(responseDTO, HttpStatus.OK);
                 })
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @PostMapping("/{auctionId}/bid")
+    public ResponseEntity<?> auctionBid(@PathVariable Long auctionId, @RequestBody BidRequestDTO bidRequestdto) {
+        Long newBidAmount = bidRequestdto.getBidAmount();
+        Long userId = bidRequestdto.getUserId();
+
+        Map<Object, Object> currentBidData = auctionService.getCurrentBid(auctionId);
+
+
+
+        if (currentBid == null || newBidAmount > currentBid) {
+            auctionService.updateBid(auctionId, );
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
 
