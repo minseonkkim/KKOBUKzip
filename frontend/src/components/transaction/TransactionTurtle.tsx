@@ -55,7 +55,7 @@ export default function TransactionTurtle({
             </div>
           </div>
           <div className="font-extrabold text-3xl text-[#4B721F] mt-1 font-stardust">
-            {price.toLocaleString("ko-KR")}
+            {price.toLocaleString("ko-KR")}원
           </div>
         </div>
       </div>
