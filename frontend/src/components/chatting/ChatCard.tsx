@@ -33,7 +33,6 @@ export default function ChatCard({ openChatDetail, chat }:ChatCardProps) {
                             1
                         </div>
                     </div>
-                    
                 </div>
             </div>
         </div>

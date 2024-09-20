@@ -12,13 +12,13 @@ interface ChatDetailProps {
     toggleChat: () => void;  // toggleChat 함수의 타입 추가
 }
 
-export default function ChatDetail({ chat, toggleChat }: ChatDetailProps) {
+export default function ChatDetail({ chat, closeChatDetail,toggleChat }: ChatDetailProps) {
     return (
         <>
             <div className="text-black bg-gray-100 rounded-[10px] flex flex-col justify-between w-full h-full">
                 <div>
                     <div className="text-[#43493A] p-[10px] flex flex-row justify-between items-center text-[29px] font-dnf-bitbit">
-                        <span onClick={toggleChat}>&lt;&nbsp;{chat.name}</span> {/* toggleChat을 사용하여 창을 닫음 */}
+                        <span onClick={closeChatDetail}>&lt;&nbsp;{chat.name}</span> {/* toggleChat을 사용하여 창을 닫음 */}
                         <IoClose className="text-[28px]" onClick={toggleChat} />
                     </div>
                     <div className="p-[10px] flex flex-col-reverse">
