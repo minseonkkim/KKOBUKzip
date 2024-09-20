@@ -21,7 +21,7 @@ interface ErrorResponse {
  *
  * @param requestFunction - API 요청을 수행하는 함수
  * @param params - 요청에 필요한 파라미터
- * @returns 성공 시 경매 데이터, 실패 시 에러 응답
+ * @returns 성공 시 데이터, 실패 시 에러 응답
  */
 const apiRequest = async <T>(
   requestFn: () => Promise<AxiosResponse<T>>

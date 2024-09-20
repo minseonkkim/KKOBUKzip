@@ -104,8 +104,8 @@ function TransactionListPage() {
         <title>판매중인 거북이</title>
       </Helmet>
 
-      <div className="page-container h-screen flex flex-col">
-        <Header />
+      <Header />
+      <div className="page-container h-screen flex flex-col pt-[85px]">
         <div className="flex flex-row items-center justify-between pt-[40px] pb-[13px]">
           <div className="text-[33px] text-gray-900 font-dnf-bitbit mr-3">
             판매중인 거북이
@@ -179,16 +179,6 @@ function TransactionListPage() {
 
         {/* 아이템 영역 */}
         <div className="grid flex-1 overflow-y-auto grid-cols-3 gap-4 mb-[30px] mt-[10px]">
-          {/* {transactionData.map((item, index) => (
-            <TransactionTurtle
-              key={index}
-              scientific_name={item.turtle.scientific_name}
-              price={item.price}
-              transaction_tag={item.transaction_tag}
-              transaction_image={item.thumbnail}
-              progress={item.progress}
-            />
-          ))} */}
           <TransactionTurtle
             scientific_name="지오프리 사이드 넥 터틀"
             price={300000000}
@@ -231,6 +221,20 @@ function TransactionListPage() {
             transaction_image={TmpTurtle6}
             progress="거래완료"
           />
+
+          {/* {transactionData.map((item, index) => (
+            <TransactionTurtle
+              key={index}
+              scientific_name={item.turtle.scientific_name}
+              price={item.price}
+              transaction_tag={item.transaction_tag}
+              transaction_image={item.thumbnail}
+              progress={item.progress}
+            />
+          ))} */}
+
+          {/* observer div */}
+          <div ref={ref} className="w-full h-[1px] col-span-full" />
         </div>
         {/* 아이템 영역 끝 */}
       </div>
