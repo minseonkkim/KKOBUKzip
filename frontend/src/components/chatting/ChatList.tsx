@@ -1,19 +1,28 @@
 import { useState } from "react";
+import useDeviceStore from "../../store/useDeviceStore";
 import ChatCard from "./ChatCard";
 import ChatDetail from "./ChatDetail";
 import { IoClose } from "react-icons/io5";
+import { AiOutlineMessage } from "react-icons/ai";
+
+
+interface Chat{
+    name: string;
+    message: string;
+}
 
 export default function ChatList() {
+    const isMobile = useDeviceStore((state) => state.isMobile);
+
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedChat, setSelectedChat] = useState(null);
+    const [selectedChat, setSelectedChat] = useState<null | Chat>(null);
 
     const toggleChat = () => {
         setIsOpen(!isOpen);
         setSelectedChat(null);  // 창을 닫을 때 선택된 채팅도 초기화
     };
     
-
-    const openChatDetail = (chat: any) => {
+    const openChatDetail = (chat: Chat) => {
         setSelectedChat(chat); // 상세 채팅을 열 때 선택한 채팅의 정보를 상태로 저장
     };
 
@@ -24,7 +33,9 @@ export default function ChatList() {
     return (
         <>
             <div
-                className={`cursor-pointer fixed w-[380px] bottom-0 right-0 z-[1000] bg-[#D7E7F7] rounded-[10px] flex flex-col justify-between items-center transition-all duration-500 ${isOpen ? 'h-[480px]' : 'h-[60px]'} animate-float`}
+                className={ isMobile ? 
+                    `cursor-pointer fixed ${isOpen ? 'bottom-0 right-0' : 'bottom-5 right-5'} z-[1000] bg-[#D7E7F7] ${isOpen ? 'rounded-[10px]' : 'rounded-full'} flex flex-col justify-between items-center transition-all duration-500 ${isOpen ? 'h-[calc(100vh-80px)] w-full' : 'h-[60px] w-[60px]'} animate-float`
+                    : `cursor-pointer fixed w-[380px] bottom-0 right-0 z-[1000] bg-[#D7E7F7] rounded-[10px] flex flex-col justify-between items-center transition-all duration-500 ${isOpen ? 'h-[480px]' : 'h-[60px]'} animate-float`}
                 style={{
                     boxShadow: '15px 8px 20px rgba(0, 0, 0, 0.3)',
                     border: '2px solid #88B3D9',
@@ -33,16 +44,24 @@ export default function ChatList() {
                 }}
             >
                 {!selectedChat && (
-                    <div className="p-[10px] flex flex-row justify-between items-center w-full" onClick={toggleChat}>
-                        <div className="font-dnf-bitbit text-[29px]">
-                            <span className="text-[#6396C6]">꼬북</span>
-                            <span className="text-[#43493A]">TALK</span>
-                        </div>
+                    <div className={`p-[10px] flex flex-row items-center w-full ${isMobile ? (isOpen ? 'justify-between' : 'h-[60px] justify-center') : 'justify-between'}`} onClick={toggleChat}>
+                        {isMobile ? ( isOpen ? (
+                            <div className="font-dnf-bitbit text-[29px]">
+                                <span className="text-[#6396C6]">꼬북</span>
+                                <span className="text-[#43493A]">TALK</span>
+                            </div>
+                        ) : <AiOutlineMessage className="w-[30px] h-[30px]" />) : (
+                            <div className="font-dnf-bitbit text-[29px]">
+                                <span className="text-[#6396C6]">꼬북</span>
+                                <span className="text-[#43493A]">TALK</span>
+                            </div>
+                        ) }
+                        
                         {!isOpen ? 
-                        <div className="rounded-full bg-[#DE0000] w-[30px] h-[30px] flex justify-center items-center text-white font-bold text-[20px] animate-bounce">
-                            1
-                        </div> : 
-                        <IoClose className="text-[28px]"/>
+                            !isMobile && <div className="rounded-full bg-[#DE0000] w-[30px] h-[30px] flex justify-center items-center text-white font-bold text-[20px] animate-bounce">
+                                1
+                            </div> : 
+                            <IoClose className="text-[28px]"/>
                         }
                     </div>
                 )}
