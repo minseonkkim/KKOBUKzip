@@ -117,7 +117,7 @@ public class AuctionService {
     }
 
     // 입찰 가격 갱신
-    public void updateBid(Long auctionId, Long userId, Double bidAmount) {
+    public void updateBid(Long auctionId, Long userId, Long bidAmount) {
         String redisKey = AUCTION_BID_KEY + auctionId;
 
         Map<String, Object> bidData = new HashMap<>();
@@ -140,6 +140,6 @@ public class AuctionService {
 
     public Map<Object, Object> getCurrentBid (Long auctionId) {
         String redisKey = AUCTION_BID_KEY + auctionId;
-        return redisTemplate.opsForHash().get(redisKey);
+        return redisTemplate.opsForHash().entries(redisKey);
     }
 }

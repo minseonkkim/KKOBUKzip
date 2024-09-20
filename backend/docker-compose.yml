@@ -20,13 +20,6 @@ services:
       - kkobuk-network
     ports:
       - "8761:8761"
-    environment:
-      - spring.cloud.config.uri=http://config-service:8888
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   config-service:
     image: 1202yjk/config-service:latest
@@ -63,8 +56,6 @@ services:
     depends_on:
       config-service:
         condition: service_healthy
-      eureka-service:
-        condition: service_healthy
 
   auction-service:
     image: 1202yjk/auction-service:latest
@@ -77,8 +68,6 @@ services:
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
     depends_on:
       config-service:
-        condition: service_healthy
-      eureka-service:
         condition: service_healthy
       apigateway-service:
         condition: service_healthy
@@ -96,8 +85,6 @@ services:
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
     depends_on:
       config-service:
-        condition: service_healthy
-      eureka-service:
         condition: service_healthy
       apigateway-service:
         condition: service_healthy
