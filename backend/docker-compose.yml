@@ -67,8 +67,6 @@ services:
       - spring.rabbitmq.host=rabbitmq
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
     depends_on:
-      config-service:
-        condition: service_healthy
       apigateway-service:
         condition: service_healthy
     networks:
@@ -84,8 +82,6 @@ services:
       - spring.rabbitmq.host=rabbitmq
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
     depends_on:
-      config-service:
-        condition: service_healthy
       apigateway-service:
         condition: service_healthy
     networks:
