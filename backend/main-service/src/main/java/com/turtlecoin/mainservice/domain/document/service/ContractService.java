@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.web3j.abi.datatypes.Type;
 import org.web3j.crypto.Credentials;
+import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.gas.ContractGasProvider;
@@ -63,12 +64,8 @@ public class ContractService {
 
 		byte[] documentHash = null;
 		documentHash = events.get(0).documentHash;
-		StringBuilder hexString = new StringBuilder();
-		for (byte b : documentHash) {
-			// %02X는 대문자 Hex를 생성합니다.
-			hexString.append(String.format("%02X", b));
-		}
-		return hexString.toString();
+
+		return byteToString(documentHash);
 	}
 
 	// 인공증식서류 조회
@@ -96,13 +93,7 @@ public class ContractService {
 		byte[] documentHash = null;
 		documentHash = events.get(0).documentHash;
 
-		StringBuilder hexString = new StringBuilder();
-		for (byte b : documentHash) {
-			// %02X는 대문자 Hex를 생성합니다.
-			hexString.append(String.format("%02X", b));
-		}
-
-		return hexString.toString();
+		return byteToString(documentHash);
 	}
 
 	// 양도서류 등록
@@ -122,13 +113,7 @@ public class ContractService {
 		byte[] returnDocumentHash = null;
 		returnDocumentHash = events.get(0).documentHash;
 
-		StringBuilder hexString = new StringBuilder();
-		for (byte b : returnDocumentHash) {
-			// %02X는 대문자 Hex를 생성합니다.
-			hexString.append(String.format("%02X", b));
-		}
-
-		return hexString.toString();
+		return byteToString(returnDocumentHash);
 	}
 
 	// 양도양수서류 조회
@@ -154,13 +139,7 @@ public class ContractService {
 		byte[] returnDocumentHash = null;
 		returnDocumentHash = events.get(0).documentHash;
 
-		StringBuilder hexString = new StringBuilder();
-		for (byte b : returnDocumentHash) {
-			// %02X는 대문자 Hex를 생성합니다.
-			hexString.append(String.format("%02X", b));
-		}
-
-		return hexString.toString();
+		return byteToString(returnDocumentHash);
 	}
 
 	// 폐사질병서류 조회
@@ -185,4 +164,18 @@ public class ContractService {
 		return byteArray;
 	}
 
+	// byte[] -> String
+	public String byteToString(byte[] bytes){
+		StringBuilder hexString = new StringBuilder();
+		for (byte b : bytes) {
+			// %02X는 대문자 Hex를 생성합니다.
+			hexString.append(String.format("%02X", b));
+		}
+		return hexString.toString();
+	}
+
+	// keccak256 생성하기
+	public String keccak256(byte[] input) {
+		return byteToString(Hash.sha3(input)); // Keccak-256 해시 계산
+	}
 }

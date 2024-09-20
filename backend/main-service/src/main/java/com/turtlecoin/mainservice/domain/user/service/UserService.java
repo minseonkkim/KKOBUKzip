@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -33,5 +34,15 @@ public class UserService {
                 uuid
         );
         return userRepository.save(user);
+    }
+
+    public User getUserByUUID(String uuid) {
+        Optional<User> userOption = userRepository.findUserByUUID(uuid);
+		return userOption.orElse(null);
+    }
+
+    public User getUserByNameAndPhoneNumber(String name, String phonenumber) {
+        Optional<User> userOption = userRepository.findUserByNameAndPhoneNumber(name, phonenumber);
+        return userOption.orElse(null);
     }
 }

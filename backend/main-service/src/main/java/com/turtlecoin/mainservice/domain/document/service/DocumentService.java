@@ -18,6 +18,8 @@ import com.turtlecoin.mainservice.domain.document.entity.DocType;
 import com.turtlecoin.mainservice.domain.document.entity.Document;
 import com.turtlecoin.mainservice.domain.document.entity.Progress;
 import com.turtlecoin.mainservice.domain.document.repository.DocumentRepository;
+import com.turtlecoin.mainservice.domain.user.entity.User;
+import com.turtlecoin.mainservice.domain.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +29,8 @@ import lombok.RequiredArgsConstructor;
 public class DocumentService {
 	private final DocumentRepository documentRepository;
 	private final DocTypeService docTypeService;
+	private final UserService userService;
+	private final ContractService contractService;
 
 	// 서류 저장
 	@Transactional
@@ -34,20 +38,21 @@ public class DocumentService {
 		documentRepository.save(document);
 	}
 
-	/*
-				유저 서비스 구현되면 꼭 추가 해줘야 함!!!!!!!!!!!!!!!!!!!!!!1
-	 */
+	// 서류 리스트를 조회하는 함수
 	public List<DocumentListDto> getDocumentList(){
 		List<Document> documents = documentRepository.findAllByProgress(Progress.DOCUMENT_REVIEWING);
 
 		List<DocumentListDto> documentListDtos = documents.stream()
 			.map(document -> {
+				// 신청자 정보 가져오기
+				User user = userService.getUserByUUID(document.getApplicant());
+
 				return DocumentListDto.builder()
 					.docType(docTypeService.convertToString(document.getDocType()))
 					.scientificName("Malaclemys terrapin")
-					.name(null)
-					.email(null)
-					.registerDate(null)
+					.name(user.getName())
+					.email(user.getEmail())
+					.registerDate(document.getCreateDate().toLocalDate())
 					.turtleUUID(document.getTurtleUUID())
 					.documentHash(document.getDocumentHash())
 					.build();
@@ -59,99 +64,120 @@ public class DocumentService {
 
 	// 이게 맞나...?
 	// 서류 조회
-	public DocumentResponseDto responseDocument(String documentHash, String turtleUUID, contract.TurtleDocumentation.Multiplication documentDetail) throws Exception{
+	public DocumentResponseDto responseDocument(String documentHash, String turtleUUID) throws Exception{
 		DocumentResponseDto documentResponseDto = null;
 		Optional<Document> documentOption = documentRepository.findByDocumentHashAndTurtleUUID(documentHash, turtleUUID);
 		if(!documentOption.isPresent()) {
 			throw new Exception("거북이를 찾을 수 없습니다.");
 		}
 		Document document = documentOption.get();
+		User user = userService.getUserByUUID(document.getApplicant());
 
-		documentResponseDto = switch (document.getDocType()) {
-			case BREEDING -> BreedingDocumentResponseDto.builder()
-				.docType(docTypeService.convertToString(document.getDocType()))
-				.turtleUUID(document.getTurtleUUID())
-				.documentHash(document.getDocumentHash())
-				.applicant(ApplicantResponseDto.builder()
-					.name(null)
-					.email(null)
-					.foreignFlag(null)
-					.phonenumber(null)
-					.birth(null)
-					.address(null)
-					.build())
-				.detail(BreedingDocumentResponseDto.Detail.builder()
-					.scientificName("Malaclemys terrapin")
-					.area(documentDetail.area)
-					.count(0)
-					.purpose(documentDetail.purpose)
-					.registerDate(document.getCreateDate().toLocalDate())
-					.motherUUID(documentDetail.motherId)
-					.motherAquisition(null)
-					.fatherUUID(documentDetail.fatherId)
-					.fatherAquisition(null)
-					.locationSpecification(documentDetail.locationSpecification)
-					.multiplicationMethod(documentDetail.multiplicationMethod)
-					.shelterSpecification(documentDetail.shelterSpecification)
-					.build())
-				.build();
-			case TRANSFER -> TransferDocumentResponseDto.builder()
-				.docType(docTypeService.convertToString(document.getDocType()))
-				.turtleUUID(document.getTurtleUUID())
-				.documentHash(document.getDocumentHash())
-				.applicant(ApplicantResponseDto.builder()
-					.name(null)
-					.email(null)
-					.foreignFlag(null)
-					.phonenumber(null)
-					.birth(null)
-					.address(null)
-					.build())
-				.assignee(TransferDocumentResponseDto.UserResponseDto.builder()
-					.name(null)
-					.phoneNumber(null)
-					.address(null)
-					.build())
-				.grantor(TransferDocumentResponseDto.UserResponseDto.builder()
-					.name(null)
-					.phoneNumber(null)
-					.address(null)
-					.build())
-				.detail(TransferDocumentResponseDto.Detail.builder()
-					.scientificName("Malaclemys terrapin")
-					.count(0)
-					.registerDate(null)
-					.transferReason(null)
-					.motherUUID(null)
-					.motherAquisition(null)
-					.fatherUUID(null)
-					.fatherAquisition(null)
-					.build())
-				.build();
-			default -> DeathDocumentResponseDto.builder()
-				.docType(docTypeService.convertToString(document.getDocType()))
-				.turtleUUID(document.getTurtleUUID())
-				.documentHash(document.getDocumentHash())
-				.applicant(ApplicantResponseDto.builder()
-					.name(null)
-					.email(null)
-					.foreignFlag(null)
-					.phonenumber(null)
-					.birth(null)
-					.address(null)
-					.build())
-				.detail(DeathDocumentResponseDto.Detail.builder()
-					.scientificName("Malaclemys terrapin")
-					.shelter(null)
-					.count(0)
-					.registerDate(null)
-					.deathReason(null)
-					.plan(null)
-					.deathImage(null)
-					.diagnosis(null)
-					.build())
-				.build();
-		};
+		// 블록체인에서 서류 상세 정보 가져오기
+
+		switch(document.getDocType()) {
+			case BREEDING :
+				// 블록체인에서 가져오기
+				contract.TurtleDocumentation.Multiplication breedingDetail = contractService.searchTurtleMultiplicationDocument(turtleUUID, documentHash);
+
+				documentResponseDto = BreedingDocumentResponseDto.builder()
+					.docType(docTypeService.convertToString(document.getDocType()))
+					.turtleUUID(document.getTurtleUUID())
+					.documentHash(document.getDocumentHash())
+					.applicant(ApplicantResponseDto.builder()
+						.name(user.getName())
+						.email(user.getEmail())
+						.korean(user.getForeignFlag())
+						.phonenumber(user.getPhonenumber())
+						.birth(user.getBirth())
+						.address(user.getAddress())
+						.build())
+					.detail(BreedingDocumentResponseDto.Detail.builder()
+						.scientificName("Malaclemys terrapin")
+						.area(breedingDetail.area)
+						.count(breedingDetail.count.intValue())
+						.purpose(breedingDetail.purpose)
+						.registerDate(document.getCreateDate().toLocalDate())
+						.motherUUID(breedingDetail.motherId)
+						.motherAquisition(null)
+						.fatherUUID(breedingDetail.fatherId)
+						.fatherAquisition(null)
+						.locationSpecification(breedingDetail.locationSpecification)
+						.multiplicationMethod(breedingDetail.multiplicationMethod)
+						.shelterSpecification(breedingDetail.shelterSpecification)
+						.build())
+					.build();
+				break;
+			case DEATH :
+				// 블록체인에서 가져오기
+				contract.TurtleDocumentation.Death deathDetail = contractService.searchTurtleDeathDocument(turtleUUID, documentHash);
+
+				documentResponseDto = DeathDocumentResponseDto.builder()
+					.docType(docTypeService.convertToString(document.getDocType()))
+					.turtleUUID(document.getTurtleUUID())
+					.documentHash(document.getDocumentHash())
+					.applicant(ApplicantResponseDto.builder()
+						.name(user.getName())
+						.email(user.getEmail())
+						.korean(user.getForeignFlag())
+						.phonenumber(user.getPhonenumber())
+						.birth(user.getBirth())
+						.address(user.getAddress())
+						.build())
+					.detail(DeathDocumentResponseDto.Detail.builder()
+						.scientificName("Malaclemys terrapin")
+						.shelter(deathDetail.shelter)
+						.count(deathDetail.count.intValue())
+						.registerDate(document.getCreateDate().toLocalDate())
+						.deathReason(deathDetail.deathReason)
+						.plan(deathDetail.plan)
+						.deathImage(deathDetail.deathImage)
+						.diagnosis(deathDetail.diagnosis)
+						.build())
+					.build();
+				break;
+			case TRANSFER:
+				// 블록체인에서 가져오기
+				contract.TurtleDocumentation.Transfer transferDetail = contractService.searchTurtleTransferDocument(turtleUUID, documentHash);
+				// 사용자 조회
+				User assignee = userService.getUserByUUID(transferDetail.assigneeId);
+				User grantor = userService.getUserByUUID(transferDetail.grantorId);
+
+				documentResponseDto = TransferDocumentResponseDto.builder()
+					.docType(docTypeService.convertToString(document.getDocType()))
+					.turtleUUID(document.getTurtleUUID())
+					.documentHash(document.getDocumentHash())
+					.applicant(ApplicantResponseDto.builder()
+						.name(user.getName())
+						.email(user.getEmail())
+						.korean(user.getForeignFlag())
+						.phonenumber(user.getPhonenumber())
+						.birth(user.getBirth())
+						.address(user.getAddress())
+						.build())
+					.assignee(TransferDocumentResponseDto.UserResponseDto.builder()
+						.name(assignee.getName())
+						.phoneNumber(assignee.getPhonenumber())
+						.address(assignee.getAddress())
+						.build())
+					.grantor(TransferDocumentResponseDto.UserResponseDto.builder()
+						.name(grantor.getName())
+						.phoneNumber(grantor.getPhonenumber())
+						.address(grantor.getAddress())
+						.build())
+					.detail(TransferDocumentResponseDto.Detail.builder()
+						.scientificName("Malaclemys terrapin")
+						.count(transferDetail.count.intValue())
+						.registerDate(document.getCreateDate().toLocalDate())
+						.transferReason(transferDetail.transferReason)
+						.motherUUID(transferDetail.motherId)
+						.motherAquisition(null)
+						.fatherUUID(transferDetail.fatherId)
+						.fatherAquisition(null)
+						.build())
+					.build();
+				break;
+		}
 
 		return documentResponseDto;
 	}

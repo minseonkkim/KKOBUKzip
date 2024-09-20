@@ -25,20 +25,18 @@ public class Document extends BaseEntity {
 	@Column(nullable = false)
 	private Progress progress;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String turtleUUID;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private DocType docType;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String applicant;
 
-	public void assignHash(String hash){
-		if(documentHash == null && hash != null){
-			documentHash = hash;
-		}
+	public void assignValuesByBatch(String applicant){
+		this.applicant = applicant;
 	}
 
 	public void approve(){

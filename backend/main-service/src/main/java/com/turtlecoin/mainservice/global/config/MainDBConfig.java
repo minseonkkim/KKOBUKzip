@@ -1,5 +1,7 @@
 package com.turtlecoin.mainservice.global.config;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -36,12 +38,13 @@ public class MainDBConfig {
 	@Bean(name = "mainEntityManagerFactory")
 	public LocalContainerEntityManagerFactoryBean mainEntityManagerFactory() {
 		LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+
 		factory.setDataSource(mainDataSource());
 		factory.setPackagesToScan("com.turtlecoin.mainservice.domain"); // 엔티티 패키지 경로
 		factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 		Properties jpaProperties = new Properties();
 		//jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-		jpaProperties.put("hibernate.hbm2ddl.auto", "update");
+		jpaProperties.put("hibernate.hbm2ddl.auto", "create");
 		factory.setJpaProperties(jpaProperties);
 
 		return factory;

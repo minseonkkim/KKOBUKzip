@@ -30,6 +30,8 @@ import com.turtlecoin.mainservice.domain.document.entity.Progress;
 import com.turtlecoin.mainservice.domain.document.service.ContractService;
 import com.turtlecoin.mainservice.domain.document.service.DocumentService;
 import com.turtlecoin.mainservice.domain.s3.service.ImageUploadService;
+import com.turtlecoin.mainservice.domain.user.entity.User;
+import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 
 import lombok.RequiredArgsConstructor;
@@ -47,6 +49,7 @@ public class DocumentController {
 	private final ImageUploadService imageUploadService;
 	private final DocumentService documentService;
 	private final ContractService contractService;
+	private final UserService userService;
 
 	// 인공증식서류 등록
 	@PostMapping(value = "/register/breed", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -75,8 +78,12 @@ public class DocumentController {
 			return new ResponseEntity<>(ResponseVO.failure("서류 등록에 실패했습니다.", "이미지 업로드 중 오류 발생"), HttpStatus.BAD_REQUEST);
 		}
 
-		String hash = "";
 		String turtleUUID = "";
+		String hash = "";
+
+		String currentVariable = requestData.getApplicant() + turtleUUID + Long.toString(System.currentTimeMillis());
+		String documentHash = contractService.keccak256(currentVariable.getBytes());
+
 		// 블록체인에 업로드
 		try{
 			turtleUUID = UUID.randomUUID().toString();
@@ -110,11 +117,11 @@ public class DocumentController {
 			e.printStackTrace();
 			// 에러가 발생했을 경우 DB에 null 인 상태로라도 저장해야 함
 			Document document = Document.builder()
-				.documentHash(null)
+				.documentHash(documentHash)
 				.progress(Progress.DOCUMENT_REVIEWING)
 				.turtleUUID(turtleUUID)
 				.docType(DocType.BREEDING)
-				.applicant(requestData.getApplicant())
+				.applicant(null)
 				.build();
 			documentService.save(document);
 
@@ -131,13 +138,18 @@ public class DocumentController {
 	public ResponseEntity<?> registerAssignDocument(@RequestBody AssignDocumentRequest requestData) {
 		String hash = "";
 		String turtleUUID = "";
+
+		String currentVariable = requestData.getApplicant() + turtleUUID + Long.toString(System.currentTimeMillis());
+		String documentHash = contractService.keccak256(currentVariable.getBytes());
 		// 블록체인에 업로드 ( 미구현 )
 		try{
 			turtleUUID = UUID.randomUUID().toString();
-			String userUUID = UUID.randomUUID().toString();
-			// 유저 서비스 완료되면 유저 검색해서 UUID 가져오는거 만들어줘야 함
+			// 이름 전화번호로 사용자 검색하기
+			User assignee = userService.getUserByNameAndPhoneNumber(requestData.getDetail().getAssignee().getName(), requestData.getDetail().getAssignee().getPhoneNumber());
+			String assigneeUUID = assignee.getUuid();
+
 			hash = contractService.registerTurtleAssigneeDocument(
-				turtleUUID, requestData.getApplicant(), userUUID, BigInteger.valueOf(requestData.getDetail().getCount()),
+				turtleUUID, requestData.getApplicant(), assigneeUUID, BigInteger.valueOf(requestData.getDetail().getCount()),
 				requestData.getDetail().getTransferReason(), requestData.getDetail().getPurpose()
 			);
 		}
@@ -153,23 +165,17 @@ public class DocumentController {
 				.progress(Progress.DOCUMENT_REVIEWING)
 				.turtleUUID(turtleUUID)
 				.docType(DocType.TRANSFER)
-				/*
-							유저 서비스 구현되면 꼭 추가 해줘야 함!!!!!!!!!!!!!!!!!!!!!!1
-				 */
-				.applicant("dump")
+				.applicant(requestData.getApplicant())
 				.build();
 			documentService.save(document);
 		}catch(Exception e){
 			// 에러가 발생했을 경우 DB에 null 인 상태로라도 저장해야 함
 			Document document = Document.builder()
-				.documentHash(null)
+				.documentHash(documentHash)
 				.progress(Progress.DOCUMENT_REVIEWING)
 				.turtleUUID(turtleUUID)
 				.docType(DocType.TRANSFER)
-				/*
-							유저 서비스 구현되면 꼭 추가 해줘야 함!!!!!!!!!!!!!!!!!!!!!!1
-				 */
-				.applicant("dump")
+				.applicant(null)
 				.build();
 			documentService.save(document);
 
@@ -187,12 +193,16 @@ public class DocumentController {
 		String hash = "";
 		String turtleUUID = "";
 		// 블록체인에 업로드 ( 미구현 )
+		turtleUUID = UUID.randomUUID().toString();
+		String currentVariable = requestData.getApplicant() + turtleUUID + Long.toString(System.currentTimeMillis());
+		String documentHash = contractService.keccak256(currentVariable.getBytes());
 		try{
-			turtleUUID = UUID.randomUUID().toString();
-			String userUUID = UUID.randomUUID().toString();
-			// 유저 서비스 완료되면 유저 검색해서 UUID 가져오는거 만들어줘야 함
+			// 이름 전화번호로 사용자 검색하기
+			User assignee = userService.getUserByNameAndPhoneNumber(requestData.getDetail().getGrantor().getName(), requestData.getDetail().getGrantor().getPhoneNumber());
+			String grantorUUID = assignee.getUuid();
+
 			hash = contractService.registerTurtleGrantorDocument(
-				turtleUUID, requestData.getApplicant(), requestData.getDocumentHash(), userUUID, requestData.getDetail().getAquisition(),
+				turtleUUID, requestData.getApplicant(), requestData.getDocumentHash(), grantorUUID, requestData.getDetail().getAquisition(),
 				requestData.getDetail().getTurtleUUID(), requestData.getDetail().getMotherUUID()
 			);
 		}
@@ -207,24 +217,17 @@ public class DocumentController {
 				.documentHash(hash)
 				.progress(Progress.DOCUMENT_REVIEWING)
 				.turtleUUID(turtleUUID)
-				.docType(DocType.TRANSFER)
-				/*
-							유저 서비스 구현되면 꼭 추가 해줘야 함!!!!!!!!!!!!!!!!!!!!!!1
-				 */
-				.applicant("dump")
+				.applicant(requestData.getApplicant())
 				.build();
 			documentService.save(document);
 		}catch(Exception e){
 			// 에러가 발생했을 경우 DB에 null 인 상태로라도 저장해야 함
 			Document document = Document.builder()
-				.documentHash(null)
+				.documentHash(documentHash)
 				.progress(Progress.DOCUMENT_REVIEWING)
 				.turtleUUID(turtleUUID)
 				.docType(DocType.TRANSFER)
-				/*
-							유저 서비스 구현되면 꼭 추가 해줘야 함!!!!!!!!!!!!!!!!!!!!!!1
-				 */
-				.applicant("dump")
+				.applicant(null)
 				.build();
 			documentService.save(document);
 
@@ -264,10 +267,10 @@ public class DocumentController {
 		}
 
 		String hash = "";
-		String turtleUUID = "";
-		// 블록체인에 업로드 ( 미구현 )
+		String turtleUUID = UUID.randomUUID().toString();
+		String currentVariable = requestData.getApplicant() + turtleUUID + Long.toString(System.currentTimeMillis());
+		String documentHash = contractService.keccak256(currentVariable.getBytes());
 		try{
-			turtleUUID = UUID.randomUUID().toString();
 			hash = contractService.registerTurtleDeathDocument(
 				turtleUUID, requestData.getApplicant(), requestData.getDetail().getShelter(), BigInteger.valueOf(requestData.getDetail().getCount()), requestData.getDetail().getDeathReason(),
 				requestData.getDetail().getPlan(), deathImageAddress, deathImageAddress
@@ -288,23 +291,17 @@ public class DocumentController {
 				.progress(Progress.DOCUMENT_REVIEWING)
 				.turtleUUID(turtleUUID)
 				.docType(DocType.DEATH)
-				/*
-							유저 서비스 구현되면 꼭 추가 해줘야 함!!!!!!!!!!!!!!!!!!!!!!1
-				 */
-				.applicant("dump")
+				.applicant(requestData.getApplicant())
 				.build();
 			documentService.save(document);
 		}catch(Exception e){
 			// 에러가 발생했을 경우 DB에 null 인 상태로라도 저장해야 함
 			Document document = Document.builder()
-				.documentHash(null)
+				.documentHash(documentHash)
 				.progress(Progress.DOCUMENT_REVIEWING)
 				.turtleUUID(turtleUUID)
 				.docType(DocType.DEATH)
-				/*
-							유저 서비스 구현되면 꼭 추가 해줘야 함!!!!!!!!!!!!!!!!!!!!!!1
-				 */
-				.applicant("dump")
+				.applicant(null)
 				.build();
 			documentService.save(document);
 
@@ -335,19 +332,10 @@ public class DocumentController {
 	public ResponseEntity<?> getDocument(
 		@PathVariable(value = "turtleUUID") String turtleUUID,
 		@PathVariable(value = "documentHash") String documentHash) {
-
-		contract.TurtleDocumentation.Multiplication documentDetail = null;
-		// 블록체인에서 서류 정보 가져오기
-		try{
-			documentDetail = contractService.searchTurtleMultiplicationDocument(turtleUUID, documentHash);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-
 		DocumentResponseDto documentResponseDto;
 
 		try{
-			documentResponseDto = documentService.responseDocument(documentHash, turtleUUID, documentDetail);
+			documentResponseDto = documentService.responseDocument(documentHash, turtleUUID);
 		}catch(Exception e){
 			return new ResponseEntity<>(ResponseVO.failure("서류 조회에 실패했습니다.", e.getMessage()), HttpStatus.BAD_REQUEST);
 		}

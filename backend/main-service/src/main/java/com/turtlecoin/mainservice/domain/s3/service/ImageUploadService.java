@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class ImageUploadService {
 	private final AmazonS3 amazonS3;
 
-	// application.properties 파일에서 받아 온 S3 버킷 이름
+	// s3.properties 파일에서 받아 온 S3 버킷 이름
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
