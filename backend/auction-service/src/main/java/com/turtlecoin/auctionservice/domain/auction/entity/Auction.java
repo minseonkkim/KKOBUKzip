@@ -27,7 +27,7 @@ public class Auction extends BaseEntity {
 
     @Column(nullable = false)
     private Double minBid;
-
+    private Double nowBid;
     private Double winningBid;
 
     // 현재 입찰 회원

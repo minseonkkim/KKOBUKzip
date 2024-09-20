@@ -22,6 +22,11 @@ services:
       - "8761:8761"
     environment:
       - spring.cloud.config.uri=http://config-service:8888
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   config-service:
     image: 1202yjk/config-service:latest
@@ -50,11 +55,16 @@ services:
       - spring.cloud.config.uri=http://config-service:8888
       - spring.rabbitmq.host=rabbitmq
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/actuator/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
     depends_on:
       config-service:
         condition: service_healthy
       eureka-service:
-        condition: service_started
+        condition: service_healthy
 
   auction-service:
     image: 1202yjk/auction-service:latest
@@ -69,9 +79,9 @@ services:
       config-service:
         condition: service_healthy
       eureka-service:
-        condition: service_started
+        condition: service_healthy
       apigateway-service:
-        condition: service_started
+        condition: service_healthy
     networks:
       - kkobuk-network
 
@@ -88,9 +98,9 @@ services:
       config-service:
         condition: service_healthy
       eureka-service:
-        condition: service_started
+        condition: service_healthy
       apigateway-service:
-        condition: service_started
+        condition: service_healthy
     networks:
       - kkobuk-network
 

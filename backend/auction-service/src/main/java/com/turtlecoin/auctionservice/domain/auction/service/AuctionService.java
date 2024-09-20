@@ -18,20 +18,23 @@ import com.turtlecoin.auctionservice.domain.turtle.service.TurtleService;
 import com.turtlecoin.auctionservice.global.client.TurtleClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuctionService {
+
+    private RedisTemplate<String, Object> redisTemplate;
+    private static final String AUCTION_BID_KEY = "auction_bid_";
 
     private final AuctionRepository auctionRepository;
     private final ImageUploadService imageUploadService;  // ImageUploadService도 주입합니다.
@@ -97,21 +100,46 @@ public class AuctionService {
 
         List<AuctionTurtleInfoDTO> filteredTurtles = turtleClient.getFilteredTurtles(gender, minSize, maxSize);
 
-        List<Auction> filteredAuctions = queryFactory.selectFrom(auction)
+        return queryFactory.selectFrom(auction)
                 .where(whereClause.and(auction.turtleId.in(
                         filteredTurtles.stream().map(AuctionTurtleInfoDTO::getId).collect(Collectors.toList()))))
-                .offset((page-1) * 10)
+                .offset((page-1L) * 10)
                 .limit(10)
                 .fetch();
-
-
-        // 페이징 처리
-        return filteredAuctions;
     }
 
+    // 거북이 정보를 받아와서 경매정보를 DTO로 변환
+    // 수정, 테스트 필요
     public AuctionResponseDTO convertToDTO(Auction auction) {
         TurtleResponseDTO turtleInfo = turtleService.getTurtleInfo(auction.getTurtleId());
 
         return AuctionResponseDTO.from(auction, turtleInfo);
+    }
+
+    // 입찰 가격 갱신
+    public void updateBid(Long auctionId, Long userId, Double bidAmount) {
+        String redisKey = AUCTION_BID_KEY + auctionId;
+
+        Map<String, Object> bidData = new HashMap<>();
+        bidData.put("userId", userId);
+        bidData.put("bidAmount", bidAmount);
+
+        Long currentBid = (Long) redisTemplate.opsForHash().get(redisKey, "bidAmount");
+        Long currentUser = (Long) redisTemplate.opsForHash().get(redisKey, "userId");
+
+        // 입찰 조건: 현재 입찰자와 다른 사용자이며, 입찰 금액이 더 클 경우에만 갱신
+        if ((currentBid == null || bidAmount > currentBid) &&
+                (currentUser == null || !currentUser.equals(userId))) {
+            redisTemplate.opsForHash().putAll(redisKey, bidData);
+
+            String bidHistory = redisKey + ":history";
+            String bidRecord = "userId: " + userId + ", bidAmount: " + bidAmount;
+            redisTemplate.opsForList().rightPush(bidHistory, bidRecord);
+        }
+    }
+
+    public Map<Object, Object> getCurrentBid (Long auctionId) {
+        String redisKey = AUCTION_BID_KEY + auctionId;
+        return redisTemplate.opsForHash().get(redisKey);
     }
 }
