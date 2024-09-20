@@ -152,13 +152,23 @@ function AuctionDetailPage() {
             <div className="absolute bottom-3 right-3 bg-gray-700 text-white px-4 py-2 rounded-[20px]">
               {currentIndex + 1} / {images.length}
             </div>
-            <div className="flex flex-row justify-between items-center mt-[15px] mb-[10px]">
+            <div className="flex flex-row justify-between items-center mt-[15px] mb-[7px]">
               <div className="text-[23px]">페닐슐라쿠터</div>
-              <div className="text-[16px] text-gray-700">
-                <span className="bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full">
-                  #태그
+              <div className="flex flex-row space-x-2">
+                <span
+                  className="px-2 py-1 rounded-full cursor-pointer text-[18px] bg-[#D5F0DD] text-[#065F46]"
+                >
+                  #암컷
+                </span>
+                <span
+                  className="px-2 py-1 rounded-full cursor-pointer text-[18px] bg-[#D5F0DD] text-[#065F46]"
+                >
+                  #베이비
                 </span>
               </div>
+            </div>
+            <div className="mb-[13px] text-[#9A9A9A] text-[17px]">
+              24년 8월 10일생 | 8kg
             </div>
             <div className="text-[17px] leading-7 border-[2px] rounded-[10px] p-2 line-clamp">
               이 붉은귀거북은 활발하고 건강한 상태로, 밝고 선명한 붉은색 귀 무늬가
