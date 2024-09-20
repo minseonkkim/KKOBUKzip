@@ -99,9 +99,9 @@ public class DocumentService {
 						.purpose(breedingDetail.purpose)
 						.registerDate(document.getCreateDate().toLocalDate())
 						.motherUUID(breedingDetail.motherId)
-						.motherAquisition(null)
+						.motherAquisition(contractService.searchCurrentDocumentHash(breedingDetail.motherId))
 						.fatherUUID(breedingDetail.fatherId)
-						.fatherAquisition(null)
+						.fatherAquisition(contractService.searchCurrentDocumentHash(breedingDetail.fatherId))
 						.locationSpecification(breedingDetail.locationSpecification)
 						.multiplicationMethod(breedingDetail.multiplicationMethod)
 						.shelterSpecification(breedingDetail.shelterSpecification)
@@ -171,9 +171,9 @@ public class DocumentService {
 						.registerDate(document.getCreateDate().toLocalDate())
 						.transferReason(transferDetail.transferReason)
 						.motherUUID(transferDetail.motherId)
-						.motherAquisition(null)
+						.motherAquisition(contractService.searchCurrentDocumentHash(transferDetail.motherId))
 						.fatherUUID(transferDetail.fatherId)
-						.fatherAquisition(null)
+						.fatherAquisition(contractService.searchCurrentDocumentHash(transferDetail.motherId))
 						.build())
 					.build();
 				break;

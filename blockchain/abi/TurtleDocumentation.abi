@@ -4,6 +4,25 @@
       "inputs": [
         {
           "indexed": true,
+          "internalType": "string",
+          "name": "turtleId",
+          "type": "string"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "documentHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "CurrentTurtleDocument",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
           "internalType": "address",
           "name": "previousOwner",
           "type": "address"
@@ -136,7 +155,7 @@
         {
           "indexed": true,
           "internalType": "bytes32",
-          "name": "docuemntHash",
+          "name": "documentHash",
           "type": "bytes32"
         }
       ],
@@ -206,6 +225,11 @@
           "internalType": "string",
           "name": "_applicant",
           "type": "string"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_documentHash",
+          "type": "bytes32"
         },
         {
           "internalType": "uint8",
@@ -352,6 +376,11 @@
           "internalType": "string",
           "name": "_applicant",
           "type": "string"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_documentHash",
+          "type": "bytes32"
         },
         {
           "internalType": "string",
@@ -524,6 +553,11 @@
           "type": "string"
         },
         {
+          "internalType": "bytes32",
+          "name": "_documentHash",
+          "type": "bytes32"
+        },
+        {
           "internalType": "string",
           "name": "_shelter",
           "type": "string"
@@ -649,5 +683,73 @@
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_turtleId",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_documentHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "approveMultiplicationDocByReviewer",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_turtleId",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_documentHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "approveTransferDocByReviewer",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_turtleId",
+          "type": "string"
+        }
+      ],
+      "name": "searchCurrentDocumentHash",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
     }
   ]

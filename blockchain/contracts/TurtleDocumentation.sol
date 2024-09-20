@@ -71,10 +71,10 @@ contract TurtleDocumentation is Ownable {
     // event 모음
     event TurtleRegistered(string indexed turtleId, string indexed applicant);
     event TurtleMultiplication(string indexed turtleId, string indexed applicant, bytes32 indexed documentHash);
-    event TurtleTransferred(string indexed turtleId, string grantApplicant, string assignApplicant, bytes32 indexed docuemntHash);
+    event TurtleTransferred(string indexed turtleId, string grantApplicant, string assignApplicant, bytes32 indexed documentHash);
     event TurtleDeath(string indexed turtleId, string indexed applicant, bytes32 indexed documentHash);
     event TurtleOwnerChanged(string indexed turtleId, string indexed oldOwner, string indexed newOwner);
-    event CurrentTurttleDocument(string indexed turtleId, bytes32 indexed documentHash);
+    event CurrentTurtleDocument(string indexed turtleId, bytes32 indexed documentHash);
 
     // (관리자용) 거북이 추가
     function registerTurtle(string memory _turtleId, string memory _applicant) public onlyOwner {
@@ -262,9 +262,7 @@ contract TurtleDocumentation is Ownable {
     }
 
     // 가장 최근 서류 조회(양도 및 양수 기록이 없는 경우에는 인공증식 서류 해시값 반환)
-    function searchCurrentDocumentHash(string memory _turtleId) public returns (bytes32) {
-        emit CurrentTurttleDocument(_turtleId, turtles[_turtleId].currentDocumentHash);
-
+    function searchCurrentDocumentHash(string memory _turtleId) public view returns (bytes32) {
         return turtles[_turtleId].currentDocumentHash;
     }
 }

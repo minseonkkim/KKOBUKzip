@@ -88,12 +88,13 @@ public class DocumentController {
 		try{
 			turtleUUID = UUID.randomUUID().toString();
 			hash = contractService.registerTurtleMultiplicationDocument(
-				turtleUUID, requestData.getApplicant(), BigInteger.valueOf(requestData.getDetail().getCount()), requestData.getDetail().getArea(),
+				turtleUUID, requestData.getApplicant(), documentHash, BigInteger.valueOf(requestData.getDetail().getCount()), requestData.getDetail().getArea(),
 				requestData.getDetail().getPurpose(), requestData.getDetail().getLocation(), requestData.getDetail().getFatherUUID(),
 				requestData.getDetail().getMotherUUID(), locationSpecificationAddress, multiplicationAddress, shelterSpecificationAddress
 			);
 		}
 		catch(Exception e){
+			e.printStackTrace();
 			// 로직중 에러가 발생하면 모두 처음으로 복구시킨다.
 			imageUploadService.deleteS3(locationSpecificationAddress);
 			imageUploadService.deleteS3(multiplicationAddress);
@@ -147,7 +148,7 @@ public class DocumentController {
 			String assigneeUUID = assignee.getUuid();
 
 			hash = contractService.registerTurtleAssigneeDocument(
-				turtleUUID, requestData.getApplicant(), assigneeUUID, BigInteger.valueOf(requestData.getDetail().getCount()),
+				turtleUUID, requestData.getApplicant(), documentHash, assigneeUUID, BigInteger.valueOf(requestData.getDetail().getCount()),
 				requestData.getDetail().getTransferReason(), requestData.getDetail().getPurpose()
 			);
 		}
@@ -270,12 +271,12 @@ public class DocumentController {
 		String documentHash = contractService.keccak256(currentVariable.getBytes());
 		try{
 			hash = contractService.registerTurtleDeathDocument(
-				turtleUUID, requestData.getApplicant(), requestData.getDetail().getShelter(), BigInteger.valueOf(requestData.getDetail().getCount()), requestData.getDetail().getDeathReason(),
+				turtleUUID, requestData.getApplicant(), documentHash, requestData.getDetail().getShelter(), BigInteger.valueOf(requestData.getDetail().getCount()), requestData.getDetail().getDeathReason(),
 				requestData.getDetail().getPlan(), deathImageAddress, deathImageAddress
 			);
 		}
 		catch(Exception e){
-			//e.printStackTrace();
+			e.printStackTrace();
 			// 로직중 에러가 발생하면 모두 처음으로 복구시킨다.
 			imageUploadService.deleteS3(deathImageAddress);
 			imageUploadService.deleteS3(diagnosisAddress);

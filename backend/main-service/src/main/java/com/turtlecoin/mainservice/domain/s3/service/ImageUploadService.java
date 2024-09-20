@@ -67,8 +67,8 @@ public class ImageUploadService {
 		amazonS3.putObject(new PutObjectRequest(bucket, fileName, uploadFile)
 			.withCannedAcl(CannedAccessControlList.PublicRead));
 		// 업로드된 파일의 URL 반환
-		return cloudFront + fileName;
-		//return amazonS3.getUrl(bucket, fileName).toString();
+		//return cloudFront + fileName;
+		return amazonS3.getUrl(bucket, fileName).toString();
 	}
 
 	// S3에서 파일 삭제하는 메서드
