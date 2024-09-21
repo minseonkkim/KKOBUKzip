@@ -20,6 +20,7 @@ eureka:
 
 logging:
   level:
+    com.example.auction-service.client: DEBUG
     org:
       hibernate:
         SQL: debug

@@ -1,7 +1,7 @@
 package com.turtlecoin.auctionservice.domain.auction.dto;
 
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
-import com.turtlecoin.auctionservice.domain.turtle.dto.TurtleResponseDTO;
+import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;

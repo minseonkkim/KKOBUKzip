@@ -14,13 +14,13 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Auction extends BaseEntity {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique=true, nullable=false)
     private Long id;
 
     //등록한 사람
     @Column(nullable=false)
-    private Long sellerId;
+    private Long userId;
 
     @Column(nullable = false)
     private String title;

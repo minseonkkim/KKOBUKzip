@@ -1,15 +1,14 @@
 package com.turtlecoin.auctionservice.feign.dto;
 
-import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import lombok.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class TurtleResponseDTO {
+public class UserResponseDTO {
     private Long id;
-    private Gender gender;
-    private Double weight;
-    private Long userId;
+    private String nickname;
+    private String email;
+    private String name;
 }
