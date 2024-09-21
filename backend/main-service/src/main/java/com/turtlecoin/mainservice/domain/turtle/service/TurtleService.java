@@ -3,6 +3,7 @@ package com.turtlecoin.mainservice.domain.turtle.service;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.turtlecoin.mainservice.domain.turtle.dto.AuctionTurtleInfoDTO;
+import com.turtlecoin.mainservice.domain.turtle.dto.TurtleResponseDTO;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.entity.QTurtle;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
@@ -43,5 +44,18 @@ public class TurtleService {
                 .stream()
                 .map(t -> new AuctionTurtleInfoDTO(t.getId(), t.getGender(), t.getWeight()))  // 필요한 필드만 DTO로 변환
                 .collect(Collectors.toList());
+    }
+
+    public TurtleResponseDTO getTurtleById(Long turtleId) {
+        Turtle turtle = turtleRepository.findById(turtleId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 거북이를 찾을 수 없습니다."));
+
+        return TurtleResponseDTO.builder()
+                .id(turtle.getId())
+                .weight(turtle.getWeight())
+                .gender(turtle.getGender())
+                .userId(turtle.getUser().getId())
+                .build();
+
     }
 }

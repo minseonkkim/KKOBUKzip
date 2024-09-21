@@ -7,11 +7,12 @@ import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.auction.service.AuctionService;
-import com.turtlecoin.auctionservice.domain.turtle.dto.TurtleResponseDTO;
+import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.domain.turtle.service.TurtleService;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auction")
@@ -44,6 +46,9 @@ public class AuctionController {
     // 테스트
     @GetMapping("/test")
     public ResponseEntity<String> test () {
+        log.info("test");
+        System.out.println("test!");
+
         return ResponseEntity.status(HttpStatus.OK).body("OK");
     }
 
@@ -52,16 +57,21 @@ public class AuctionController {
     public ResponseEntity<ResponseVO<AuctionResponseDTO>> registerAuction(
             @RequestPart("data") RegisterAuctionDTO registerAuctionDTO,
             @RequestPart(value = "images", required = false) List<MultipartFile> multipartFiles) {
+        log.info("Registering auction {}", registerAuctionDTO);
         try {
             // 이미지가 없다면 빈 리스트로 처리
             if (multipartFiles == null) {
                 multipartFiles = new ArrayList<>();
+                log.info("이미지 파일 없음");
             }
 
             Auction registeredAuction = auctionService.registerAuction(registerAuctionDTO, multipartFiles);
+            log.info(registeredAuction.toString());
             AuctionResponseDTO responseDTO = auctionService.convertToDTO(registeredAuction);
+            log.info(responseDTO.toString());
             return new ResponseEntity<>(ResponseVO.success("경매 등록에 성공했습니다.", "auction", responseDTO), HttpStatus.OK);
         } catch (IOException e) {
+            log.info("오류 발생");
             return new ResponseEntity<>(ResponseVO.failure("400", "경매 등록에 실패했습니다. "+e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
