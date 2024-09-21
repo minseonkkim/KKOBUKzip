@@ -13,6 +13,7 @@ import com.turtlecoin.auctionservice.domain.turtle.service.TurtleService;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.AmqpConnectException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -70,9 +71,18 @@ public class AuctionController {
             AuctionResponseDTO responseDTO = auctionService.convertToDTO(registeredAuction);
             log.info(responseDTO.toString());
             return new ResponseEntity<>(ResponseVO.success("경매 등록에 성공했습니다.", "auction", responseDTO), HttpStatus.OK);
+
+        } catch (AmqpConnectException e) {
+            // RabbitMQ 예외 처리: 오류가 발생해도 200 OK 응답을 반환
+            log.error("RabbitMQ 연결 실패: {}", e.getMessage());
+            return new ResponseEntity<>(ResponseVO.success("RabbitMQ 오류 발생, 하지만 경매는 성공적으로 등록되었습니다.", "auction", null), HttpStatus.OK);
+
         } catch (IOException e) {
-            log.info("오류 발생");
-            return new ResponseEntity<>(ResponseVO.failure("400", "경매 등록에 실패했습니다. "+e.getMessage()), HttpStatus.BAD_REQUEST);
+            log.info("IOException 발생");
+            return new ResponseEntity<>(ResponseVO.failure("400", "경매 등록에 실패했습니다. " + e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            log.info("기타 오류 발생");
+            return new ResponseEntity<>(ResponseVO.failure("500", "서버 내부 오류가 발생했습니다. " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -96,13 +106,17 @@ public class AuctionController {
 
     @GetMapping("/{auctionId}")
     public ResponseEntity<ResponseVO<AuctionResponseDTO>> getAuctionById(@PathVariable Long auctionId) {
-        return auctionService.getAuctionWithTurtleInfo(auctionId)
-                .map(auction -> {
-                    AuctionResponseDTO responseDTO = auctionService.convertToDTO(auction);
-                    return new ResponseEntity<>(ResponseVO.success("경매 조회에 성공했습니다", "auction", responseDTO), HttpStatus.OK);
-                })
-                .orElseGet(() -> new ResponseEntity<>(ResponseVO.failure("404", "경매를 찾을 수 없습니다."), HttpStatus.NOT_FOUND));
+        log.info("경매 ID : {}", auctionId);
+
+        AuctionResponseDTO responseDTO = auctionService.getAuctionById(auctionId);
+
+        if (responseDTO != null) {
+            return new ResponseEntity<>(ResponseVO.success("경매 조회에 성공했습니다", "auction", responseDTO), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(ResponseVO.failure("404", "경매를 찾을 수 없습니다."), HttpStatus.NOT_FOUND);
+        }
     }
+
 
     @PostMapping("/{auctionId}/bid")
     public ResponseEntity<ResponseVO<String>> auctionBid(@PathVariable Long auctionId, @RequestBody BidRequestDTO bidRequestdto) {

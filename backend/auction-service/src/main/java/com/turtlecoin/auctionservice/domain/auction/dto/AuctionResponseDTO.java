@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 public class AuctionResponseDTO {
     private Long id;
     private Long turtleId;
-    private TurtleResponseDTO turtleInfo;
     private String title;
     private Double minBid;
     private Double nowBid;
@@ -29,11 +28,10 @@ public class AuctionResponseDTO {
     private List<AuctionTagDTO> tags;
     private List<AuctionPhotoDTO> images;
 
-    public static AuctionResponseDTO from(Auction auction, TurtleResponseDTO turtleInfo) {
+    public static AuctionResponseDTO from(Auction auction) {
         return AuctionResponseDTO.builder()
                 .id(auction.getId())
                 .turtleId(auction.getTurtleId())
-                .turtleInfo(turtleInfo)
                 .title(auction.getTitle())
                 .minBid(auction.getMinBid())
                 .nowBid(auction.getNowBid())
