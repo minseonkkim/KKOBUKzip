@@ -3,7 +3,9 @@ package com.turtlecoin.auctionservice.domain.auction.service;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 //import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
+import com.turtlecoin.auctionservice.domain.auction.dto.AuctionPhotoDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
+import com.turtlecoin.auctionservice.domain.auction.dto.AuctionTagDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
@@ -52,6 +54,10 @@ public class AuctionService {
             log.info("거북이 검증 시작");
             // 사용자가 소유한 거북이인지 검증
             validateUserOwnsTurtle(registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
+
+            // 거북이가 이미 올라간 거북이가 아닌지 검증하는 로직 추가
+            validateTurtleNotAlreadyRegistered(registerAuctionDTO.getTurtleId());
+
             log.info("거북이 정보 조회 및 DTO설정");
             // 거북이 정보 조회 및 DTO에 설정
             RegisterAuctionDTO updatedAuctionDTO = updateAuctionWithTurtleInfo(registerAuctionDTO);
@@ -94,6 +100,14 @@ public class AuctionService {
         log.info("내 거북이가 맞다");
     }
 
+    private void validateTurtleNotAlreadyRegistered (Long turtleId) {
+        Boolean isRegistered = auctionRepository.existsByTurtleId(turtleId);
+
+        if (isRegistered) {
+            throw new IllegalArgumentException("이미 등록된 거북이는 등록할 수 없습니다.");
+        }
+    }
+
     // 거북이 정보를 가져와서 RegisterAuctionDTO에 설정하는 메서드
     private RegisterAuctionDTO updateAuctionWithTurtleInfo(RegisterAuctionDTO registerAuctionDTO) {
         TurtleResponseDTO turtleInfo = mainClient.getTurtle(registerAuctionDTO.getTurtleId());
@@ -123,16 +137,44 @@ public class AuctionService {
         }
     }
 
-    // 거북이 정보로 경매 조회
-    public Optional<Auction> getAuctionWithTurtleInfo(Long auctionId) {
-        Optional<Auction> auction = auctionRepository.findById(auctionId);
-        log.info("거북이 정보로 경매 조회");
-        auction.ifPresent(a -> {
-            TurtleResponseDTO turtleInfo = turtleService.getTurtleInfo(a.getTurtleId());
-            log.info("Turtle Info: {}", turtleInfo);
-        });
+    // 경매 ID로 경매 조회
+    public AuctionResponseDTO getAuctionById(Long auctionId) {
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new IllegalArgumentException("경매를 찾을 수 없습니다: " + auctionId));
 
-        return auction;
+        log.info("경매 ID로 경매 조회");
+
+        List<AuctionTagDTO> auctionTagDTOs = auction.getAuctionTags().stream()
+                .map(tag -> AuctionTagDTO.builder()
+                        .id(tag.getId())
+                        .tag(tag.getTag())
+                        .build())
+                .toList();
+
+        List<AuctionPhotoDTO> auctionPhotoDTOS = auction.getAuctionPhotos().stream()
+                .map(photo -> AuctionPhotoDTO.builder()
+                        .id(photo.getId())
+                        .imageAddress(photo.getImageAddress())
+                        .build())
+                .toList();
+
+        // 경매 정보를 빌더 패턴을 사용해 DTO로 변환
+        return AuctionResponseDTO.builder()
+                .id(auction.getId())
+                .turtleId(auction.getTurtleId())
+                .title(auction.getTitle())
+                .minBid(auction.getMinBid())
+                .nowBid(auction.getNowBid())
+                .winningBid(auction.getWinningBid())
+                .sellerId(auction.getUserId())
+                .buyerId(auction.getBuyerId())
+                .startTime(auction.getStartTime())
+                .endTime(auction.getEndTime())
+                .content(auction.getContent())
+                .progress(auction.getAuctionProgress().name())
+                .tags(auctionTagDTOs)
+                .images(auctionPhotoDTOS)
+                .build();
     }
 
     // 경매 필터링 후 조회
@@ -151,6 +193,7 @@ public class AuctionService {
             whereClause.and(auction.auctionProgress.eq(progress));
         }
 
+        // main-service에서 필터링 엔드포인트 열어둘 것
         List<TurtleResponseDTO> filteredTurtles = mainClient.getFilteredTurtles(gender, minSize, maxSize);
 
         return queryFactory.selectFrom(auction)
@@ -166,7 +209,7 @@ public class AuctionService {
     public AuctionResponseDTO convertToDTO(Auction auction) {
         TurtleResponseDTO turtleInfo = turtleService.getTurtleInfo(auction.getTurtleId());
 
-        return AuctionResponseDTO.from(auction, turtleInfo);
+        return AuctionResponseDTO.from(auction);
     }
 
     // 입찰 가격 갱신
