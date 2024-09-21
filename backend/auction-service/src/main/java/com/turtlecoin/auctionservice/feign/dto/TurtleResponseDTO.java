@@ -1,4 +1,4 @@
-package com.turtlecoin.auctionservice.domain.turtle.dto;
+package com.turtlecoin.auctionservice.feign.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
