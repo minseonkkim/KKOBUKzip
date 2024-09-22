@@ -178,7 +178,7 @@ function DeathDocument() {
       </div>
       {/* 구비서류 정보 끝 */}
 
-      <div className="flex justify-end space-x-4">
+      <div className="flex justify-center space-x-4">
         <button
           onClick={sendDeathDocRequest}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
