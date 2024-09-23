@@ -23,9 +23,4 @@ public class TurtleController {
             ) {
         return turtleService.getFilteredTurtles(gender, minSize, maxSize);
     }
-
-    @GetMapping("/{turtleId}")
-    public TurtleResponseDTO getTurtleById (@PathVariable("turtleId") Long turtleId) {
-        return turtleService.getTurtleById(turtleId);
-    }
 }
