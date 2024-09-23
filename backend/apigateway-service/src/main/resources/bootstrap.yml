@@ -2,7 +2,7 @@ spring:
   application:
     name: apigateway-service
   profiles:
-    active: jun
+    active: local
   cloud:
     config:
       uri: http://127.0.0.1:8888  # Config Server URI 설정
@@ -20,5 +20,5 @@ spring:
   rabbitmq:
     host: rabbitmq
     port: 5672
-    username: guest
-    password: guest
+    username: kkobuk
+    password: kkobuk

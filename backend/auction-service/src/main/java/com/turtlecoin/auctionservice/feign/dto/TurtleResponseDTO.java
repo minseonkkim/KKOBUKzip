@@ -10,6 +10,6 @@ import lombok.*;
 public class TurtleResponseDTO {
     private Long id;
     private Gender gender;
-    private Double weight;
+    private int weight;
     private Long userId;
 }

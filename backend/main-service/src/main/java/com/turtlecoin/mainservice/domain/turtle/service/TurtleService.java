@@ -59,4 +59,18 @@ public class TurtleService {
     public void saveTurtle(Turtle turtle) {
         turtleRepository.save(turtle);
     }
+
+    public TurtleResponseDTO getTurtleById(Long turtleId) {
+        Turtle turtle = turtleRepository.findById(turtleId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 거북이를 찾을 수 없습니다."));
+
+        return TurtleResponseDTO.builder()
+                .id(turtle.getId())
+                .weight(turtle.getWeight())
+                .gender(turtle.getGender())
+                .userId(turtle.getUser().getId())
+                .build();
+
+    }
+
 }
