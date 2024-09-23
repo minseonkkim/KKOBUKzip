@@ -56,6 +56,7 @@ export default function AuctionRegisterPage() {
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">
           <img
             src={TmpTurtleImg}
+            draggable="false"
             className="w-[170px] h-full object-cover rounded-[10px] mr-8"
           />
           <div className="flex flex-col">
@@ -143,6 +144,7 @@ export default function AuctionRegisterPage() {
                     <img
                       src={URL.createObjectURL(image)}
                       alt="Preview"
+                      draggable="false"
                       className="w-[100px] h-[100px] object-cover rounded-[10px]"
                     />
                     <div className="absolute top-1 right-1 bg-[#D80000] rounded-full w-5 h-5 flex justify-center items-center">
