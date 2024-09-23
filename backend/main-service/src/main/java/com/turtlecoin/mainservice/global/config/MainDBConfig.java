@@ -41,7 +41,7 @@ public class MainDBConfig {
 		factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 		Properties jpaProperties = new Properties();
 		//jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-		jpaProperties.put("hibernate.hbm2ddl.auto", "update");
+		jpaProperties.put("hibernate.hbm2ddl.auto", "create");
 		factory.setJpaProperties(jpaProperties);
 
 		return factory;

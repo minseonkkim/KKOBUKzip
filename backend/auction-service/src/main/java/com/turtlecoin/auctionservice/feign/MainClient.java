@@ -13,18 +13,18 @@ import java.util.List;
 
 @FeignClient(name = "main-service", configuration = FeignConfig.class)
 public interface MainClient {
-    @GetMapping("/api/turtle/filter")
+    @GetMapping("/main/turtle/filter")
     List<TurtleResponseDTO> getFilteredTurtles(
             @RequestParam(required = false)Gender gender,
             @RequestParam(required = false)Double minSize,
             @RequestParam(required = false)Double maxSize);
 
-    @GetMapping("/api/main/user/{userId}/turtle")
+    @GetMapping("/main/user/{userId}/turtle")
     List<TurtleResponseDTO> getTurtlesByUserId(@PathVariable("userId") Long userId);
 
-    @GetMapping("/api/main/turtle/{turtleId}")
+    @GetMapping("/main/turtle/{turtleId}")
     TurtleResponseDTO getTurtle(@PathVariable Long turtleId);
 
-    @GetMapping("api/main/user/{userId}")
+    @GetMapping("/main/user/{userId}")
     UserResponseDTO getUserById(@PathVariable("userId") Long userId);
 }
