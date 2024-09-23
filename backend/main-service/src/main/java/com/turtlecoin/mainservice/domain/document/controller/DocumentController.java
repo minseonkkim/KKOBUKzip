@@ -427,6 +427,7 @@ public class DocumentController {
 			// 관리자가 확인 중인 서류를 모두 조회
 			documentList = documentService.getDocumentList();
 		}catch(Exception e){
+			e.printStackTrace();
 			return new ResponseEntity<>(ResponseVO.failure("500", "서류 조회에 실패했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 

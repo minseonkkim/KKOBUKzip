@@ -29,7 +29,7 @@ public class S3Controller {
 			imageUploadService.upload(img2, "test");
 			imageUploadService.upload(img3, "test");
 		}catch (Exception e){
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 
 		// 응답

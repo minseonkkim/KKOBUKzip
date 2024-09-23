@@ -18,18 +18,18 @@ public class Document extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(name = "document_hash", nullable = false)
 	private String documentHash;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Progress progress;
 
-	@Column(nullable = true)
+	@Column(name = "turtle_uuid", nullable = true)
 	private String turtleUUID;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(name = "doc_type", nullable = false)
 	private DocType docType;
 
 	@Column(nullable = true)
