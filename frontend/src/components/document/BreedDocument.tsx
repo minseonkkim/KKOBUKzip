@@ -246,7 +246,14 @@ function BreedDocument() {
         {/* 구비서류 정보 끝 */}
 
         <div className="flex justify-center space-x-4">
+<<<<<<< HEAD
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+=======
           <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+>>>>>>> 2ba9b3c60a9c0fc231388c0aeeb790c0f76cb701
             신청서 제출
           </button>
         </div>

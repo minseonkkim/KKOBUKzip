@@ -2,9 +2,11 @@ package com.turtlecoin.mainservice.domain.user.controller;
 
 import com.turtlecoin.mainservice.domain.turtle.dto.TurtleResponseDTO;
 import com.turtlecoin.mainservice.domain.user.dto.EmailDto;
+import com.turtlecoin.mainservice.domain.user.dto.LoginUserDto;
 import com.turtlecoin.mainservice.domain.user.dto.UserRequestDto;
 import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
 import com.turtlecoin.mainservice.domain.user.service.EmailService;
+import com.turtlecoin.mainservice.domain.user.service.JWTService;
 import com.turtlecoin.mainservice.domain.user.service.JoinService;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
@@ -15,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RequestMapping("/main/user")
 @Controller
@@ -25,12 +27,14 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final JoinService joinService;
     private final EmailService emailService;
-    private final UserService userService;
+    private final UserService userService;;
+    private final JWTService jwtService;
 
-    public UserController(JoinService joinService, EmailService emailService, UserService userService) {
+    public UserController(JoinService joinService, EmailService emailService, UserService userService, JWTService jwtService ) {
         this.joinService = joinService;
         this.emailService = emailService;
         this.userService = userService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/join")
@@ -42,6 +46,11 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseVO);
         }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginUserDto loginUserDto) {
+        return jwtService.loginService(loginUserDto);
     }
 
     @PostMapping("/email/request")

@@ -35,6 +35,7 @@ public class ResponseVO<T> {
 		return new ResponseVO<>("200", message, dataMap);
 	}
 
+
 	public static <T> ResponseVO<T> success(String name, T data) {
 		Map<String, T> dataMap = new HashMap<>();
 		dataMap.put(name, data);
