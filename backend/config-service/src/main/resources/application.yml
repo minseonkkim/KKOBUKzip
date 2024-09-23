@@ -5,8 +5,8 @@ spring:
   rabbitmq:
     host: 0.0.0.0
     port: 5672
-    username: guest
-    password: guest
+    username: kkobuk
+    password: kkobuk
   application:
     name: config-service
   cloud:
