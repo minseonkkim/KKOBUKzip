@@ -8,10 +8,9 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class AuctionPhotoDTO {
-    private Long id;
     private String imageAddress;
 
     public static AuctionPhotoDTO from(AuctionPhoto photo) {
-        return new AuctionPhotoDTO(photo.getId(), photo.getImageAddress());
+        return new AuctionPhotoDTO(photo.getImageAddress());
     }
 }

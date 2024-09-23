@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/main/turtle")
+@RequestMapping("/main/turtle")
 public class TurtleController {
     private final TurtleService turtleService;
 

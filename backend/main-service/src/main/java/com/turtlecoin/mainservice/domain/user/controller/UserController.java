@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/api/main/user")
+@RequestMapping("/main/user")
 @Controller
 @ResponseBody
 public class UserController {
@@ -74,12 +74,15 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
+    // 유저 없을 때 에러 던져주기
     public UserResponseDTO getUserById(@PathVariable Long userId) {
         return userService.getByUserId(userId);
     }
 
     @GetMapping("/{userId}/turtle")
     public ResponseEntity<List<TurtleResponseDTO>> getTurtlesByUserId(@PathVariable Long userId) {
+        // 유저 없을 때 에러 던져주기
+
         // 사용자가 소유한 거북이 정보를 조회하는 로직
         List<TurtleResponseDTO> turtles = userService.getTurtlesByUserId(userId);
         log.info("거북이 정보: {}", turtles);

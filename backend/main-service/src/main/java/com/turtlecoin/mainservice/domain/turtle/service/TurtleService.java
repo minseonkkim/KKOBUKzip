@@ -34,10 +34,6 @@ public class TurtleService {
             whereClause.and(turtle.weight.between(minSize, maxSize));
         }
 
-        Iterable<Turtle> turtleIterable = turtleRepository.findAll(whereClause);
-        List<Turtle> turtles = StreamSupport.stream(turtleIterable.spliterator(), false)
-                .toList();
-
         return jpaQueryFactory.selectFrom(turtle)
                 .where(whereClause)
                 .fetch()
