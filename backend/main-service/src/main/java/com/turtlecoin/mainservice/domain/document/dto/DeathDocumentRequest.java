@@ -20,6 +20,7 @@ public class DeathDocumentRequest {
 	@Data
 	@AllArgsConstructor
 	public static class Detail {
+		String turtleUUID;
 		String shelter;
 		int count;
 		String deathReason;

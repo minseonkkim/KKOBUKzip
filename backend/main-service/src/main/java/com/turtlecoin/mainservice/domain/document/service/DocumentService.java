@@ -18,8 +18,11 @@ import com.turtlecoin.mainservice.domain.document.entity.DocType;
 import com.turtlecoin.mainservice.domain.document.entity.Document;
 import com.turtlecoin.mainservice.domain.document.entity.Progress;
 import com.turtlecoin.mainservice.domain.document.repository.DocumentRepository;
+import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
+import com.turtlecoin.mainservice.global.exception.DocumentNotFoundException;
+import com.turtlecoin.mainservice.global.exception.DocumentProgressException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -67,8 +70,8 @@ public class DocumentService {
 	public DocumentResponseDto responseDocument(String documentHash, String turtleUUID) throws Exception{
 		DocumentResponseDto documentResponseDto = null;
 		Optional<Document> documentOption = documentRepository.findByDocumentHashAndTurtleUUID(documentHash, turtleUUID);
-		if(!documentOption.isPresent()) {
-			throw new Exception("거북이를 찾을 수 없습니다.");
+		if(documentOption.isEmpty()) {
+			return null;
 		}
 		Document document = documentOption.get();
 		User user = userService.getUserByUUID(document.getApplicant());
@@ -184,11 +187,34 @@ public class DocumentService {
 
 	// 서류 승인 또는 반려
 	@Transactional
-	public void approveDocument(DocumentApprovalRequestDto documentApprovalRequestDto) {
-		Document document = documentRepository.findByDocumentHashAndTurtleUUID(documentApprovalRequestDto.getDocumentHash(), documentApprovalRequestDto.getTurtleUUID()).get();
-		if(documentApprovalRequestDto.isFlag()){
-			document.approve();
+	public void approveDocument(DocumentApprovalRequestDto documentApprovalRequestDto) throws Exception {
+		Optional<Document> documentOptional = documentRepository.findByDocumentHashAndTurtleUUID(documentApprovalRequestDto.getDocumentHash(), documentApprovalRequestDto.getTurtleUUID());
+		if(documentOptional.isEmpty()){
+			throw new DocumentNotFoundException("입력한 정보와 일치하는 양수 신청서가 존재하지 않습니다.");
 		}
-		else document.reject();
+
+		Document document = documentOptional.get();
+		if(documentApprovalRequestDto.isApproval()){
+			if(!document.approve()){
+				throw new DocumentProgressException("이미 검토 완료된 서류입니다.");
+			}
+			
+			// 만약 인공증식 서류 일 경우 DB에 거북이 추가해야 함
+			if(document.getDocType() == DocType.BREEDING){
+				BreedingDocumentResponseDto documentResponseDto = (BreedingDocumentResponseDto)responseDocument(document.getDocumentHash(), document.getTurtleUUID());
+				if(documentResponseDto == null){
+					throw new DocumentNotFoundException("입력한 정보와 일치하는 서류가 존재하지 않습니다.");
+				}
+
+				// Turtle turtle = Turtle.builder()
+				// 	.birth(documentResponseDto.getDetail().getRegisterDate())
+				// 	.weight(documentResponseDto.getDetail().getWeight)
+			}
+		}
+		else {
+			if(!document.reject()){
+				throw new DocumentProgressException("이미 검토 완료된 서류입니다.");
+			}
+		}
 	}
 }

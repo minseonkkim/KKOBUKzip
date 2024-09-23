@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class DocumentApprovalRequestDto {
 	private String documentHash;
 	private String turtleUUID;
-	private boolean flag;
+	private boolean approval;
 }

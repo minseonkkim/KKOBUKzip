@@ -5,6 +5,8 @@ import com.turtlecoin.mainservice.domain.global.entity.BaseEntity;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +18,8 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Turtle extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -56,3 +60,6 @@ public class Turtle extends BaseEntity {
     @OneToMany(mappedBy = "turtle", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TurtlePhoto> turtlePhotos = new ArrayList<>();
 }
+
+
+

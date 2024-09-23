@@ -39,15 +39,19 @@ public class Document extends BaseEntity {
 		this.applicant = applicant;
 	}
 
-	public void approve(){
+	public boolean approve(){
 		if(progress == Progress.DOCUMENT_REVIEWING){
 			progress = Progress.DOCUMENT_APPROVED;
+			return true;
 		}
+		return false;
 	}
 
-	public void reject(){
+	public boolean reject(){
 		if(progress == Progress.DOCUMENT_REVIEWING){
 			progress = Progress.DOCUMENT_REJECTED;
+			return true;
 		}
+		return false;
 	}
 }

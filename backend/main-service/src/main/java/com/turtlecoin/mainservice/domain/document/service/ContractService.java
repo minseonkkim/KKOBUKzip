@@ -15,6 +15,8 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.StaticGasProvider;
 
+import com.turtlecoin.mainservice.domain.user.service.UserService;
+
 import contract.TurtleDocumentation;
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +28,9 @@ public class ContractService {
 	private final ContractGasProvider contractGasProvider;
 	// smartcontract의 주소
 	private final String contractAddress = "0x989835b9fa68F861E66fcBE4Ba4dE9CEF625D250";
+
+	@Autowired
+	private UserService userService;
 
 	@Autowired
 	public ContractService(Web3j web3j) {

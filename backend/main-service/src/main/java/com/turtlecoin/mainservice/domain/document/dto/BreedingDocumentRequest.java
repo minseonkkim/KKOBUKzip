@@ -30,6 +30,9 @@ public class BreedingDocumentRequest {
 		LocalDate registerDate;
 		String motherUUID;
 		String fatherUUID;
+		LocalDate birth;
+		int weight;
+		String gender;
 	}
 }
 
