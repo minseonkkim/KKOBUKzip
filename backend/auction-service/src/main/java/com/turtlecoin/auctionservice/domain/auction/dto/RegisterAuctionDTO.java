@@ -25,7 +25,7 @@ public class RegisterAuctionDTO {
     private Double minBid;
     private String content;
     private String title;
-    private Double weight;   // 거북이 무게 추가
+    private int weight;   // 거북이 무게 추가
     private Gender gender;   // 거북이 성별 추가
 
     public Auction toEntity() {

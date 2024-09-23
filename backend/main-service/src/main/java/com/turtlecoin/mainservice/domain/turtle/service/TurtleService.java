@@ -47,4 +47,18 @@ public class TurtleService {
                 .map(t -> new AuctionTurtleInfoDTO(t.getId(), t.getGender(), t.getWeight()))  // 필요한 필드만 DTO로 변환
                 .collect(Collectors.toList());
     }
+
+    public TurtleResponseDTO getTurtleById(Long turtleId) {
+        Turtle turtle = turtleRepository.findById(turtleId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 거북이를 찾을 수 없습니다."));
+
+        return TurtleResponseDTO.builder()
+                .id(turtle.getId())
+                .weight(turtle.getWeight())
+                .gender(turtle.getGender())
+                .userId(turtle.getUser().getId())
+                .build();
+
+    }
+
 }

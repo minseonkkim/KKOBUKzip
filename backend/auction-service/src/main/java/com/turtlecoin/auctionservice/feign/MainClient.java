@@ -19,9 +19,14 @@ public interface MainClient {
             @RequestParam(required = false)Double minSize,
             @RequestParam(required = false)Double maxSize);
 
+    @GetMapping("/main/turtle/{turtleId}")
+    TurtleResponseDTO getTurtle(@PathVariable Long turtleId);
+
+
     @GetMapping("/main/user/{userId}/turtle")
     List<TurtleResponseDTO> getTurtlesByUserId(@PathVariable("userId") Long userId);
 
     @GetMapping("/main/user/{userId}")
     UserResponseDTO getUserById(@PathVariable("userId") Long userId);
+
 }
