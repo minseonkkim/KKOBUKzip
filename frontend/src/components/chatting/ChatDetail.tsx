@@ -4,15 +4,7 @@ import { ChatListItem, ChatData } from "../../types/chatting";
 import { useEffect, useRef, useState } from "react";
 import OtherChatItem from "./OtherChatItem";
 import MyChatItem from "./MyChatItem";
-<<<<<<< HEAD
-<<<<<<< HEAD
-import ChatDayDivider from "./ChatDayDIvider";
-=======
 import ChatDayDivider from "./ChatDayDivider";
->>>>>>> 4e4413325e1a209c68687215a8f79d4a02ca3bb0
-=======
-import ChatDayDivider from "./ChatDayDivider";
->>>>>>> 2ba9b3c60a9c0fc231388c0aeeb790c0f76cb701
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import formatDate from "../../utils/formatDate";
 import { fetchChatMessageData } from "../../apis/chatApi";
