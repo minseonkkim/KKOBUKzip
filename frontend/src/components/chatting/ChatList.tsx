@@ -54,7 +54,7 @@ export default function ChatList() {
               } flex flex-col justify-between items-center transition-all duration-500 ${
                 isOpen ? "h-[calc(100vh-80px)] w-full" : "h-[60px] w-[60px]"
               } animate-float`
-            : ` fixed w-[380px] bottom-0 right-0 z-[1000] bg-[#D7E7F7] rounded-[10px] flex flex-col justify-between items-center transition-all duration-500 ${
+            : ` fixed w-[380px] bottom-0 right-0 z-[1000] bg-[#D7E7F7] rounded-t-[10px] flex flex-col justify-between items-center transition-all duration-500 ${
                 isOpen ? "h-[480px]" : "h-[60px]"
               } animate-float`
         }

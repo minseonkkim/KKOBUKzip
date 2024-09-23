@@ -203,7 +203,7 @@ export default function ChatDetail({
     <>
       <div className="text-black bg-gray-100 rounded-[10px] flex flex-col justify-between w-full">
         <div>
-          <div className="text-[#43493A] p-[10px] flex flex-row justify-between items-center text-[29px] font-dnf-bitbit ">
+          <div className="text-[#43493A] p-[10px] flex flex-row justify-between items-center text-[29px] font-dnf-bitbit absolute bg-gray-100 w-full">
             <span className="cursor-pointer" onClick={closeChatDetail}>
               &lt;&nbsp;{chattingTitle}
             </span>
@@ -213,7 +213,7 @@ export default function ChatDetail({
               onClick={toggleChat}
             />
           </div>
-          <div className="p-[10px] flex flex-col">
+          <div className="p-[10px] mt-[49px] mb-[42px] flex flex-col">
             {groupedChat.map((group, index) => (
               <div key={index}>
                 {/* 날짜 */}
@@ -237,7 +237,7 @@ export default function ChatDetail({
           </div>
         </div>
 
-        <div className="mt-auto">
+        <div className="mt-auto absolute bottom-0 w-full">
           <input
             type="text"
             value={inputValue}
