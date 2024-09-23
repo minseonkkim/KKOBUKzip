@@ -85,7 +85,7 @@ function DeathDocument() {
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">허가 정보</h3>
         <div className="space-y-2">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4">
             <div className="flex items-center">
               <span className="w-1/3 font-medium">학명</span>
               <span className="w-2/3 px-3 py-2">Malaclemys terrapin</span>
@@ -94,19 +94,16 @@ function DeathDocument() {
               <span className="w-1/3 font-medium">보통명(일반명)</span>
               <span className="w-2/3 px-3 py-2 ">(공란)</span>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center">
-              <span className="w-1/3 font-medium">부속서등급</span>
+              <span className="w-1/3 font-medium break-keep">부속서 등급</span>
               <span className="w-2/3 px-3 py-2">II급</span>
             </div>
             <div className="flex items-center">
               <label className="w-1/3 font-medium">수량</label>
               <span className="w-2/3 px-3 py-2">1</span>
             </div>
-
-            <div className="flex items-center ">
-              <span className="w-1/3 font-medium">폐사/질병사유</span>
+            <div className="flex items-center">
+              <span className="w-1/3 font-medium break-keep">폐사/질병 사유</span>
               <input
                 type="text"
                 onChange={(evt) => changeHandle("deathReason", evt)}
@@ -136,10 +133,10 @@ function DeathDocument() {
         <div className="space-y-4">
           <div>
             <p
-              aria-labelledby="보호시설 명세서"
-              className="block font-semibold pt-4 "
+              aria-labelledby="폐사를 증명할 수 있는 사진"
+              className="block font-semibold pt-4 mb-2"
             >
-              폐사를 증명할 수 있는 사진{" "}
+              폐사를 증명할 수 있는 사진
             </p>
             <DocImgUpload id="setDeathImage" setImage={setDeathImage} />
 
@@ -157,10 +154,10 @@ function DeathDocument() {
 
           <div>
             <p
-              aria-labelledby="보호시설 명세서"
-              className="block font-semibold pt-4 "
+              aria-labelledby="수의사 진단서"
+              className="block font-semibold pt-4 mb-2"
             >
-              폐사를 증명할 수 있는 사진{" "}
+              수의사 진단서
             </p>
             <DocImgUpload id="setDiagnosis" setImage={setDiagnosis} />
 
