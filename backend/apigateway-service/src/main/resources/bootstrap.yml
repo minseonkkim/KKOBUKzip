@@ -2,7 +2,7 @@ spring:
   application:
     name: apigateway-service
   profiles:
-    active: local
+    active: jun
   cloud:
     config:
       uri: http://127.0.0.1:8888  # Config Server URI 설정
@@ -12,11 +12,11 @@ spring:
         - id: main-service
           uri: lb://main-service
           predicates:
-            - Path=/api/main/**
+            - Path=/main/**
         - id: auction-service
           uri: lb://auction-service
           predicates:
-            - Path=/api/auction/**
+            - Path=/auction/**
   rabbitmq:
     host: rabbitmq
     port: 5672

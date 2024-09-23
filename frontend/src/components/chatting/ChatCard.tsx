@@ -1,6 +1,7 @@
 import useDeviceStore from "../../store/useDeviceStore";
 import TmpProfileImg from "../../assets/tmp_profile.gif";
 import { ChatListItem } from "../../types/chatting";
+import formatDate from "../../utils/formatDate";
 
 interface ChatCardProps {
   openChatDetail: (chat: ChatListItem) => void;
@@ -24,8 +25,7 @@ export default function ChatCard({ openChatDetail, chat }: ChatCardProps) {
           <div className="flex flex-row justify-between mb-1">
             <div className="text-[16px]">{chat.otherUserNickname}</div>
             <div className="font-bold text-[15px] text-gray-300">
-              24년 9월 9일
-              {chat.lastMessageTime}
+              {formatDate(chat.lastMessageTime)}
             </div>
           </div>
 

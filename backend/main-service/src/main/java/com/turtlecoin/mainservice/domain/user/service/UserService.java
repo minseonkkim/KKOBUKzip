@@ -20,6 +20,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+
     public User saveUser(UserRequestDto dto) {
         Role role = (dto.getRole() == null) ? Role.ROLE_USER : dto.getRole();
         String uuid = String.valueOf(new SecretKeySpec(dto.getEmail().getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm()));

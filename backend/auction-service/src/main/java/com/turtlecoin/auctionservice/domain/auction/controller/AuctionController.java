@@ -4,12 +4,15 @@ import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.BidRequestDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
+import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.auction.service.AuctionService;
+import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
 import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.domain.turtle.service.TurtleService;
+import com.turtlecoin.auctionservice.global.exception.AuctionNotFoundException;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +31,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auction")
+@RequestMapping("/auction")
 public class AuctionController {
 
     private final TurtleService turtleService;
+    private final ImageUploadService imageUploadService;
 
     //거북이 정보 조회
     @GetMapping("/info")
@@ -55,25 +59,42 @@ public class AuctionController {
 
     // 경매 등록
     @PostMapping
-    public ResponseEntity<ResponseVO<AuctionResponseDTO>> registerAuction(
+    public ResponseEntity<ResponseVO<?>> registerAuction(
             @RequestPart("data") RegisterAuctionDTO registerAuctionDTO,
             @RequestPart(value = "images", required = false) List<MultipartFile> multipartFiles) {
         log.info("Registering auction {}", registerAuctionDTO);
         try {
-            // 이미지가 없다면 빈 리스트로 처리
-            if (multipartFiles == null) {
-                multipartFiles = new ArrayList<>();
-                log.info("이미지 파일 없음");
+            // 경매 생성
+            Auction registeredAuction = auctionService.registerAuction(registerAuctionDTO, multipartFiles);
+            log.info("경매 정보 저장");
+
+            AuctionResponseDTO responseDTO = auctionService.convertToDTO(registeredAuction);
+            log.info("경매 정보 DTO로 변환 완료");
+
+
+
+            // 이미지가 있다면 처리
+            if (multipartFiles != null && !multipartFiles.isEmpty()) {
+                for (MultipartFile file : multipartFiles) {
+                    String imagePath = imageUploadService.upload(file, "auctionImages"); // 이미지 업로드 후 경로 반환
+
+                    // AuctionPhoto 엔티티 생성 후 Auction과 연결
+                    AuctionPhoto auctionPhoto = AuctionPhoto.builder()
+                            .imageAddress(imagePath)
+                            .auction(registeredAuction)  // 경매와 연결
+                            .build();
+
+                    registeredAuction.getAuctionPhotos().add(auctionPhoto);  // Auction 엔티티에 추가
+                }
             }
 
-            Auction registeredAuction = auctionService.registerAuction(registerAuctionDTO, multipartFiles);
-            log.info(registeredAuction.toString());
-            AuctionResponseDTO responseDTO = auctionService.convertToDTO(registeredAuction);
-            log.info(responseDTO.toString());
-            return new ResponseEntity<>(ResponseVO.success("경매 등록에 성공했습니다.", "auction", responseDTO), HttpStatus.OK);
+            // 경매 및 사진 정보 저장
+            auctionRepository.save(registeredAuction);
+            log.info("이미지 및 경매 정보 저장 완료");
+
+            return new ResponseEntity<>(ResponseVO.success("경매 등록에 성공했습니다."), HttpStatus.OK);
 
         } catch (AmqpConnectException e) {
-            // RabbitMQ 예외 처리: 오류가 발생해도 200 OK 응답을 반환
             log.error("RabbitMQ 연결 실패: {}", e.getMessage());
             return new ResponseEntity<>(ResponseVO.success("RabbitMQ 오류 발생, 하지만 경매는 성공적으로 등록되었습니다.", "auction", null), HttpStatus.OK);
 
@@ -99,7 +120,7 @@ public class AuctionController {
         List<AuctionResponseDTO> auctionDTOs = auctionService.getFilteredAuctions(gender, minSize, maxSize, minPrice, maxPrice, progress, page)
                 .stream()
                 .map(auctionService::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
 
         return new ResponseEntity<>(ResponseVO.success("경매 목록 조회에 성공했습니다.", "auctions", auctionDTOs), HttpStatus.OK);
     }
@@ -108,12 +129,17 @@ public class AuctionController {
     public ResponseEntity<ResponseVO<AuctionResponseDTO>> getAuctionById(@PathVariable Long auctionId) {
         log.info("경매 ID : {}", auctionId);
 
-        AuctionResponseDTO responseDTO = auctionService.getAuctionById(auctionId);
-
-        if (responseDTO != null) {
+        try {
+            AuctionResponseDTO responseDTO = auctionService.getAuctionById(auctionId);
             return new ResponseEntity<>(ResponseVO.success("경매 조회에 성공했습니다", "auction", responseDTO), HttpStatus.OK);
-        } else {
+
+        } catch (AuctionNotFoundException e) {
+            log.error("경매를 찾을 수 없습니다: {}", auctionId, e);
             return new ResponseEntity<>(ResponseVO.failure("404", "경매를 찾을 수 없습니다."), HttpStatus.NOT_FOUND);
+
+        } catch (Exception e) {
+            log.error("기타 에러 발생: {}", e.getMessage(), e);
+            return new ResponseEntity<>(ResponseVO.failure("400", "에러가 발생했습니다."), HttpStatus.BAD_REQUEST);
         }
     }
 

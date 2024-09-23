@@ -17,7 +17,7 @@ public class AuctionPhoto extends BaseEntity {
     private String imageAddress;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "transaction_id", nullable = false)
+    @JoinColumn(name = "auction_id", nullable = false)
     private Auction auction;
 
     public String getImageUrl() {
