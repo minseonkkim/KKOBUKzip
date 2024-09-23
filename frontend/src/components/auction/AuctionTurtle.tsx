@@ -20,10 +20,6 @@ export default function AuctionTurtle({
         onClick={goToDetail}
         className="bg-[#F8F9FA] shadow-lg hover:shadow-xl transition-shadow duration-300 w-full max-w-sm h-[330px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative"
       >
-        <div className="absolute top-4 right-4 z-10">
-          <AuctionStatusTag progress={"경매중"} />
-        </div>
-
         <div className="overflow-hidden rounded-t-2xl relative">
           <img
             src={TmpTurtle}
@@ -31,6 +27,9 @@ export default function AuctionTurtle({
             draggable="false"
             alt="거북이 이미지"
           />
+        </div>
+        <div className="absolute top-4 right-4">
+          <AuctionStatusTag progress={"경매중"} />
         </div>
         <div className="px-4 py-2">
           <div className="flex justify-between items-center mb-2">

@@ -1,11 +1,12 @@
 package com.turtlecoin.auctionservice.domain.auction.dto;
 
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 public class AuctionPhotoDTO {
     private String imageAddress;
 

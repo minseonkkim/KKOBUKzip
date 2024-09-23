@@ -47,6 +47,10 @@ export interface BreedDocumentDataType {
   motherUUID: string;
   fatherUUID: string;
   location: string;
+  name: string;
+  birth: Date | null;
+  weight: number;
+  gender: string;
 }
 
 export interface BreedFetchData {

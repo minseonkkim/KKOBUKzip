@@ -94,11 +94,11 @@ function AssignDocument() {
       </Helmet>
 
       <div className="mb-8">
-        <div className="w-full flex">
-          <span className="text-xl font-semibold mb-4 flex-1">양수인</span>
+        <div className="w-full flex mb-4">
+          <span className="text-xl font-semibold flex-1">양수인</span>
           <label
             htmlFor="loadUserData"
-            className="cursor-pointer select-none mr-4"
+            className="cursor-pointer select-none mr-4 flex items-center gap-2"
           >
             <span>신청인 정보 불러오기</span>
             <input onClick={loadUserData} type="checkbox" id="loadUserData" />
@@ -107,7 +107,7 @@ function AssignDocument() {
 
         {/* 양수인 정보 */}
         <div className="space-y-2">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4">
             <div className="flex items-center">
               <span className="w-1/3 font-medium">성명(상호)</span>
               <input
@@ -129,32 +129,34 @@ function AssignDocument() {
             </div>
           </div>
           <div className="flex items-center">
-            <label className="w-1/4 font-medium">주소</label>
+            <label className="w-[31%] md:w-1/5 font-medium">주소</label>
 
             <button
               ref={addressBtnRef}
-              className="w-1/12"
+              className="hidden md:inline w-1/12 md:w-1/12 hover:bg-gray-100 border py-2 ml-1.5 rounded"
               onClick={loadPostcodeSearch}
             >
               찾기
             </button>
-            <input
-              type="text"
-              className="w-1/3 px-3 ml-2 py-2 border rounded cursor-pointer hover:bg-gray-100"
-              placeholder="기본주소"
-              readOnly
-              // onChange={(evt) => changeAssigneeHandle("address", evt)}
-              value={postcodeData?.roadAddress || ""}
-              onClick={() => addressBtnRef.current?.click()}
-            />
-            <input
-              type="text"
-              onChange={(evt) => {
-                setDetailLocation(evt.target.value);
-              }}
-              className="w-1/3 px-3 py-2 border rounded ml-2"
-              placeholder="상세주소"
-            />
+            <div className="flex flex-col w-[67%] md:flex-row md:w-full space-y-1 md:space-y-0">
+              <input
+                type="text"
+                className="w-full px-3 ml-2 py-2 border rounded cursor-pointer hover:bg-gray-100"
+                placeholder="기본주소"
+                readOnly
+                // onChange={(evt) => changeAssigneeHandle("address", evt)}
+                value={postcodeData?.roadAddress || ""}
+                onClick={() => addressBtnRef.current?.click()}
+              />
+              <input
+                type="text"
+                onChange={(evt) => {
+                  setDetailLocation(evt.target.value);
+                }}
+                className="w-full px-3 py-2 border rounded ml-2"
+                placeholder="상세주소"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -163,7 +165,7 @@ function AssignDocument() {
       {/* 개체 정보 - 사전에 설정된 정보 불러올 것 */}
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">개체 정보 작성</h3>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           <div className="flex items-center">
             <span className="w-1/3 font-medium">학명</span>
             <span className="w-2/3 px-3 py-2">Malaclemys terrapin</span>
@@ -202,7 +204,7 @@ function AssignDocument() {
               type="text"
               onChange={(evt) => changeDataHandle("transferReason", evt)}
               value={data.transferReason || ""}
-              className="w-2/3 px-3 mr-2 py-2 border rounded"
+              className="w-2/3 px-3 py-2 border rounded"
               placeholder="양수사유"
             />
           </div>
@@ -219,7 +221,7 @@ function AssignDocument() {
       </div>
       {/* 개체 정보 끝 */}
 
-      <div className="flex justify-end space-x-4">
+      <div className="flex justify-center space-x-4">
         <button
           onClick={sendAssigneeDocRequest}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"

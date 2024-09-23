@@ -4,6 +4,8 @@ spring:
   profiles:
     active: bin
   cloud:
+    loadbalancer:
+      enabled: true
     config:
       uri: http://127.0.0.1:8888
       name: main-service

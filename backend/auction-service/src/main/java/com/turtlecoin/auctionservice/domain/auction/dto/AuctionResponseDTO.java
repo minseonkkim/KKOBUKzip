@@ -1,7 +1,8 @@
 package com.turtlecoin.auctionservice.domain.auction.dto;
 
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
-import com.turtlecoin.auctionservice.domain.turtle.dto.TurtleResponseDTO;
+import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
+import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,6 @@ import java.util.stream.Collectors;
 public class AuctionResponseDTO {
     private Long id;
     private Long turtleId;
-    private TurtleResponseDTO turtleInfo;
     private String title;
     private Double minBid;
     private Double nowBid;
@@ -27,28 +27,33 @@ public class AuctionResponseDTO {
     private String content;
     private String progress;
     private List<AuctionTagDTO> tags;
-    private List<AuctionPhotoDTO> images;
+
+    // 이미지 주소 리스트로 변경
+    private List<String> images;
+
+    private TurtleResponseDTO turtleInfo;
 
     public static AuctionResponseDTO from(Auction auction, TurtleResponseDTO turtleInfo) {
         return AuctionResponseDTO.builder()
                 .id(auction.getId())
                 .turtleId(auction.getTurtleId())
-                .turtleInfo(turtleInfo)
                 .title(auction.getTitle())
                 .minBid(auction.getMinBid())
                 .nowBid(auction.getNowBid())
                 .winningBid(auction.getWinningBid())
                 .buyerId(auction.getBuyerId())
+                .sellerId(auction.getUserId())
                 .startTime(auction.getStartTime())
                 .endTime(auction.getEndTime())
                 .content(auction.getContent())
                 .progress(auction.getAuctionProgress().toString())
                 .tags(auction.getAuctionTags().stream()
                         .map(AuctionTagDTO::from)
-                        .collect(Collectors.toList()))
-                .images(auction.getAuctionPhotos().stream()
-                        .map(AuctionPhotoDTO::from)
-                        .collect(Collectors.toList()))
+                        .toList())
+                .images(auction.getAuctionPhotos().stream()  // 이미지 주소만 추출
+                        .map(AuctionPhoto::getImageAddress)
+                        .toList())
+                .turtleInfo(turtleInfo) // Turtle 정보 추가
                 .build();
     }
 }

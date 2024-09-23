@@ -48,7 +48,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/main/document")
+@RequestMapping("/main/document")
 public class DocumentController {
 	private final ImageUploadService imageUploadService;
 	private final DocumentService documentService;

@@ -21,6 +21,10 @@ function BreedDocument() {
     location: "",
     motherUUID: "",
     fatherUUID: "",
+    name: "",
+    birth: null,
+    weight: 0,
+    gender: "",
   });
   const [shelterImg, setShelterImg] = useState<File | null>(null);
   const [locationImg, setLocationImg] = useState<File | null>(null);
@@ -103,7 +107,9 @@ function BreedDocument() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center">
-                <span className="w-1/3 font-medium">부속서등급</span>
+                <span className="w-1/3 font-medium break-keep">
+                  부속서 등급
+                </span>
                 <span className="w-2/3 px-3 py-2">II급</span>
               </div>
               <div className="flex items-center">
@@ -124,7 +130,7 @@ function BreedDocument() {
               />
             </div>
             <div className="flex items-center">
-              <label htmlFor="purpose" className="w-1/4 font-medium">
+              <label htmlFor="purpose" className="w-1/4 font-medium break-keep">
                 인공증식의 목적/용도
               </label>
               <select
@@ -140,7 +146,10 @@ function BreedDocument() {
             </div>
 
             <div className="flex items-center">
-              <label htmlFor="location" className="w-1/4 font-medium">
+              <label
+                htmlFor="location"
+                className="w-1/4 font-medium break-keep"
+              >
                 인공증식 시설 소재지
               </label>
 
@@ -148,43 +157,102 @@ function BreedDocument() {
                 aria-label="find location"
                 type="button"
                 ref={addressBtnRef}
-                className="hover:bg-gray-100 w-1/12 border py-2 ml-1.5 rounded"
+                className="hidden md:inline hover:bg-gray-100 w-1/12 border py-2 ml-1.5 rounded"
                 onClick={loadPostcodeSearch}
               >
                 찾기
               </button>
-              <input
-                id="location"
-                type="text"
-                className="w-1/3 px-3 ml-2 py-2 border rounded cursor-pointer hover:bg-gray-100"
-                placeholder="기본주소"
-                readOnly
-                onChange={(evt) => changeHandle("location", evt)}
-                value={postcodeData?.roadAddress || ""}
-                onClick={() => addressBtnRef.current?.click()}
-              />
-              <input
-                type="text"
-                onChange={(evt) => {
-                  setDetailLocation(evt.target.value);
-                }}
-                className="w-1/3 px-3 ml-2 py-2 border rounded"
-                placeholder="상세주소"
-              />
+              <div className="flex flex-col w-[67%] md:flex-row md:w-full space-y-1 md:space-y-0">
+                <input
+                  id="location"
+                  type="text"
+                  className="w-full px-3 ml-2 py-2 border rounded cursor-pointer hover:bg-gray-100"
+                  placeholder="기본주소"
+                  readOnly
+                  onChange={(evt) => changeHandle("location", evt)}
+                  value={postcodeData?.roadAddress || ""}
+                  onClick={() => addressBtnRef.current?.click()}
+                />
+                <input
+                  type="text"
+                  onChange={(evt) => {
+                    setDetailLocation(evt.target.value);
+                  }}
+                  className="w-full px-3 py-2 border rounded ml-2"
+                  placeholder="상세주소"
+                />
+              </div>
             </div>
           </div>
         </div>
         {/* 허가 정보 끝 */}
 
+        {/* 개체 정보 */}
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold mb-4">개체 정보</h3>
+          <div className="grid space-y-2 md:space-y-2 md:grid-cols-2 md:gap-x-4">
+            <div className="flex items-center">
+              <label htmlFor="name" className="w-1/4 font-medium">
+                별명
+              </label>
+              <input
+                id="name"
+                type="text"
+                className="w-3/4 px-3 py-2 border rounded"
+                placeholder="별명"
+                onChange={(evt) => changeHandle("name", evt)}
+              />
+            </div>
+            <div className="flex items-center">
+              <label htmlFor="birth" className="w-1/4 font-medium">
+                출생일
+              </label>
+              <input
+                id="birth"
+                type="date"
+                className="w-3/4 px-3 py-2 border rounded"
+                onChange={(evt) => changeHandle("birth", evt)}
+              />
+            </div>
+            <div className="flex items-center">
+              <label htmlFor="gender" className="w-1/4 font-medium">
+                성별
+              </label>
+              <select
+                id="gender"
+                onChange={(evt) => changeHandle("gender", evt)}
+                className="cursor-pointer font-medium bg-gray-50 border border-gray text-gray-900 rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              >
+                <option value="수컷">수컷</option>
+                <option value="암컷">암컷</option>
+              </select>
+            </div>
+            <div className="flex items-center">
+              <label htmlFor="weight" className="w-1/4 font-medium">
+                무게
+              </label>
+              <input
+                id="weight"
+                type="number"
+                className="w-3/5 px-3 py-2 border rounded"
+                min="0"
+                placeholder="무게"
+                onChange={(evt) => changeHandle("weight", evt)}
+              />
+              <div className="inline-block ml-2 w-14">g(그램)</div>
+            </div>
+          </div>
+        </div>
+
         {/* 구비서류 정보 */}
         <div className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">구비서류</h3>
+          <h3 className="text-xl font-semibold mb-4">구비 서류</h3>
           <div className="space-y-4">
             <div>
               <label className="block font-semibold mb-1">
-                인공증식하려는 국제적 멸종위기종의 부모 개체의 고유번호
+                인공증식하려는 국제적 멸종위기종 부모 개체의 고유번호
               </label>
-              <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center">
+              <div className="w-full px-3 py-2 mb-2 border rounded bg-gray-50 flex items-center">
                 <span className="text-gray-500 flex-grow">
                   부 개체 고유번호
                 </span>
@@ -255,7 +323,7 @@ function BreedDocument() {
         </div>
         {/* 구비서류 정보 끝 */}
 
-        <div className="flex justify-end space-x-4">
+        <div className="flex justify-center space-x-4">
           <button
             type="submit"
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"

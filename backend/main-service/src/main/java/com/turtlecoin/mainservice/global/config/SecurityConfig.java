@@ -56,12 +56,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())  // CSRF 비활성화
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // CORS 설정 추가
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll()
-                        .requestMatchers("/main/login", "/main", "/main/join").permitAll()
+                        .requestMatchers("/login", "/join", "/main/login", "/main", "/main/join", "                                 /**").permitAll()
                         .requestMatchers("/main/jwt/refresh", "/main/jwt/access").permitAll()  // /jwt/access에 대한 접근 허용
                         .anyRequest().authenticated()  // 다른 요청은 인증 필요
                 )
-                .addFilterBefore(new JWTFilter(jwtUtil,userRepository), UsernamePasswordAuthenticationFilter.class)  // JWT 필터 추가
+//                .addFilterBefore(new JWTFilter(jwtUtil,userRepository), UsernamePasswordAuthenticationFilter.class)  // JWT 필터 추가
                 .addFilterAt(new LoginFilter(authenticationManagerBean(authenticationConfiguration), jwtUtil, redisTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, redisTemplate), LogoutFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  // 세션 사용하지 않음 (JWT 기반)

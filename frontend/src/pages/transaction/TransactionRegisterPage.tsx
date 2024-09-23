@@ -51,7 +51,7 @@ export default function TransactionRegisterPage(){
       <div className="px-[250px] mt-[85px]">
         <div className="text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-[40px] pb-[13px]">판매 등록하기</div>
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">
-          <img src={TmpTurtleImg} className="w-[170px] h-full object-cover rounded-[10px] mr-8" />
+          <img src={TmpTurtleImg} draggable="false" className="w-[170px] h-full object-cover rounded-[10px] mr-8" />
           <div className="flex flex-col">
             <div className="text-[26px] font-bold mb-2">꼬부기</div>
             <div className="text-gray-600 text-[21px]">수컷 | 18년 3월 2일생</div>
@@ -113,6 +113,7 @@ export default function TransactionRegisterPage(){
                     <img
                       src={URL.createObjectURL(image)}
                       alt="Preview"
+                      draggable="false"
                       className="w-[100px] h-[100px] object-cover rounded-[10px]"
                     />
                     <div className="absolute top-1 right-1 bg-[#D80000] rounded-full w-5 h-5 flex justify-center items-center">

@@ -198,7 +198,7 @@ export default function MyTurtle() {
             
             <div className="flex flex-row w-full space-x-5">
                 <div className="w-1/2 h-[180px] overflow-hidden">
-                    <img src={TmpTurtleImg} className="object-cover rounded-[10px] w-full h-[180px]"/>
+                    <img src={TmpTurtleImg} className="object-cover rounded-[10px] w-full h-[180px]" draggable="false"/>
                 </div>
                 <div className="w-1/2 text-[19px] flex flex-col space-y-2">
                     <div>이름: 김거북</div>
@@ -211,11 +211,11 @@ export default function MyTurtle() {
             <div className="flex flex-row mt-7">
                 <div className="flex flex-col space-y-2 w-1/2 text-[19px]">
                     <div>부개체 : 저거북</div>
-                    <img src={TmpTurtleImg2} className="object-cover rounded-[10px] w-full h-[180px]"/>
+                    <img src={TmpTurtleImg2} className="object-cover rounded-[10px] w-full h-[180px]" draggable="false"/>
                 </div>
                 <div className="flex flex-col space-y-2 w-1/2 text-[19px]">
                     <div>모개체 : 이거북</div>
-                    <img src={TmpTurtleImg3} className="object-cover rounded-[10px] w-full h-[180px]"/>
+                    <img src={TmpTurtleImg3} className="object-cover rounded-[10px] w-full h-[180px]" draggable="false"/>
                 </div>
             </div>
           </div>

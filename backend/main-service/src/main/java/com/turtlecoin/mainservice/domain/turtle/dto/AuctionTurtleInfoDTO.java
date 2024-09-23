@@ -1,11 +1,12 @@
 package com.turtlecoin.mainservice.domain.turtle.dto;
 
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 public class AuctionTurtleInfoDTO {
     private Long id;
     private Gender gender;

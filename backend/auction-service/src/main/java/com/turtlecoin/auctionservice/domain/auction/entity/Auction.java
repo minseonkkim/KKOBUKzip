@@ -14,13 +14,13 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Auction extends BaseEntity {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique=true, nullable=false)
     private Long id;
 
     //등록한 사람
     @Column(nullable=false)
-    private Long sellerId;
+    private Long userId;
 
     @Column(nullable = false)
     private String title;
@@ -40,6 +40,7 @@ public class Auction extends BaseEntity {
     private String content;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private AuctionProgress auctionProgress;
 
     private LocalDateTime endTime;
@@ -47,7 +48,7 @@ public class Auction extends BaseEntity {
     @Column(nullable = false)
     private Long turtleId;
 
-    @OneToMany(mappedBy = "auction")
+    @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<AuctionPhoto> auctionPhotos = new ArrayList<>();
 

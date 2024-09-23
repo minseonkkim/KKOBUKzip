@@ -82,11 +82,11 @@ function GrantorDocument() {
       </Helmet>
 
       <div className="mb-8">
-        <div className="w-full flex">
-          <span className="text-xl font-semibold mb-4 flex-1">양도인</span>
+        <div className="w-full flex mb-4">
+          <span className="text-xl font-semibold flex-1">양도인</span>
           <label
             htmlFor="loadUserData"
-            className="cursor-pointer select-none mr-4"
+            className="cursor-pointer select-none mr-4 flex items-center gap-2"
           >
             <span>신청인 정보 불러오기</span>
             <input onClick={loadUserData} type="checkbox" id="loadUserData" />
@@ -95,7 +95,7 @@ function GrantorDocument() {
 
         {/* 양도인 정보 */}
         <div className="space-y-2">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4">
             <div className="flex items-center">
               <span className="w-1/3 font-medium">성명(상호)</span>
               <input
@@ -117,32 +117,34 @@ function GrantorDocument() {
             </div>
           </div>
           <div className="flex items-center">
-            <label className="w-1/4 font-medium">인공증식 시설 소재지</label>
+            <label className="w-[31%] md:w-1/5 font-medium break-keep">인공증식 시설 소재지</label>
 
             <button
               ref={addressBtnRef}
-              className="hover:bg-gray-100 w-1/12 border py-2 ml-1.5 rounded"
+              className="hidden md:inline w-1/12 md:w-1/12 hover:bg-gray-100 border py-2 ml-1.5 rounded"
               onClick={loadPostcodeSearch}
             >
               찾기
             </button>
-            <input
-              type="text"
-              className="w-1/3 px-3 ml-2 py-2 border rounded cursor-pointer hover:bg-gray-100"
-              placeholder="기본주소"
-              readOnly
-              // onChange={(evt) => changeHandle("address", evt)}
-              value={postcodeData?.roadAddress || ""}
-              onClick={() => addressBtnRef.current?.click()}
-            />
-            <input
-              type="text"
-              onChange={(evt) => {
-                setDetailLocation(evt.target.value);
-              }}
-              className="w-1/3 px-3 py-2 border rounded ml-2"
-              placeholder="상세주소"
-            />
+            <div className="flex flex-col w-[67%] md:flex-row md:w-full space-y-1 md:space-y-0">
+              <input
+                type="text"
+                className="w-full px-3 ml-2 py-2 border rounded cursor-pointer hover:bg-gray-100"
+                placeholder="기본주소"
+                readOnly
+                // onChange={(evt) => changeHandle("address", evt)}
+                value={postcodeData?.roadAddress || ""}
+                onClick={() => addressBtnRef.current?.click()}
+              />
+              <input
+                type="text"
+                onChange={(evt) => {
+                  setDetailLocation(evt.target.value);
+                }}
+                className="w-full px-3 py-2 border rounded ml-2"
+                placeholder="상세주소"
+              />
+            </div>
           </div>
         </div>
         {/* 양도인 정보 끝 */}
@@ -151,7 +153,7 @@ function GrantorDocument() {
       {/* 양수인 정보 - 불러올 것 */}
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">양수인</h3>
-        <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+        <div className="grid grid-cols-1 gap-y-4 md:grid-cols-2 md:gap-x-8 md:gap-y-2">
           <div className="flex">
             <span className="w-1/3 font-medium">성명</span>
             <span className="w-2/3">사전에 설정된 양수인 정보 불러올 것</span>
@@ -172,7 +174,7 @@ function GrantorDocument() {
       {/* 개체 정보 - 사전에 설정된 정보 불러올 것 */}
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">개체 정보 작성</h3>
-        <div className="grid grid-cols-2 gap-y-2">
+        <div className="grid grid-cols-1 gap-y-1 md:grid-cols-2 md:gap-x-8 md:gap-y-2">
           <div className="flex">
             <span className="w-1/3 font-medium">학명</span>
             <span className="w-2/3 px-3 py-2">Malaclemys terrapin</span>
@@ -181,18 +183,14 @@ function GrantorDocument() {
             <span className="w-1/3 font-medium">보통명(일반명)</span>
             <span className="w-2/3 px-3 py-2">(공란)</span>
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-y-4">
           <div className="flex items-center">
-            <span className="w-1/3 font-medium">부속서등급</span>
+            <span className="w-1/3 font-medium break-keep">부속서 등급</span>
             <span className="w-2/3 px-3 py-2">II급</span>
           </div>
           <div className="flex items-center">
             <label className="w-1/3 font-medium">수량</label>
             <span className="w-2/3 px-3 py-2">1</span>
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-y-4">
           <div className="flex items-center">
             <span className="w-1/3 font-medium">형태</span>
             <span className="w-2/3 px-3 py-2">살아있는 생물</span>
@@ -201,8 +199,6 @@ function GrantorDocument() {
             <label className="w-1/3 font-medium">용도</label>
             <span className="w-2/3 px-3 py-2">양수인 입력 값</span>
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-y-4">
           <div className="flex items-center">
             <span className="w-1/3 font-medium">양수사유</span>
             <span className="w-2/3 px-3 py-2">양수인 입력 값</span>
@@ -220,7 +216,7 @@ function GrantorDocument() {
         <h3 className="text-xl font-semibold mb-4">구비서류</h3>
         <div className="space-y-4">
           <div>
-            <label className="block font-semibold mb-1">
+            <label className="block font-semibold mb-1 break-keep">
               수입허가증 등 양도하려는 국제적 멸종위기종의 입수 경위 및 이를
               증명하는 서류
             </label>
@@ -234,10 +230,10 @@ function GrantorDocument() {
           </div>
 
           <div>
-            <label className="block font-semibold mb-1">
+            <label className="block font-semibold mb-1 break-keep">
               양도한 국제적 멸종위기종의 부모 개체의 고유번호
             </label>
-            <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center">
+            <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center mb-2">
               <span className="text-gray-500 flex-grow">부 개체 번호</span>
               <input type="file" className="hidden" id="file1" />
               <label htmlFor="file1" className="cursor-pointer flex-shrink">
@@ -257,7 +253,7 @@ function GrantorDocument() {
       </div>
       {/* 구비서류 정보 끝 */}
 
-      <div className="flex justify-end space-x-4">
+      <div className="flex justify-center space-x-4">
         <button
           onClick={sendGrantorDocRequest}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"

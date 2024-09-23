@@ -38,9 +38,11 @@ public class Transaction extends BaseEntity {
     @JoinColumn(name = "turtle_id")
     private Turtle turtle;
 
+    @Column(name = "document_hash")
     private String documentHash;
 
     @OneToMany(mappedBy = "transaction")
+    @Column(name = "transaction_photos")
     private List<TransactionPhoto> transactionPhotos = new ArrayList<>();
 
     @OneToMany(mappedBy = "transaction")

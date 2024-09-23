@@ -1,14 +1,15 @@
 package com.turtlecoin.mainservice.domain.turtle.dto;
 
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 public class TurtleResponseDTO {
-    private Long turtleId;
+    private Long id;
     private Gender gender;
-    private int size;
-    private Double price;
+    private Double weight;
+    private Long userId;
 }

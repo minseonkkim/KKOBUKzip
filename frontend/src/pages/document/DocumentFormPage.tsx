@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
-// import { Helmet } from "react-helmet-async";
+import { Helmet } from "react-helmet-async";
+import useDeviceStore from "../../store/useDeviceStore";
 import MyDocumentDataForm from "../../components/document/MyDocumentDataForm";
 import { Outlet, useLocation } from "react-router-dom";
+import Header from "../../components/common/Header";
 import { applicant } from "../../fixtures/docsDummy";
 type TabName = "인공증식" | "양도" | "양수" | "폐사/질병" | ""; // 필요한 탭 이름들을 여기에 추가
 
 // 각 컴포넌트의 구비서류 부분 정비할것!!!
 
 function DocumentFormPage() {
+  const isMobile = useDeviceStore((state) => state.isMobile);
   const [activeTab, setActiveTab] = useState<TabName>("");
   const [tabNameList, setTabNameList] = useState<TabName[]>([]);
   const location = useLocation();
@@ -46,13 +49,21 @@ function DocumentFormPage() {
     }
   }, [location.pathname]);
 
-  if (activeTab.length === 0) {
-    return <div>Loading...</div>; // 임시로 로딩 텍스트
-  }
+  // if (activeTab.length === 0) {
+  //   return <div>Loading...</div>; // 임시로 로딩 텍스트
+  // }
 
   return (
     <>
-      <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mb-10">
+      <Helmet>
+        <title>서류 등록 메인</title>
+      </Helmet>
+      <Header />
+      <div
+        className={`${
+          isMobile ? "mt-[70px]" : "mt-[120px]"
+        } max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mb-10`}
+      >
         <h2 className="text-2xl font-bold mb-6 text-center">
           {activeTab} 서류 등록
         </h2>
@@ -80,7 +91,6 @@ function DocumentFormPage() {
         {/* 신청인 정보 -데이터 연동되면 할당할 것 */}
         {/* search keyword : dummy */}
         <MyDocumentDataForm info={applicant} />
-        {/* 신청인 정보 끝*/}
 
         <Outlet />
       </div>

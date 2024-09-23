@@ -3,6 +3,7 @@ package com.turtlecoin.mainservice.domain.turtle.service;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.turtlecoin.mainservice.domain.turtle.dto.AuctionTurtleInfoDTO;
+import com.turtlecoin.mainservice.domain.turtle.dto.TurtleResponseDTO;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.entity.QTurtle;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
@@ -31,13 +32,15 @@ public class TurtleService {
             whereClause.and(turtle.gender.eq(gender));
         }
 
-        if (minSize != null && maxSize != null) {
-            whereClause.and(turtle.weight.between(minSize, maxSize));
+        if (minSize != null) {
+            if (maxSize != null) {
+                whereClause.and(turtle.weight.between(minSize, maxSize));
+            } else {
+                whereClause.and(turtle.weight.goe(minSize));
+            }
+        } else if (maxSize != null) {
+            whereClause.and(turtle.weight.loe(maxSize));
         }
-
-        Iterable<Turtle> turtleIterable = turtleRepository.findAll(whereClause);
-        List<Turtle> turtles = StreamSupport.stream(turtleIterable.spliterator(), false)
-                .toList();
 
         return jpaQueryFactory.selectFrom(turtle)
                 .where(whereClause)
