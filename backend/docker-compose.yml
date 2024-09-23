@@ -10,8 +10,8 @@ services:
       - "15672:15672"
       - "5672:5672"
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_USER=kkobuk
+      - RABBITMQ_DEFAULT_PASS=kkobuk
 
   eureka-service:
     image: 1202yjk/eureka-service:${BUILD_TAG}
