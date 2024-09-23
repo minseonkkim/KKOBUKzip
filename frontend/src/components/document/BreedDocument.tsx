@@ -131,18 +131,20 @@ function BreedDocument() {
                 인공증식 시설 소재지
               </label>
 
-              <button aria-label="find location" type="button" ref={addressBtnRef} className="hover:bg-gray-100 w-1/12 border py-2 ml-1.5 rounded" onClick={loadPostcodeSearch}>
+              <button aria-label="find location" type="button" ref={addressBtnRef} className="hidden md:inline hover:bg-gray-100 w-1/12 border py-2 ml-1.5 rounded" onClick={loadPostcodeSearch}>
                 찾기
               </button>
-              <input id="location" type="text" className="w-1/3 px-3 ml-2 py-2 border rounded cursor-pointer hover:bg-gray-100" placeholder="기본주소" readOnly onChange={(evt) => changeHandle("location", evt)} value={postcodeData?.roadAddress || ""} onClick={() => addressBtnRef.current?.click()} />
-              <input
-                type="text"
-                onChange={(evt) => {
-                  setDetailLocation(evt.target.value);
-                }}
-                className="w-1/3 px-3 ml-2 py-2 border rounded"
-                placeholder="상세주소"
-              />
+              <div className="flex flex-col w-[67%] md:flex-row md:w-full space-y-1 md:space-y-0">
+                <input id="location" type="text" className="w-full px-3 ml-2 py-2 border rounded cursor-pointer hover:bg-gray-100" placeholder="기본주소" readOnly onChange={(evt) => changeHandle("location", evt)} value={postcodeData?.roadAddress || ""} onClick={() => addressBtnRef.current?.click()} />
+                <input
+                  type="text"
+                  onChange={(evt) => {
+                    setDetailLocation(evt.target.value);
+                  }}
+                  className="w-full px-3 py-2 border rounded ml-2"
+                  placeholder="상세주소"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -177,7 +179,7 @@ function BreedDocument() {
               <label htmlFor="weight" className="w-1/4 font-medium">
                 무게
               </label>
-              <input id="weight" type="number" className="w-3/5 px-3 py-2 border rounded" min="0" placeholder="무게" onChange={(evt) => changeHandle("weight", evt)} /><span className="ml-2">g(그램)</span>
+              <input id="weight" type="number" className="w-3/5 px-3 py-2 border rounded" min="0" placeholder="무게" onChange={(evt) => changeHandle("weight", evt)} /><div className="inline-block ml-2 w-14">g(그램)</div>
             </div>
           </div>
         </div>
