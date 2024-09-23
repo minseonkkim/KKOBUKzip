@@ -1,5 +1,6 @@
 package com.turtlecoin.mainservice.domain.document.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,11 +19,17 @@ import com.turtlecoin.mainservice.domain.document.entity.DocType;
 import com.turtlecoin.mainservice.domain.document.entity.Document;
 import com.turtlecoin.mainservice.domain.document.entity.Progress;
 import com.turtlecoin.mainservice.domain.document.repository.DocumentRepository;
+import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
+import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
+import com.turtlecoin.mainservice.domain.turtle.service.TurtleService;
 import com.turtlecoin.mainservice.domain.user.entity.User;
+import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.global.exception.DocumentNotFoundException;
 import com.turtlecoin.mainservice.global.exception.DocumentProgressException;
+import com.turtlecoin.mainservice.global.exception.TurtleNotFoundException;
+import com.turtlecoin.mainservice.global.exception.UserNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +41,9 @@ public class DocumentService {
 	private final DocTypeService docTypeService;
 	private final UserService userService;
 	private final ContractService contractService;
+	private final TurtleRepository turtleRepository;
+	private final UserRepository userRepository;
+	private final TurtleService turtleService;
 
 	// 서류 저장
 	@Transactional
@@ -105,6 +115,10 @@ public class DocumentService {
 						.motherAquisition(contractService.searchCurrentDocumentHash(breedingDetail.motherId))
 						.fatherUUID(breedingDetail.fatherId)
 						.fatherAquisition(contractService.searchCurrentDocumentHash(breedingDetail.fatherId))
+						// .birth(document.getBirth().toLocalDate())
+						// .name(document.getName())
+						// .weight(document.getWeight())
+						// .gender(document.getGender())
 						.locationSpecification(breedingDetail.locationSpecification)
 						.multiplicationMethod(breedingDetail.multiplicationMethod)
 						.shelterSpecification(breedingDetail.shelterSpecification)
@@ -146,6 +160,8 @@ public class DocumentService {
 				User assignee = userService.getUserByUUID(transferDetail.assigneeId);
 				User grantor = userService.getUserByUUID(transferDetail.grantorId);
 
+				boolean notGranted = grantor == null;
+
 				documentResponseDto = TransferDocumentResponseDto.builder()
 					.docType(docTypeService.convertToString(document.getDocType()))
 					.turtleUUID(document.getTurtleUUID())
@@ -164,19 +180,20 @@ public class DocumentService {
 						.address(assignee.getAddress())
 						.build())
 					.grantor(TransferDocumentResponseDto.UserResponseDto.builder()
-						.name(grantor.getName())
-						.phoneNumber(grantor.getPhonenumber())
-						.address(grantor.getAddress())
+						.name( notGranted ? null : grantor.getName())
+						.phoneNumber(notGranted ? null : grantor.getPhonenumber())
+						.address(notGranted ? null : grantor.getAddress())
 						.build())
 					.detail(TransferDocumentResponseDto.Detail.builder()
 						.scientificName("Malaclemys terrapin")
 						.count(transferDetail.count.intValue())
 						.registerDate(document.getCreateDate().toLocalDate())
 						.transferReason(transferDetail.transferReason)
+						.aquisition(contractService.searchCurrentDocumentHash(turtleUUID))
 						.motherUUID(transferDetail.motherId)
 						.motherAquisition(contractService.searchCurrentDocumentHash(transferDetail.motherId))
 						.fatherUUID(transferDetail.fatherId)
-						.fatherAquisition(contractService.searchCurrentDocumentHash(transferDetail.motherId))
+						.fatherAquisition(contractService.searchCurrentDocumentHash(transferDetail.fatherId))
 						.build())
 					.build();
 				break;
@@ -206,9 +223,50 @@ public class DocumentService {
 					throw new DocumentNotFoundException("입력한 정보와 일치하는 서류가 존재하지 않습니다.");
 				}
 
-				// Turtle turtle = Turtle.builder()
-				// 	.birth(documentResponseDto.getDetail().getRegisterDate())
-				// 	.weight(documentResponseDto.getDetail().getWeight)
+				Optional<Turtle> fatherOptional = turtleRepository.findByUUID(documentResponseDto.getDetail().getFatherUUID());
+				Optional<Turtle> motherOptional = turtleRepository.findByUUID(documentResponseDto.getDetail().getFatherUUID());
+
+				if(fatherOptional.isEmpty() || motherOptional.isEmpty()){
+					throw new TurtleNotFoundException("존재하지 않는 부모 개체입니다.");
+				}
+
+				Optional<User> userOptional = userRepository.findUserByUUID(document.getApplicant());
+				if(userOptional.isEmpty()){
+					throw new UserNotFoundException("신청자 정보와 일치하는 회원이 존재하지 않습니다.");
+				}
+
+				Turtle turtle = Turtle.builder()
+					//.birth(documentResponseDto.getDetail().getBirth())
+					.birth(LocalDate.now())
+					//.weight(documentResponseDto.getDetail().getWeight())
+					.weight(240)
+					.dad(fatherOptional.get())
+					.mom(motherOptional.get())
+					.user(userOptional.get())
+					//.name(documentResponseDto.getDetail().getName())
+					.name("꼬부기")
+					.scientificName(documentResponseDto.getDetail().getScientificName())
+					.uuid(documentResponseDto.getTurtleUUID())
+					//.gender(documentResponseDto.getDetail().getGender())
+					.gender(Gender.MALE)
+					.dead(false)
+					.build();
+
+				turtleRepository.save(turtle);
+
+				contractService.approveBreeding(document.getTurtleUUID(), document.getDocumentHash());
+			}
+			else if(document.getDocType() == DocType.DEATH){
+				Turtle turtle = turtleService.findTurtleByUUID(document.getTurtleUUID());
+				if(turtle == null){
+					throw new TurtleNotFoundException("존재하지 않는 거북이 입니다.");
+				}
+				else{
+					turtle.turtleDie();
+				}
+			}
+			else if(document.getDocType() == DocType.TRANSFER){
+				contractService.approveTransfer(document.getTurtleUUID(), document.getDocumentHash());
 			}
 		}
 		else {

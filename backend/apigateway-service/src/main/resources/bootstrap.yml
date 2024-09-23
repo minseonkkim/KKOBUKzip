@@ -2,7 +2,7 @@ spring:
   application:
     name: apigateway-service
   profiles:
-    active: local
+    active: jun
   cloud:
     config:
       uri: http://config-service:8888  # Config Server URI 설정`

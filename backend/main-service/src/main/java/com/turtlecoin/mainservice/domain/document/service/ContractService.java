@@ -2,6 +2,7 @@ package com.turtlecoin.mainservice.domain.document.service;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.StaticGasProvider;
 
+import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
 
 import contract.TurtleDocumentation;
@@ -57,13 +59,16 @@ public class ContractService {
 	public String registerTurtleMultiplicationDocument(
 		String turtleUUID, String applicant, String documentHash, BigInteger count, String area,
 		String purpose,	String location, String fatherUUID, String motherUUID,
+		LocalDate birth, String name, int weight, Gender gender,
 		String locationSpecification, String multiplicationMethod, String shelterSpecification) throws Exception {
 
 		contract.TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
 		// byte로 변환
 		byte[] byteArray = hexStringToByte32("0x" + documentHash);
 		TransactionReceipt receipt =  turtleDocumentation.registerTurtleMultiplicationDocument(
-			turtleUUID, applicant, byteArray, count, area, purpose, location, fatherUUID, motherUUID, locationSpecification, multiplicationMethod, shelterSpecification
+			turtleUUID, applicant, byteArray, count, area, purpose, location, fatherUUID, motherUUID,
+			// birth, name, weight, gender,
+			locationSpecification, multiplicationMethod, shelterSpecification
 		).send();
 
 		// 이벤트 호출
@@ -167,6 +172,20 @@ public class ContractService {
 
 		byte[] documentHash = turtleDocumentation.searchCurrentDocumentHash(turtleUUID).send();
 		return byteToString(documentHash);
+	}
+
+	// 인공증식서류 승인
+	public void approveBreeding(String turtleUUID, String documentHash) throws Exception {
+		contract.TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
+		byte[] byteArray = hexStringToByte32("0x" + documentHash);
+		turtleDocumentation.approveMultiplicationDocByReviewer(turtleUUID, byteArray).send();
+	}
+
+	// 양도양수 승인
+	public void approveTransfer(String turtleUUID, String documentHash) throws Exception {
+		contract.TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
+		byte[] byteArray = hexStringToByte32("0x" + documentHash);
+		turtleDocumentation.approveTransferDocByReviewer(turtleUUID, byteArray).send();
 	}
 
 	// byte32로 변환하기

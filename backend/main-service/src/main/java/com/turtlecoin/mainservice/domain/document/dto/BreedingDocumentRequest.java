@@ -3,6 +3,8 @@ package com.turtlecoin.mainservice.domain.document.dto;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,8 +33,9 @@ public class BreedingDocumentRequest {
 		String motherUUID;
 		String fatherUUID;
 		LocalDate birth;
+		String name;
 		int weight;
-		String gender;
+		Gender gender;
 	}
 }
 

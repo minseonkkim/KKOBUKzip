@@ -9,6 +9,6 @@ import lombok.Data;
 public class TurtleResponseDTO {
     private Long turtleId;
     private Gender gender;
-    private Double size;
+    private int size;
     private Double price;
 }

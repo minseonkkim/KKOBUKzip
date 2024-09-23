@@ -9,5 +9,5 @@ import lombok.Data;
 public class AuctionTurtleInfoDTO {
     private Long id;
     private Gender gender;
-    private Double size;
+    private int size;
 }

@@ -32,13 +32,16 @@ import com.turtlecoin.mainservice.domain.document.entity.Progress;
 import com.turtlecoin.mainservice.domain.document.service.ContractService;
 import com.turtlecoin.mainservice.domain.document.service.DocumentService;
 import com.turtlecoin.mainservice.domain.s3.service.ImageUploadService;
+import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import com.turtlecoin.mainservice.domain.turtle.service.TurtleService;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.global.exception.DocumentNotFoundException;
 import com.turtlecoin.mainservice.global.exception.DocumentProgressException;
+import com.turtlecoin.mainservice.global.exception.TurtleDeadException;
 import com.turtlecoin.mainservice.global.exception.TurtleNotFoundException;
 import com.turtlecoin.mainservice.global.exception.UserNotFoundException;
+import com.turtlecoin.mainservice.global.response.ResponseSingle;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 
 import lombok.RequiredArgsConstructor;
@@ -75,15 +78,26 @@ public class DocumentController {
 			if(userService.getUserByUUID(applicant) == null){
 				throw new UserNotFoundException("신청자 정보와 일치하는 회원이 존재하지 않습니다.");
 			}
-			String mother = requestData.getDetail().getMotherUUID();
-			String father = requestData.getDetail().getFatherUUID();
+			String motherUUID = requestData.getDetail().getMotherUUID();
+			String fatherUUID = requestData.getDetail().getFatherUUID();
+			Turtle father = turtleService.findTurtleByUUID(fatherUUID);
+			Turtle mother = turtleService.findTurtleByUUID(motherUUID);
 
-			if(turtleService.findTurtleByUUID(mother) == null || turtleService.findTurtleByUUID(father) == null){
+			if(father == null || mother == null){
 				throw new TurtleNotFoundException("존재하지 않는 부모 개체입니다.");
+			}
+			else if(father != null && father.isDead()){
+				throw new TurtleDeadException("부모 개체가 이미 폐사한 상태입니다.");
+			}
+			else if(mother != null && mother.isDead()){
+				throw new TurtleDeadException("부모 개체가 이미 폐사한 상태입니다.");
 			}
 		}
 		catch(UserNotFoundException | TurtleNotFoundException e){
 			return new ResponseEntity<>(ResponseVO.failure("404", e.getMessage()), HttpStatus.NOT_FOUND);
+		}
+		catch(TurtleDeadException e){
+			return new ResponseEntity<>(ResponseVO.failure("400", e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 
 		// S3에 이미지를 업로드
@@ -113,11 +127,12 @@ public class DocumentController {
 			hash = contractService.registerTurtleMultiplicationDocument(
 				turtleUUID, requestData.getApplicant(), documentHash, BigInteger.valueOf(requestData.getDetail().getCount()), requestData.getDetail().getArea(),
 				requestData.getDetail().getPurpose(), requestData.getDetail().getLocation(), requestData.getDetail().getFatherUUID(),
-				requestData.getDetail().getMotherUUID(), locationSpecificationAddress, multiplicationAddress, shelterSpecificationAddress
+				requestData.getDetail().getMotherUUID(), requestData.getDetail().getBirth(), requestData.getDetail().getName(), requestData.getDetail().getWeight(), requestData.getDetail().getGender(),
+				locationSpecificationAddress, multiplicationAddress, shelterSpecificationAddress
 			);
 		}
 		catch(Exception e){
-			e.printStackTrace();
+			//e.printStackTrace();
 			// 로직중 에러가 발생하면 모두 처음으로 복구시킨다.
 			imageUploadService.deleteS3(locationSpecificationAddress);
 			imageUploadService.deleteS3(multiplicationAddress);
@@ -127,6 +142,10 @@ public class DocumentController {
 
 		// DB에 최종적으로 데이터 저장
 		try{
+			if(requestData.getApplicant().equals("abc456-uuid-value")){
+				throw new Exception();
+			}
+
 			Document document = Document.builder()
 				.documentHash(hash)
 				.progress(Progress.DOCUMENT_REVIEWING)
@@ -176,8 +195,12 @@ public class DocumentController {
 		try{
 			// 거북이 일치하지 않으면 에러
 			turtleUUID = requestData.getDetail().getTurtleUUID();
-			if(turtleService.findTurtleByUUID(turtleUUID) == null){
+			Turtle turtle = turtleService.findTurtleByUUID(turtleUUID);
+			if(turtle == null){
 				throw new TurtleNotFoundException("존재하지 않는 거북이 입니다.");
+			}
+			else if(turtle.isDead()){
+				throw new TurtleDeadException("개체가 이미 폐사한 상태입니다.");
 			}
 
 			String currentVariable = requestData.getApplicant() + turtleUUID + Long.toString(System.currentTimeMillis());
@@ -197,6 +220,9 @@ public class DocumentController {
 		}
 		catch(UserNotFoundException | TurtleNotFoundException e){
 			return new ResponseEntity<>(ResponseVO.failure("404", e.getMessage()), HttpStatus.NOT_FOUND);
+		}
+		catch(TurtleDeadException e){
+			return new ResponseEntity<>(ResponseVO.failure("400", e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 		catch(Exception e){
 			//e.printStackTrace();
@@ -252,11 +278,15 @@ public class DocumentController {
 		// 블록체인에 업로드 ( 미구현 )
 		try{
 			turtleUUID = requestData.getDetail().getTurtleUUID();
-			if(turtleService.findTurtleByUUID(turtleUUID) == null){
+			Turtle turtle = turtleService.findTurtleByUUID(turtleUUID);
+			if(turtle == null){
 				throw new TurtleNotFoundException("존재하지 않는 거북이 입니다.");
 			}
-			String currentVariable = requestData.getApplicant() + turtleUUID + Long.toString(System.currentTimeMillis());
-			documentHash = contractService.keccak256(currentVariable.getBytes());
+			else if(turtle.isDead()){
+				throw new TurtleDeadException("개체가 이미 폐사한 상태입니다.");
+			}
+
+			documentHash = requestData.getDocumentHash();
 			if(documentService.responseDocument(documentHash, turtleUUID) == null){
 				throw new DocumentNotFoundException("입력한 정보와 일치하는 양수 신청서가 존재하지 않습니다.");
 			}
@@ -269,39 +299,18 @@ public class DocumentController {
 
 			hash = contractService.registerTurtleGrantorDocument(
 				turtleUUID, requestData.getApplicant(), requestData.getDocumentHash(), grantorUUID, requestData.getDetail().getAquisition(),
-				requestData.getDetail().getTurtleUUID(), requestData.getDetail().getMotherUUID()
+				requestData.getDetail().getFatherUUID(), requestData.getDetail().getMotherUUID()
 			);
 		}
 		catch(UserNotFoundException | TurtleNotFoundException | DocumentNotFoundException e){
 			return new ResponseEntity<>(ResponseVO.failure("404", e.getMessage()), HttpStatus.NOT_FOUND);
 		}
+		catch(TurtleDeadException e){
+			return new ResponseEntity<>(ResponseVO.failure("400", e.getMessage()), HttpStatus.BAD_REQUEST);
+		}
 		catch(Exception e){
 			//e.printStackTrace();
 			return new ResponseEntity<>(ResponseVO.failure("500", "블록체인 접근 중 오류 발생"), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-
-		// DB에 최종적으로 데이터 저장
-		try{
-			Document document = Document.builder()
-				.documentHash(hash)
-				.progress(Progress.DOCUMENT_REVIEWING)
-				.turtleUUID(turtleUUID)
-				.applicant(requestData.getApplicant())
-				.build();
-			documentService.save(document);
-		}catch(Exception e){
-			// 에러가 발생했을 경우 DB에 null 인 상태로라도 저장해야 함
-			Document document = Document.builder()
-				.documentHash(documentHash)
-				.progress(Progress.DOCUMENT_REVIEWING)
-				.turtleUUID(turtleUUID)
-				.docType(DocType.TRANSFER)
-				.applicant(null)
-				.build();
-			documentService.save(document);
-
-			// 블록체인에 저장된 거니까 등록에는 성공한거다
-			return new ResponseEntity<>(ResponseVO.success("서류 등록에 성공했습니다."), HttpStatus.OK);
 		}
 
 		// 응답
@@ -338,12 +347,19 @@ public class DocumentController {
 		String documentHash = contractService.keccak256(currentVariable.getBytes());
 		// 거북이 일치 확인
 		try{
-			if(turtleService.findTurtleByUUID(turtleUUID) == null){
+			Turtle turtle = turtleService.findTurtleByUUID(turtleUUID);
+			if(turtle == null){
 				throw new TurtleNotFoundException("존재하지 않는 거북이 입니다.");
+			}
+			else if(turtle.isDead()){
+				throw new TurtleDeadException("개체가 이미 폐사한 상태입니다.");
 			}
 		}
 		catch(TurtleNotFoundException e){
 			return new ResponseEntity<>(ResponseVO.failure("404", e.getMessage()), HttpStatus.NOT_FOUND);
+		}
+		catch(TurtleDeadException e){
+			return new ResponseEntity<>(ResponseVO.failure("400", e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 		// S3에 이미지를 업로드
 		try{
@@ -414,7 +430,7 @@ public class DocumentController {
 			return new ResponseEntity<>(ResponseVO.failure("500", "서류 조회에 실패했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		return new ResponseEntity<>(ResponseVO.success("data", documentList), HttpStatus.OK);
+		return new ResponseEntity<>(ResponseSingle.success("서류 목록 조회에 성공하였습니다.", documentList), HttpStatus.OK);
 	}
 	
 	// 서류 상세 조회
@@ -434,10 +450,11 @@ public class DocumentController {
 			return new ResponseEntity<>(ResponseVO.failure("404", e.getMessage()), HttpStatus.NOT_FOUND);
 		}
 		catch(Exception e){
+			//e.printStackTrace();
 			return new ResponseEntity<>(ResponseVO.failure("500", "서류 조회 중 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		return new ResponseEntity<>(ResponseVO.success("data", documentResponseDto), HttpStatus.OK);
+		return new ResponseEntity<>(ResponseSingle.success("서류 상세 조회에 성공하였습니다.", documentResponseDto), HttpStatus.OK);
 	}
 
 	// 서류 승인 또는 반려
@@ -451,7 +468,7 @@ public class DocumentController {
 			}
 			documentService.approveDocument(documentApprovalRequestDto);
 		}
-		catch(DocumentNotFoundException e){
+		catch(DocumentNotFoundException | UserNotFoundException | TurtleNotFoundException e){
 			return new ResponseEntity<>(ResponseVO.failure("404", e.getMessage()), HttpStatus.NOT_FOUND);
 		}
 		catch(DocumentProgressException e){
