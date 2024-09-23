@@ -16,6 +16,10 @@ contract TurtleDocumentation is Ownable {
         // 구비 서류
         string fatherId;
         string motherId;
+        string birth;
+        string name;
+        uint weight;
+        string gender;
         string locationSpecification;
         string multiplicationMethod;
         string shelterSpecification;
@@ -98,6 +102,10 @@ contract TurtleDocumentation is Ownable {
         string memory _location,
         string memory _fatherId,
         string memory _motherId,
+        string memory _birth,
+        string memory _name,
+        uint _weight,
+        string memory _gender,
         string memory _locationSpecification,
         string memory _multiplicationMethod,
         string memory _shelterSpecification
@@ -112,6 +120,10 @@ contract TurtleDocumentation is Ownable {
             newTurtle.multiplicationDoc[_documentHash].location = _location;
             newTurtle.multiplicationDoc[_documentHash].fatherId = _fatherId;
             newTurtle.multiplicationDoc[_documentHash].motherId = _motherId;
+            newTurtle.multiplicationDoc[_documentHash].birth = _birth;
+            newTurtle.multiplicationDoc[_documentHash].name = _name;
+            newTurtle.multiplicationDoc[_documentHash].weight = _weight;
+            newTurtle.multiplicationDoc[_documentHash].gender = _gender;
             newTurtle.multiplicationDoc[_documentHash].locationSpecification = _locationSpecification;
             newTurtle.multiplicationDoc[_documentHash].multiplicationMethod = _multiplicationMethod;
             newTurtle.multiplicationDoc[_documentHash].shelterSpecification = _shelterSpecification;
@@ -123,6 +135,10 @@ contract TurtleDocumentation is Ownable {
             turtles[_turtleId].multiplicationDoc[_documentHash].location = _location;
             turtles[_turtleId].multiplicationDoc[_documentHash].fatherId = _fatherId;
             turtles[_turtleId].multiplicationDoc[_documentHash].motherId = _motherId;
+            turtles[_turtleId].multiplicationDoc[_documentHash].birth = _birth;
+            turtles[_turtleId].multiplicationDoc[_documentHash].name = _name;
+            turtles[_turtleId].multiplicationDoc[_documentHash].weight = _weight;
+            turtles[_turtleId].multiplicationDoc[_documentHash].gender = _gender;
             turtles[_turtleId].multiplicationDoc[_documentHash].locationSpecification = _locationSpecification;
             turtles[_turtleId].multiplicationDoc[_documentHash].multiplicationMethod = _multiplicationMethod;
             turtles[_turtleId].multiplicationDoc[_documentHash].shelterSpecification = _shelterSpecification;
