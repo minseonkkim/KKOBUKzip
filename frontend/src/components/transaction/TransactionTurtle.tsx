@@ -26,10 +26,6 @@ export default function TransactionTurtle({
     <>
       <div onClick={goToDetail}
         className="bg-[#F8F9FA] shadow-lg transition-shadow duration-300 w-full max-w-sm h-[300px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative">
-        <div className="absolute top-4 right-4 z-10">
-          <TransactionStatusTag progress={progress} />
-        </div>
-
         <div className="overflow-hidden rounded-t-2xl relative">
           <img
             src={transaction_image}
@@ -39,6 +35,9 @@ export default function TransactionTurtle({
             draggable="false"
             alt="거북이 이미지"
           />
+        </div>
+        <div className="absolute top-4 right-4">
+          <TransactionStatusTag progress={progress} />
         </div>
         <div className="px-4 py-1">
           <div className="flex justify-between items-center my-2">
