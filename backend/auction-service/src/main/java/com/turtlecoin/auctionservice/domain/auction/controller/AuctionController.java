@@ -13,6 +13,9 @@ import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.domain.turtle.service.TurtleService;
 import com.turtlecoin.auctionservice.global.exception.AuctionNotFoundException;
+import com.turtlecoin.auctionservice.global.exception.TurtleAlreadyRegisteredException;
+import com.turtlecoin.auctionservice.global.exception.TurtleNotFoundException;
+import com.turtlecoin.auctionservice.global.exception.UserNotFoundException;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,10 +26,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -34,17 +35,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/auction")
 public class AuctionController {
 
-    private final TurtleService turtleService;
     private final ImageUploadService imageUploadService;
-
-    //거북이 정보 조회
-    @GetMapping("/info")
-    public TurtleResponseDTO getTurtleInfo() {
-        // turtleId는 1로 고정
-        Long turtleId = 1L;
-        return turtleService.getTurtleInfo(turtleId);
-    }
-
     private final AuctionService auctionService;
     private final AuctionRepository auctionRepository;
 
@@ -68,11 +59,6 @@ public class AuctionController {
             Auction registeredAuction = auctionService.registerAuction(registerAuctionDTO, multipartFiles);
             log.info("경매 정보 저장");
 
-            AuctionResponseDTO responseDTO = auctionService.convertToDTO(registeredAuction);
-            log.info("경매 정보 DTO로 변환 완료");
-
-
-
             // 이미지가 있다면 처리
             if (multipartFiles != null && !multipartFiles.isEmpty()) {
                 for (MultipartFile file : multipartFiles) {
@@ -94,6 +80,9 @@ public class AuctionController {
 
             return new ResponseEntity<>(ResponseVO.success("경매 등록에 성공했습니다."), HttpStatus.OK);
 
+        } catch (TurtleAlreadyRegisteredException e) {
+            return new ResponseEntity<>(ResponseVO.failure("409", "이미 등록된 개체입니다."), HttpStatus.CONFLICT);
+
         } catch (AmqpConnectException e) {
             log.error("RabbitMQ 연결 실패: {}", e.getMessage());
             return new ResponseEntity<>(ResponseVO.success("RabbitMQ 오류 발생, 하지만 경매는 성공적으로 등록되었습니다.", "auction", null), HttpStatus.OK);
@@ -101,6 +90,7 @@ public class AuctionController {
         } catch (IOException e) {
             log.info("IOException 발생");
             return new ResponseEntity<>(ResponseVO.failure("400", "경매 등록에 실패했습니다. " + e.getMessage()), HttpStatus.BAD_REQUEST);
+
         } catch (Exception e) {
             log.info("기타 오류 발생");
             return new ResponseEntity<>(ResponseVO.failure("500", "서버 내부 오류가 발생했습니다. " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);

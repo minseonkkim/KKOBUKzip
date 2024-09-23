@@ -3,9 +3,7 @@ package com.turtlecoin.auctionservice.domain.auction.service;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 //import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
-import com.turtlecoin.auctionservice.domain.auction.dto.AuctionPhotoDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
-import com.turtlecoin.auctionservice.domain.auction.dto.AuctionTagDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
@@ -18,17 +16,18 @@ import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.domain.turtle.service.TurtleService;
 import com.turtlecoin.auctionservice.feign.MainClient;
 import com.turtlecoin.auctionservice.global.exception.AuctionNotFoundException;
+import com.turtlecoin.auctionservice.global.exception.TurtleAlreadyRegisteredException;
+import com.turtlecoin.auctionservice.global.exception.TurtleNotFoundException;
+import com.turtlecoin.auctionservice.global.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -88,12 +87,17 @@ public class AuctionService {
     private void validateUserOwnsTurtle(Long userId, Long turtleId) {
         log.info("검증 메서드 내부 진입");
         List<TurtleResponseDTO> userTurtles = mainClient.getTurtlesByUserId(userId);
+
+        if (userTurtles.isEmpty()) {
+            throw new UserNotFoundException("해당 사용자를 찾을 수 없습니다." + userId);
+        }
+
         log.info("userTurtle : {}", userTurtles);
         boolean isUserTurtle = userTurtles.stream()
                 .anyMatch(turtle -> turtle.getId().equals(turtleId));
 
         if (!isUserTurtle) {
-            throw new IllegalArgumentException("해당 거북이는 사용자가 소유한 거북이가 아닙니다.");
+            throw new TurtleNotFoundException("해당 거북이는 사용자가 소유한 거북이가 아닙니다.");
         }
         log.info("내 거북이가 맞다");
     }
@@ -104,7 +108,7 @@ public class AuctionService {
         log.info("이미 올라간 거북이 검증 완료");
 
         if (isRegistered) {
-            throw new IllegalArgumentException("이미 등록된 거북이는 등록할 수 없습니다.");
+            throw new TurtleAlreadyRegisteredException("이미 등록된 거북이는 등록할 수 없습니다.");
         }
     }
 
@@ -159,8 +163,14 @@ public class AuctionService {
         BooleanBuilder whereClause = new BooleanBuilder();
 
         // 가격 필터 (minPrice ~ maxPrice)
-        if (minPrice != null && maxPrice != null) {
-            whereClause.and(auction.minBid.between(minPrice, maxPrice));
+        if (minPrice != null) {
+            if (maxPrice != null) {
+                whereClause.and(auction.minBid.between(minPrice, maxPrice));
+            } else {
+                whereClause.and(auction.minBid.goe(minPrice));
+            }
+        } else if (maxPrice != null) {
+            whereClause.and(auction.minBid.loe(maxPrice));
         }
 
         // 경매 진행 상태 필터
@@ -184,6 +194,11 @@ public class AuctionService {
     public AuctionResponseDTO convertToDTO(Auction auction) {
         log.info("Turtle ID: {}", auction.getTurtleId());
         TurtleResponseDTO turtleInfo = mainClient.getTurtle(auction.getTurtleId());
+
+        if (turtleInfo == null) {
+            throw new TurtleNotFoundException("Main-service에서 거북이를 가져올 수 없습니다.");
+        }
+
         log.info("Turtle info retrieved: {}", turtleInfo);
         return AuctionResponseDTO.from(auction, turtleInfo);
     }

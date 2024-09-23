@@ -22,9 +22,6 @@ public interface MainClient {
     @GetMapping("/main/user/{userId}/turtle")
     List<TurtleResponseDTO> getTurtlesByUserId(@PathVariable("userId") Long userId);
 
-    @GetMapping("/main/turtle/{turtleId}")
-    TurtleResponseDTO getTurtle(@PathVariable Long turtleId);
-
     @GetMapping("/main/user/{userId}")
     UserResponseDTO getUserById(@PathVariable("userId") Long userId);
 }
