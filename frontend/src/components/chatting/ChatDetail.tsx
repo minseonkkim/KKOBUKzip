@@ -13,6 +13,7 @@ interface ChatDetailProps {
   closeChatDetail: () => void; // 함수에서 인자가 없기 때문에 () => void
   chattingId: number; // chat의 타입을 지정 (name과 message를 가지는 객체)
   toggleChat: () => void; // toggleChat 함수의 타입 추가
+  chattingTitle: string;
 }
 
 // 확인해야 할 사항
@@ -84,6 +85,7 @@ const data: ChatData[] = [
 ];
 
 export default function ChatDetail({
+  chattingTitle,
   chattingId,
   closeChatDetail,
   toggleChat,
@@ -199,14 +201,17 @@ export default function ChatDetail({
 
   return (
     <>
-      <div className="text-black bg-gray-100 rounded-[10px] flex flex-col justify-between w-full h-full">
+      <div className="text-black bg-gray-100 rounded-[10px] flex flex-col justify-between w-full">
         <div>
-          <div className="text-[#43493A] p-[10px] flex flex-row justify-between items-center text-[29px] font-dnf-bitbit">
-            <span onClick={closeChatDetail}>
-              &lt;&nbsp;{groupedChat[0]?.messages[0].message}
+          <div className="text-[#43493A] p-[10px] flex flex-row justify-between items-center text-[29px] font-dnf-bitbit ">
+            <span className="cursor-pointer" onClick={closeChatDetail}>
+              &lt;&nbsp;{chattingTitle}
             </span>
             {/* toggleChat을 사용하여 창을 닫음 */}
-            <IoClose className="text-[28px]" onClick={toggleChat} />
+            <IoClose
+              className="text-[28px] cursor-pointer"
+              onClick={toggleChat}
+            />
           </div>
           <div className="p-[10px] flex flex-col">
             {groupedChat.map((group, index) => (
@@ -247,6 +252,16 @@ export default function ChatDetail({
           />
         </div>
       </div>
+
+      <style>{`
+* {
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
+}
+*::-webkit-scrollbar {
+    display: none; 
+}
+`}</style>
     </>
   );
 }

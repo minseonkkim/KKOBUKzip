@@ -14,10 +14,14 @@ export default function ChatList() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [selectedChat, setSelectedChat] = useState<null | number>(null);
+  const [selectedChatTitle, setSelectedChatTitle] = useState<null | string>(
+    null
+  );
 
   useEffect(() => {
     const getChatData = async () => {
       console.log("채팅목록을가져오는함수");
+      // setChats
     };
     getChatData();
   }, []);
@@ -25,14 +29,17 @@ export default function ChatList() {
   const toggleChat = () => {
     setIsOpen(!isOpen);
     setSelectedChat(null); // 창을 닫을 때 선택된 채팅도 초기화
+    setSelectedChatTitle(null);
   };
 
   const openChatDetail = (chat: ChatListItem) => {
     setSelectedChat(chat.chattingId); // 상세 채팅을 열 때 선택한 채팅의 정보를 상태로 저장
+    setSelectedChatTitle(chat.otherUserNickname);
   };
 
   const closeChatDetail = () => {
     setSelectedChat(null); // 상세 채팅에서 돌아가려면 선택한 채팅을 null로 설정
+    setSelectedChatTitle(null);
   };
 
   return (
@@ -98,17 +105,18 @@ export default function ChatList() {
         )}
 
         {isOpen && (
-          <div className="w-full h-full">
+          <div className="w-full h-full overflow-y-auto">
             {selectedChat ? (
               // 상세 채팅
               <ChatDetail
+                chattingTitle={selectedChatTitle!}
                 chattingId={selectedChat}
                 closeChatDetail={closeChatDetail}
                 toggleChat={toggleChat}
               />
             ) : (
               // 채팅 목록
-              <div className="px-[10px] w-full bg-transparent rounded-lg overflow-y-auto">
+              <div className="px-[10px] w-full bg-transparent rounded-lg ">
                 {chats.map((chat) => (
                   <ChatCard
                     key={chat.chattingId}
