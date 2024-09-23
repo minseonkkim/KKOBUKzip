@@ -36,10 +36,10 @@ function LoginPage() {
       </Helmet>
       <Header />
       <div className={isMobile ?
-        "absolute top-10 left-0 right-0 flex justify-center items-center h-full"
+        "absolute top-16 left-0 right-0 flex justify-center items-center h-full"
         : "absolute top-0 left-0 right-0 px-[250px] flex justify-center items-center h-full"}>
         {/* 로그인 컴포넌트 */}
-        <div className={isMobile ? "relative w-full h-[800px] bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex flex-col" : "relative w-full h-[600px] bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex flex-row"}>
+        <div className={isMobile ? "relative w-full h-[750px] bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex flex-col" : "relative w-full h-[600px] bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex flex-row"}>
           <div className={isMobile ? "w-full h-[300px]" : "rounded-l-[20px] w-1/2"}>
             <img
               src={StopTurtleImg}
