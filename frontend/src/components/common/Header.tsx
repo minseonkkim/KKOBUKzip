@@ -20,16 +20,13 @@ export default function Header() {
 
   return <>
     <div
-      className={`${isMobile ? 
-        "fixed top-0 left-0 w-full h-[65px]" : 
-        "fixed top-0 left-0 w-full h-[85px]"
-      } fixed top-0 left-0 w-full h-[65px] lg:h-[85px] px-4 lg:px-[250px] flex flex-row justify-between items-center shadow-md z-50`}
+      className={`fixed top-0 left-0 w-full h-[65px] lg:h-[85px] px-4 lg:px-[250px] flex flex-row justify-between items-center shadow-md z-50`}
       style={{ backgroundColor }}
     >
       <Link to="/">
         <div className="text-[32px] lg:text-[40px] font-dnf-bitbit flex flex-row items-center cursor-pointer"
         >
-          <img src={LogoImg} className={`${isMobile ? "w-[45px] h-[45px]" : "w-[60px] h-[60px]"} mr-3`} draggable="false" />
+          <img src={LogoImg} className="w-[45px] h-[45px] lg:w-[60px] lg:h-[60px] mr-3" draggable="false" />
           <div className="whitespace-nowrap"><span className="text-[#4B721F]">꼬북</span>ZIP</div>
         </div>
       </Link>
@@ -41,7 +38,7 @@ export default function Header() {
           "mr-3 bg-[#F6CA19] hover:bg-[#DFB509] shadow-[3px_3px_0px_#C49B07] hover:shadow-[3px_3px_0px_#CAA612] rounded-[10px] px-2 py-1.5"
         } flex flex-row items-center gap-1 cursor-pointer font-dnf-bitbit active:scale-95`} onClick={toggleWallet}>
           <img src={CoinImg} className="w-[27px] h-[27px]" draggable="false" />
-          {!isMobile && <span className="whitespace-nowrap text-white text-[20px] tracking-widest">내 지갑</span>}
+          {!isMobile && <span className="whitespace-nowrap text-white text-[17px] lg:text-[20px] tracking-widest">내 지갑</span>}
         </div>
         <Link to="/mypage">
           <div className={`${isMobile ? 
@@ -50,7 +47,7 @@ export default function Header() {
           } flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95`}>
             {isMobile ? 
               <img src={MyPageImg} className="whitespace-nowrap w-[25px] h-[25px]" draggable="false" /> :
-              <span className="whitespace-nowrap text-white text-[20px] tracking-widest">마이페이지</span>
+              <span className="whitespace-nowrap text-white text-[17px] lg:text-[20px] tracking-widest">마이페이지</span>
             }
           </div>
         </Link>
