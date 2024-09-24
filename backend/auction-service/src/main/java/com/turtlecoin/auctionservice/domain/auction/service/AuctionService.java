@@ -12,12 +12,8 @@ import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository
 import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
 import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
-import com.turtlecoin.auctionservice.domain.turtle.service.TurtleService;
 import com.turtlecoin.auctionservice.feign.MainClient;
-import com.turtlecoin.auctionservice.global.exception.AuctionNotFoundException;
-import com.turtlecoin.auctionservice.global.exception.TurtleAlreadyRegisteredException;
-import com.turtlecoin.auctionservice.global.exception.TurtleNotFoundException;
-import com.turtlecoin.auctionservice.global.exception.UserNotFoundException;
+import com.turtlecoin.auctionservice.global.exception.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -33,12 +29,11 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AuctionService {
 
-    private RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
     private static final String AUCTION_BID_KEY = "auction_bid_";
 
     private final AuctionRepository auctionRepository;
     private final ImageUploadService imageUploadService;  // ImageUploadService도 주입합니다.
-    private final TurtleService turtleService;
     private final MainClient mainClient;
     private final JPAQueryFactory queryFactory;
 
@@ -180,37 +175,45 @@ public class AuctionService {
     }
 
     // 입찰 가격 갱신
-    public void updateBid(Long auctionId, Long userId, Long bidAmount) {
+    @Transactional
+    public void processBid(Long auctionId, Long userId, Double bidAmount) {
         String redisKey = AUCTION_BID_KEY + auctionId;
 
         Map<String, Object> bidData = new HashMap<>();
         bidData.put("userId", userId);
         bidData.put("bidAmount", bidAmount);
 
-        Long currentBid = (Long) redisTemplate.opsForHash().get(redisKey, "bidAmount");
-        Long currentUser = (Long) redisTemplate.opsForHash().get(redisKey, "userId");
+        Map<Object, Object> currentBidData = getCurrentBid(auctionId);
+        Double currentBid = (Double) currentBidData.get("nowBid");
+        Long currentUserId = (Long) currentBidData.get("userId");
 
-        // 입찰 조건: 현재 입찰자와 다른 사용자이며, 입찰 금액이 더 클 경우에만 갱신
+        if (currentBid == null) {
+            currentBid = getMinBid(auctionId);
+        }
+
         if ((currentBid == null || bidAmount > currentBid) &&
-                (currentUser == null || !currentUser.equals(userId))) {
+                (currentUserId == null || !currentUserId.equals(userId))) {
 
             if (currentBid == null) {
-                currentBid = getMinBid(auctionId).longValue();
+                currentBid = getMinBid(auctionId);
             }
 
             Long bidIncrement = calculateBidIncrement(currentBid);
-            Long newBidAmount = currentBid + bidIncrement;
+            Double newBidAmount = currentBid + bidIncrement;
 
             bidData.put("bidAmount", newBidAmount);
             redisTemplate.opsForHash().putAll(redisKey, bidData);
 
             String bidHistory = redisKey + ":history";
-            String bidRecord = "userId: " + userId + ", bidAmount: " + bidAmount;
+            String bidRecord = "userId: " + userId + ", bidAmount: " + newBidAmount;
             redisTemplate.opsForList().rightPush(bidHistory, bidRecord);
 
             log.info("입찰 갱신 : auctionID = {}, userId = {}, newBidAmount = {}", auctionId, userId, newBidAmount);
         } else {
-            throw new
+            if (currentUserId != null && currentUserId.equals(userId)) {
+                throw new SameUserBidException("자신의 입찰에 재입찰할 수 없습니다");
+            }
+            throw new WrongBidAmountException("현재 입찰가보다 낮은 금액으로 입찰할 수 없습니다");
         }
     }
 
@@ -225,7 +228,7 @@ public class AuctionService {
         return auction.getMinBid();
     }
 
-    private Long calculateBidIncrement(Long currentBid) {
+    private Long calculateBidIncrement(Double currentBid) {
         // 경매 가격에 따라 구분 필요
         if (currentBid >= 0 && currentBid <= 10000) {
             return 500L; // 0 ~ 10000 : 500
