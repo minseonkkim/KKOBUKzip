@@ -1,7 +1,9 @@
 package com.turtlecoin.mainservice.global.config;
 
+import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,8 +32,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())  // CSRF 비활성화
                 .cors(cors -> cors.disable())  // CORS 설정 추가
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  // 세션 사용하지 않음 (JWT 기반)
-
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // 세션 사용하지 않음 (JWT 기반)
         return http.build();
     }
 }
