@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +55,7 @@ public class AuctionController {
     public ResponseEntity<ResponseVO<?>> registerAuction(
             @RequestPart("data") RegisterAuctionDTO registerAuctionDTO,
             @RequestPart(value = "images", required = false) List<MultipartFile> multipartFiles) {
-        log.info("Registering auction {}", registerAuctionDTO);
+        List<AuctionPhoto> uploadedPhotos = new ArrayList<>();
         try {
             // 경매 생성
             Auction registeredAuction = auctionService.registerAuction(registerAuctionDTO, multipartFiles);
@@ -71,6 +73,7 @@ public class AuctionController {
                             .build();
 
                     registeredAuction.getAuctionPhotos().add(auctionPhoto);  // Auction 엔티티에 추가
+                    uploadedPhotos.add(auctionPhoto);
                 }
             }
 
@@ -81,18 +84,22 @@ public class AuctionController {
             return new ResponseEntity<>(ResponseVO.success("경매 등록에 성공했습니다."), HttpStatus.OK);
 
         } catch (TurtleAlreadyRegisteredException e) {
+            auctionService.deleteUploadedImages(uploadedPhotos);
             return new ResponseEntity<>(ResponseVO.failure("409", "이미 등록된 개체입니다."), HttpStatus.CONFLICT);
 
         } catch (AmqpConnectException e) {
             log.error("RabbitMQ 연결 실패: {}", e.getMessage());
+            auctionService.deleteUploadedImages(uploadedPhotos);
             return new ResponseEntity<>(ResponseVO.success("RabbitMQ 오류 발생, 하지만 경매는 성공적으로 등록되었습니다.", "auction", null), HttpStatus.OK);
 
         } catch (IOException e) {
             log.info("IOException 발생");
+            auctionService.deleteUploadedImages(uploadedPhotos);
             return new ResponseEntity<>(ResponseVO.failure("400", "경매 등록에 실패했습니다. " + e.getMessage()), HttpStatus.BAD_REQUEST);
 
         } catch (Exception e) {
             log.info("기타 오류 발생");
+            auctionService.deleteUploadedImages(uploadedPhotos);
             return new ResponseEntity<>(ResponseVO.failure("500", "서버 내부 오류가 발생했습니다. " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -135,13 +142,19 @@ public class AuctionController {
 
 
     @PostMapping("/{auctionId}/bid")
-    public ResponseEntity<ResponseVO<String>> auctionBid(@PathVariable Long auctionId, @RequestBody BidRequestDTO bidRequestdto) {
+    public ResponseEntity<ResponseVO<?>> auctionBid(@PathVariable Long auctionId, @RequestBody BidRequestDTO bidRequestdto) {
         Long newBidAmount = bidRequestdto.getBidAmount();
         Long userId = bidRequestdto.getUserId();
 
+        Map<Double, Double> priceTable = new HashMap<>();
+
         Map<Object, Object> currentBidData = auctionService.getCurrentBid(auctionId);
-        Long currentBid = (Long) currentBidData.get("nowBid");
+        Double currentBid = (Double) currentBidData.get("nowBid");
         Long currentUserId = (Long) currentBidData.get("userId");
+
+        if (currentBid == null) {
+            currentBid = auctionService.getMinBid(auctionId);
+        }
 
         if ((currentBid == null || newBidAmount > currentBid) &&
                 (currentUserId == null || !currentUserId.equals(userId))) {

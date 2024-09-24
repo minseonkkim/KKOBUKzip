@@ -2,7 +2,6 @@ package com.turtlecoin.auctionservice.domain.auction.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-//import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
@@ -48,18 +47,13 @@ public class AuctionService {
     public Auction registerAuction(RegisterAuctionDTO registerAuctionDTO, List<MultipartFile> images) throws IOException {
         log.info("경매 등록 시작 - 사용자 ID: {}, 거북이 ID: {}", registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
 
-        // 사용자가 소유한 거북이인지 검증
         validateUserOwnsTurtle(registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
-
-        // 거북이가 이미 올라간 거북이가 아닌지 검증하는 로직 추가
         validateTurtleNotAlreadyRegistered(registerAuctionDTO.getTurtleId());
 
-        Auction auction = registerAuctionDTO.toEntity();
-        auctionRepository.save(auction);
+        Auction auction = auctionRepository.save(registerAuctionDTO.toEntity());
 
         if (images != null && !images.isEmpty()) {
-            List<AuctionPhoto> photos = uploadImages(images, auction);
-            auction.getAuctionPhotos().addAll(photos);
+            auction.getAuctionPhotos().addAll(uploadImages(images, auction));
         }
 
         return auctionRepository.save(auction);
@@ -67,47 +61,29 @@ public class AuctionService {
 
     // 이미지 업로드 처리 메서드
     private List<AuctionPhoto> uploadImages(List<MultipartFile> images, Auction auction) throws IOException {
-        return images.stream()
-                .map(image -> {
-                    try {
-                        String imagePath = imageUploadService.upload(image, "auctionImages");
-                        return AuctionPhoto.builder()
-                                .imageAddress(imagePath)
-                                .auction(auction)
-                                .build();
-                    } catch (IOException e) {
-                        log.error("이미지 업로드 실패 : {}", image.getOriginalFilename(), e);
-                        throw new RuntimeException(e);
-                    }
-                })
-                .toList();
+        List<AuctionPhoto> photos = new ArrayList<>();
+        for (MultipartFile image : images) {
+            String imagePath = imageUploadService.upload(image, "auctionImages");
+            photos.add(AuctionPhoto.builder().imageAddress(imagePath).auction(auction).build());
+        }
+        return photos;
     }
 
     // 사용자가 소유한 거북이인지 검증 메서드
     private void validateUserOwnsTurtle(Long userId, Long turtleId) {
-        log.info("검증 메서드 내부 진입");
         List<TurtleResponseDTO> userTurtles = mainClient.getTurtlesByUserId(userId);
-
         if (userTurtles.isEmpty()) {
-            throw new UserNotFoundException("해당 사용자를 찾을 수 없습니다." + userId);
+            throw new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId);
         }
 
-        log.info("userTurtle : {}", userTurtles);
-        boolean isUserTurtle = userTurtles.stream()
-                .anyMatch(turtle -> turtle.getId().equals(turtleId));
-
+        boolean isUserTurtle = userTurtles.stream().anyMatch(turtle -> turtle.getId().equals(turtleId));
         if (!isUserTurtle) {
             throw new TurtleNotFoundException("해당 거북이는 사용자가 소유한 거북이가 아닙니다.");
         }
-        log.info("내 거북이가 맞다");
     }
 
-    private void validateTurtleNotAlreadyRegistered (Long turtleId) {
-        log.info("이미 올라간 거북이 검증 시작");
-        Boolean isRegistered = auctionRepository.existsByTurtleId(turtleId);
-        log.info("이미 올라간 거북이 검증 완료");
-
-        if (isRegistered) {
+    private void validateTurtleNotAlreadyRegistered(Long turtleId) {
+        if (auctionRepository.existsByTurtleId(turtleId)) {
             throw new TurtleAlreadyRegisteredException("이미 등록된 거북이는 등록할 수 없습니다.");
         }
     }
@@ -137,7 +113,7 @@ public class AuctionService {
     }
 
     // 업로드된 이미지 삭제 메서드
-    private void deleteUploadedImages(List<AuctionPhoto> auctionPhotos) {
+    public void deleteUploadedImages(List<AuctionPhoto> auctionPhotos) {
         for (AuctionPhoto photo : auctionPhotos) {
             imageUploadService.deleteS3(photo.getImageAddress());
         }
@@ -217,11 +193,24 @@ public class AuctionService {
         // 입찰 조건: 현재 입찰자와 다른 사용자이며, 입찰 금액이 더 클 경우에만 갱신
         if ((currentBid == null || bidAmount > currentBid) &&
                 (currentUser == null || !currentUser.equals(userId))) {
+
+            if (currentBid == null) {
+                currentBid = getMinBid(auctionId).longValue();
+            }
+
+            Long bidIncrement = calculateBidIncrement(currentBid);
+            Long newBidAmount = currentBid + bidIncrement;
+
+            bidData.put("bidAmount", newBidAmount);
             redisTemplate.opsForHash().putAll(redisKey, bidData);
 
             String bidHistory = redisKey + ":history";
             String bidRecord = "userId: " + userId + ", bidAmount: " + bidAmount;
             redisTemplate.opsForList().rightPush(bidHistory, bidRecord);
+
+            log.info("입찰 갱신 : auctionID = {}, userId = {}, newBidAmount = {}", auctionId, userId, newBidAmount);
+        } else {
+            throw new
         }
     }
 
@@ -229,4 +218,25 @@ public class AuctionService {
         String redisKey = AUCTION_BID_KEY + auctionId;
         return redisTemplate.opsForHash().entries(redisKey);
     }
+
+    public Double getMinBid(Long auctionId) {
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다."));
+        return auction.getMinBid();
+    }
+
+    private Long calculateBidIncrement(Long currentBid) {
+        // 경매 가격에 따라 구분 필요
+        if (currentBid >= 0 && currentBid <= 10000) {
+            return 500L; // 0 ~ 10000 : 500
+        } else if (currentBid >= 10001 && currentBid <= 100000) {
+            return 2000L; // 10001 ~ 100000 : 2000
+        } else if (currentBid >= 100001 && currentBid <= 200000) {
+            return 5000L; // 100001 ~ 200000 : 5000
+        } else {
+            return 10000L; // 그 외 : 10000 (기본 값)
+        }
+    }
+
+
 }

@@ -13,6 +13,117 @@ services:
       - RABBITMQ_DEFAULT_USER=kkobuk
       - RABBITMQ_DEFAULT_PASS=kkobuk
 
+  redis-master:
+    image: redis:latest
+    container_name: redis-master
+    networks:
+      - kkobuk-network
+    ports:
+      - "6379:6379"
+    command: [
+      "redis-server",
+      "--appendonly", "yes",
+      "--appendfsync", "everysec",
+      "--save", "900", "1",
+      "--save", "300", "10",
+      "--save", "60", "10000",
+      "--dbfilename", "dump.rdb",
+      "--dir", "/data",
+      "--requirepass", "kkobuk",
+      "--masterauth", "kkobuk"
+    ]
+    volumes:
+      - ./data/redis-master:/data  # RDB 및 AOF 파일이 저장될 디렉토리
+
+  redis-replica-1:
+    image: redis:latest
+    container_name: redis-replica-1
+    networks:
+      - kkobuk-network
+    ports:
+      - "6380:6379"
+    command: [
+      "redis-server",
+      "--slaveof", "redis-master", "6379",
+      "--appendonly", "yes",
+      "--appendfsync", "everysec",
+      "--save", "900", "1",
+      "--save", "300", "10",
+      "--save", "60", "10000",
+      "--dbfilename", "dump.rdb",
+      "--dir", "/data",
+      "--requirepass", "kkobuk",
+      "--masterauth", "kkobuk"
+    ]
+    volumes:
+      - ./data/redis-replica-1:/data
+    depends_on:
+      - redis-master
+
+  redis-replica-2:
+    image: redis:latest
+    container_name: redis-replica-2
+    networks:
+      - kkobuk-network
+    ports:
+      - "6381:6379"
+    command: [
+      "redis-server",
+      "--slaveof", "redis-master", "6379",
+      "--appendonly", "yes",
+      "--appendfsync", "everysec",
+      "--save", "900", "1",
+      "--save", "300", "10",
+      "--save", "60", "10000",
+      "--dbfilename", "dump.rdb",
+      "--dir", "/data",
+      "--requirepass", "kkobuk",
+      "--masterauth", "kkobuk"
+    ]
+    volumes:
+      - ./data/redis-replica-2:/data
+    depends_on:
+      - redis-master
+
+  redis-sentinel-1:
+    image: redis:latest
+    container_name: redis-sentinel-1
+    networks:
+      - kkobuk-network
+    ports:
+      - "26379:26379"
+    command: ["redis-sentinel", "/etc/sentinel.conf"]
+    volumes:
+      - ./sentinel/sentinel-1.conf:/etc/sentinel.conf
+    depends_on:
+      - redis-master
+
+  redis-sentinel-2:
+    image: redis:latest
+    container_name: redis-sentinel-2
+    networks:
+      - kkobuk-network
+    ports:
+      - "26380:26379"
+    command: ["redis-sentinel", "/etc/sentinel.conf"]
+    volumes:
+      - ./sentinel/sentinel-2.conf:/etc/sentinel.conf
+    depends_on:
+      - redis-master
+
+  redis-sentinel-3:
+    image: redis:latest
+    container_name: redis-sentinel-3
+    networks:
+      - kkobuk-network
+    ports:
+      - "26381:26379"
+    command: ["redis-sentinel", "/etc/sentinel.conf"]
+    volumes:
+      - ./sentinel/sentinel-3.conf:/etc/sentinel.conf
+    depends_on:
+      - redis-master
+
   eureka-service:
     image: 1202yjk/eureka-service:${BUILD_TAG}
     container_name: eureka-service
@@ -65,6 +176,8 @@ services:
     environment:
       - spring.cloud.config.uri=http://config-service:8888
       - spring.rabbitmq.host=rabbitmq
+      - spring.redis.host=redis-master  # Redis 마스터 설정
+      - spring.redis.password=kkobuk # Redis 암호 설정
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
     depends_on:
       apigateway-service:
@@ -80,6 +193,8 @@ services:
     environment:
       - spring.cloud.config.uri=http://config-service:8888
       - spring.rabbitmq.host=rabbitmq
+      - spring.redis.host=redis-master  # Redis 마스터 설정
+      - spring.redis.password=kkobuk # Redis 암호 설정
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
     depends_on:
       apigateway-service:
