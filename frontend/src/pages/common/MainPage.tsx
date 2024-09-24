@@ -53,7 +53,8 @@ function MainPage() {
         <title>꼬북ZIP</title>
       </Helmet>
       <Header />
-      <img src={BackgroundImg} className="w-full h-full object-cover min-h-screen" draggable="false" />
+      <div className="w-full h-full">
+      <img src={BackgroundImg} className="object-cover min-h-screen" draggable="false" />
 
       {showTurtleMoving ? <img src={TurtleStop} className="w-[380px] absolute" style={{ bottom: "15px", right: "200px" }} draggable="false" /> : <img src={TurtleMoving} className="w-[380px] absolute turtle-animation" draggable="false" />}
 
@@ -85,8 +86,9 @@ function MainPage() {
             </Link>
           </div>
         </div>
+        
       )}
-
+      </div>
       <style>{`
   .turtle-animation {
     animation: moveTurtle 3s forwards ease-in-out;
