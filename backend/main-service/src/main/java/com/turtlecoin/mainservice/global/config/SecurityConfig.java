@@ -1,10 +1,10 @@
 package com.turtlecoin.mainservice.global.config;
 
 import com.turtlecoin.mainservice.domain.user.filter.CustomLogoutFilter;
-import com.turtlecoin.mainservice.domain.user.filter.LoginFilter;
+//import com.turtlecoin.mainservice.domain.user.filter.LoginFilter;
 import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
-import com.turtlecoin.mainservice.global.filter.JWTFilter;
+//import com.turtlecoin.mainservice.global.filter.JWTFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -61,7 +61,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()  // 다른 요청은 인증 필요
                 )
 //                .addFilterBefore(new JWTFilter(jwtUtil,userRepository), UsernamePasswordAuthenticationFilter.class)  // JWT 필터 추가
-                .addFilterAt(new LoginFilter(authenticationManagerBean(authenticationConfiguration), jwtUtil, redisTemplate), UsernamePasswordAuthenticationFilter.class)
+//                .addFilterAt(new LoginFilter(authenticationManagerBean(authenticationConfiguration), jwtUtil, redisTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, redisTemplate), LogoutFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  // 세션 사용하지 않음 (JWT 기반)
 
