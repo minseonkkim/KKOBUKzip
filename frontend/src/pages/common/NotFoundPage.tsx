@@ -1,27 +1,43 @@
 // src/NotFoundPage.js
 import { Link } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
-import DinoGame from "react-chrome-dino-ts";
 import "react-chrome-dino-ts/index.css";
-import Turtle from "../../assets/NotFoundPage_Turtle.gif";
 import React, { useState, useEffect } from "react";
+import { v4 as uuidv4 } from 'uuid'; // 고유 ID 생성 라이브러리
 import TurtleWalk from "../../assets/turtle_walk.gif";
 import Coral1 from "../../assets/NotFound/coral.png";
 import Coral2 from "../../assets/NotFound/coral2.png";
 import Coral3 from "../../assets/NotFound/coral3.png";
 import Seaweed from "../../assets/NotFound/seaweed.png";
 import Seaweed2 from "../../assets/NotFound/seaweed2.png";
+import Shark from "../../assets/NotFound/shark.png";
+
+// Define types for obstacles and fish
+type ObstacleType = {
+  id: string; // 고유 ID 추가
+  left: number;
+  height: number;
+  passed: boolean;
+  type: string;
+  img: string;
+};
+
+type SharkType = {
+  left: number;
+  height: number;
+  img: string;
+};
 
 function NotFoundPage() {
-  const [obstacles, setObstacles] = useState<{ left: number; height: number; passed: boolean; type: string; img: string }[]>([]);
-  const [jumpStage, setJumpStage] = useState(0); // 점프 단계를 추적
+  const [obstacles, setObstacles] = useState<ObstacleType[]>([]);
+  const [sharkObstacles, setSharkObstacles] = useState<SharkType[]>([]);
+  const [jumpStage, setJumpStage] = useState(0);
   const [isGameOver, setIsGameOver] = useState(false);
-  const [isGameStarted, setIsGameStarted] = useState(false); // 게임 시작 여부 상태 추가
-  const [score, setScore] = useState(0); // 점수 상태 추가
-  const [speed, setSpeed] = useState(10); // 장애물 속도 상태 추가 (초기 속도 설정)
-  const [lastSpeedIncrease, setLastSpeedIncrease] = useState(0); // 마지막 속도 증가를 추적
+  const [isGameStarted, setIsGameStarted] = useState(false);
+  const [score, setScore] = useState(0);
+  const [speed, setSpeed] = useState(10);
+  const [lastSpeedIncrease, setLastSpeedIncrease] = useState(0);
 
-  // 장애물 모양들
   const obstacleTypes = [
     { type: "coral1", img: Coral1 },
     { type: "coral2", img: Coral2 },
@@ -31,132 +47,179 @@ function NotFoundPage() {
   ];
 
   useEffect(() => {
-    if (!isGameStarted || isGameOver) return; // 게임이 시작되지 않았거나 종료되었을 때는 실행하지 않음
+    if (!isGameStarted || isGameOver) return;
 
-    // 점수에 따라 속도 증가 (10의 배수일 때만 한 번 증가)
+    // Speed increase based on score
     if (score > 0 && score % 10 === 0 && score !== lastSpeedIncrease) {
-      setSpeed((prevSpeed) => prevSpeed + 1); // 점수가 10 증가할 때마다 속도를 1씩 증가시킴
-      setLastSpeedIncrease(score); // 마지막 속도 증가 시점을 업데이트
+      setSpeed((prevSpeed) => prevSpeed + 4);
+      setLastSpeedIncrease(score);
     }
 
     const interval = setInterval(() => {
-      setObstacles((prev) => {
+      setObstacles((prev: ObstacleType[]) => {
         const updatedObstacles = prev
-          .map((obstacle) => ({ ...obstacle, left: obstacle.left - speed })) // 장애물 속도에 따라 이동
+          .map((obstacle) => ({ ...obstacle, left: obstacle.left - speed }))
           .filter((obstacle) => obstacle.left > -50);
 
-        // 새로운 장애물 생성 로직
+        // New obstacle generation
         if (
           Math.random() < 0.03 &&
           (updatedObstacles.length === 0 ||
             updatedObstacles[updatedObstacles.length - 1].left < 600)
         ) {
-          // 새로 생성되는 장애물 간격 조정 (이전 장애물과 겹치지 않도록 설정)
           const randomObstacle =
-            obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)]; // 랜덤으로 장애물 타입 선택
+            obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
           updatedObstacles.push({
+            id: uuidv4(), // 고유 ID 부여
             left: 800,
-            height: 30 + Math.random() * 20, // 장애물 높이 조정
-            passed: false, // 처음엔 뛰어넘지 않은 상태로 설정
-            type: randomObstacle.type, // 장애물의 타입 설정
-            img: randomObstacle.img, // 이미지 설정
+            height: 30 + Math.random() * 20,
+            passed: false,
+            type: randomObstacle.type,
+            img: randomObstacle.img,
           });
         }
 
         return updatedObstacles;
+      });
+
+      setSharkObstacles((prev: SharkType[]) => {
+        const updatedShark = prev
+          .map((shark) => ({ ...shark, left: shark.left - speed }))
+          .filter((shark) => shark.left > -50);
+
+        if (
+          Math.random() < 0.02 &&
+          (updatedShark.length === 0 ||
+            updatedShark[updatedShark.length - 1].left < 600)
+        ) {
+          updatedShark.push({
+            left: 800,
+            height: 110 + Math.random() * 50,
+            img: Shark,
+          });
+        }
+
+        return updatedShark;
       });
     }, 50);
 
     return () => clearInterval(interval);
   }, [isGameStarted, isGameOver, score, speed, lastSpeedIncrease]);
 
-  // 점프 핸들러 및 게임 시작 핸들러
   useEffect(() => {
-    const handleKeyUp = (e: any) => {
-      if (!isGameStarted && e.code === "Space") {
-        setIsGameStarted(true); // 게임 시작
-        return;
-      }
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code === "Space") {
+        if (!isGameStarted) {
+          // Initialize game state
+          setIsGameStarted(true);
+          setIsGameOver(false);
+          setScore(0);
+          setObstacles([]);
+          setSharkObstacles([]);
+          setSpeed(13);
+          setJumpStage(0);
+          setLastSpeedIncrease(0);
+          return;
+        }
 
-      if (isGameStarted && e.code === "Space" && jumpStage < 2) {
-        setJumpStage((prev) => prev + 1); // 점프 단계를 증가
+        if (isGameOver) {
+          // Restart game
+          setIsGameOver(false);
+          setIsGameStarted(true);
+          setScore(0);
+          setObstacles([]);
+          setSharkObstacles([]);
+          setSpeed(10);
+          setJumpStage(0);
+          setLastSpeedIncrease(0);
+          return;
+        }
 
-        // 점프가 끝난 후 공중에 머무르기
-        setTimeout(() => {
-          setTimeout(() => setJumpStage(0), 200); // 공중에서 머무는 시간 설정 (0.3초)
-        }, 300); // 점프 애니메이션 지속 시간 (0.3초)
+        if (jumpStage < 2) {
+          setJumpStage((prev) => prev + 1);
+
+          setTimeout(() => {
+            setTimeout(() => setJumpStage(0), 250);
+          }, 250);
+        }
       }
     };
+
     window.addEventListener("keyup", handleKeyUp);
     return () => window.removeEventListener("keyup", handleKeyUp);
-  }, [jumpStage, isGameStarted]);
+  }, [jumpStage, isGameStarted, isGameOver]);
 
-  // 충돌 감지 및 점수 증가
+  // Collision detection and score update
   useEffect(() => {
     const checkCollision = () => {
       setObstacles((prev) =>
         prev.map((obstacle) => {
-          // 충돌 감지 범위 수정
-          const turtleLeft = 50; // 거북이의 위치 (left: 10 + 거북이의 가로 길이)
-          const turtleWidth = 40; // 거북이의 너비
-          const obstacleWidth = 40; // 장애물의 너비 (모든 장애물 크기가 동일하다고 가정)
+          const turtleLeft = 40;
+          const turtleWidth = 60;
+          const obstacleWidth = 40;
 
-          // 정확한 충돌 범위 계산
           const isObstacleInRange =
-            obstacle.left < turtleLeft + turtleWidth && // 거북이의 오른쪽 끝보다 장애물이 왼쪽에 있고
-            obstacle.left + obstacleWidth > turtleLeft; // 거북이의 왼쪽 끝보다 장애물이 오른쪽에 있을 때
+            obstacle.left < turtleLeft + turtleWidth &&
+            obstacle.left + obstacleWidth > turtleLeft;
           const isTurtleLow = jumpStage === 0;
           const isCollision = isObstacleInRange && isTurtleLow;
 
-          // 충돌 감지
           if (isCollision) {
             setIsGameOver(true);
+            return obstacle;
           }
 
-          // 장애물 통과 점수 증가
-          if (!obstacle.passed && obstacle.left < 10 && !isCollision) {
+          if (!obstacle.passed && obstacle.left + obstacleWidth <= turtleLeft) {
             setScore((prevScore) => prevScore + 1);
-            return { ...obstacle, passed: true }; // 점수를 증가시키고 장애물을 통과한 것으로 표시
+            return { ...obstacle, passed: true };
           }
 
           return obstacle;
         })
       );
+
+      sharkObstacles.forEach((shark) => {
+        const turtleLeft = 40;
+        const turtleWidth = 60;
+        const turtleHeight = jumpStage === 1 ? 70 : jumpStage === 2 ? 140 : 0;
+        const turtleTop = turtleHeight + 20;
+
+        const sharkLeft = shark.left;
+        const sharkWidth = 40;
+        const sharkHeight = shark.height;
+
+        const isSharkInRange =
+          sharkLeft < turtleLeft + turtleWidth && sharkLeft + sharkWidth > turtleLeft;
+        const isSharkAtSameHeight = turtleTop >= sharkHeight;
+
+        const isCollision = isSharkInRange && isSharkAtSameHeight;
+
+        if (isCollision) {
+          setIsGameOver(true);
+        }
+      });
     };
 
     if (isGameStarted) {
       const collisionInterval = setInterval(checkCollision, 50);
       return () => clearInterval(collisionInterval);
     }
-  }, [obstacles, jumpStage, isGameStarted]);
-
-  // 게임 재시작 핸들러
-  const handleRestart = () => {
-    setIsGameStarted(false); // 게임 시작 상태 초기화
-    setIsGameOver(false);
-    setScore(0);
-    setObstacles([]);
-    setJumpStage(0);
-    setSpeed(10); // 속도 초기화
-    setLastSpeedIncrease(0); // 마지막 속도 증가 시점을 초기화
-  };
+  }, [obstacles, sharkObstacles, jumpStage, isGameStarted]);
 
   return (
     <>
       <div className="w-full h-screen bg-[#0099cc] flex flex-col items-center justify-center py-6">
-        {/* 게임 설명 추가 */}
-        <div className="text-center text-white text-lg mb-8">
-          <p className="font-dnf-bitbit text-[38px] mb-5">404</p>
-          <p>꼬북이가 바닷속에서 길을 잃었어요!</p>
-          <p>스페이스바를 눌러 장애물을 피하고 점수를 올려보세요!</p>
+        <div className="text-center text-white text-[18px] mb-8">
+          <p className="font-dnf-bitbit text-[50px] mb-4">404</p>
+          <p>꼬북이가 바닷속에서 길을 잃었어요 o(TヘTo) 장애물을 피하고 점수를 올려보세요!!</p>
         </div>
         <div className="relative w-[800px] h-[200px] bg-[#048cdc] border-4 border-blue-400 overflow-hidden">
           <div
             className={`absolute bottom-0 left-10 transition-transform duration-300 ${
               jumpStage === 1
-                ? "translate-y-[-70px]" // 첫 번째 점프 높이
+                ? "translate-y-[-70px]"
                 : jumpStage === 2
-                ? "translate-y-[-140px]" // 두 번째 점프 높이
+                ? "translate-y-[-140px]"
                 : ""
             }`}
           >
@@ -176,44 +239,58 @@ function NotFoundPage() {
               }}
             />
           ))}
+          {sharkObstacles.map((shark, index) => (
+            <img
+              key={index}
+              src={shark.img}
+              alt="Fish"
+              className="absolute"
+              style={{
+                left: `${shark.left}px`,
+                bottom: `${shark.height}px`,
+                width: "40px",
+                height: "auto",
+              }}
+            />
+          ))}
 
           {!isGameStarted && !isGameOver && (
-            <div className="absolute text-center text-white text-2xl font-stardust blink"
+            <div
+              className="absolute text-center text-white text-2xl font-stardust blink"
               style={{
                 top: "50%",
                 left: "50%",
                 transform: "translate(-50%, -50%)",
-              }}>
+              }}
+            >
               Press Spacebar to Start
             </div>
           )}
-        
-        {isGameOver ? (
-          <div className="absolute text-center"
-          style={{
+
+          {isGameOver && (
+            <div
+              className="absolute text-center"
+              style={{
                 top: "50%",
                 left: "50%",
                 transform: "translate(-50%, -50%)",
-              }}>
-            <div className="text-2xl text-white mb-4 font-dnf-bitbit">
-              Game Over! Your Score: {score}
-            </div>
-            <button
-              onClick={handleRestart}
-              className="font-stardust font-bold text-[20px] px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+              }}
             >
-              Restart
-            </button>
-          </div>
-        ) : (
-          isGameStarted && (
+              <div className="text-2xl text-white mb-4 font-dnf-bitbit">
+                Game Over! Your Score: {score}
+              </div>
+              <div className="text-white text-2xl font-stardust blink">
+                Press Spacebar to Restart
+              </div>
+            </div>
+          )}
+
+          {isGameStarted && !isGameOver && (
             <div className="absolute top-4 left-4 text-white text-xl font-stardust">
               Score: {score}
             </div>
-          )
-        )}
+          )}
         </div>
-        {/* 홈으로 돌아가기 버튼 추가 */}
         <Link
           to="/"
           className="mt-8 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
