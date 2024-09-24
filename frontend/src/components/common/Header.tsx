@@ -47,7 +47,7 @@ export default function Header() {
           <div className={`${isMobile ? 
             "bg-[#B9A6E6] hover:bg-[#9B8BC1] shadow-[3px_3px_0px_#8568CB] hover:shadow-[3px_3px_0px_#8E70D3] rounded-full px-1.5 py-1.5" : 
             "bg-[#B9A6E6] hover:bg-[#9B8BC1] shadow-[3px_3px_0px_#8568CB] hover:shadow-[3px_3px_0px_#8E70D3] rounded-[10px] px-2 py-1.5"
-          } flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95 md:px-1.5 md:py-1`}>
+          } flex flex-row items-center cursor-pointer font-dnf-bitbit active:scale-95`}>
             {isMobile ? 
               <img src={MyPageImg} className="whitespace-nowrap w-[25px] h-[25px]" draggable="false" /> :
               <span className="whitespace-nowrap text-white text-[20px] tracking-widest">마이페이지</span>
