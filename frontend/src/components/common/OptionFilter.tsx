@@ -46,7 +46,7 @@ function OptionFilter({
     <>
       <div className="border-[2px] border-[#DADADA] rounded-[20px] px-6 py-4 mb-4 transition-all ease-in-out duration-300">
         <div className="mb-4 flex flex-row items-center">
-          <label className="block mb-2 font-bold text-lg w-[100px]">성별</label>
+          <label className="block mb-2 font-bold text-lg w-[60px] md:w-[100px]">성별</label>
           <div className="flex space-x-3">
             <label className="custom-radio">
               <input
@@ -84,13 +84,13 @@ function OptionFilter({
           </div>
         </div>
         <div className="mb-4 flex flex-row items-center">
-          <label className="block mb-2 font-bold text-lg w-[100px]">체중</label>
+          <label className="block mb-2 font-bold text-lg w-[60px] md:w-[100px]">체중</label>
           <div className="flex space-x-4 items-center">
             <div>
               <input
                 value={filters.minWeight}
                 onChange={(e) => updateFilter("minWeight", e.target.value)}
-                className="mr-1 w-[180px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
+                className="mr-1 w-[90px] md:w-[180px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
                 placeholder="최소 체중"
                 onInput={(e) => {
                   const target = e.target as HTMLInputElement;
@@ -104,7 +104,7 @@ function OptionFilter({
               <input
                 value={filters.maxWeight}
                 onChange={(e) => updateFilter("maxWeight", e.target.value)}
-                className="mr-1 w-[180px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
+                className="mr-1 w-[90px] md:w-[180px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
                 placeholder="최대 체중"
                 onInput={(e) => {
                   const target = e.target as HTMLInputElement;
@@ -117,12 +117,12 @@ function OptionFilter({
         </div>
         <div className="flex flex-row justify-between">
           <div className="flex flex-row items-center">
-            <label className="block mb-2 font-bold text-lg w-[100px]">가격</label>
+            <label className="block mb-2 font-bold text-lg w-[60px] md:w-[100px]">가격</label>
             <div className="flex space-x-4 items-center">
               <input
                 value={filters.minPrice}
                 onChange={(e) => updateFilter("minPrice", e.target.value)}
-                className="w-[200px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
+                className="w-[90px] md:w-[200px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
                 placeholder="최소 가격"
                 onInput={handleInputChange}
               />
@@ -130,7 +130,7 @@ function OptionFilter({
               <input
                 value={filters.maxPrice}
                 onChange={(e) => updateFilter("maxPrice", e.target.value)}
-                className="w-[200px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
+                className="w-[90px] md:w-[200px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
                 placeholder="최대 가격"
                 onInput={handleInputChange}
               />
@@ -139,7 +139,7 @@ function OptionFilter({
           <button
             type="button"
             onClick={handleFilterApply}
-            className="bg-[#4B721F] rounded-[5px] px-3 py-1 text-white font-bold"
+            className="bg-[#4B721F] rounded-[5px] px-3 py-1 text-white font-bold whitespace-nowrap"
           >
             검색
           </button>
