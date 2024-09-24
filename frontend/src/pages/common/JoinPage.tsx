@@ -4,14 +4,22 @@ import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import useDeviceStore from "../../store/useDeviceStore";
 import ErrorMessage from "../../components/common/join/ErrorMessage";
 import { JoinDataType } from "../../types/join";
-import { register } from "../../apis/userApi";
+import {
+  checkEmailRequest,
+  createEmailRequest,
+  register,
+} from "../../apis/userApi";
 import Header from "../../components/common/Header";
 import StopTurtleImg from "../../assets/turtle_home_stop.png";
+
+// 1. 인증하기를 누르고 인증이 된다-> 그냥 다음으로 보냄(step 3) 넘어가먼 못돌아옴
+// 2. 인증 직전까지는 -> 이전으로 가서 정보 수정 ok
 
 interface ErrorStateType {
   email: string;
   password: string;
   passwordConfirm: string;
+  emailConfirm: string;
   name: string;
   nickname: string;
   birthday: string;
@@ -37,20 +45,30 @@ function JoinPage() {
   });
   const [detailedAddress, setDetailAddress] = useState("");
 
-  const [birth, setBirth] = useState<{ y: number | null; m: number | null; d: number | null }>({ y: null, m: null, d: null });
+  const [birth, setBirth] = useState<{
+    y: number | null;
+    m: number | null;
+    d: number | null;
+  }>({ y: null, m: null, d: null });
 
-  const [phoneNumber, setPhoneNumber] = useState<{ first: string | null; second: string | null; third: string | null }>({
+  const [phoneNumber, setPhoneNumber] = useState<{
+    first: string | null;
+    second: string | null;
+    third: string | null;
+  }>({
     first: null,
     second: null,
     third: null,
   });
 
   const [confirmPassword, setConfirmPassword] = useState<string>("");
-
+  const [emailConfirm, setEmailConfirm] = useState("");
+  const [emailCheck, setEmailCheck] = useState(false);
   const [errStat, setErrStat] = useState<ErrorStateType>({
     email: "",
     password: "",
     passwordConfirm: "",
+    emailConfirm: "",
     name: "",
     nickname: "",
     birthday: "",
@@ -68,13 +86,15 @@ function JoinPage() {
     }
   }, [postcodeData?.jibunAddress]);
 
-  const onChangeHandle = (key: keyof JoinDataType) => (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setData((prev) => ({ ...prev, [key]: evt.target.value }));
-  };
+  const onChangeHandle =
+    (key: keyof JoinDataType) => (evt: React.ChangeEvent<HTMLInputElement>) => {
+      setData((prev) => ({ ...prev, [key]: evt.target.value }));
+    };
 
   const loadDaumPostcodeScript = useCallback(() => {
     const script = document.createElement("script");
-    script.src = "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    script.src =
+      "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
     script.async = true;
     document.head.appendChild(script);
   }, []);
@@ -83,7 +103,10 @@ function JoinPage() {
     loadDaumPostcodeScript();
   }, [loadDaumPostcodeScript]);
 
-  const handleChangeBirth = (evt: React.ChangeEvent<HTMLInputElement>, type: "y" | "m" | "d") => {
+  const handleChangeBirth = (
+    evt: React.ChangeEvent<HTMLInputElement>,
+    type: "y" | "m" | "d"
+  ) => {
     const value = evt.target.value;
     setBirth((prev) => ({ ...prev, [type]: parseInt(value) }));
   };
@@ -92,12 +115,16 @@ function JoinPage() {
     setData((prev) => ({ ...prev, foreignFlag: tf }));
   };
 
-  const changeAddress = (type: "address" | "detailedAddress") => (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const value = evt.target.value;
-    setData((prev) => ({ ...prev, [type]: value }));
-  };
+  const changeAddress =
+    (type: "address" | "detailedAddress") =>
+    (evt: React.ChangeEvent<HTMLInputElement>) => {
+      const value = evt.target.value;
+      setData((prev) => ({ ...prev, [type]: value }));
+    };
 
-  const confirmPasswordChangeHandle = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const confirmPasswordChangeHandle = (
+    evt: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setConfirmPassword(evt.target.value);
 
     if (data.password !== evt.target.value) {
@@ -110,10 +137,12 @@ function JoinPage() {
     }
   };
 
-  const handleChangePhoneNumber = (type: "first" | "second" | "third") => (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const value = evt.target.value;
-    setPhoneNumber((prev) => ({ ...prev, [type]: value }));
-  };
+  const handleChangePhoneNumber =
+    (type: "first" | "second" | "third") =>
+    (evt: React.ChangeEvent<HTMLInputElement>) => {
+      const value = evt.target.value;
+      setPhoneNumber((prev) => ({ ...prev, [type]: value }));
+    };
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -124,15 +153,34 @@ function JoinPage() {
     return password.length >= 8 && /[!@#$%^&*(),.?":{}|<>]/.test(password);
   };
 
-  const validateBirthday = (y: number | null, m: number | null, d: number | null) => {
+  const validateBirthday = (
+    y: number | null,
+    m: number | null,
+    d: number | null
+  ) => {
     if (!y || !m || !d) return false;
     const date = new Date(y, m - 1, d);
 
-    return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d;
+    return (
+      date.getFullYear() === y &&
+      date.getMonth() === m - 1 &&
+      date.getDate() === d
+    );
   };
 
-  const validatePhoneNumber = (first: string | null, second: string | null, third: string | null) => {
-    return first && second && third && first.toString().length === 3 && second.toString().length === 4 && third.toString().length === 4;
+  const validatePhoneNumber = (
+    first: string | null,
+    second: string | null,
+    third: string | null
+  ) => {
+    return (
+      first &&
+      second &&
+      third &&
+      first.toString().length === 3 &&
+      second.toString().length === 4 &&
+      third.toString().length === 4
+    );
   };
 
   const handleNextStep = () => {
@@ -141,6 +189,7 @@ function JoinPage() {
       email: "",
       password: "",
       passwordConfirm: "",
+      emailConfirm: "",
       name: "",
       nickname: "",
       birthday: "",
@@ -157,7 +206,8 @@ function JoinPage() {
     }
 
     if (!validatePassword(data.password)) {
-      newErrStat.password = "비밀번호는 8자 이상이며, 특수문자를 포함해야 합니다.";
+      newErrStat.password =
+        "비밀번호는 8자 이상이며, 특수문자를 포함해야 합니다.";
       isValid = false;
     }
 
@@ -184,6 +234,7 @@ function JoinPage() {
       email: "",
       password: "",
       passwordConfirm: "",
+      emailConfirm: "",
       name: "",
       nickname: "",
       birthday: "",
@@ -197,7 +248,13 @@ function JoinPage() {
       isValid = false;
     }
 
-    if (!validatePhoneNumber(phoneNumber.first, phoneNumber.second, phoneNumber.third)) {
+    if (
+      !validatePhoneNumber(
+        phoneNumber.first,
+        phoneNumber.second,
+        phoneNumber.third
+      )
+    ) {
       newErrStat.phoneNumber = "올바른 전화번호를 입력해주세요.";
       isValid = false;
     }
@@ -215,10 +272,40 @@ function JoinPage() {
     setErrStat(newErrStat);
 
     if (isValid) {
-      await register({ ...data, address: data.address + " " + detailedAddress });
+      await register({
+        ...data,
+        address: data.address + " " + detailedAddress,
+      });
     }
   };
 
+  const confirmEmail = () => {
+    // Implement email confirmation logic
+
+    if (!validateEmail(data.email)) {
+      setErrStat((prev) => ({
+        ...prev,
+        email: "유효한 이메일 주소를 입력해주세요.",
+      }));
+    } else {
+      setErrStat((prev) => ({ ...prev, email: "" }));
+      // 여기에서 이메일 인증 요청
+      setEmailCheck(true);
+      createEmailRequest(data.email);
+    }
+  };
+
+  const handleLastStep = () => {
+    if (emailConfirm) return;
+
+    checkEmailRequest(data.email, emailConfirm);
+    setStep(3);
+  };
+  const handlePrevStep = () => {
+    setStep(1);
+    setEmailCheck(false);
+    setEmailConfirm("");
+  };
   return (
     <>
       <Helmet>
@@ -231,7 +318,9 @@ function JoinPage() {
             <div className="p-2.5 my-10 order-2 md:order-1">
               <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
                 <div className="w-4/5">
-                  <h2 className="text-[38px] text-center mb-6 font-dnf-bitbit">회원가입</h2>
+                  <h2 className="text-[38px] text-center mb-6 font-dnf-bitbit">
+                    회원가입
+                  </h2>
                   <form
                     onSubmit={(evt) => {
                       evt.preventDefault();
@@ -242,7 +331,16 @@ function JoinPage() {
                     <div>
                       <div className="flex items-center">
                         <span className="w-1/3 font-medium">이메일</span>
-                        <input type="email" id="email" value={data.email} onChange={onChangeHandle("email")} placeholder="이메일을 입력해주세요" aria-required="true" aria-label="이메일을 입력해주세요" className="text-[18px] w-2/3 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]" />
+                        <input
+                          type="email"
+                          id="email"
+                          value={data.email}
+                          onChange={onChangeHandle("email")}
+                          placeholder="이메일을 입력해주세요"
+                          aria-required="true"
+                          aria-label="이메일을 입력해주세요"
+                          className="text-[18px] w-2/3 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                        />
                       </div>
                       {errStat.email && <ErrorMessage msg={errStat.email} />}
                     </div>
@@ -250,23 +348,58 @@ function JoinPage() {
                     <div>
                       <div className="flex items-center">
                         <span className="w-1/3 font-medium">비밀번호</span>
-                        <input type="password" id="password" value={data.password} onChange={onChangeHandle("password")} autoComplete="off" maxLength={20} size={20} aria-required="true" aria-invalid="false" placeholder="비밀번호를 입력해주세요" className="text-[18px] w-2/3 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]" />
+                        <input
+                          type="password"
+                          id="password"
+                          value={data.password}
+                          onChange={onChangeHandle("password")}
+                          autoComplete="off"
+                          maxLength={20}
+                          size={20}
+                          aria-required="true"
+                          aria-invalid="false"
+                          placeholder="비밀번호를 입력해주세요"
+                          className="text-[18px] w-2/3 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                        />
                       </div>
-                      {errStat.password && <ErrorMessage msg={errStat.password} />}
+                      {errStat.password && (
+                        <ErrorMessage msg={errStat.password} />
+                      )}
                     </div>
 
                     <div>
                       <div className="flex items-center">
                         <span className="w-1/3 font-medium">비밀번호 확인</span>
-                        <input type="password" id="password2" value={confirmPassword} onChange={confirmPasswordChangeHandle} autoComplete="off" maxLength={20} size={20} aria-required="true" aria-invalid="false" placeholder="비밀번호를 입력해주세요" className="text-[18px] w-2/3 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]" />
+                        <input
+                          type="password"
+                          id="password2"
+                          value={confirmPassword}
+                          onChange={confirmPasswordChangeHandle}
+                          autoComplete="off"
+                          maxLength={20}
+                          size={20}
+                          aria-required="true"
+                          aria-invalid="false"
+                          placeholder="비밀번호를 입력해주세요"
+                          className="text-[18px] w-2/3 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                        />
                       </div>
-                      {errStat.passwordConfirm && <ErrorMessage msg={errStat.passwordConfirm} />}
+                      {errStat.passwordConfirm && (
+                        <ErrorMessage msg={errStat.passwordConfirm} />
+                      )}
                     </div>
 
                     <div>
                       <div className="flex items-center">
                         <span className="w-1/3 font-medium">성명</span>
-                        <input type="text" placeholder="성명을 입력해주세요." value={data.name} onChange={onChangeHandle("name")} aria-required="true" className="text-[18px] w-2/3 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]" />
+                        <input
+                          type="text"
+                          placeholder="성명을 입력해주세요."
+                          value={data.name}
+                          onChange={onChangeHandle("name")}
+                          aria-required="true"
+                          className="text-[18px] w-2/3 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                        />
                       </div>
                       {errStat.name && <ErrorMessage msg={errStat.name} />}
                     </div>
@@ -274,12 +407,24 @@ function JoinPage() {
                     <div>
                       <div className="flex items-center">
                         <span className="w-1/3 font-medium">닉네임</span>
-                        <input type="text" value={data.nickname} onChange={onChangeHandle("nickname")} aria-required="true" placeholder="닉네임을 입력해주세요." className="text-[18px] w-2/3 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]" />
+                        <input
+                          type="text"
+                          value={data.nickname}
+                          onChange={onChangeHandle("nickname")}
+                          aria-required="true"
+                          placeholder="닉네임을 입력해주세요."
+                          className="text-[18px] w-2/3 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                        />
                       </div>
-                      {errStat.nickname && <ErrorMessage msg={errStat.nickname} />}
+                      {errStat.nickname && (
+                        <ErrorMessage msg={errStat.nickname} />
+                      )}
                     </div>
 
-                    <button type="submit" className="w-full bg-[#4B721F] text-[22px] text-white py-3 rounded hover:bg-[#3E5A1E]">
+                    <button
+                      type="submit"
+                      className="w-full bg-[#4B721F] text-[22px] text-white py-3 rounded hover:bg-[#3E5A1E]"
+                    >
                       다음
                     </button>
                   </form>
@@ -292,7 +437,93 @@ function JoinPage() {
             <div className="p-2.5 my-10 order-2 md:order-1">
               <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
                 <div className="w-4/5">
-                  <h2 className="text-3xl mt-2 md:mt-0 md:text-[38px] text-center mb-6 font-dnf-bitbit">회원가입 - 추가 정보</h2>
+                  <h2 className="text-[38px] text-center mb-6 font-dnf-bitbit">
+                    이메일 인증
+                  </h2>
+                  <form
+                    onSubmit={(evt) => {
+                      evt.preventDefault();
+                      if (emailCheck) handleLastStep();
+                    }}
+                    className="grid grid-cols-1 space-y-4"
+                  >
+                    <div>
+                      <div className="flex items-center">
+                        <div className="w-full grid-cols-12 grid gap-x-2">
+                          <input
+                            type="email"
+                            id="emailRepeat"
+                            value={data.email}
+                            disabled
+                            aria-required="true"
+                            className="text-[18px] col-span-9 px-3 py-2 border rounded bg-gray-400/50 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                          />
+                          <button
+                            type="button"
+                            className="border col-span-3 text-sm bg-blue-300 rounded rainbow-text"
+                            onClick={confirmEmail}
+                          >
+                            인증하기
+                          </button>
+                        </div>
+                      </div>
+                      {errStat.email && <ErrorMessage msg={errStat.email} />}
+                    </div>
+
+                    <div>
+                      <div className="flex items-center">
+                        <span className="w-1/3 font-medium">인증번호 입력</span>
+                        <input
+                          type="text"
+                          id="emailConfirm"
+                          value={emailConfirm}
+                          onChange={(evt) => setEmailConfirm(evt.target.value)}
+                          autoComplete="off"
+                          maxLength={20}
+                          size={20}
+                          aria-required="true"
+                          aria-invalid="false"
+                          placeholder="인증번호를 입력해주세요"
+                          className="text-[18px] w-2/3 px-3 py-2 border rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                        />
+                      </div>
+                      {errStat.passwordConfirm && (
+                        <ErrorMessage msg={errStat.passwordConfirm} />
+                      )}
+                    </div>
+                    <div className="flex justify-between">
+                      <button
+                        type="button"
+                        onClick={handlePrevStep}
+                        className="w-[48%] bg-gray-300 text-[22px] text-black py-3 rounded hover:bg-gray-400"
+                      >
+                        이전
+                      </button>
+
+                      <button
+                        type="submit"
+                        className={`w-[48%] transition-colors duration-300 text-[22px] text-white py-3 rounded ${
+                          !emailCheck
+                            ? "cursor-not-allowed bg-gray-500"
+                            : "hover:bg-[#3E5A1E] bg-[#4B721F]"
+                        }`}
+                      >
+                        다음
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="p-2.5 my-10 order-2 md:order-1">
+              <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
+                <div className="w-4/5">
+                  <h2 className="text-[38px] text-center mb-6 font-dnf-bitbit">
+                    회원가입 - 추가 정보
+                  </h2>
                   <form
                     onSubmit={(evt) => {
                       evt.preventDefault();
@@ -315,7 +546,7 @@ function JoinPage() {
                               size={4}
                               aria-required="true"
                               className="text-[18px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
-                              inline px-3 py-2 mr-1 border rounded w-full bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                              inline px-3 py-2 mr-1 border rounded w-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
                             />
                             년
                           </div>
@@ -327,7 +558,7 @@ function JoinPage() {
                               placeholder="MM"
                               aria-required="true"
                               className="text-[18px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
-                              inline px-3 py-2 mr-1 border rounded w-full bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                              inline px-3 py-2 mr-1 border rounded w-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
                             />
                             월
                           </div>
@@ -339,13 +570,15 @@ function JoinPage() {
                               placeholder="DD"
                               aria-required="true"
                               className="text-[18px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
-                              inline px-3 py-2 mr-1 border rounded w-full bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                              inline px-3 py-2 mr-1 border rounded w-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
                             />
                             일
                           </div>
                         </div>
                       </div>
-                      {errStat.birthday && <ErrorMessage msg={errStat.birthday} />}
+                      {errStat.birthday && (
+                        <ErrorMessage msg={errStat.birthday} />
+                      )}
                     </div>
                     {/* 국적 */}
                     <div>
@@ -353,13 +586,45 @@ function JoinPage() {
                         <span className="md:w-1/3 font-medium">국적</span>
                         <div className="md:w-2/3 flex justify-evenly">
                           <label className="inline-flex items-center mr-4">
-                            <input type="radio" className="absolute opacity-0 cursor-pointer" name="foreignFlag" checked={!data.foreignFlag} onChange={() => handleChangeForeignFlag(false)} />
-                            <span className={`w-6 h-6 rounded-full border-2 transition-colors duration-300 ${data.foreignFlag === false ? "border-[#4B721F] bg-[#4B721F]" : "border-gray-300 bg-gray-50/80"} cursor-pointer`}>{data.foreignFlag === false && <span className="block w-3 h-3 rounded-full bg-white mx-auto mt-1"></span>}</span>
+                            <input
+                              type="radio"
+                              className="absolute opacity-0 cursor-pointer"
+                              name="foreignFlag"
+                              checked={!data.foreignFlag}
+                              onChange={() => handleChangeForeignFlag(false)}
+                            />
+                            <span
+                              className={`w-6 h-6 rounded-full border-2 transition-colors duration-300 ${
+                                data.foreignFlag === false
+                                  ? "border-[#4B721F] bg-[#4B721F]"
+                                  : "border-gray-300 bg-gray-50/80"
+                              } cursor-pointer`}
+                            >
+                              {data.foreignFlag === false && (
+                                <span className="block w-3 h-3 rounded-full bg-white mx-auto mt-1"></span>
+                              )}
+                            </span>
                             <span className="ml-2">내국인</span>
                           </label>
                           <label className="inline-flex items-center">
-                            <input type="radio" className="absolute opacity-0 cursor-pointer" name="foreignFlag" checked={data.foreignFlag} onChange={() => handleChangeForeignFlag(true)} />
-                            <span className={`w-6 h-6 rounded-full border-2 transition-colors duration-300 ${data.foreignFlag === true ? "border-[#4B721F] bg-[#4B721F]" : "border-gray-300 bg-gray-50/80"} cursor-pointer`}>{data.foreignFlag === true && <span className="block w-3 h-3 rounded-full bg-white mx-auto mt-1"></span>}</span>
+                            <input
+                              type="radio"
+                              className="absolute opacity-0 cursor-pointer"
+                              name="foreignFlag"
+                              checked={data.foreignFlag}
+                              onChange={() => handleChangeForeignFlag(true)}
+                            />
+                            <span
+                              className={`w-6 h-6 rounded-full border-2 transition-colors duration-300 ${
+                                data.foreignFlag === true
+                                  ? "border-[#4B721F] bg-[#4B721F]"
+                                  : "border-gray-300 bg-gray-50/80"
+                              } cursor-pointer`}
+                            >
+                              {data.foreignFlag === true && (
+                                <span className="block w-3 h-3 rounded-full bg-white mx-auto mt-1"></span>
+                              )}
+                            </span>
                             <span className="ml-2">외국인</span>
                           </label>
                         </div>
@@ -379,7 +644,7 @@ function JoinPage() {
                               maxLength={3}
                               aria-required="true"
                               className="text-[18px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
-                              inline px-3 py-2 border rounded w-full bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                              inline px-3 py-2 border rounded w-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
                             />
                           </div>
                           -
@@ -392,7 +657,7 @@ function JoinPage() {
                               maxLength={4}
                               aria-required="true"
                               className="text-[18px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
-                              inline px-3 py-2 border rounded w-full bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                              inline px-3 py-2 border rounded w-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
                             />
                           </div>
                           -
@@ -405,37 +670,71 @@ function JoinPage() {
                               maxLength={4}
                               aria-required="true"
                               className="text-[18px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
-                              inline px-3 py-2 border rounded w-full bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                              inline px-3 py-2 border rounded w-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
                             />
                           </div>
                         </div>
                       </div>
-                      {errStat.phoneNumber && <ErrorMessage msg={errStat.phoneNumber} />}
+                      {errStat.phoneNumber && (
+                        <ErrorMessage msg={errStat.phoneNumber} />
+                      )}
                     </div>
                     {/* 주소 */}
                     <div>
                       <div className="flex flex-col md:flex-row items-center">
                         <span className="md:w-1/3 font-medium">주소</span>
                         <div className="w-full md:w-2/3 flex">
-                          <button type="button" ref={addressBtnRef} className="text-[18px] flex-none hover:bg-gray-100 px-2 items-center transition-all duration-300 ease-in-out bg-gray-50 border py-2 mr-1.5 rounded" onClick={loadPostcodeSearch}>
+                          <button
+                            type="button"
+                            ref={addressBtnRef}
+                            className="text-[18px] flex-none hover:bg-gray-100 px-2 items-center transition-all duration-300 ease-in-out bg-gray-50 border py-2 mr-1.5 rounded"
+                            onClick={loadPostcodeSearch}
+                          >
                             찾기
                           </button>
-                          <input type="text" id="address" onChange={changeAddress("address")} onClick={() => addressBtnRef.current?.click()} value={postcodeData?.roadAddress || ""} placeholder="주소를 검색해주세요." className="text-[18px] flex-grow min-w-0 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]" readOnly />
+                          <input
+                            type="text"
+                            id="address"
+                            onChange={changeAddress("address")}
+                            onClick={() => addressBtnRef.current?.click()}
+                            value={postcodeData?.roadAddress || ""}
+                            placeholder="주소를 검색해주세요."
+                            className="text-[18px] flex-grow min-w-0 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                            readOnly
+                          />
                         </div>
                       </div>
-                      {errStat.address && <ErrorMessage msg={errStat.address} />}
+                      {errStat.address && (
+                        <ErrorMessage msg={errStat.address} />
+                      )}
                       <div className="mt-3">
                         <div className="md:w-1/3 inline-block" />
-                        <input type="text" id="addressDetail" value={detailedAddress} onChange={(evt) => setDetailAddress(evt.target.value)} placeholder="상세주소를 입력해주세요." className="text-[18px] w-full md:w-2/3 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]" />
+                        <input
+                          type="text"
+                          id="addressDetail"
+                          value={detailedAddress}
+                          onChange={(evt) => setDetailAddress(evt.target.value)}
+                          placeholder="상세주소를 입력해주세요."
+                          className="text-[18px] w-full md:w-2/3 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                        />
                       </div>
-                      {errStat.detailedAddress && <ErrorMessage msg={errStat.detailedAddress} />}
+                      {errStat.detailedAddress && (
+                        <ErrorMessage msg={errStat.detailedAddress} />
+                      )}
                     </div>
 
                     <div className="flex justify-between">
-                      <button type="button" onClick={() => setStep(1)} className="w-[48%] bg-gray-300 text-[22px] text-black py-3 rounded hover:bg-gray-400">
+                      <button
+                        type="button"
+                        onClick={() => setStep(1)}
+                        className="w-[48%] bg-gray-300 text-[22px] text-black py-3 rounded hover:bg-gray-400"
+                      >
                         이전
                       </button>
-                      <button type="submit" className="w-[48%] bg-[#4B721F] text-[22px] text-white py-3 rounded hover:bg-[#3E5A1E]">
+                      <button
+                        type="submit"
+                        className="w-[48%] bg-[#4B721F] text-[22px] text-white py-3 rounded hover:bg-[#3E5A1E]"
+                      >
                         회원가입하기
                       </button>
                     </div>
@@ -446,7 +745,14 @@ function JoinPage() {
           )}
 
           <div className="rounded-r-[20px] order-1 md:order-2">
-            <img src={StopTurtleImg} className={isMobile ? "rounded-t-[20px] w-full h-[300px] object-none" : "rounded-r-[20px] h-full object-cover"} />
+            <img
+              src={StopTurtleImg}
+              className={
+                isMobile
+                  ? "rounded-t-[20px] w-full h-[300px] object-none"
+                  : "rounded-r-[20px] h-full object-cover"
+              }
+            />
           </div>
         </div>
       </div>
