@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-@RequestMapping("/main/user")
+@RequestMapping("api/main/user")
 @Controller
 @ResponseBody
 public class UserController {
