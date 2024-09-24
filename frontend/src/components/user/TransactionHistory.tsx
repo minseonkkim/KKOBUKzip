@@ -1,15 +1,42 @@
+// import { useState } from "react";
+// import Web3 from "web3";
+// import { AbiItem } from "web3-utils";
+// import { Contract } from "web3-eth-contract";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import BabyTurtleImg from "../../assets/babyturtle.png";
 import { IoCheckmark } from "react-icons/io5";
 
+// 컨트랙트 ABI 타입
+// const CONTRACT_ABI: AbiItem[] = [];
+// const CONTRACT_ADDRESS = "추후에 추가";
+
 export default function TransactionHistory(){
+    // const [web3, setWeb3] = useState<Web3 | null>(null);
+    // const [contract, setContract] = useState<Contract<AbiItem[]> | null>(null);
+    // const [account, setAccount] = useState<string | null>(null);
+
+    const handlleDeposit = () => {}
+    const startPapework = () => {}
+    const finalizeTransaction = () => {}
+
     return <>
         <div className="w-full h-[180px] border-[2px] rounded-[20px] my-[12px] p-[15px] bg-[#f8f8f8] flex flex-row">
             <img src={TmpTurtleImg} className="w-[200px] h-[150px] rounded-[10px] object-cover" draggable="false"/>
-            <div className="w-[420px] ml-[20px]">
-                <div>분양자 정보</div>
-                <div>태그</div>
-                <div>가격</div>
+            <div className="flex flex-col justify-between w-[420px] ml-[20px]">
+                <div>
+                    <div>분양자 정보</div>
+                    <div>태그</div>
+                    <div>가격</div>
+                </div>
+                {/* 아래 버튼은 거래 진행 상황에 따라 on/off하기! */}
+                <div>
+                    {/* 경매 거래인 경우에만 활성화 해당(입금 대기 상태일 때) */}
+                    <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={() => {handlleDeposit()}}>입금하기</button>
+                    {/* 예약 단계에 활성화 */}
+                    <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={()=>{startPapework()}}>서류 작성</button>
+                    {/* 서류 검토 */}
+                    <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={()=>{finalizeTransaction()}}>구매 확정</button>
+                </div>
             </div>
             <div>
             <div className="w-[510px] h-[104px] relative mt-[18px]">
