@@ -8,6 +8,7 @@ import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
 import com.turtlecoin.auctionservice.domain.auction.entity.QAuction;
+import com.turtlecoin.auctionservice.domain.auction.facade.RedissonLockFacade;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
 import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
@@ -36,6 +37,7 @@ public class AuctionService {
     private final ImageUploadService imageUploadService;  // ImageUploadService도 주입합니다.
     private final MainClient mainClient;
     private final JPAQueryFactory queryFactory;
+    private final RedissonLockFacade redissonLockFacade;
 
     // 경매 등록
     @Transactional
@@ -176,7 +178,7 @@ public class AuctionService {
 
     // 입찰 가격 갱신
     @Transactional
-    public void processBid(Long auctionId, Long userId, Double bidAmount) {
+    public void processBidWithoutLock(Long auctionId, Long userId, Double bidAmount) {
         String redisKey = AUCTION_BID_KEY + auctionId;
 
         Map<String, Object> bidData = new HashMap<>();
@@ -241,5 +243,7 @@ public class AuctionService {
         }
     }
 
-
+    public void processBid(Long auctionId, Long userId, Double newBidAmount) {
+        redissonLockFacade.updateBidWithLock(auctionId, userId, newBidAmount);
+    }
 }
