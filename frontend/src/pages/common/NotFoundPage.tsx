@@ -94,7 +94,7 @@ function NotFoundPage() {
         ) {
           updatedShark.push({
             left: 800,
-            height: 100 + Math.random() * 40,
+            height: 90 + Math.random() * 40,
             img: Shark,
           });
         }
@@ -149,67 +149,71 @@ function NotFoundPage() {
       setJumpStage((prev) => prev + 1);
 
       setTimeout(() => {
-        setTimeout(() => setJumpStage(0), 230);
-      }, 230);
+        setTimeout(() => setJumpStage(0), 250);
+      }, 250);
     }
   };
 
   // Collision detection and score update
   useEffect(() => {
-    const checkCollision = () => {
-      setObstacles((prev) =>
-        prev.map((obstacle) => {
-          const turtleLeft = 20;
-          const turtleWidth = 60;
-          const obstacleWidth = 40;
-
-          const isObstacleInRange =
-            obstacle.left < turtleLeft + turtleWidth &&
-            obstacle.left + obstacleWidth > turtleLeft;
-          const isTurtleLow = jumpStage === 0;
-          const isCollision = isObstacleInRange && isTurtleLow;
-
-          if (isCollision) {
-            setIsGameOver(true);
-            return obstacle;
-          }
-
-          if (!obstacle.passed && obstacle.left + obstacleWidth <= turtleLeft) {
-            setScore((prevScore) => prevScore + 1);
-            return { ...obstacle, passed: true };
-          }
-
-          return obstacle;
-        })
-      );
-
-      sharkObstacles.forEach((shark) => {
-        const turtleLeft = 40;
+  const checkCollision = () => {
+    setObstacles((prev) =>
+      prev.map((obstacle) => {
+        const turtleLeft = 20;
         const turtleWidth = 60;
-        const turtleHeight = jumpStage === 1 ? 70 : jumpStage === 2 ? 140 : 0;
-        const turtleTop = turtleHeight + 20;
+        const obstacleWidth = 40;
 
-        const sharkLeft = shark.left;
-        const sharkWidth = 40;
-        const sharkHeight = shark.height;
+        // Check if the obstacle is in range of the turtle
+        const isObstacleInRange =
+          obstacle.left < turtleLeft + turtleWidth &&
+          obstacle.left + obstacleWidth > turtleLeft;
+        const isTurtleLow = jumpStage === 0;
+        const isCollision = isObstacleInRange && isTurtleLow;
 
-        const isSharkInRange =
-          sharkLeft < turtleLeft + turtleWidth && sharkLeft + sharkWidth > turtleLeft;
-        const isSharkAtSameHeight = turtleTop >= sharkHeight;
-
-        const isCollision = isSharkInRange && isSharkAtSameHeight;
-
+        // Check for collision and update game state
         if (isCollision) {
           setIsGameOver(true);
+          return obstacle;
         }
-      });
-    };
 
-    if (isGameStarted) {
-      const collisionInterval = setInterval(checkCollision, 50);
-      return () => clearInterval(collisionInterval);
-    }
-  }, [obstacles, sharkObstacles, jumpStage, isGameStarted]);
+        // Update score if obstacle passed the turtle
+        if (!obstacle.passed && obstacle.left + obstacleWidth / 2 < turtleLeft) {
+          setScore((prevScore) => prevScore + 1);
+          // Mark the obstacle as passed to prevent multiple score increments
+          return { ...obstacle, passed: true };
+        }
+
+        return obstacle;
+      })
+    );
+
+    sharkObstacles.forEach((shark) => {
+      const turtleLeft = 40;
+      const turtleWidth = 60;
+      const turtleHeight = jumpStage === 1 ? 70 : jumpStage === 2 ? 140 : 0;
+      const turtleTop = turtleHeight + 20;
+
+      const sharkLeft = shark.left;
+      const sharkWidth = 40;
+      const sharkHeight = shark.height;
+
+      const isSharkInRange =
+        sharkLeft < turtleLeft + turtleWidth && sharkLeft + sharkWidth > turtleLeft;
+      const isSharkAtSameHeight = turtleTop >= sharkHeight;
+
+      const isCollision = isSharkInRange && isSharkAtSameHeight;
+
+      if (isCollision) {
+        setIsGameOver(true);
+      }
+    });
+  };
+
+  if (isGameStarted) {
+    const collisionInterval = setInterval(checkCollision, 50);
+    return () => clearInterval(collisionInterval);
+  }
+}, [obstacles, sharkObstacles, jumpStage, isGameStarted]);
 
   return (
     <>
