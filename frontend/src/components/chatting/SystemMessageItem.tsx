@@ -7,7 +7,7 @@ function SystemMessageItem({
   price: number;
   image: string;
 }) {
-  return <></>;
+  return <>System Message</>;
 }
 
 export default SystemMessageItem;

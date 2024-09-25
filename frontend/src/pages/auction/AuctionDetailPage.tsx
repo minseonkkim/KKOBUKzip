@@ -1,7 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AuctionItemDataType } from "../../types/auction";
 import { getAuctionDetailItemData } from "../../apis/tradeApi";
 import AuctionItemInfo from "../../components/auction/AuctionItemInfo";
@@ -33,11 +33,14 @@ function AuctionDetailPage() {
   const [auctionStatus, setAuctionStatus] = useState<AuctionType>(null); // 경매 상태, 13은 false, 2는 true
   const [auctionItemData, setAuctionItemData] =
     useState<AuctionItemDataType | null>(null);
-
+  const params = useParams();
   useLayoutEffect(() => {
     // 처음 옥션 데이터 로딩하는 부분
+
     const getData = async () => {
-      const response = await getAuctionDetailItemData(1); // 상품 id 넣을 것
+      if (!Number.isSafeInteger(params.auctionId)) navigate("/");
+      const auctionId = Number(params.auctionId);
+      const response = await getAuctionDetailItemData(auctionId);
       if (response.success) {
         console.log(response.data.data.auction);
         setAuctionStatus(response.data.data.auction.progress);

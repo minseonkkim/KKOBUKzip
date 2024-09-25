@@ -11,7 +11,7 @@ export default function AuctionTurtle({
   const navigate = useNavigate();
 
   const goToDetail = () => {
-    navigate("/auction-detail");
+    navigate("/auction-detail/" + (data?.id ?? 1));
   };
 
   return (
