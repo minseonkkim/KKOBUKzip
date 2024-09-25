@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import com.turtlecoin.mainservice.domain.document.dto.TransferDocumentResponseDt
 import com.turtlecoin.mainservice.domain.document.entity.DocType;
 import com.turtlecoin.mainservice.domain.document.entity.Document;
 import com.turtlecoin.mainservice.domain.document.entity.Progress;
+import com.turtlecoin.mainservice.domain.document.entity.contract.TurtleDocumentation;
 import com.turtlecoin.mainservice.domain.document.repository.DocumentRepository;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
@@ -52,8 +54,8 @@ public class DocumentService {
 	}
 
 	// 서류 리스트를 조회하는 함수
-	public List<DocumentListDto> getDocumentList(){
-		List<Document> documents = documentRepository.findAllByProgress(Progress.DOCUMENT_REVIEWING);
+	public List<DocumentListDto> getDocumentList(Pageable pageable){
+		List<Document> documents = documentRepository.findAllByProgress(Progress.DOCUMENT_REVIEWING, pageable);
 
 		List<DocumentListDto> documentListDtos = documents.stream()
 			.map(document -> {
@@ -91,7 +93,7 @@ public class DocumentService {
 		switch(document.getDocType()) {
 			case BREEDING :
 				// 블록체인에서 가져오기
-				contract.TurtleDocumentation.Multiplication breedingDetail = contractService.searchTurtleMultiplicationDocument(turtleUUID, documentHash);
+				TurtleDocumentation.Multiplication breedingDetail = contractService.searchTurtleMultiplicationDocument(turtleUUID, documentHash);
 
 				documentResponseDto = BreedingDocumentResponseDto.builder()
 					.docType(docTypeService.convertToString(document.getDocType()))
@@ -115,10 +117,10 @@ public class DocumentService {
 						.motherAquisition(contractService.searchCurrentDocumentHash(breedingDetail.motherId))
 						.fatherUUID(breedingDetail.fatherId)
 						.fatherAquisition(contractService.searchCurrentDocumentHash(breedingDetail.fatherId))
-						// .birth(document.getBirth().toLocalDate())
-						// .name(document.getName())
-						// .weight(document.getWeight())
-						// .gender(document.getGender())
+						.birth(LocalDate.parse(breedingDetail.birth))
+						.name(breedingDetail.name)
+						.weight(breedingDetail.weight.intValue())
+						.gender(Gender.valueOf(breedingDetail.gender))
 						.locationSpecification(breedingDetail.locationSpecification)
 						.multiplicationMethod(breedingDetail.multiplicationMethod)
 						.shelterSpecification(breedingDetail.shelterSpecification)
@@ -127,7 +129,7 @@ public class DocumentService {
 				break;
 			case DEATH :
 				// 블록체인에서 가져오기
-				contract.TurtleDocumentation.Death deathDetail = contractService.searchTurtleDeathDocument(turtleUUID, documentHash);
+				TurtleDocumentation.Death deathDetail = contractService.searchTurtleDeathDocument(turtleUUID, documentHash);
 
 				documentResponseDto = DeathDocumentResponseDto.builder()
 					.docType(docTypeService.convertToString(document.getDocType()))
@@ -155,7 +157,7 @@ public class DocumentService {
 				break;
 			case TRANSFER:
 				// 블록체인에서 가져오기
-				contract.TurtleDocumentation.Transfer transferDetail = contractService.searchTurtleTransferDocument(turtleUUID, documentHash);
+				TurtleDocumentation.Transfer transferDetail = contractService.searchTurtleTransferDocument(turtleUUID, documentHash);
 				// 사용자 조회
 				User assignee = userService.getUserByUUID(transferDetail.assigneeId);
 				User grantor = userService.getUserByUUID(transferDetail.grantorId);
@@ -236,19 +238,19 @@ public class DocumentService {
 				}
 
 				Turtle turtle = Turtle.builder()
-					//.birth(documentResponseDto.getDetail().getBirth())
-					.birth(LocalDate.now())
-					//.weight(documentResponseDto.getDetail().getWeight())
-					.weight(240)
+					.birth(documentResponseDto.getDetail().getBirth())
+					//.birth(LocalDate.now())
+					.weight(documentResponseDto.getDetail().getWeight())
+					//.weight(240)
 					.dad(fatherOptional.get())
 					.mom(motherOptional.get())
 					.user(userOptional.get())
-					//.name(documentResponseDto.getDetail().getName())
-					.name("꼬부기")
+					.name(documentResponseDto.getDetail().getName())
+					//.name("꼬부기")
 					.scientificName(documentResponseDto.getDetail().getScientificName())
 					.uuid(documentResponseDto.getTurtleUUID())
-					//.gender(documentResponseDto.getDetail().getGender())
-					.gender(Gender.MALE)
+					.gender(documentResponseDto.getDetail().getGender())
+					//.gender(Gender.MALE)
 					.dead(false)
 					.build();
 

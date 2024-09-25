@@ -24,6 +24,7 @@ public class JWTUtil {
     }
 
     public String getUsernameFromToken(String token) {
+        System.out.println(token);
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
     }
     public String getRoleFromToken(String token) {

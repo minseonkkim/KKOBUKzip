@@ -263,6 +263,26 @@
         },
         {
           "internalType": "string",
+          "name": "_birth",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_name",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_weight",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_gender",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
           "name": "_locationSpecification",
           "type": "string"
         },
@@ -301,7 +321,7 @@
           "type": "bytes32"
         }
       ],
-      "name": "searchTutleMultiplicationDocument",
+      "name": "searchTurtleMultiplicationDocument",
       "outputs": [
         {
           "components": [
@@ -338,6 +358,26 @@
             {
               "internalType": "string",
               "name": "motherId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "birth",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "weight",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "gender",
               "type": "string"
             },
             {

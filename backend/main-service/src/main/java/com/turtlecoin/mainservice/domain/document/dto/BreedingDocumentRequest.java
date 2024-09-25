@@ -26,7 +26,7 @@ public class BreedingDocumentRequest {
 	public static class Detail {
 		String scientificName;
 		String area;
-		int count;
+		Integer count;
 		String purpose;
 		String location;
 		LocalDate registerDate;
@@ -34,8 +34,17 @@ public class BreedingDocumentRequest {
 		String fatherUUID;
 		LocalDate birth;
 		String name;
-		int weight;
+		Integer weight;
 		Gender gender;
+	}
+
+	public boolean isValid(){
+		return (
+			docType != null && applicant != null && detail != null && detail.getScientificName() != null
+			&& detail.getArea() != null && detail.count != null && detail.purpose != null && detail.location != null
+			&& detail.registerDate != null && detail.motherUUID != null && detail.fatherUUID != null
+			&& detail.birth != null && detail.name != null && detail.weight != null && detail.gender != null
+		);
 	}
 }
 

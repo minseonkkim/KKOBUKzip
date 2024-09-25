@@ -1,4 +1,4 @@
-package contract;
+package com.turtlecoin.mainservice.domain.document.entity.contract;
 
 import io.reactivex.Flowable;
 import java.math.BigInteger;
@@ -15,6 +15,7 @@ import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.Type;
 import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Bytes32;
+import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.abi.datatypes.generated.Uint8;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
@@ -51,7 +52,7 @@ public class TurtleDocumentation extends Contract {
 
     public static final String FUNC_REGISTERTURTLEMULTIPLICATIONDOCUMENT = "registerTurtleMultiplicationDocument";
 
-    public static final String FUNC_SEARCHTUTLEMULTIPLICATIONDOCUMENT = "searchTutleMultiplicationDocument";
+    public static final String FUNC_SEARCHTURTLEMULTIPLICATIONDOCUMENT = "searchTurtleMultiplicationDocument";
 
     public static final String FUNC_REGISTERTURTLEASSIGNEEDOCUMENT = "registerTurtleAssigneeDocument";
 
@@ -410,6 +411,7 @@ public class TurtleDocumentation extends Contract {
     public RemoteFunctionCall<TransactionReceipt> registerTurtleMultiplicationDocument(
             String _turtleId, String _applicant, byte[] _documentHash, BigInteger _count,
             String _area, String _purpose, String _location, String _fatherId, String _motherId,
+            String _birth, String _name, BigInteger _weight, String _gender,
             String _locationSpecification, String _multiplicationMethod,
             String _shelterSpecification) {
         final Function function = new Function(
@@ -423,6 +425,10 @@ public class TurtleDocumentation extends Contract {
                 new org.web3j.abi.datatypes.Utf8String(_location), 
                 new org.web3j.abi.datatypes.Utf8String(_fatherId), 
                 new org.web3j.abi.datatypes.Utf8String(_motherId), 
+                new org.web3j.abi.datatypes.Utf8String(_birth), 
+                new org.web3j.abi.datatypes.Utf8String(_name), 
+                new org.web3j.abi.datatypes.generated.Uint256(_weight), 
+                new org.web3j.abi.datatypes.Utf8String(_gender), 
                 new org.web3j.abi.datatypes.Utf8String(_locationSpecification), 
                 new org.web3j.abi.datatypes.Utf8String(_multiplicationMethod), 
                 new org.web3j.abi.datatypes.Utf8String(_shelterSpecification)), 
@@ -430,9 +436,9 @@ public class TurtleDocumentation extends Contract {
         return executeRemoteCallTransaction(function);
     }
 
-    public RemoteFunctionCall<Multiplication> searchTutleMultiplicationDocument(String _turtleId,
+    public RemoteFunctionCall<Multiplication> searchTurtleMultiplicationDocument(String _turtleId,
             byte[] _documentHash) {
-        final Function function = new Function(FUNC_SEARCHTUTLEMULTIPLICATIONDOCUMENT, 
+        final Function function = new Function(FUNC_SEARCHTURTLEMULTIPLICATIONDOCUMENT, 
                 Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
                 new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
                 Arrays.<TypeReference<?>>asList(new TypeReference<Multiplication>() {}));
@@ -582,6 +588,14 @@ public class TurtleDocumentation extends Contract {
 
         public String motherId;
 
+        public String birth;
+
+        public String name;
+
+        public BigInteger weight;
+
+        public String gender;
+
         public String locationSpecification;
 
         public String multiplicationMethod;
@@ -589,7 +603,8 @@ public class TurtleDocumentation extends Contract {
         public String shelterSpecification;
 
         public Multiplication(String applicant, BigInteger count, String area, String purpose,
-                String location, String fatherId, String motherId, String locationSpecification,
+                String location, String fatherId, String motherId, String birth, String name,
+                BigInteger weight, String gender, String locationSpecification,
                 String multiplicationMethod, String shelterSpecification) {
             super(new org.web3j.abi.datatypes.Utf8String(applicant), 
                     new org.web3j.abi.datatypes.generated.Uint8(count), 
@@ -598,6 +613,10 @@ public class TurtleDocumentation extends Contract {
                     new org.web3j.abi.datatypes.Utf8String(location), 
                     new org.web3j.abi.datatypes.Utf8String(fatherId), 
                     new org.web3j.abi.datatypes.Utf8String(motherId), 
+                    new org.web3j.abi.datatypes.Utf8String(birth), 
+                    new org.web3j.abi.datatypes.Utf8String(name), 
+                    new org.web3j.abi.datatypes.generated.Uint256(weight), 
+                    new org.web3j.abi.datatypes.Utf8String(gender), 
                     new org.web3j.abi.datatypes.Utf8String(locationSpecification), 
                     new org.web3j.abi.datatypes.Utf8String(multiplicationMethod), 
                     new org.web3j.abi.datatypes.Utf8String(shelterSpecification));
@@ -608,6 +627,10 @@ public class TurtleDocumentation extends Contract {
             this.location = location;
             this.fatherId = fatherId;
             this.motherId = motherId;
+            this.birth = birth;
+            this.name = name;
+            this.weight = weight;
+            this.gender = gender;
             this.locationSpecification = locationSpecification;
             this.multiplicationMethod = multiplicationMethod;
             this.shelterSpecification = shelterSpecification;
@@ -615,9 +638,10 @@ public class TurtleDocumentation extends Contract {
 
         public Multiplication(Utf8String applicant, Uint8 count, Utf8String area,
                 Utf8String purpose, Utf8String location, Utf8String fatherId, Utf8String motherId,
+                Utf8String birth, Utf8String name, Uint256 weight, Utf8String gender,
                 Utf8String locationSpecification, Utf8String multiplicationMethod,
                 Utf8String shelterSpecification) {
-            super(applicant, count, area, purpose, location, fatherId, motherId, locationSpecification, multiplicationMethod, shelterSpecification);
+            super(applicant, count, area, purpose, location, fatherId, motherId, birth, name, weight, gender, locationSpecification, multiplicationMethod, shelterSpecification);
             this.applicant = applicant.getValue();
             this.count = count.getValue();
             this.area = area.getValue();
@@ -625,6 +649,10 @@ public class TurtleDocumentation extends Contract {
             this.location = location.getValue();
             this.fatherId = fatherId.getValue();
             this.motherId = motherId.getValue();
+            this.birth = birth.getValue();
+            this.name = name.getValue();
+            this.weight = weight.getValue();
+            this.gender = gender.getValue();
             this.locationSpecification = locationSpecification.getValue();
             this.multiplicationMethod = multiplicationMethod.getValue();
             this.shelterSpecification = shelterSpecification.getValue();

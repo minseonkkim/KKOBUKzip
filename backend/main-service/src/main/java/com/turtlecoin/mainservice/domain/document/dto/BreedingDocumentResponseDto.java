@@ -2,6 +2,8 @@ package com.turtlecoin.mainservice.domain.document.dto;
 
 import java.time.LocalDate;
 
+import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,6 +34,10 @@ public class BreedingDocumentResponseDto implements DocumentResponseDto {
 		private String motherAquisition;
 		private String fatherUUID;
 		private String fatherAquisition;
+		private LocalDate birth;
+		private String name;
+		private int weight;
+		private Gender gender;
 		private String locationSpecification;
 		private String multiplicationMethod;
 		private String shelterSpecification;

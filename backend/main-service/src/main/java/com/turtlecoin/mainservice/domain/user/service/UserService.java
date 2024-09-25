@@ -76,4 +76,9 @@ public class UserService {
         Optional<User> userOption = userRepository.findUserByNameAndPhoneNumber(name, phonenumber);
         return userOption.orElse(null);
     }
+
+    public User getUserByEmail(String email) {
+        Optional<User> userOptional = Optional.ofNullable(userRepository.findByemail(email));
+        return userOptional.orElse(null);
+    }
 }

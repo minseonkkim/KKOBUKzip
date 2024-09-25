@@ -278,9 +278,7 @@ contract TurtleDocumentation is Ownable {
     }
 
     // 가장 최근 서류 조회(양도 및 양수 기록이 없는 경우에는 인공증식 서류 해시값 반환)
-    function searchCurrentDocumentHash(string memory _turtleId) public returns (bytes32) {
-        emit CurrentTurtleDocument(_turtleId, turtles[_turtleId].currentDocumentHash);
-
+    function searchCurrentDocumentHash(string memory _turtleId) public view returns (bytes32) {
         return turtles[_turtleId].currentDocumentHash;
     }
 }

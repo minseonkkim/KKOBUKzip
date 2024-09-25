@@ -1,5 +1,7 @@
 package com.turtlecoin.mainservice.domain.chat.repository;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -18,17 +20,24 @@ public class CustomChatRepositoryImpl implements CustomChatRepository {
 
 	@Override
 	public void insertBySmallUserAndBigUser(Long smallUserId, Long bigUserId, ChatMessage chatMessage) {
-		Query query = new Query(Criteria.where("smallUser").is(smallUserId).and("bigUserId").is(bigUserId));
+		Query query = new Query(Criteria.where("smallUser").is(smallUserId).and("bigUser").is(bigUserId));
 		Update update = new Update().push("messages").atPosition(0).value(chatMessage);
 		mongoTemplate.upsert(query, update, Chat.class);
 	}
 
-	// @Override
-	// public List<ChatbotChatting> getChattingsByPage(Long memberId, int page, int size){
-	// 	Query query = new Query(Criteria.where("memberId").is(memberId));
-	// 	query.fields().slice("chattings", page*size, size);
-	// 	ChattingDocument result = mongoTemplate.findOne(query, ChattingDocument.class);
-	// 	return result != null ? result.getChattings() : null;
-	// }
+	@Override
+	public Chat getChat(Long smallUserId, Long bigUserId){
+		Query query = new Query(Criteria.where("smallUser").is(smallUserId).and("bigUser").is(bigUserId));
+		Chat result = mongoTemplate.findOne(query, Chat.class);
+		return result;
+	}
+
+	@Override
+	public List<ChatMessage> getChatByPage(Long smallUserId, Long bigUserId, int page, int size){
+		Query query = new Query(Criteria.where("smallUser").is(smallUserId).and("bigUser").is(bigUserId));
+		query.fields().slice("messages", page*size, size);
+		Chat result = mongoTemplate.findOne(query, Chat.class);
+		return result != null ? result.getMessages() : null;
+	}
 
 }

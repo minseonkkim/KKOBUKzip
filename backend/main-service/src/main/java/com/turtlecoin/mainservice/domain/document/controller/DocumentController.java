@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import javax.print.Doc;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/main/document")
+@RequestMapping("/api/main/document")
 public class DocumentController {
 	private final ImageUploadService imageUploadService;
 	private final DocumentService documentService;
@@ -68,8 +69,8 @@ public class DocumentController {
 		String multiplicationAddress = "";
 		String shelterSpecificationAddress = "";
 
-		if(locationSpecification == null || multiplicationMethod == null || shelterSpecification == null) {
-			return new ResponseEntity<>(ResponseVO.failure("400", "이미지가 포함되지 않았습니다."), HttpStatus.BAD_REQUEST);
+		if(!requestData.isValid() || locationSpecification == null || multiplicationMethod == null || shelterSpecification == null) {
+			return new ResponseEntity<>(ResponseVO.failure("400", "포함되지 않은 항목이 있습니다."), HttpStatus.BAD_REQUEST);
 		}
 
 		try{
@@ -142,10 +143,6 @@ public class DocumentController {
 
 		// DB에 최종적으로 데이터 저장
 		try{
-			if(requestData.getApplicant().equals("abc456-uuid-value")){
-				throw new Exception();
-			}
-
 			Document document = Document.builder()
 				.documentHash(hash)
 				.progress(Progress.DOCUMENT_REVIEWING)
@@ -156,6 +153,7 @@ public class DocumentController {
 
 			documentService.save(document);
 		}catch(Exception e){
+			//e.printStackTrace();
 			// 에러가 발생했을 경우 DB에 null 인 상태로라도 저장해야 함
 			Document document = Document.builder()
 				.documentHash(documentHash)
@@ -180,6 +178,11 @@ public class DocumentController {
 		String hash = "";
 		String turtleUUID = "";
 		String documentHash = "";
+
+		if(!requestData.isValid()){
+			return new ResponseEntity<>(ResponseVO.failure("400", "포함되지 않은 항목이 있습니다."), HttpStatus.BAD_REQUEST);
+		}
+
 		// 신청자 정보가 DB에 없는 경우 에러
 		try{
 			String applicant = requestData.getApplicant();
@@ -264,6 +267,9 @@ public class DocumentController {
 		String hash = "";
 		String turtleUUID = "";
 		String documentHash = "";
+		if(!requestData.isValid()){
+			return new ResponseEntity<>(ResponseVO.failure("400", "포함되지 않은 항목이 있습니다."), HttpStatus.BAD_REQUEST);
+		}
 		// 신청자 정보가 DB에 없는 경우 에러
 		try{
 			String applicant = requestData.getApplicant();
@@ -323,6 +329,9 @@ public class DocumentController {
 		@RequestPart("data") DeathDocumentRequest requestData,
 		@RequestPart("deathImage") MultipartFile deathImage,
 		@RequestPart("diagnosis") MultipartFile diagnosis) {
+		if(!requestData.isValid() || deathImage == null || diagnosis == null) {
+			return new ResponseEntity<>(ResponseVO.failure("400", "포함되지 않은 항목이 있습니다."), HttpStatus.BAD_REQUEST);
+		}
 		// 신청자 정보가 DB에 없는 경우 에러
 		try{
 			String applicant = requestData.getApplicant();
@@ -334,9 +343,6 @@ public class DocumentController {
 			return new ResponseEntity<>(ResponseVO.failure("404", e.getMessage()), HttpStatus.NOT_FOUND);
 		}
 
-		if(deathImage == null || diagnosis == null) {
-			return new ResponseEntity<>(ResponseVO.failure("400", "이미지가 포함되지 않았습니다."), HttpStatus.BAD_REQUEST);
-		}
 
 		String deathImageAddress = "";
 		String diagnosisAddress = "";
@@ -420,12 +426,12 @@ public class DocumentController {
 
 	// 전체 서류 조회
 	@GetMapping("/list")
-	public ResponseEntity<?> listDocuments() {
+	public ResponseEntity<?> listDocuments(Pageable pageable) {
 		List<DocumentListDto> documentList;
 
 		try{
 			// 관리자가 확인 중인 서류를 모두 조회
-			documentList = documentService.getDocumentList();
+			documentList = documentService.getDocumentList(pageable);
 		}catch(Exception e){
 			e.printStackTrace();
 			return new ResponseEntity<>(ResponseVO.failure("500", "서류 조회에 실패했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
