@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { AuctionItemDataType } from "../../types/auction";
+import useChatStore from "../../store/useChatStore";
 
 function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { openChatDetail } = useChatStore();
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % itemData.images.length);
@@ -52,8 +54,8 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
           </div>
         </div>
         <div className="mb-[13px] text-[#9A9A9A] text-[17px]">
-          {/* {itemData.turtleInfo.} */} | {itemData.turtleInfo.weight}
-          24년 8월 10일생 | 8kg
+          {/* {itemData.turtleInfo.} */} | {itemData.turtleInfo.weight}kg
+          {/* 24년 8월 10일생 | 8kg */}
         </div>
         <div className="text-[17px] leading-7 border-[2px] rounded-[10px] p-2 line-clamp">
           {itemData.content}
@@ -71,7 +73,10 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
             />
             <span className="text-[20px]">꼬북맘</span>
           </div>
-          <div className="cursor-pointer bg-[#7CBBF9] h-fit flex justify-center items-center rounded-[10px] font-bold px-3 py-2 text-white">
+          <div
+            onClick={() => openChatDetail(itemData.sellerId, "꼬북맘")}
+            className="cursor-pointer bg-[#7CBBF9] h-fit flex justify-center items-center rounded-[10px] font-bold px-3 py-2 text-white"
+          >
             채팅하기
           </div>
         </div>

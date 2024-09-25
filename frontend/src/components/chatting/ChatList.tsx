@@ -7,9 +7,10 @@ import { AiOutlineMessage } from "react-icons/ai";
 import { chatsData } from "../../fixtures/chatDummy";
 import { ChatListItem } from "../../types/chatting";
 import useChatStore from "../../store/useChatStore";
-import { fetchChatListData, fetchChatMessageData } from "../../apis/chatApi";
+import { fetchChatListData } from "../../apis/chatApi";
 
 const dummyData = chatsData;
+
 export default function ChatList() {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const {
@@ -19,16 +20,18 @@ export default function ChatList() {
     toggleChat,
     closeChatDetail,
     openChatDetail,
+    initChatRoomList,
+    updateRoomList,
+    chatRoomList,
   } = useChatStore();
   const isOpen = isChattingOpen;
-  const [chats, setChats] = useState<ChatListItem[]>(dummyData);
 
   useEffect(() => {
     // 초기 데이터를 load하는 함수
     const getChatData = async () => {
       const fetchedChats = await fetchChatListData(1);
       if (fetchedChats.success) {
-        setChats(fetchedChats.data!);
+        initChatRoomList(fetchedChats.data!);
       }
       // 유저 id로 바꿀것
     };
@@ -39,13 +42,7 @@ export default function ChatList() {
 
       eventSource.onmessage = (event) => {
         const newChat: ChatListItem = JSON.parse(event.data);
-
-        setChats((prevChats) => {
-          const updatedChats = prevChats.filter(
-            (chat) => chat.chattingId !== newChat.chattingId
-          );
-          return [newChat, ...updatedChats]; // 새 채팅을 최상단에 추가
-        });
+        updateRoomList(newChat);
       };
 
       eventSource.onerror = (error) => {
@@ -56,6 +53,7 @@ export default function ChatList() {
       return eventSource;
     };
 
+    // 호출부분
     const fetchDataAndInitializeSSE = async () => {
       await getChatData(); // 채팅 데이터를 가져옴
       const eventSource = initializeSSE(); // SSE 초기화
@@ -64,18 +62,8 @@ export default function ChatList() {
         eventSource.close(); // 컴포넌트 언마운트 시 연결 종료
       };
     };
-
+    initChatRoomList(dummyData);
     fetchDataAndInitializeSSE();
-  }, []);
-
-  // SSE URL 나오면 아래 useEffect 삭제
-  // search dummy
-  useEffect(() => {
-    const getChatData = async () => {
-      console.log("채팅목록을가져오는함수");
-      // setChats
-    };
-    getChatData();
   }, []);
 
   return (
@@ -153,7 +141,7 @@ export default function ChatList() {
             ) : (
               // 채팅 목록
               <div className="px-[10px] w-full bg-transparent rounded-lg ">
-                {chats.map((chat) => (
+                {chatRoomList.map((chat) => (
                   <ChatCard
                     key={chat.chattingId}
                     openChatDetail={openChatDetail}

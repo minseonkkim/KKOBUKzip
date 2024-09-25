@@ -96,18 +96,17 @@ function AuctionDetailPage() {
           </button>
         </div>
         {/* 테스트 드라이버 끝 */}
+
         <div className="cursor-pointer text-[33px] text-gray-900 font-dnf-bitbit pt-[40px] pb-[13px]">
           <span onClick={goBack}>&lt;&nbsp;경매중인 거북이</span>
         </div>
         <div className="flex flex-row justify-between mt-[10px]">
           {/* 좌측 거북이 정보 */}
           {auctionStatus === null ? (
+            // 스켈레톤 애니메이션
             <AuctionItemInfoSkeleton />
           ) : (
-            <AuctionItemInfo
-              itemData={auctionItemData!}
-              // images={auctionItemData?.images!}
-            />
+            <AuctionItemInfo itemData={auctionItemData!} />
           )}
 
           {/* 경매 상태별 컴포넌트 */}
