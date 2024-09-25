@@ -39,21 +39,21 @@ export default function TransactionTurtle({
         <div className="absolute top-4 right-4">
           <TransactionStatusTag progress={progress} />
         </div>
-        <div className="px-4 py-1">
+        <div className="px-3 py-1">
           <div className="flex justify-between items-center my-2">
-            <h3 className="text-xl font-semibold">{scientific_name}</h3>
-            <div className="text-[16px] text-gray-700 flex space-x-2">
+            <div className="text-[16px] xl:text-[17px] font-semibold whitespace-nowrap">{scientific_name}</div>
+            <div className="text-[15px] text-gray-700 flex space-x-1.5">
               {transaction_tag.map((tag, index) => (
                 <span
                   key={index}
-                  className="bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full"
+                  className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full"
                 >
                   #{tag}
                 </span>
               ))}
             </div>
           </div>
-          <div className="font-extrabold text-3xl text-[#4B721F] mt-1 font-stardust">
+          <div className="whitespace-nowrap font-extrabold text-3xl text-[#4B721F] mt-1 font-stardust">
             {price.toLocaleString("ko-KR")}원
           </div>
         </div>

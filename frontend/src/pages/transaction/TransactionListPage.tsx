@@ -24,19 +24,19 @@ function TransactionListPage() {
   >([]);
 
   const [isChecked, setIsChecked] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState(false); // State to handle opening and closing of the filter div
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const [itemLoading, setItemLoading] = useState(false);
-  const [pages, setPages] = useState(1); // 페이지네이션용
-  const [maxPage, setMaxPage] = useState(-1); // 페이지네이션용
+  const [pages, setPages] = useState(1);
+  const [maxPage, setMaxPage] = useState(-1);
 
   const [ref, inView] = useInView({
     threshold: 1,
-  }); // infinity-scroll observer
+  });
 
   const { filters, filterResetHandle, updateFilter } = useTradeFilter();
+
   useEffect(() => {
-    // getAuctionDatas and setAuctionData
     const getData = async () => {
       try {
         setItemLoading(true);
@@ -55,7 +55,6 @@ function TransactionListPage() {
     getData();
   }, []);
 
-  // 다음 페이지를 불러오는 함수
   const loadMore = async () => {
     if (itemLoading) return;
     setItemLoading(true);
@@ -77,16 +76,13 @@ function TransactionListPage() {
     }
   };
 
-  // 스크롤을 인식해서 load
   useEffect(() => {
-    console.log(inView);
     if (loadMore && inView) {
       loadMore();
     }
   }, [inView, loadMore]);
 
   const handleCheckboxChange = () => {
-    // 경매중인 거북이만 보기 -> progress : "DURING_AUCTION"
     setIsChecked(!isChecked);
   };
 
@@ -105,15 +101,15 @@ function TransactionListPage() {
       </Helmet>
 
       <Header />
-      <div className="page-container h-screen flex flex-col pt-[85px]">
-        <div className="flex flex-row items-center justify-between pt-[40px] pb-[13px]">
-          <div className="text-[33px] text-gray-900 font-dnf-bitbit mr-3">
+      <div className="h-screen flex flex-col pt-[85px] px-4 lg:px-[250px]">
+        <div className="flex flex-col md:flex-row items-center justify-between pt-0 lg:pt-[40px] pb-[5px] lg:pb-[13px]">
+          <div className="whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 mb-2 md:mb-0">
             판매중인 거북이
           </div>
         </div>
 
-        <div className="flex flex-row items-center justify-between mb-4">
-          <div className="text-[23px] font-bold flex flex-row items-center">
+        <div className="flex flex-col md:flex-row items-center justify-between mb-4">
+          <div className="text-[18px] md:text-[23px] font-bold flex items-center mb-2 md:mb-0">
             <label className="flex items-center">
               <input
                 type="checkbox"
@@ -122,41 +118,41 @@ function TransactionListPage() {
                 checked={isChecked}
               />
               <div
-                className={`w-6 h-6 border-2 border-gray-500 rounded-[5px] p-1 mr-2 cursor-pointer flex justify-center items-center ${
+                className={`w-5 h-5 md:w-6 md:h-6 border-2 border-gray-500 rounded-[5px] p-1 mr-2 cursor-pointer flex justify-center items-center ${
                   isChecked ? "bg-[#FFD9D9]" : "bg-[#fff]"
                 }`}
                 onClick={handleCheckboxChange}
               >
                 {isChecked && <FaCheck />}
               </div>
-              <span onClick={handleCheckboxChange} className="cursor-pointer">
+              <span onClick={handleCheckboxChange} className="cursor-pointer whitespace-nowrap text-[20px] md:text-[18px] xl:text-[21px]">
                 거래가능한 거북이만 보기
               </span>
             </label>
           </div>
 
-          <div className="flex flex-row">
-            <div className="flex items-center w-[320px] h-[38px] bg-[#f2f2f2] rounded-[10px] p-1 mr-4">
-              <IoIosSearch className="text-gray-400 mx-2 text-[30px]" />
+          <div className="flex flex-row items-center space-x-3">
+            <div className="flex items-center xl:w-[320px] lg:w-[190px] md:w-[300px] h-[38px] bg-[#f2f2f2] rounded-[10px] p-1">
+              <IoIosSearch className="text-gray-400 mx-2 text-[20px] md:text-[30px]" />
               <input
                 type="text"
                 placeholder="종을 검색하세요"
-                className="w-full h-full bg-[#f2f2f2] text-[19px] focus:outline-none p-1"
+                className="w-full h-full bg-[#f2f2f2] text-[16px] md:text-[19px] focus:outline-none p-1"
               />
             </div>
 
             <div
-              className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[30px] w-[90px] h-[42px] cursor-pointer hover:text-[#4B721F] mr-2"
+              className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[30px] w-[80px] md:w-[90px] h-[42px] cursor-pointer hover:text-[#4B721F]"
               onClick={toggleFilterDiv}
             >
-              <IoFilterOutline className="text-[22px] mr-2" />
-              <span className="text-[18px]">필터</span>
+              <IoFilterOutline className="text-[18px] md:text-[22px] mr-2" />
+              <span className="text-[16px] md:text-[18px]">필터</span>
             </div>
             <div
               onClick={filterResetHandle}
-              className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[360px] w-[42px] h-[42px] cursor-pointer font-bold hover:text-[#4B721F]"
+              className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[360px] w-[38px] md:w-[42px] h-[38px] md:h-[42px] cursor-pointer font-bold hover:text-[#4B721F]"
             >
-              <GrPowerReset className="text-[20px]" />
+              <GrPowerReset className="text-[18px] md:text-[20px]" />
             </div>
           </div>
         </div>
@@ -178,7 +174,7 @@ function TransactionListPage() {
         {/* 필터 영역 끝 */}
 
         {/* 아이템 영역 */}
-        <div className="grid flex-1 overflow-y-auto grid-cols-3 gap-4 mb-[30px] mt-[10px]">
+        <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-[30px] mt-[10px]">
           <TransactionTurtle
             scientific_name="지오프리 사이드 넥 터틀"
             price={300000000}
@@ -222,24 +218,12 @@ function TransactionListPage() {
             progress="거래완료"
           />
 
-          {/* {transactionData.map((item, index) => (
-            <TransactionTurtle
-              key={index}
-              scientific_name={item.turtle.scientific_name}
-              price={item.price}
-              transaction_tag={item.transaction_tag}
-              transaction_image={item.thumbnail}
-              progress={item.progress}
-            />
-          ))} */}
-
           {/* observer div */}
           <div ref={ref} className="w-full h-[1px] col-span-full" />
         </div>
         {/* 아이템 영역 끝 */}
       </div>
 
-      {/* Custom Radio Button Styling */}
       <style>{`
         .custom-radio {
           display: flex;

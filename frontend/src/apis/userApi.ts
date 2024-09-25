@@ -80,17 +80,19 @@ const checkToken = async (): Promise<{
 };
 
 // 이메일 인증 확인
-const checkEmail = async (
-  email: string
+const checkEmailRequest = async (
+  email: string,
+  verification: string
 ): Promise<{
   success: boolean;
   data?: EmailCheckResponseData;
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<EmailCheckResponseData>(
-      `/main/user/email/request?email=${email}`
-    )
+    guestAxios.post<EmailCheckResponseData>(`/main/user/email/`, {
+      email,
+      verification,
+    })
   );
 };
 
@@ -159,4 +161,11 @@ interface CreateEmailRequestResponseData {
 
 // 내 거래 내역 상세 조회
 
-export { register, login, logout, checkToken, checkEmail, createEmailRequest };
+export {
+  register,
+  login,
+  logout,
+  checkToken,
+  checkEmailRequest,
+  createEmailRequest,
+};
