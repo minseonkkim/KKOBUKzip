@@ -1,29 +1,58 @@
 package com.turtlecoin.mainservice.domain.user.service;
 
+import com.turtlecoin.mainservice.domain.s3.service.ImageUploadService;
 import com.turtlecoin.mainservice.domain.turtle.dto.TurtleResponseDTO;
 import com.turtlecoin.mainservice.domain.user.dto.UserRequestDto;
 import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
 import com.turtlecoin.mainservice.domain.user.entity.Role;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
+import com.turtlecoin.mainservice.global.response.ResponseVO;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ImageUploadService imageUploadService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
-    public User saveUser(UserRequestDto dto) {
+    public ResponseEntity<ResponseVO<?>> saveUser(UserRequestDto dto) {
+        dto.setPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
+        // 이메일 중복 체크
+        if (userRepository.findByemail(dto.getEmail()) != null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ResponseVO.failure("401", "이미 가입된 이메일입니다."));
+        }
+
         Role role = (dto.getRole() == null) ? Role.ROLE_USER : dto.getRole();
         String uuid = String.valueOf(new SecretKeySpec(dto.getEmail().getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm()));
+        String imageUrl = null;
+
+        try {
+            // 이미지 업로드
+            imageUrl = imageUploadService.upload(dto.getProfileImage(), uuid + "Profile");
+        } catch (IOException e) {
+            e.printStackTrace();
+            // 이미지 업로드 실패 시 에러 메시지 반환
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResponseVO.failure("400", "프로필 이미지 등록 과정에서 에러가 발생했습니다."));
+        }
+
+        // 사용자 객체 생성
         User user = new User(
                 dto.getEmail(),
                 dto.getPassword(),
@@ -34,10 +63,21 @@ public class UserService {
                 dto.getPhonenumber(),
                 dto.getAddress(),
                 role,
-                dto.getProfileImage(),
+                imageUrl,
                 uuid
         );
-        return userRepository.save(user);
+
+        // 사용자 저장
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            // 사용자 저장 중 에러 발생 시 처리
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResponseVO.failure("400", "사용자 저장 중 에러가 발생하였습니다."));
+        }
+
+        // 성공 메시지 반환
+        return ResponseEntity.ok(ResponseVO.success("요청이 정상적으로 수행되었습니다."));
     }
 
     public UserResponseDTO getByUserId(Long userId) {
@@ -64,5 +104,15 @@ public class UserService {
                         .gender(turtle.getGender())
                         .build())
                 .toList();
+    }
+
+    public Boolean verifyPassword(UserRequestDto userDto){
+        String password = userDto.getPassword();
+        // 특수 문자를 포함하고 있으며 8자 이상
+        String regex = "^(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).{8,}$";
+
+        // 정규식 패턴과 입력 비밀번호를 매칭
+        Pattern pattern = Pattern.compile(regex);
+        return pattern.matcher(password).matches();
     }
 }

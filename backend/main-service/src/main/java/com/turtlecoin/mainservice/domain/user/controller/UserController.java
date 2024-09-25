@@ -7,9 +7,9 @@ import com.turtlecoin.mainservice.domain.user.dto.UserRequestDto;
 import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
 import com.turtlecoin.mainservice.domain.user.service.EmailService;
 import com.turtlecoin.mainservice.domain.user.service.JWTService;
-import com.turtlecoin.mainservice.domain.user.service.JoinService;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -25,13 +25,11 @@ import java.util.*;
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
-    private final JoinService joinService;
     private final EmailService emailService;
     private final UserService userService;;
     private final JWTService jwtService;
 
-    public UserController(JoinService joinService, EmailService emailService, UserService userService, JWTService jwtService ) {
-        this.joinService = joinService;
+    public UserController(EmailService emailService, UserService userService, JWTService jwtService ) {
         this.emailService = emailService;
         this.userService = userService;
         this.jwtService = jwtService;
@@ -39,13 +37,7 @@ public class UserController {
 
     @PostMapping("/join")
     public ResponseEntity<ResponseVO<?>> joinProcess(@RequestBody UserRequestDto userDto) {
-        ResponseVO<?> responseVO = joinService.joinProcess(userDto);
-
-        if ("200".equals(responseVO.getStatus())) {
-            return ResponseEntity.ok(responseVO);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseVO);
-        }
+        return userService.saveUser(userDto);
     }
 
     @PostMapping("/login")
@@ -53,8 +45,14 @@ public class UserController {
         return jwtService.loginService(loginUserDto);
     }
 
-    @PostMapping("/email/request")
-    public ResponseEntity<?> emailRequest(@RequestParam String email) {
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        String token = request.getHeader("Refresh-Token");
+        return jwtService.logoutService(token);
+    }
+
+    @PostMapping("/email/request/{email}")
+    public ResponseEntity<?> emailRequest(@PathVariable String email) {
         try {
             ResponseVO<?> responseVO = emailService.sendCodeToEmail(email);
 

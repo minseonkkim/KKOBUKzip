@@ -11,10 +11,11 @@ import Coral3 from "../../assets/NotFound/coral3.png";
 import Seaweed from "../../assets/NotFound/seaweed.png";
 import Seaweed2 from "../../assets/NotFound/seaweed2.png";
 import Shark from "../../assets/NotFound/shark.png";
+import { Helmet } from "react-helmet-async";
 
 // Define types for obstacles and fish
 type ObstacleType = {
-  id: string; // 고유 ID 추가
+  id: string;
   left: number;
   height: number;
   passed: boolean;
@@ -35,7 +36,7 @@ function NotFoundPage() {
   const [isGameOver, setIsGameOver] = useState(false);
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [score, setScore] = useState(0);
-  const [speed, setSpeed] = useState(10);
+  const [speed, setSpeed] = useState(9);
   const [lastSpeedIncrease, setLastSpeedIncrease] = useState(0);
 
   const obstacleTypes = [
@@ -49,7 +50,6 @@ function NotFoundPage() {
   useEffect(() => {
     if (!isGameStarted || isGameOver) return;
 
-    // Speed increase based on score
     if (score > 0 && score % 10 === 0 && score !== lastSpeedIncrease) {
       setSpeed((prevSpeed) => prevSpeed + 4);
       setLastSpeedIncrease(score);
@@ -61,7 +61,6 @@ function NotFoundPage() {
           .map((obstacle) => ({ ...obstacle, left: obstacle.left - speed }))
           .filter((obstacle) => obstacle.left > -50);
 
-        // New obstacle generation
         if (
           Math.random() < 0.03 &&
           (updatedObstacles.length === 0 ||
@@ -70,7 +69,7 @@ function NotFoundPage() {
           const randomObstacle =
             obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
           updatedObstacles.push({
-            id: uuidv4(), // 고유 ID 부여
+            id: uuidv4(),
             left: 800,
             height: 30 + Math.random() * 20,
             passed: false,
@@ -94,7 +93,7 @@ function NotFoundPage() {
         ) {
           updatedShark.push({
             left: 800,
-            height: 110 + Math.random() * 50,
+            height: 90 + Math.random() * 40,
             img: Shark,
           });
         }
@@ -109,39 +108,7 @@ function NotFoundPage() {
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.code === "Space") {
-        if (!isGameStarted) {
-          // Initialize game state
-          setIsGameStarted(true);
-          setIsGameOver(false);
-          setScore(0);
-          setObstacles([]);
-          setSharkObstacles([]);
-          setSpeed(13);
-          setJumpStage(0);
-          setLastSpeedIncrease(0);
-          return;
-        }
-
-        if (isGameOver) {
-          // Restart game
-          setIsGameOver(false);
-          setIsGameStarted(true);
-          setScore(0);
-          setObstacles([]);
-          setSharkObstacles([]);
-          setSpeed(10);
-          setJumpStage(0);
-          setLastSpeedIncrease(0);
-          return;
-        }
-
-        if (jumpStage < 2) {
-          setJumpStage((prev) => prev + 1);
-
-          setTimeout(() => {
-            setTimeout(() => setJumpStage(0), 250);
-          }, 250);
-        }
+        handleJump();
       }
     };
 
@@ -149,12 +116,45 @@ function NotFoundPage() {
     return () => window.removeEventListener("keyup", handleKeyUp);
   }, [jumpStage, isGameStarted, isGameOver]);
 
-  // Collision detection and score update
+  const handleJump = () => {
+    if (!isGameStarted) {
+      setIsGameStarted(true);
+      setIsGameOver(false);
+      setScore(0);
+      setObstacles([]);
+      setSharkObstacles([]);
+      setSpeed(13);
+      setJumpStage(0);
+      setLastSpeedIncrease(0);
+      return;
+    }
+
+    if (isGameOver) {
+      setIsGameOver(false);
+      setIsGameStarted(true);
+      setScore(0);
+      setObstacles([]);
+      setSharkObstacles([]);
+      setSpeed(10);
+      setJumpStage(0);
+      setLastSpeedIncrease(0);
+      return;
+    }
+
+    if (jumpStage < 2) {
+      setJumpStage((prev) => prev + 1);
+
+      setTimeout(() => {
+        setTimeout(() => setJumpStage(0), 250);
+      }, 250);
+    }
+  };
+
   useEffect(() => {
     const checkCollision = () => {
       setObstacles((prev) =>
         prev.map((obstacle) => {
-          const turtleLeft = 40;
+          const turtleLeft = 20;
           const turtleWidth = 60;
           const obstacleWidth = 40;
 
@@ -169,7 +169,7 @@ function NotFoundPage() {
             return obstacle;
           }
 
-          if (!obstacle.passed && obstacle.left + obstacleWidth <= turtleLeft) {
+          if (!obstacle.passed && obstacle.left + obstacleWidth / 2 < turtleLeft) {
             setScore((prevScore) => prevScore + 1);
             return { ...obstacle, passed: true };
           }
@@ -208,22 +208,28 @@ function NotFoundPage() {
 
   return (
     <>
-      <div className="w-full h-screen bg-[#0099cc] flex flex-col items-center justify-center py-6">
-        <div className="text-center text-white text-[18px] mb-8">
-          <p className="font-dnf-bitbit text-[50px] mb-4">404</p>
-          <p>꼬북이가 바닷속에서 길을 잃었어요 o(TヘTo) 장애물을 피하고 점수를 올려보세요!!</p>
+      <Helmet>
+        <title>404</title>
+      </Helmet>
+      <div
+        className="w-full h-screen bg-[#0099cc] flex flex-col items-center justify-center py-7"
+        onClick={handleJump}
+      >
+        <div className="text-center text-white mb-7 md:mb-10">
+          <p className="font-dnf-bitbit text-[60px] md:text-[75px] md-3 md:mb-5">404</p>
+          <p className="mx-10 text-[18px] md:text-[22px]">꼬북이가 바닷속에서 길을 잃었어요 o(TヘTo) <br/>장애물을 피하고 점수를 올려보세요!!</p>
         </div>
-        <div className="relative w-[800px] h-[200px] bg-[#048cdc] border-4 border-blue-400 overflow-hidden">
+        <div className="relative border-4 border-blue-400 w-[90%] max-w-[1200px] h-[200px] sm:h-[300px] bg-[#048cdc] border-6 border-blue-400 overflow-hidden">
           <div
-            className={`absolute bottom-0 left-10 transition-transform duration-300 ${
+            className={`absolute bottom-0 left-[20px] transition-transform duration-200 ${
               jumpStage === 1
-                ? "translate-y-[-70px]"
+                ? "translate-y-[-50px] sm:translate-y-[-105px]"
                 : jumpStage === 2
-                ? "translate-y-[-140px]"
+                ? "translate-y-[-100px] sm:translate-y-[-210px]"
                 : ""
             }`}
           >
-            <img src={TurtleWalk} className="w-[60px] h-auto" alt="Turtle" />
+            <img src={TurtleWalk} className="w-[60px] sm:w-[90px] h-auto" alt="Turtle" />
           </div>
           {obstacles.map((obstacle, index) => (
             <img
@@ -232,7 +238,7 @@ function NotFoundPage() {
               alt={obstacle.type}
               className="absolute"
               style={{
-                left: `${obstacle.left}px`,
+                left: `${obstacle.left * 1.5}px`,
                 bottom: "0px",
                 width: "40px",
                 height: "auto",
@@ -243,11 +249,11 @@ function NotFoundPage() {
             <img
               key={index}
               src={shark.img}
-              alt="Fish"
+              alt="Shark"
               className="absolute"
               style={{
-                left: `${shark.left}px`,
-                bottom: `${shark.height}px`,
+                left: `${shark.left * 1.5}px`,
+                bottom: `${shark.height * 1.5}px`,
                 width: "40px",
                 height: "auto",
               }}
@@ -256,7 +262,7 @@ function NotFoundPage() {
 
           {!isGameStarted && !isGameOver && (
             <div
-              className="absolute text-center text-white text-2xl font-stardust blink"
+              className="absolute text-center text-white text-2xl sm:text-3xl font-stardust blink"
               style={{
                 top: "50%",
                 left: "50%",
@@ -276,26 +282,26 @@ function NotFoundPage() {
                 transform: "translate(-50%, -50%)",
               }}
             >
-              <div className="text-2xl text-white mb-4 font-dnf-bitbit">
+              <div className="text-2xl sm:text-3xl text-white mb-6 font-dnf-bitbit">
                 Game Over! Your Score: {score}
               </div>
-              <div className="text-white text-2xl font-stardust blink">
+              <div className="text-white text-xl md:text-3xl font-stardust blink">
                 Press Spacebar to Restart
               </div>
             </div>
           )}
 
           {isGameStarted && !isGameOver && (
-            <div className="absolute top-4 left-4 text-white text-xl font-stardust">
+            <div className="absolute top-6 left-6 text-white text-xl sm:text-2xl font-stardust">
               Score: {score}
             </div>
           )}
         </div>
         <Link
           to="/"
-          className="mt-8 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+          className="cursor-pointer text-[16px] sm:text-[20px] mt-6 sm:mt-12 px-6 sm:px-9 py-3 sm:py-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
         >
-          <FaHome className="inline mr-2" />
+          <FaHome className="inline mr-2 sm:mr-3" />
           홈으로 돌아가기
         </Link>
       </div>

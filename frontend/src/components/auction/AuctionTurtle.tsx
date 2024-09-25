@@ -15,8 +15,11 @@ export default function AuctionTurtle({
   };
 
   return (
-    <div onClick={goToDetail}>
-      <div className="bg-[#F8F9FA] shadow-lg hover:shadow-xl transition-shadow duration-300 w-full max-w-sm h-[330px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative">
+    <>
+      <div
+        onClick={goToDetail}
+        className="bg-[#F8F9FA] shadow-lg transition-shadow duration-300 w-full max-w-sm h-[300px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative"
+      >
         <div className="overflow-hidden rounded-t-2xl relative">
           <img
             src={TmpTurtle}
@@ -28,18 +31,18 @@ export default function AuctionTurtle({
         <div className="absolute top-4 right-4">
           <AuctionStatusTag progress={"경매중"} />
         </div>
-        <div className="px-4 py-2">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-xl font-semibold">페닐슐라쿠터</h3>
-            <div className="text-[16px] text-gray-700">
-              <span className="bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full">
+        <div className="px-3 py-1">
+          <div className="flex justify-between items-center my-2">
+            <h3 className="text-[16px] xl:text-[17px] font-semibold whitespace-nowrap">페닐슐라쿠터</h3>
+            <div className="text-[15px] text-gray-700 flex space-x-1.5">
+              <span className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full">
                 #태그
               </span>
             </div>
           </div>
           {/* 가격, 시간 라이브러리 쓰기 */}
           <div className="flex flex-col">
-            <div className="font-extrabold text-3xl text-[#4B721F] my-1 font-stardust">
+            <div className="whitespace-nowrap font-extrabold text-3xl text-[#4B721F] mt-1 font-stardust">
               3,000,000원↑
             </div>
           </div>
