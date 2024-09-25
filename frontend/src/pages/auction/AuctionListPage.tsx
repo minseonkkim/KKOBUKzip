@@ -10,7 +10,7 @@ import { AuctionItemDataType } from "../../types/auction";
 import { getAuctionDatas } from "../../apis/tradeApi";
 import OptionFilter from "../../components/common/OptionFilter";
 import useTradeFilter from "../../hooks/useTradeFilter";
-import AuctionTurtleSkeleton from "../../components/auction/AuctionTurtleSkeleton";
+import AuctionTurtleSkeleton from "../../components/auction/skeleton/AuctionTurtleSkeleton";
 import { useInView } from "react-intersection-observer";
 
 // 해야할것 -> 스크롤 구현(귀찮...)
