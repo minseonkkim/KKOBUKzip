@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 import { useNavigate } from "react-router-dom";
@@ -43,7 +43,8 @@ function AuctionDetailPage() {
         setAuctionStatus(response.data.data.auction.progress);
         setAuctionItemData(response.data.data.auction);
       } else {
-        navigate("/");
+        // 요청 실패 혹은 없는 거북이면 되돌아감
+        goBack();
       }
     };
 
@@ -52,14 +53,14 @@ function AuctionDetailPage() {
 
   const navigate = useNavigate();
 
-  const goBack = () => {
+  const goBack = useCallback(() => {
     navigate(-1); // 이전 페이지로 이동
-  };
+  }, [navigate]);
 
   // 옥션 전-> 옥션 진행
-  const changeAuctionStatus = () => {
+  const changeAuctionStatus = useCallback(() => {
     setAuctionStatus("DURING_AUCTION");
-  };
+  }, []);
   return (
     <>
       <Helmet>
@@ -103,7 +104,10 @@ function AuctionDetailPage() {
           {auctionStatus === null ? (
             <AuctionItemInfoSkeleton />
           ) : (
-            <AuctionItemInfo images={auctionItemData?.images!} />
+            <AuctionItemInfo
+              itemData={auctionItemData!}
+              // images={auctionItemData?.images!}
+            />
           )}
 
           {/* 경매 상태별 컴포넌트 */}
