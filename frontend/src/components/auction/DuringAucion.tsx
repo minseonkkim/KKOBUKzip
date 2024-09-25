@@ -1,8 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MovingTurtle from "../../assets/moving_turtle.gif";
 import { useSpring, animated } from "@react-spring/web";
+import { CompatClient } from "@stomp/stompjs";
 
 function DuringAucion() {
+  const auctionStompClient = useRef<CompatClient | null>(null);
+
+  useEffect(() => {
+    // 소켓 연결부
+  }, []);
   const [bidPrice, setBidPrice] = useState(3000000); // 입찰가
   const [bidHistory, setBidHistory] = useState([
     { bidder: "민굥", price: 3400000 },

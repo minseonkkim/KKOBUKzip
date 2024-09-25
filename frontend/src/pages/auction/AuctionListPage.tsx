@@ -13,7 +13,6 @@ import useTradeFilter from "../../hooks/useTradeFilter";
 import AuctionTurtleSkeleton from "../../components/auction/skeleton/AuctionTurtleSkeleton";
 import { useInView } from "react-intersection-observer";
 
-// 해야할것 -> 스크롤 구현(귀찮...)
 // 해야할 것 : 필터 조회 적용
 // api 연동하면 더미데이터 -> 실제데이터, AuctionTurtle 내부 데이터 연동하기, 스켈레톤 이미지 활성화까지 할 것 -> 대부분 주석걸려있음
 

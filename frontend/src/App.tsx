@@ -57,7 +57,10 @@ function App() {
           <Route path="/doc-list" element={<DocumentListPage />} />
 
           {/* Auction Domain - 경매 */}
-          <Route path="/auction-detail" element={<AuctionDetailPage />} />
+          <Route
+            path="/auction-detail/:auctionId"
+            element={<AuctionDetailPage />}
+          />
           <Route path="/auction-list" element={<AuctionListPage />} />
           <Route path="/auction-success" element={<AuctionSuccessPage />} />
           <Route path="/auction-register" element={<AuctionRegisterPage />} />
