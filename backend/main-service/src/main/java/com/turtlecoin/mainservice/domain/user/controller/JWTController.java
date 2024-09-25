@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("api/main/jwt")
+@RequestMapping("/main/jwt")
 
 public class JWTController {
     private final JWTService jwtService;
