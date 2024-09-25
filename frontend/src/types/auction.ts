@@ -1,14 +1,22 @@
 export interface AuctionItemDataType {
   id: number;
-  turtle_id: number;
+  turtleId: number | null;
   title: string;
-  min_bid: number;
-  winning_bid: number;
-  buyer_id: number; //현재 입찰 회원
-  start_time: Date;
+  minBid: number;
+  nowBid: number | null;
+  winningBid: number | null;
+  sellerId: number; // 판매자 아이디
+  buyerId: number | null; //현재 입찰 회원
+  startTime: Date;
+  endTime: Date | null;
   content: string;
-  progress: number; // 1: 경매전 2: 경매중, 유찰, 낙찰
-  end_time: Date;
+  progress: "BEFORE_AUCTION" | "DURING_AUCTION" | "NO_BID" | "SUCCESSFUL_BID"; // 1: 경매전 2: 경매중, 유찰, 낙찰
   tags: string[];
   images: string[];
+  turtleInfo: {
+    id: number;
+    gender: string;
+    weight: number;
+    userId: number;
+  };
 }

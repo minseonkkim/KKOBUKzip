@@ -10,6 +10,7 @@ import com.turtlecoin.mainservice.domain.user.service.JWTService;
 import com.turtlecoin.mainservice.domain.user.service.JoinService;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-@RequestMapping("/main/user")
+@RequestMapping("api/main/user")
 @Controller
 @ResponseBody
 public class UserController {
@@ -53,8 +54,14 @@ public class UserController {
         return jwtService.loginService(loginUserDto);
     }
 
-    @PostMapping("/email/request")
-    public ResponseEntity<?> emailRequest(@RequestParam String email) {
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        String token = request.getHeader("Refresh-Token");
+        return jwtService.logoutService(token);
+    }
+
+    @PostMapping("/email/request/{email}")
+    public ResponseEntity<?> emailRequest(@PathVariable String email) {
         try {
             ResponseVO<?> responseVO = emailService.sendCodeToEmail(email);
 

@@ -2,6 +2,8 @@ package com.turtlecoin.mainservice.domain.user.service;
 
 import com.turtlecoin.mainservice.domain.user.dto.EmailDto;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
+import io.lettuce.core.RedisConnectionException;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,16 +31,24 @@ public class EmailService {
     final String AuthCode = "VerifyCode";
 
     // 이메일 인증코드 발송하기
-    public ResponseVO<?> sendCodeToEmail(String email){
+    public ResponseVO<?> sendCodeToEmail(String email) {
         String title = "꼬북집 KKOBUKZIP 이메일 인증번호";
-        String code =  this.createCode();
-        try{
-            sendEmail(email,title,"인증번호 : "+code);
-            redisTemplate.opsForValue().set(AuthCode+email,code,180, TimeUnit.SECONDS);
-        }catch (Exception e){
-            log.info(e.getMessage());
-            return ResponseVO.failure("401", "이메일 발송 중 에러가 발생하였습니다.");
+        String code = this.createCode();
+
+        try {
+            // 이메일 전송
+            sendEmail(email, title, "인증번호 : " + code);
+
+            // Redis에 인증 코드 저장
+            redisTemplate.opsForValue().set(AuthCode + email, code, 180, TimeUnit.SECONDS);
+        } catch (RedisConnectionException e) {
+            log.error("Redis 연결 오류: {}", e.getMessage(), e);
+            return ResponseVO.failure("500", "이메일 발송 중 오류가 발생하였습니다. (Redis 연결 오류)");
+        } catch (Exception e) {
+            log.error("알 수 없는 오류 발생: {}", e.getMessage(), e);
+            return ResponseVO.failure("500", "이메일 발송 중 알 수 없는 오류가 발생하였습니다.");
         }
+
         return ResponseVO.success("이메일이 정상적으로 발송되었습니다.");
     }
 

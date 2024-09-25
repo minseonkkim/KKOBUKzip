@@ -102,7 +102,7 @@ function TransactionListPage() {
 
       <Header />
       <div className="h-screen flex flex-col pt-[85px] px-4 lg:px-[250px]">
-        <div className="flex flex-col md:flex-row items-center justify-between pt-[20px] md:pt-[40px] pb-[13px]">
+        <div className="flex flex-col md:flex-row items-center justify-between pt-0 lg:pt-[40px] pb-[5px] lg:pb-[13px]">
           <div className="whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 mb-2 md:mb-0">
             판매중인 거북이
           </div>
@@ -125,7 +125,7 @@ function TransactionListPage() {
               >
                 {isChecked && <FaCheck />}
               </div>
-              <span onClick={handleCheckboxChange} className="cursor-pointer whitespace-nowrap text-[18px] xl:text-[21px]">
+              <span onClick={handleCheckboxChange} className="cursor-pointer whitespace-nowrap text-[20px] md:text-[18px] xl:text-[21px]">
                 거래가능한 거북이만 보기
               </span>
             </label>

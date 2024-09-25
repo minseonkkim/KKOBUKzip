@@ -1,9 +1,10 @@
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
-import TmpProfileImg from "../../assets/tmp_profile.gif";
+// import TmpProfileImg from "../../assets/tmp_profile.gif";
 import { useState } from "react";
 import MyTurtle from "../../components/user/MyTurtle";
-import NoImage from "../../assets/no_image.png";
+import TransactionHistory from "../../components/user/TransactionHistory";
+// import NoImage from "../../assets/no_image.png";
 import { LiaRandomSolid } from "react-icons/lia";
 import CustomProfile1 from "../../assets/custom_profile/profile1.gif";
 import CustomProfile2 from "../../assets/custom_profile/profile2.gif";
@@ -114,11 +115,19 @@ function MyPage() {
 
         {/* 거래내역 */}
         {selectedMenu === 0 && (
-          // 거래내역이 없을 경우
-          <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
-            <img src={NoImage} className="w-[200px] mb-7" draggable="false" />
-            <div className="text-[25px] font-bold text-center font-stardust">거래 내역이 없어요.</div>
+          // 거래 내역이 있을 경우
+          <div className="flex flex-col mb-[20px]">
+            <TransactionHistory/>
+            <TransactionHistory/>
+            <TransactionHistory/>
           </div>
+
+
+          // 거래내역이 없을 경우
+          // <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
+          //   <img src={NoImage} className="w-[200px] mb-7" draggable="false" />
+          //   <div className="text-[25px] font-bold text-center font-stardust">거래 내역이 없어요.</div>
+          // </div>
         )}
 
         {/* 나의 거북이 */}
