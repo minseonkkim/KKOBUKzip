@@ -3,6 +3,7 @@ package com.turtlecoin.mainservice.domain.user.dto;
 import com.turtlecoin.mainservice.domain.user.entity.Role;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -17,7 +18,7 @@ public class UserRequestDto {
     private LocalDate birth;
     private String phonenumber;
     private String address;
-    private String profileImage;
+    private MultipartFile profileImage;
     private Role role;
 
     public Role getRole() {

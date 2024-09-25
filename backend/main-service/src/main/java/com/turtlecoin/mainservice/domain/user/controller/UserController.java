@@ -7,7 +7,6 @@ import com.turtlecoin.mainservice.domain.user.dto.UserRequestDto;
 import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
 import com.turtlecoin.mainservice.domain.user.service.EmailService;
 import com.turtlecoin.mainservice.domain.user.service.JWTService;
-import com.turtlecoin.mainservice.domain.user.service.JoinService;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,19 +19,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-@RequestMapping("api/main/user")
+@RequestMapping("/main/user")
 @Controller
 @ResponseBody
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
-    private final JoinService joinService;
     private final EmailService emailService;
     private final UserService userService;;
     private final JWTService jwtService;
 
-    public UserController(JoinService joinService, EmailService emailService, UserService userService, JWTService jwtService ) {
-        this.joinService = joinService;
+    public UserController(EmailService emailService, UserService userService, JWTService jwtService ) {
         this.emailService = emailService;
         this.userService = userService;
         this.jwtService = jwtService;
@@ -40,13 +37,7 @@ public class UserController {
 
     @PostMapping("/join")
     public ResponseEntity<ResponseVO<?>> joinProcess(@RequestBody UserRequestDto userDto) {
-        ResponseVO<?> responseVO = joinService.joinProcess(userDto);
-
-        if ("200".equals(responseVO.getStatus())) {
-            return ResponseEntity.ok(responseVO);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseVO);
-        }
+        return userService.saveUser(userDto);
     }
 
     @PostMapping("/login")
