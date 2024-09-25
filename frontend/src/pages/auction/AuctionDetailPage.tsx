@@ -7,7 +7,7 @@ import { getAuctionDetailItemData } from "../../apis/tradeApi";
 import AuctionItemInfo from "../../components/auction/AuctionItemInfo";
 import AuctionItemInfoSkeleton from "../../components/auction/skeleton/AuctionItemInfoSkeleton";
 import BeforeAuction from "../../components/auction/BeforeAuction";
-import DuringAucion from "../../components/auction/DuringAucion";
+import DuringAuction from "../../components/auction/DuringAuction";
 import AfterAuction from "../../components/auction/AfterAuction";
 
 // flow
@@ -120,7 +120,7 @@ function AuctionDetailPage() {
               minBid={auctionItemData?.minBid!}
             />
           )}
-          {auctionStatus === "DURING_AUCTION" && <DuringAucion />}
+          {auctionStatus === "DURING_AUCTION" && <DuringAuction />}
           {auctionStatus === ("NO_BID" || "SUCCESSFUL_BID") && <AfterAuction />}
         </div>
       </div>

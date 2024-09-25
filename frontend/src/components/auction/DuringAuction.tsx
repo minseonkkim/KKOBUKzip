@@ -1,14 +1,56 @@
 import { useEffect, useRef, useState } from "react";
 import MovingTurtle from "../../assets/moving_turtle.gif";
 import { useSpring, animated } from "@react-spring/web";
-import { CompatClient } from "@stomp/stompjs";
+import { CompatClient, Stomp } from "@stomp/stompjs";
 
-function DuringAucion() {
+interface StompFrame {
+  command: string;
+  headers: Record<string, string>;
+  body?: string;
+}
+
+function DuringAuction({ channelId }: { channelId: string }) {
   const auctionStompClient = useRef<CompatClient | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 소켓 연결부
-  }, []);
+    const init = async () => {
+      setLoading(true);
+      // 소켓 설정
+      const socketAddress = "ws://localhost:8080/api/main/ws";
+      // const socketAddress = import.meta.env.VITE_SOCKET_URL
+      const socket = new WebSocket(socketAddress);
+      auctionStompClient.current = Stomp.over(socket);
+
+      // 메세지 수신
+      auctionStompClient.current.connect(
+        { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+        (frame: StompFrame) => {
+          console.log("Connected: " + frame);
+          auctionStompClient.current!.subscribe(
+            `/${channelId}`,
+            (message) => {
+              const newMessage = JSON.parse(message.body);
+              console.log(newMessage);
+            },
+            { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+          );
+        },
+        (error: unknown) => {
+          console.error("Connection error: ", error);
+        }
+      );
+    };
+    init();
+
+    return () => {
+      if (auctionStompClient.current) {
+        auctionStompClient.current.disconnect();
+      }
+    };
+  }, [channelId]);
+  // ------------------여기까지 작성했음--------------
+
   const [bidPrice, setBidPrice] = useState(3000000); // 입찰가
   const [bidHistory, setBidHistory] = useState([
     { bidder: "민굥", price: 3400000 },
@@ -171,4 +213,4 @@ function DuringAucion() {
   );
 }
 
-export default DuringAucion;
+export default DuringAuction;

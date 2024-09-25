@@ -15,11 +15,8 @@ export default function AuctionTurtle({
   };
 
   return (
-    <>
-      <div
-        onClick={goToDetail}
-        className="bg-[#F8F9FA] shadow-lg hover:shadow-xl transition-shadow duration-300 w-full max-w-sm h-[330px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative"
-      >
+    <div onClick={goToDetail}>
+      <div className="bg-[#F8F9FA] shadow-lg hover:shadow-xl transition-shadow duration-300 w-full max-w-sm h-[330px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative">
         <div className="overflow-hidden rounded-t-2xl relative">
           <img
             src={TmpTurtle}
@@ -49,6 +46,6 @@ export default function AuctionTurtle({
           <div className="text-[18px] text-[#BA0606]">10초 뒤 가격 상승</div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
