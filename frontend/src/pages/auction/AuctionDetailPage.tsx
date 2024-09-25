@@ -67,6 +67,34 @@ function AuctionDetailPage() {
       </Helmet>
       <Header />
       <div className="px-[250px] mt-[85px]">
+        {/* 테스트 드라이버 */}
+        <div className="grid grid-cols-4">
+          <button
+            className="bg-slate-200"
+            onClick={() => setAuctionStatus("BEFORE_AUCTION")}
+          >
+            BEFORE_AUCTION
+          </button>
+          <button
+            className="bg-slate-200"
+            onClick={() => setAuctionStatus("DURING_AUCTION")}
+          >
+            DURING_AUCTION
+          </button>
+          <button
+            className="bg-slate-200"
+            onClick={() => setAuctionStatus("NO_BID")}
+          >
+            NO_BID
+          </button>
+          <button
+            className="bg-slate-200"
+            onClick={() => setAuctionStatus("SUCCESSFUL_BID")}
+          >
+            SUCCESSFUL_BID
+          </button>
+        </div>
+        {/* 테스트 드라이버 끝 */}
         <div className="cursor-pointer text-[33px] text-gray-900 font-dnf-bitbit pt-[40px] pb-[13px]">
           <span onClick={goBack}>&lt;&nbsp;경매중인 거북이</span>
         </div>
