@@ -20,3 +20,28 @@ export interface AuctionItemDataType {
     userId: number;
   };
 }
+
+/*
+{
+	"data": {
+	  "title": "Test Auction2",
+	  "content": "This is a test auction description.!!!!",
+	  "minBid": 20000,
+	  "startTime": "2028-10-01T12:00:00",
+	  "userId": 1,
+	  "turtleId": 2
+	},
+	"images": ["경로1","경로2"]
+}
+  create interface for auction data
+  */
+
+export interface AuctionData {
+  title: string;
+  content: string;
+  minBid: number;
+  startTime: string;
+  userId: number;
+  turtleId: number;
+  // images: File[];
+}
