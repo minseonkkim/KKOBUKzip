@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { AuctionItemDataType } from "../../types/auction";
-import useChatStore from "../../store/useChatStore";
+// import useChatStore from "../../store/useChatStore";
 
 function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { openChatDetail } = useChatStore();
+  // const { openChatDetail } = useChatStore();
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % itemData.images.length);
@@ -73,12 +73,12 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
             />
             <span className="text-[20px]">꼬북맘</span>
           </div>
-          <div
+          {/* <div
             onClick={() => openChatDetail(itemData.sellerId, "꼬북맘")}
             className="cursor-pointer bg-[#7CBBF9] h-fit flex justify-center items-center rounded-[10px] font-bold px-3 py-2 text-white"
           >
             채팅하기
-          </div>
+          </div> */}
         </div>
       </div>
     </>
