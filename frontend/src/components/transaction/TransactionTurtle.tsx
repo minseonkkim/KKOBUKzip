@@ -39,10 +39,10 @@ export default function TransactionTurtle({
         <div className="absolute top-4 right-4">
           <TransactionStatusTag progress={progress} />
         </div>
-        <div className="px-4 py-1">
+        <div className="px-3 py-1">
           <div className="flex justify-between items-center my-2">
-            <h3 className="text-xl font-semibold whitespace-nowrap">{scientific_name}</h3>
-            <div className="text-[16px] text-gray-700 flex space-x-2">
+            <div className="text-[16px] xl:text-[17px] font-semibold whitespace-nowrap">{scientific_name}</div>
+            <div className="text-[15px] text-gray-700 flex space-x-1.5">
               {transaction_tag.map((tag, index) => (
                 <span
                   key={index}

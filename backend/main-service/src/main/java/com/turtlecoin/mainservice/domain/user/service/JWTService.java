@@ -11,10 +11,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -25,21 +21,21 @@ public class JWTService {
     private final JWTUtil jwtUtil;
     private final RedisTemplate<String,String> redisTemplate;
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    JWTService(JWTUtil jwtUtil, RedisTemplate<String, String> redisTemplate,UserRepository userRepository) {
+    JWTService(JWTUtil jwtUtil, RedisTemplate<String, String> redisTemplate, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.jwtUtil = jwtUtil;
         this.redisTemplate = redisTemplate;
         this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     public ResponseEntity<?> loginService(LoginUserDto loginUserDto) {
         Optional<User> user = Optional.ofNullable(userRepository.findByemail(loginUserDto.getEmail()));
-        if (user.isEmpty() || !user.get().getPassword().equals(loginUserDto.getPassword())) {
+        if (user.isEmpty() || !bCryptPasswordEncoder.matches(loginUserDto.getPassword(),user.get().getPassword())) {
             return new ResponseEntity<>(ResponseVO.failure("400", "아이디 또는 비밀번호가 일치하지 않습니다."), HttpStatus.UNAUTHORIZED);
         }
-
-
         try{
             // 인증 성공 시 JWT 토큰 생성 및 Redis 저장
             String email = user.get().getEmail(); // "username"을 "email"로 변경;
@@ -63,9 +59,20 @@ public class JWTService {
         }catch (Exception e){
             return new ResponseEntity<>(ResponseVO.failure("500","서버 에러 발생"),HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
 
+    // 로그아웃 요청시 redis에서 refreshToken 제거
+    public ResponseEntity<?> logoutService(String RefreshToken) {
+        // Refresh token 검증
+        if (!jwtUtil.validateRefreshToken(RefreshToken)) {
+            return new ResponseEntity<>(ResponseVO.failure("400", "로그아웃 처리 중 오류가 발생했습니다."), HttpStatus.BAD_REQUEST);
+        }
 
+        // SecurityContext 클리어 및 Redis에서 Refresh Token 삭제
+        SecurityContextHolder.clearContext();
+        redisTemplate.delete(RefreshToken);
 
+        return new ResponseEntity<>(ResponseVO.success("정상적으로 로그아웃 처리가 완료되었습니다."), HttpStatus.OK);
     }
     // accessToken 재발급 요청
     public ResponseEntity<?> refreshTokenRotate(String refreshToken){

@@ -12,10 +12,7 @@ import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
 import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.domain.turtle.service.TurtleService;
-import com.turtlecoin.auctionservice.global.exception.AuctionNotFoundException;
-import com.turtlecoin.auctionservice.global.exception.TurtleAlreadyRegisteredException;
-import com.turtlecoin.auctionservice.global.exception.TurtleNotFoundException;
-import com.turtlecoin.auctionservice.global.exception.UserNotFoundException;
+import com.turtlecoin.auctionservice.global.exception.*;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -143,27 +140,20 @@ public class AuctionController {
 
     @PostMapping("/{auctionId}/bid")
     public ResponseEntity<ResponseVO<?>> auctionBid(@PathVariable Long auctionId, @RequestBody BidRequestDTO bidRequestdto) {
-        Long newBidAmount = bidRequestdto.getBidAmount();
+        Double newBidAmount = bidRequestdto.getBidAmount();
         Long userId = bidRequestdto.getUserId();
 
-        Map<Double, Double> priceTable = new HashMap<>();
-
-        Map<Object, Object> currentBidData = auctionService.getCurrentBid(auctionId);
-        Double currentBid = (Double) currentBidData.get("nowBid");
-        Long currentUserId = (Long) currentBidData.get("userId");
-
-        if (currentBid == null) {
-            currentBid = auctionService.getMinBid(auctionId);
-        }
-
-        if ((currentBid == null || newBidAmount > currentBid) &&
-                (currentUserId == null || !currentUserId.equals(userId))) {
-            auctionService.updateBid(auctionId, currentUserId, newBidAmount);
+        try {
+            auctionService.processBid(auctionId, userId, newBidAmount);
             return new ResponseEntity<>(ResponseVO.success("입찰에 성공했습니다."), HttpStatus.OK);
-        } else if (currentUserId != null && currentUserId.equals(userId)) {
+        } catch (SameUserBidException e) {
             return new ResponseEntity<>(ResponseVO.failure("400", "자신의 입찰에 재입찰 할 수 없습니다."), HttpStatus.BAD_REQUEST);
-        } else {
+        } catch (WrongBidAmountException e) {
             return new ResponseEntity<>(ResponseVO.failure("400", "현재 입찰가가 더 높습니다."), HttpStatus.BAD_REQUEST);
+        } catch (AuctionNotFoundException e) {
+            return new ResponseEntity<>(ResponseVO.failure("404", "경매를 찾을 수 없습니다."), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(ResponseVO.failure("500", "서버 내부 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

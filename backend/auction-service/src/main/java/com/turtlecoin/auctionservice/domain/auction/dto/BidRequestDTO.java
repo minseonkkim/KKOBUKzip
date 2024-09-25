@@ -8,5 +8,5 @@ import lombok.*;
 @Builder
 public class BidRequestDTO {
     private Long userId;
-    private Long bidAmount;
+    private Double bidAmount;
 }
