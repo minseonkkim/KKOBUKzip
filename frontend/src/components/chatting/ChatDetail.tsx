@@ -8,6 +8,7 @@ import ChatDayDivider from "./ChatDayDivider";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import formatDate from "../../utils/formatDate";
 import { fetchChatMessageData } from "../../apis/chatApi";
+import SystemMessageItem from "./SystemMessageItem";
 
 interface ChatDetailProps {
   closeChatDetail: () => void;
@@ -84,6 +85,12 @@ const data: ChatData[] = [
   },
 ];
 
+interface SystemMessageType {
+  turtleName: string;
+  price: number;
+  image: string;
+}
+
 export default function ChatDetail({
   chattingTitle,
   chattingId,
@@ -93,7 +100,7 @@ export default function ChatDetail({
   const [inputValue, setInputValue] = useState("");
   const stompClient = useRef<CompatClient | null>(null);
   const [groupedChat, setGroupedChat] = useState<
-    { date: string; messages: ChatData[] }[]
+    { date: string; messages: (ChatData | SystemMessageType)[] }[]
   >([]);
 
   const myNickName = "판매자";
@@ -220,18 +227,31 @@ export default function ChatDetail({
 
                 <ChatDayDivider date={group.date} />
 
-                {group.messages.map((message) =>
-                  myNickName === message.nickname ? (
-                    // 보낸 메세지
-                    <MyChatItem message={message.message} />
-                  ) : (
-                    // 받은 메세지
-                    <OtherChatItem
-                      message={message.message}
-                      profileImg={TmpProfileImg}
-                    />
-                  )
-                )}
+                {group.messages.map((message, index) => {
+                  if ("turtleName" in message) {
+                    // 시스템 메시지 처리
+                    return (
+                      <SystemMessageItem
+                        key={index}
+                        turtleName={message.turtleName}
+                        price={message.price}
+                        image={message.image}
+                      />
+                    );
+                  } else if (myNickName === message.nickname) {
+                    // 보낸 메시지 처리
+                    return <MyChatItem key={index} message={message.message} />;
+                  } else {
+                    // 받은 메시지 처리
+                    return (
+                      <OtherChatItem
+                        key={index}
+                        message={message.message}
+                        profileImg={message.userProfile}
+                      />
+                    );
+                  }
+                })}
               </div>
             ))}
           </div>
