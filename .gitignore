@@ -38,5 +38,8 @@ out/
 
 uploads/*
 
-## Redis ##
-/backend/data/
+
+### Redis dump.rdb ###
+backend/data
+backend/data/redis-replica-1/dump.rdb
+backend/data/redis-replica-2/dump.rdb
