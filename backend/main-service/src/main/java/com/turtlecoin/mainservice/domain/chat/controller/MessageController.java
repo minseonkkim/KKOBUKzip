@@ -20,27 +20,28 @@ public class MessageController {
 	private final ChatService chatService;
 
 	@MessageMapping("/main/ws")
-	@SendTo("/topic/chat/{roomId}")  // roomId로 구독
+	@SendTo("/topic/{roomId}")  // roomId로 구독
 	public void connect(
 		@Header("chattingId") String chattingId,
 		@Header("type") String type) {
 
-		StringTokenizer st = new StringTokenizer(chattingId, "-");
-		Long smallUserId = Long.valueOf(st.nextToken());
-		Long bigUserId = Long.valueOf(st.nextToken());
+		// StringTokenizer st = new StringTokenizer(, "-");
+		// Long smallUserId = Long.valueOf(st.nextToken());
+		// Long bigUserId = Long.valueOf(st.nextToken());
 
 		// 채팅 DB가 없으면 새로 생성하기
-		try{
-			if(chatService.isChatExists(smallUserId, bigUserId)){
-				return;
-			}
-			else{
-				chatService.createChat(smallUserId, bigUserId);
-			}
-		}
-		catch(Exception e){
-			//e.printStackTrace();
-		}
+		// try{
+		// 	if(chatService.isChatExists(smallUserId, bigUserId)){
+		// 		return;
+		// 	}
+		// 	else{
+		// 		chatService.createChat(smallUserId, bigUserId);
+		// 		//chatService.addChatMessage();
+		// 	}
+		// }
+		// catch(Exception e){
+		// 	//e.printStackTrace();
+		// }
 	}
 
 	@MessageMapping("/chat/{chattingId}") // 클라이언트가 이 경로로 메시지를 전송합니다.

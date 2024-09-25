@@ -12,7 +12,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/chatting"); // 클라이언트가 보낸 메세지를 여기로 받음
+		config.enableSimpleBroker("/topic"); // 클라이언트가 보낸 메세지를 여기로 받음
 		config.setApplicationDestinationPrefixes("/main"); // /room 밑의 주소를 구독하는 클라이언트들이 메세지를 수신 받는다
 	}
 

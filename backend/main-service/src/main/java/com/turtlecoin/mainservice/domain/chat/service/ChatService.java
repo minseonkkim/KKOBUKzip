@@ -50,6 +50,6 @@ public class ChatService {
 	}
 
 	public void addChatMessage(Long smallUserId, Long bigUserId, Long sender, String message) throws Exception{
-
+		//chatRepository.insertBySmallUserAndBigUser(smallUserId, bigUserId, message);
 	}
 }
