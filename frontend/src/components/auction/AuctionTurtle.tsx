@@ -49,6 +49,6 @@ export default function AuctionTurtle({
           <div className="text-[18px] text-[#BA0606]">10초 뒤 가격 상승</div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

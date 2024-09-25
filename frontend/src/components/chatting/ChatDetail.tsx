@@ -172,7 +172,7 @@ export default function ChatDetail({
               });
             }
           },
-          { Authorization: `Bearer ${sessionStorage.getItem("accessToken")}` }
+          { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
         );
       },
       (error: unknown) => {}
