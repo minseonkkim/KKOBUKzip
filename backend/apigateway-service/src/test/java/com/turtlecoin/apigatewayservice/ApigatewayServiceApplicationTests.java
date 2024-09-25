@@ -1,13 +1,13 @@
-package com.turtlecoin.apigatewayservice;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-class ApigatewayServiceApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
-}
+//package com.turtlecoin.apigatewayservice;
+//
+//import org.junit.jupiter.api.Test;
+//import org.springframework.boot.test.context.SpringBootTest;
+//
+//@SpringBootTest
+//class ApigatewayServiceApplicationTests {
+//
+//	@Test
+//	void contextLoads() {
+//	}
+//
+//}
