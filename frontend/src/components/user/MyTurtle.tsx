@@ -147,38 +147,40 @@ export default function MyTurtle() {
 
   return (
     <>
-      <div className="w-[23.5%] h-[373px] border-[2px] rounded-[20px] my-[13px] p-[15px] bg-[#f8f8f8]">
+      <div className="border-[2px] rounded-[20px] p-2 md:p-[15px] bg-[#f8f8f8]">
         <div className="flex flex-row justify-between items-center mb-3">
-          <div className="text-[20px]">꼬북이</div>
+          <div className="text-[18px] md:text-[20px]">꼬북이</div>
           <div className="font-bold text-gray-400">24.09.01</div>
         </div>
         <img
           src={TmpTurtleImg}
-          className="rounded-[10px] w-full h-[190px] object-cover"
+          className="rounded-[10px] w-full lg:h-[190px] md:h-[170px] h-[130px] object-cover"
           draggable="false"
         />
-        <div className="flex flex-row justify-between mt-4 text-[18px]">
+        <div className="flex flex-row justify-between mt-4 lg:text-[17px] text-[16px]">
           <button
             onClick={openDetailModal}
-            className="w-[48%] h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
+            className="w-[48%] h-[33px] md:h-[37px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
           >
             상세 정보
           </button>
-          <button className="w-[48%] h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
+          <button className="w-[48%] h-[33px] md:h-[37px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
             onClick={openDocumentModal}>
             서류 조회
           </button>
         </div>
-        <div className="flex flex-row justify-between mt-3 text-[18px]">
+        <div className="flex flex-row justify-between mt-3 lg:text-[17px] text-[16px]">
+          {/* 판매 등록 했을 경우 버튼 비활성화 */}
           <button
             onClick={goToTransactionRegister}
-            className="w-[48%] h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
+            className="w-[48%] h-[33px] md:h-[37px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
           >
             판매 등록
           </button>
+          {/* 경매 등록 했을 경우 버튼 비활성화 */}
           <button
             onClick={goToAuctionRegister}
-            className="w-[48%] h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
+            className="w-[48%] h-[33px] md:h-[37px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
           >
             경매 등록
           </button>
@@ -190,7 +192,7 @@ export default function MyTurtle() {
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100000]"
           onClick={handleDetailOverlayClick} 
         >
-          <div className="bg-white p-6 rounded-[10px] shadow-lg w-[500px]">
+          <div className="bg-white p-6 rounded-[10px] shadow-lg md:w-[620px] w-[380px]">
             <div className="flex flex-row justify-between">
                 <h2 className="text-[22px] font-bold mb-4 font-stardust">상세 정보</h2>
                 <IoClose className="text-[30px] cursor-pointer" onClick={closeDetailModal} />
@@ -198,9 +200,9 @@ export default function MyTurtle() {
             
             <div className="flex flex-row w-full space-x-5">
                 <div className="w-1/2 h-[180px] overflow-hidden">
-                    <img src={TmpTurtleImg} className="object-cover rounded-[10px] w-full h-[180px]" draggable="false"/>
+                    <img src={TmpTurtleImg} className="object-cover rounded-[10px] w-full h-[155px] md:h-[180px]" draggable="false"/>
                 </div>
-                <div className="w-1/2 text-[19px] flex flex-col space-y-2">
+                <div className="w-1/2 md:text-[19px] text-[17px] flex flex-col space-y-2">
                     <div>이름: 김거북</div>
                     <div>종: 페닐슐라쿠터</div>
                     <div>성별 : 암컷</div>
@@ -208,14 +210,14 @@ export default function MyTurtle() {
                 </div>
             </div>
 
-            <div className="flex flex-row mt-7">
+            <div className="flex flex-row mt-1 md:mt-7">
                 <div className="flex flex-col space-y-2 w-1/2 text-[19px]">
                     <div>부개체 : 저거북</div>
-                    <img src={TmpTurtleImg2} className="object-cover rounded-[10px] w-full h-[180px]" draggable="false"/>
+                    <img src={TmpTurtleImg2} className="object-cover rounded-[10px] w-full h-[155px] md:h-[180px]" draggable="false"/>
                 </div>
                 <div className="flex flex-col space-y-2 w-1/2 text-[19px]">
                     <div>모개체 : 이거북</div>
-                    <img src={TmpTurtleImg3} className="object-cover rounded-[10px] w-full h-[180px]" draggable="false"/>
+                    <img src={TmpTurtleImg3} className="object-cover rounded-[10px] w-full h-[155px] md:h-[180px]" draggable="false"/>
                 </div>
             </div>
           </div>
@@ -225,12 +227,12 @@ export default function MyTurtle() {
       {isDocumentModalOpen && 
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100000]"
         onClick={handleDocumentOverlayClick} >
-            <div className="bg-white p-6 rounded-[10px] shadow-lg w-[620px]">
+            <div className="bg-white p-6 rounded-[10px] shadow-lg md:w-[620px] w-[380px]">
                 <div className="flex flex-row justify-between">
                     <h2 className="text-[22px] font-bold mb-4 font-stardust">서류 조회</h2>
                     <IoClose className="text-[30px] cursor-pointer" onClick={closeDocumentModal} />
                 </div>
-                <div className="mt-[25px] text-[20px] flex flex-row cursor-pointer mb-[10px] font-stardust">
+                <div className="md:mt-[25px] mt-2 text-[20px] flex flex-row cursor-pointer mb-[10px] font-stardust">
                     <div
                         className={`w-1/3 h-[42px] border-b-[4px] text-center ${
                             selectedMenu === 0 && "border-[#4B721F] font-bold"
@@ -259,19 +261,19 @@ export default function MyTurtle() {
 
                 {/* 인공증식 */}
                 {selectedMenu === 0 &&
-                <div className="h-[540px] overflow-y-auto p-12">
+                <div className="md:h-[540px] h-[390px] overflow-y-auto md:p-12 p-3">
                     <CompleteBreedDocument data={exampleData}/>
                 </div>}
 
                 {/* 양도양수 */}
                 {selectedMenu === 1 &&
-                <div className="h-[540px] overflow-y-auto p-12">
+                <div className="md:h-[540px] h-[390px] overflow-y-auto md:p-12 p-3">
                     <CompleteAssignGrantDocument data={exampleData2}/>
                 </div>}
 
                 {/* 폐사 */}
                 {selectedMenu === 2 &&
-                <div className="h-[540px] overflow-y-auto p-12">
+                <div className="md:h-[540px] h-[390px] overflow-y-auto md:p-12 p-3">
                     <CompleteDeathDocument data={exampleData3}/>
                 </div>}
 
