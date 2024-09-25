@@ -6,18 +6,70 @@ import { IoClose } from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
 import { chatsData } from "../../fixtures/chatDummy";
 import { ChatListItem } from "../../types/chatting";
+import useChatStore from "../../store/useChatStore";
+import { fetchChatListData, fetchChatMessageData } from "../../apis/chatApi";
 
 const dummyData = chatsData;
 export default function ChatList() {
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const {
+    isChattingOpen,
+    selectedChat,
+    selectedChatTitle,
+    toggleChat,
+    closeChatDetail,
+    openChatDetail,
+  } = useChatStore();
+  const isOpen = isChattingOpen;
   const [chats, setChats] = useState<ChatListItem[]>(dummyData);
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedChat, setSelectedChat] = useState<null | number>(null);
-  const [selectedChatTitle, setSelectedChatTitle] = useState<null | string>(
-    null
-  );
+  useEffect(() => {
+    // 초기 데이터를 load하는 함수
+    const getChatData = async () => {
+      const fetchedChats = await fetchChatListData(1);
+      if (fetchedChats.success) {
+        setChats(fetchedChats.data!);
+      }
+      // 유저 id로 바꿀것
+    };
 
+    // SSE 연결하는 함수
+    const initializeSSE = () => {
+      const eventSource = new EventSource("YOUR_SSE_ENDPOINT");
+
+      eventSource.onmessage = (event) => {
+        const newChat: ChatListItem = JSON.parse(event.data);
+
+        setChats((prevChats) => {
+          const updatedChats = prevChats.filter(
+            (chat) => chat.chattingId !== newChat.chattingId
+          );
+          return [newChat, ...updatedChats]; // 새 채팅을 최상단에 추가
+        });
+      };
+
+      eventSource.onerror = (error) => {
+        console.error("SSE 에러 발생:", error);
+        eventSource.close(); // 에러 발생 시 연결 종료
+      };
+
+      return eventSource;
+    };
+
+    const fetchDataAndInitializeSSE = async () => {
+      await getChatData(); // 채팅 데이터를 가져옴
+      const eventSource = initializeSSE(); // SSE 초기화
+
+      return () => {
+        eventSource.close(); // 컴포넌트 언마운트 시 연결 종료
+      };
+    };
+
+    fetchDataAndInitializeSSE();
+  }, []);
+
+  // SSE URL 나오면 아래 useEffect 삭제
+  // search dummy
   useEffect(() => {
     const getChatData = async () => {
       console.log("채팅목록을가져오는함수");
@@ -25,22 +77,6 @@ export default function ChatList() {
     };
     getChatData();
   }, []);
-
-  const toggleChat = () => {
-    setIsOpen(!isOpen);
-    setSelectedChat(null); // 창을 닫을 때 선택된 채팅도 초기화
-    setSelectedChatTitle(null);
-  };
-
-  const openChatDetail = (chat: ChatListItem) => {
-    setSelectedChat(chat.chattingId); // 상세 채팅을 열 때 선택한 채팅의 정보를 상태로 저장
-    setSelectedChatTitle(chat.otherUserNickname);
-  };
-
-  const closeChatDetail = () => {
-    setSelectedChat(null); // 상세 채팅에서 돌아가려면 선택한 채팅을 null로 설정
-    setSelectedChatTitle(null);
-  };
 
   return (
     <>
