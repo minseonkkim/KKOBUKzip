@@ -4,12 +4,14 @@ import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import { IoMdAddCircle } from "react-icons/io";
 import { ChangeEvent, useState } from "react";
 import { IoClose } from "react-icons/io5";
+import { addAuctionItem } from "../../apis/tradeApi";
 
 export default function AuctionRegisterPage() {
   const [images, setImages] = useState<File[]>([]);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-
+  const [minBid, setMinBid] = useState("");
+  const [startTime, setStartTime] = useState("");
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length + images.length > 3) {
@@ -24,15 +26,17 @@ export default function AuctionRegisterPage() {
   };
 
   const formatNumberWithCommas = (value: string): string => {
-    const numberValue = value.replace(/,/g, '');
-    if (!isNaN(Number(numberValue)) && numberValue !== '') {
+    const numberValue = value.replace(/,/g, "");
+    if (!isNaN(Number(numberValue)) && numberValue !== "") {
       return Number(numberValue).toLocaleString();
     }
-    return '';
+    return "";
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    e.target.value = formatNumberWithCommas(e.target.value);
+    console.log(formatNumberWithCommas(e.target.value));
+    setMinBid(formatNumberWithCommas(e.target.value));
+    // setMinBid(e.target.value);
   };
 
   const handleGenderClick = (tag: string) => {
@@ -43,12 +47,37 @@ export default function AuctionRegisterPage() {
     setSelectedSize(selectedSize === tag ? null : tag);
   };
 
+  const submitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = {
+      title: "params으로 넘겨받을 이름",
+      turtleId: "params으로 넘겨받은 아이디",
+      userId: "store에서 가져온 유저아이디",
+      content: e.currentTarget.content.value,
+      minBid: minBid.replace(/,/g, ""),
+      startTime: startTime,
+      tags: [selectedGender, selectedSize],
+    };
+
+    const formData = new FormData();
+    images.forEach((image) => {
+      formData.append("images", image);
+    });
+    formData.append("data", JSON.stringify(data));
+
+    console.log(data);
+
+    // await addAuctionItem(formData);
+    alert("서브밋 핸들");
+  };
   return (
     <>
       <Helmet>
         <title>경매 등록하기</title>
       </Helmet>
+
       <Header />
+
       <div className="px-[250px] mt-[85px]">
         <div className="text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-[40px] pb-[13px]">
           경매 등록하기
@@ -66,7 +95,10 @@ export default function AuctionRegisterPage() {
             </div>
           </div>
         </div>
-        <form className="text-[21px] flex flex-col gap-4">
+        <form
+          onSubmit={submitHandle}
+          className="text-[21px] flex flex-col gap-4"
+        >
           <div className="flex flex-row items-center">
             <div className="flex flex-row items-center">
               <label className="w-[120px]">시작일</label>
@@ -74,10 +106,12 @@ export default function AuctionRegisterPage() {
                 className="text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
                 type="datetime-local"
                 name="start_time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
                 required
               />
             </div>
-            <div className="flex flex-row items-center ml-[100px]">
+            {/* <div className="flex flex-row items-center ml-[100px]">
               <label className="w-[120px]">종료일</label>
               <input
                 className="text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
@@ -85,7 +119,7 @@ export default function AuctionRegisterPage() {
                 name="end_time"
                 required
               />
-            </div>
+            </div> */}
           </div>
           <div className="flex flex-row items-center">
             <label className="w-[120px]">시작 가격</label>
@@ -93,6 +127,7 @@ export default function AuctionRegisterPage() {
               className="w-[350px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
               type="text"
               name="min_bid"
+              value={minBid}
               onInput={handleInputChange}
               required
             />
@@ -106,7 +141,7 @@ export default function AuctionRegisterPage() {
               required
               onInput={(e) => {
                 const target = e.target as HTMLInputElement;
-                target.value = target.value.replace(/[^0-9]/g, '');
+                target.value = target.value.replace(/[^0-9]/g, "");
               }}
             />
             kg
@@ -115,6 +150,7 @@ export default function AuctionRegisterPage() {
             <label className="w-[120px]">상세 설명</label>
             <textarea
               rows={3}
+              id="content"
               className="flex-grow border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px] mt-2"
             ></textarea>
           </div>
@@ -127,18 +163,6 @@ export default function AuctionRegisterPage() {
                 </p>
               </div>
               <div className="flex flex-row mt-[10px]">
-                {images.length < 3 && (
-                  <label className="cursor-pointer bg-[#F2F2F2] w-[100px] h-[100px] rounded-[10px] mr-5 flex items-center justify-center">
-                    <IoMdAddCircle className="text-[40px]" />
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      multiple
-                      onChange={handleImageChange}
-                    />
-                  </label>
-                )}
                 {images.map((image, index) => (
                   <div key={index} className="relative mr-5">
                     <img
@@ -155,6 +179,18 @@ export default function AuctionRegisterPage() {
                     </div>
                   </div>
                 ))}
+                {images.length < 3 && (
+                  <label className="cursor-pointer bg-[#F2F2F2] w-[100px] h-[100px] rounded-[10px] mr-5 flex items-center justify-center">
+                    <IoMdAddCircle className="text-[40px]" />
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageChange}
+                    />
+                  </label>
+                )}
               </div>
             </div>
             <div className="flex flex-col gap-3 items-start w-[35%]">
@@ -201,7 +237,10 @@ export default function AuctionRegisterPage() {
             </div>
           </div>
           <div className="flex justify-center mb-[20px]">
-            <button className="text-white text-[20px] font-bold bg-black w-fit px-4 py-2 rounded-[10px]">
+            <button
+              type="submit"
+              className="text-white text-[20px] font-bold bg-black w-fit px-4 py-2 rounded-[10px]"
+            >
               등록하기
             </button>
           </div>

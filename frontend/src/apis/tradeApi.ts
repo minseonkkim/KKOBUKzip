@@ -144,21 +144,6 @@ export const addAuctionItem = async (auctionData: FormData) => {
   return response;
 };
 
-/*
-{
-	"status" : 200, // 응답 스테이터스
-	"message" : "success" // 에러일 시에는 메세지 칸에 에러 메세지
-	"data":{
-			"cnt" : 100, // 현재 아이템의 수
-			"current_page" : 1, // 현재 페이지 넘버
-			"total_pages" : 20, // 최대 페이지 넘버
-			"transactions" : [
-				... // cnt개의 아아이템들
-			],
-	}
-}
-  create interface for TransactionListData
-*/
 export interface TransactionListData {
   status: number;
   message: string;
