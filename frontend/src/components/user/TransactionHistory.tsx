@@ -90,7 +90,7 @@ export default function TransactionHistory(props: TransactionHistoryProps){
                     {/* 아래 버튼은 거래 진행 상황에 따라 on/off하기! */}
                     <div className="text-[19px] font-bold">
                         {/* 경매 거래인 경우에만 활성화 해당(입금 대기 상태일 때) */}
-                        <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={() => {handlleDeposit()}}>입금하기</button>
+                        {/* <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={() => {handleDeposit()}}>입금하기</button> */}
                         {/* 예약 단계에 활성화 */}
                         {/* <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={()=>{startPapework()}}>서류 작성</button> */}
                         {/* 서류 검토 */}
