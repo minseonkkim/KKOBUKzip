@@ -140,11 +140,6 @@
 					},
 					{
 						"internalType": "address",
-						"name": "_buyer",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
 						"name": "_seller",
 						"type": "address"
 					},
@@ -398,7 +393,7 @@
 						"_token": "사용할 ERC20 토큰 주소"
 					}
 				},
-				"createTransaction(uint256,address,address,uint256)": {
+				"createTransaction(uint256,address,uint256)": {
 					"details": "새로운 거래 생성",
 					"params": {
 						"_amount": "거래 금액",
@@ -464,7 +459,7 @@
 		"userdoc": {
 			"kind": "user",
 			"methods": {
-				"createTransaction(uint256,address,address,uint256)": {
+				"createTransaction(uint256,address,uint256)": {
 					"notice": "CEI 패턴 적용(Checks-Effects-Interactions) - Checks: 입력 값 검증 먼저 수행 - Effects: 거래 정보 상태에 저장 - Interactions: 토큰 전송"
 				},
 				"refund(uint256)": {
@@ -488,10 +483,11 @@
 			"bytecodeHash": "ipfs"
 		},
 		"optimizer": {
-			"enabled": false,
+			"enabled": true,
 			"runs": 200
 		},
-		"remappings": []
+		"remappings": [],
+		"viaIR": true
 	},
 	"sources": {
 		"@openzeppelin/contracts/access/Ownable.sol": {
@@ -551,11 +547,11 @@
 			]
 		},
 		"contracts/TurtleEscrow.sol": {
-			"keccak256": "0x5ccfe7583fe58b30c270e283f8ac05c9f41bc4f80d15328ae74483716cc9aeb2",
+			"keccak256": "0x79fbd159502ad1b7733145da69c6fef11d910ec3d48e08b1a9c64c6d870998dd",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://7938e267dc8783568f8a09573c2d0d285b3f8957847b587bb11732358f80f6a5",
-				"dweb:/ipfs/QmVBL9X6nPnG1KdodJ3BG3T3wzGboHpvtZMLQktbzsrmWJ"
+				"bzz-raw://89e6725927f52c9d554824efbebc40e811a05b7e2a9dbd8119e7489f3fdc9ab0",
+				"dweb:/ipfs/QmXirUfoMBiRXV6QknKFudcnmNv8QvFKXsAaGaSgzp6pxM"
 			]
 		}
 	},
