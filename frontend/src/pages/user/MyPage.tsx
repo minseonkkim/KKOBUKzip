@@ -1,10 +1,10 @@
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
-import TmpProfileImg from "../../assets/tmp_profile.gif";
+// import TmpProfileImg from "../../assets/tmp_profile.gif";
 import { useState } from "react";
 import MyTurtle from "../../components/user/MyTurtle";
 import TransactionHistory from "../../components/user/TransactionHistory";
-import NoImage from "../../assets/no_image.png";
+// import NoImage from "../../assets/no_image.png";
 import { LiaRandomSolid } from "react-icons/lia";
 import CustomProfile1 from "../../assets/custom_profile/profile1.gif";
 import CustomProfile2 from "../../assets/custom_profile/profile2.gif";
