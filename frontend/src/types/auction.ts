@@ -20,3 +20,13 @@ export interface AuctionItemDataType {
     userId: number;
   };
 }
+
+export interface AuctionData {
+  title: string;
+  content: string;
+  minBid: number;
+  startTime: string;
+  userId: number;
+  turtleId: number;
+  // images: File[];
+}

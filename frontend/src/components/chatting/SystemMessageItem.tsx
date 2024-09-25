@@ -1,9 +1,9 @@
 function SystemMessageItem({
-  turtleName,
+  title,
   price,
   image,
 }: {
-  turtleName: string;
+  title: string;
   price: number;
   image: string;
 }) {

@@ -117,7 +117,7 @@ export const getAuctionDatas = async ({
   return response;
 };
 
-// 경매 단일 상품 조회
+// 경매 단일 상품 조회 search dummy
 export const getAuctionDetailItemData = async (auctionID: number) => {
   const response = (await apiRequest)<{
     data: { auction: AuctionItemDataType };
@@ -130,8 +130,32 @@ export const getAuctionDetailItemData = async (auctionID: number) => {
   };
 };
 
-// 거래 데이터 조회
+// 경매 등록
+export const addAuctionItem = async (auctionData: FormData) => {
+  const response = await apiRequest<{ status: number; message: string }>(() =>
+    authAxios.post("/auction", auctionData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      timeout: 10000,
+    })
+  );
+  return response;
+};
 
+export interface TransactionListData {
+  status: number;
+  message: string;
+  data: {
+    current_page: number;
+    total_pages: number;
+    cnt: number;
+    transactions: TransactionItemDataType[];
+  };
+}
+
+// 거래 목록 조회
 export const getTransactionData = async ({
   page,
   gender,
@@ -160,11 +184,8 @@ export const getTransactionData = async ({
   const query =
     pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
 
-  const response = await apiRequest<{
-    status: number;
-    cnt: number;
-    transactions: TransactionItemDataType[];
-    total_pages: number;
-  }>(() => guestAxios.get(`/transaction?${query}`));
+  const response = await apiRequest<TransactionListData>(() =>
+    guestAxios.get(`/transaction?${query}`)
+  );
   return response;
 };

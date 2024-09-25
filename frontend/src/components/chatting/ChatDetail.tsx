@@ -86,7 +86,7 @@ const data: ChatData[] = [
 ];
 
 interface SystemMessageType {
-  turtleName: string;
+  title: string;
   price: number;
   image: string;
 }
@@ -228,12 +228,12 @@ export default function ChatDetail({
                 <ChatDayDivider date={group.date} />
 
                 {group.messages.map((message, index) => {
-                  if ("turtleName" in message) {
+                  if ("title" in message) {
                     // 시스템 메시지 처리
                     return (
                       <SystemMessageItem
                         key={index}
-                        turtleName={message.turtleName}
+                        title={message.title}
                         price={message.price}
                         image={message.image}
                       />
