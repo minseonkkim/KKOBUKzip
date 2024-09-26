@@ -138,7 +138,8 @@ function AuctionDetailPage() {
           {auctionStatus === "DURING_AUCTION" && (
             <DuringAuction channelId={String(auctionItemData?.id)} />
           )}
-          {auctionStatus === ("NO_BID" || "SUCCESSFUL_BID") && <AfterAuction />}
+          {(auctionStatus === "NO_BID" ||
+            auctionStatus === "SUCCESSFUL_BID") && <AfterAuction />}
         </div>
       </div>
     </>
