@@ -39,7 +39,7 @@ const apiRequest = async <T>(
 };
 
 // 로그인
-const login = async (
+const loginRequest = async (
   email: string,
   password: string
 ): Promise<{ success: boolean; data?: LoginResponseData; error?: string }> => {
@@ -54,7 +54,7 @@ const logout = async (): Promise<{ success: boolean; error?: string }> => {
 };
 
 // 회원가입
-const register = async (
+const registerRequest = async (
   data: JoinDataType
 ): Promise<{
   success: boolean;
@@ -117,6 +117,11 @@ interface LoginResponseData {
     accessToken: string;
     refreshToken: string;
     role: string; // 유저는 user 관리자는 admin
+    id: number;
+    email: string;
+    addres: string;
+    CP: string;
+    nickname: string;
   };
 }
 
@@ -158,8 +163,8 @@ interface CreateEmailRequestResponseData {
 // 내 거래 내역 상세 조회
 
 export {
-  register,
-  login,
+  registerRequest,
+  loginRequest,
   logout,
   checkToken,
   checkEmailRequest,

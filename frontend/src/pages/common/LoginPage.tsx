@@ -7,7 +7,8 @@ import kakao_logo from "../../assets/login/kakao_logo.png";
 import Header from "../../components/common/Header";
 import StopTurtleImg from "../../assets/turtle_home_stop.png";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { login } from "../../apis/userApi";
+import { loginRequest } from "../../apis/userApi";
+import { useUserStore } from "../../store/useUserStore";
 
 // 해야할 것 : api 요청 결과에 따라 분기처리
 // 히야할 것 : api 요청 직전에 입력값 확인
@@ -19,14 +20,22 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [hide, setHide] = useState(true);
-
+  const { setLogin } = useUserStore();
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     alert("로그인 핸들");
     console.log(email, password);
-    await login(email, password);
-    navigate("/login");
+    const { success, data, error } = await loginRequest(email, password);
+    if (success) {
+      setLogin(data?.data!);
+      localStorage.setItem("accessToken", data?.data?.accessToken!);
+      localStorage.setItem("refreshToken", data?.data?.refreshToken!);
+      navigate("/");
+    } else {
+      console.log(error);
+      alert(error);
+    }
   };
 
   return (

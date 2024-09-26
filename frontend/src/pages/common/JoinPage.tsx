@@ -7,7 +7,7 @@ import { JoinDataType } from "../../types/join";
 import {
   checkEmailRequest,
   createEmailRequest,
-  register,
+  registerRequest,
 } from "../../apis/userApi";
 import Header from "../../components/common/Header";
 import StopTurtleImg from "../../assets/turtle_home_stop.png";
@@ -290,7 +290,7 @@ function JoinPage() {
 
     setErrStat(newErrStat);
     if (isValid) {
-      const rst = await register({
+      const rst = await registerRequest({
         ...data,
         birthday: birth.y! + "-" + birth.m! + "-" + birth.d!,
         address: data.address + " / " + detailedAddress,
