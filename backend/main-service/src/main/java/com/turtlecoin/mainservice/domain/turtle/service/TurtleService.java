@@ -10,8 +10,10 @@ import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -46,6 +48,16 @@ public class TurtleService {
                 .stream()
                 .map(t -> new AuctionTurtleInfoDTO(t.getId(), t.getGender(), t.getWeight()))  // 필요한 필드만 DTO로 변환
                 .collect(Collectors.toList());
+    }
+
+    public Turtle findTurtleByUUID(String uuid) {
+        Optional<Turtle> turtleOptional = turtleRepository.findByUUID(uuid);
+		return turtleOptional.orElse(null);
+    }
+
+    @Transactional
+    public void saveTurtle(Turtle turtle) {
+        turtleRepository.save(turtle);
     }
 
     public TurtleResponseDTO getTurtleById(Long turtleId) {

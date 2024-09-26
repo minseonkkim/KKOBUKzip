@@ -1,24 +1,31 @@
 @charset "UTF-8";
-@import "//cdn.jsdelivr.net/npm/font-kopub@1.0/kopubdotum.min.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @font-face {
-  font-family: "DNFBitBitv2";
-  font-style: normal;
+  font-family: "KoPub Dotum";
+  src: url("/fonts/KoPubDotum_Medium.otf") format("opentype");
   font-weight: 300;
-  src: url("//cdn.df.nexon.com/img/common/font/DNFBitBitv2.otf")
-    format("opentype");
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DNFBitBitv2";
+  src: url("/fonts/DNFBitBitv2.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
   font-family: "PFStardust";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/PFStardust.woff")
-    format("woff");
+  src: url("/fonts/PFStardust3.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 body {

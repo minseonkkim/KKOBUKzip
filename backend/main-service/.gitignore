@@ -39,3 +39,4 @@ out/
 ### S3 ###
 /src/main/resources/s3.properties
 /src/main/resources/application.yml
+/src/main/resources/ethereum.properties

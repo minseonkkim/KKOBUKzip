@@ -37,6 +37,7 @@ public class RegisterAuctionDTO {
                 .minBid(minBid)
                 .content(content)
                 .title(title)
+                .nowBid(minBid)
                 .auctionProgress(AuctionProgress.BEFORE_AUCTION)
                 .build();
     }

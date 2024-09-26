@@ -17,14 +17,14 @@ function DuringAuction({ channelId }: { channelId: string }) {
     const init = async () => {
       setLoading(true);
       // 소켓 설정
-      const socketAddress = "ws://localhost:8080/api/main/ws";
-      // const socketAddress = import.meta.env.VITE_SOCKET_URL
+      const socketAddress = import.meta.env.VITE_SOCKET_AUCTION_URL;
+      console.log(socketAddress)
       const socket = new WebSocket(socketAddress);
       auctionStompClient.current = Stomp.over(socket);
 
       // 메세지 수신
       auctionStompClient.current.connect(
-        { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+        // { Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoidGVzdEB0ZXN0LmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MjczMjc1ODQsImV4cCI6MTcyNzMyODE4NH0.CZ0rgjiGXJmXbdkeUa-AZCCMgKLImW2Cwt5euIuUuNM` },
         (frame: StompFrame) => {
           console.log("Connected: " + frame);
           auctionStompClient.current!.subscribe(

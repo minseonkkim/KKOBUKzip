@@ -12,7 +12,7 @@ function formatDate(dateStr: string): string {
 }
 
 // 테스트 예시
-const date = "2024-9-9"; // 2024년 9월 9일
+// const date = "2024-9-9"; // 2024년 9월 9일
 // 2024-09-15T10:15:30 등 timezon을 포함한 date도 가능
-console.log(formatDate(date)); // 출력: 24년 9월 9일
+// console.log(formatDate(date)); // 출력: 24년 9월 9일
 export default formatDate;

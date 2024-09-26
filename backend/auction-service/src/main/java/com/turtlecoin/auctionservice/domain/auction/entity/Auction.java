@@ -55,4 +55,12 @@ public class Auction extends BaseEntity {
     @OneToMany(mappedBy = "auction")
     @Builder.Default
     private List<AuctionTag> auctionTags = new ArrayList<>();
+
+    public void updateEndTime() {
+        this.endTime = LocalDateTime.now().plusSeconds(30);
+    }
+
+    public void updateStatus(AuctionProgress auctionProgress) {
+        this.auctionProgress = auctionProgress;
+    }
 }

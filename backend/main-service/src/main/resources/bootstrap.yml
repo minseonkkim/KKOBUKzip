@@ -2,7 +2,7 @@ spring:
   application:
     name: main-service
   profiles:
-    active: local
+    active: bin
   cloud:
     loadbalancer:
       enabled: true

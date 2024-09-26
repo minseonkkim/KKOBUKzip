@@ -79,7 +79,7 @@ export default function AuctionRegisterPage() {
       <Header />
 
       <div className="px-[250px] mt-[85px]">
-        <div className="text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-[40px] pb-[13px]">
+        <div className="text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-[32px] pb-[13px]">
           경매 등록하기
         </div>
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">

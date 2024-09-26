@@ -22,6 +22,7 @@ export const fetchChatMessageData = async (
       console.log(error.message);
       message = error.message;
     }
+    console.error("Chat LIST API Error : " + message);
     return {
       success: false,
       message: message,
@@ -43,6 +44,7 @@ export const fetchChatListData = async (memberId: number) => {
       console.log(error.message);
       message = error.message;
     }
+    console.error("Chat Detail API Error : " + message);
     return {
       success: false,
       message: message,
