@@ -11,8 +11,8 @@ COPY . .
 ENV VITE_BASE_URL=https://j11c107.p.ssafy.io
 # ENV VITE_SSE_MAIN_URL=https://j11c107.p.ssafy.io
 # ENV VITE_SSE_AUCTION_URL=https://j11c107.p.ssafy.io
-ENV VITE_SOCKET_MAIN_URL=wss://j11c107.p.ssafy.io/main/ws
-ENV VITE_SOCKET_AUCTION_URL=wss://j11c107.p.ssafy.io/auction/ws
+ENV VITE_SOCKET_MAIN_URL=wss://j11c107.p.ssafy.io/ws/main
+ENV VITE_SOCKET_AUCTION_URL=wss://j11c107.p.ssafy.io/ws/auction
 
 #포트번호
 EXPOSE 3000

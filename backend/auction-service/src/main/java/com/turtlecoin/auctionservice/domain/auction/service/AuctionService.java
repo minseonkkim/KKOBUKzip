@@ -179,4 +179,20 @@ public class AuctionService {
     public void processBid(Long auctionId, Long userId, Double newBidAmount) {
         redissonLockFacade.updateBidWithLock(auctionId, userId, newBidAmount);
     }
+
+    public void endAuction(Long auctionId) {
+        // 상태 종료로 변경
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new AuctionNotFoundException("경매가 존재하지 않습니다."));
+
+        String redisKey = "auction:" + auctionId + ":status";
+        Map<Object, Object> currentBidData = redisTemplate.opsForHash().entries(redisKey);
+
+        if (currentBidData == null || currentBidData.isEmpty()) {
+            log.error("Redis에서 경매를 찾을 수 없습니다. 경매ID: {}", auctionId);
+            throw new AuctionNotFoundException("경매 정보를 찾을 수 없습니다.");
+        }
+
+        // redis에 담긴 마지막 입찰자와 종료 시간 변경
+    }
 }

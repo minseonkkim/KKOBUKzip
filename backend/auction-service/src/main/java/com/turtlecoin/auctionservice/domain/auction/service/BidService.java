@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -29,26 +30,30 @@ public class BidService {
     // 입찰 가격 갱신
     @Transactional
     public void processBidWithRedis(Long auctionId, Long userId, Double bidAmount) {
-        String redisKey = AUCTION_BID_KEY + auctionId;
+        String redisKey = AUCTION_BID_KEY + auctionId + ":history";
 
         // Redis에서 현재 입찰가와 입찰자 정보 가져오기
-        Map<Object, Object> currentBidData = getCurrentBid(auctionId);
-        Double currentBid = (Double) currentBidData.get("bidAmount");
-        Long currentUserId = (Long) currentBidData.get("userId");
+        List<Object> bidHistory = redisTemplate.opsForList().range(redisKey, 0, -1);
+        Long currentUserId = null;
+        Double currentBid = null;
 
-        LocalDateTime auctionEndTime = auctionRepository.findById(auctionId).get().getEndTime();
-
-        // 현재 입찰가가 없을 경우 최소 입찰가로 시작
-        if (currentBid == null) {
-            currentBid = getMinBid(auctionId);
+        if (bidHistory != null && !bidHistory.isEmpty()) {
+            String latestBidRecord = (String) bidHistory.get(0);
+            currentUserId = Long.parseLong(latestBidRecord.split(":")[1]);
+            currentBid = Double.parseDouble(latestBidRecord.split(":")[2]);
         }
 
+        LocalDateTime auctionEndTime = getAuctionEndTime(auctionId);
+
+        if (LocalDateTime.now().isAfter(auctionEndTime)) {
+            notifyClient(auctionId, null, true, "입찰시간이 종료됐습니다");
+            log.info("입찰 실패: auctionID{}, userId{}, bidAmount{}", auctionId, userId, bidAmount);
+            return;
+        }
 
         // 입찰가 계산
-        Double bidIncrement = calculateBidIncrement(currentBid);
-        Double newBidAmount = currentBid + bidIncrement;
-
-
+        Double bidIncrement = calculateBidIncrement(bidAmount);
+        Double newBidAmount = bidAmount + bidIncrement;
 
         try {
             // 동일 사용자가 재입찰 시 예외 처리
@@ -63,12 +68,18 @@ public class BidService {
             }
 
             String bidRecord = "auctionId: " + auctionId + ", userId: " + userId + ", bidAmount: " + newBidAmount;
+//            redisTemplate.opsForList()
 
             // Redis에 새로운 입찰 정보 저장
             Map<String, Object> bidData = new HashMap<>();
             bidData.put("userId", userId);
             bidData.put("bidAmount", newBidAmount);
             redisTemplate.opsForHash().putAll(redisKey, bidData);
+
+            Auction auction = auctionRepository.findById(auctionId)
+                    .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다."));
+            auction.updateEndTime();
+//            (auctionId, LocalDateTime.now().plusSeconds(30));
 
             // 입찰 기록 로그에 저장 (optional)
             redisTemplate.opsForList().rightPush(redisKey + ":history", bidRecord);
@@ -86,6 +97,13 @@ public class BidService {
         // 입찰 기록 생성
 
     }
+
+//    private void updateAuctionEndTime(Long auctionId, LocalDateTime localDateTime) {
+//        Auction auction = auctionRepository.findById(auctionId)
+//                .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다."));
+//
+//        auction
+//    }
 
 
     public Map<Object, Object> getCurrentBid (Long auctionId) {
@@ -123,5 +141,11 @@ public class BidService {
         }
         // 클라이언트에게 ResponseVO 객체를 전송
         messagingTemplate.convertAndSend("/auction/topic/" + auctionId, response);
+    }
+
+    public LocalDateTime getAuctionEndTime(Long auctionId) {
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다."+auctionId));
+        return auction.getEndTime();
     }
 }
