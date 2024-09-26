@@ -8,12 +8,14 @@ import java.util.List;
 import com.turtlecoin.mainservice.domain.document.entity.contract.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-import org.web3j.abi.datatypes.Type;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tx.TransactionManager;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.StaticGasProvider;
 
@@ -24,35 +26,33 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@PropertySource("classpath:ethereum.properties")
 public class ContractService {
 	private final Web3j web3j;
-	private final Credentials credentials;
 	private final ContractGasProvider contractGasProvider;
 	// smartcontract의 주소
-	private final String contractAddress = "0x4b5d7E32aBD87278ECDE86013a60Ea522679984a";
-
-	@Autowired
-	private UserService userService;
-
-	@Autowired
-	public ContractService(Web3j web3j) {
-		this.web3j = web3j;
-		// 관리 계정의 private key
-		this.credentials = Credentials.create("0xca2e77682f34e3968a551c668edc6d7568460bb299af16fbc76e8b54537aa142"); // 개인 키
-
-		// 가스 가격과 가스 한도 설정
-		BigInteger gasPrice = BigInteger.valueOf(20_000_000_000L); // 20 Gwei
-		BigInteger gasLimit = BigInteger.valueOf(6721975); // 300,000
-
-		// StaticGasProvider를 이용한 설정
-		StaticGasProvider gasProvider = new StaticGasProvider(gasPrice, gasLimit);
-
-		this.contractGasProvider = gasProvider;
-	}
+	private final String contractAddress;
+	private final TransactionManager transactionManager;
 
 	// 스마트 컨트랙트 로드
 	public TurtleDocumentation loadTurtleDocumentationContract() {
-		return TurtleDocumentation.load(contractAddress, web3j, credentials, contractGasProvider);
+		return TurtleDocumentation.load(contractAddress, web3j, transactionManager, contractGasProvider);
+	}
+
+	// 비동기 등록
+	public void registerTurtleMultiplicationDocumentAsync(String turtleUUID, String applicant, String documentHash, BigInteger count, String area,
+		String purpose,	String location, String fatherUUID, String motherUUID,
+		LocalDate birth, String name, int weight, Gender gender,
+		String locationSpecification, String multiplicationMethod, String shelterSpecification){
+
+		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
+		byte[] byteArray = hexStringToByte32("0x" + documentHash);
+
+		turtleDocumentation.registerTurtleMultiplicationDocument(
+			turtleUUID, applicant, byteArray, count, area, purpose, location, fatherUUID, motherUUID,
+			birth.toString(), name, BigInteger.valueOf(weight), gender.toString(),
+			locationSpecification, multiplicationMethod, shelterSpecification
+		).sendAsync();
 	}
 
 	// 인공증식서류 등록
@@ -110,6 +110,19 @@ public class ContractService {
 		return byteToString(returnDocumentHash);
 	}
 
+	// 양수 서류 비동기 등록
+	public void registerTurtleAssigneeDocumentAsync(
+		String turtleUUID, String applicant, String documentHash, String assigneeID,
+		BigInteger count, String transferReason, String purpose
+	) throws Exception {
+		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
+		// byte로 변환
+		byte[] byteArray = hexStringToByte32("0x" + documentHash);
+		turtleDocumentation.registerTurtleAssigneeDocument(
+			turtleUUID, applicant, byteArray, assigneeID, count, transferReason, purpose
+		).sendAsync();
+	}
+
 	// 양도서류 등록
 	public String registerTurtleGrantorDocument(
 		String turtleUUID, String applicant, String documentHash, String grantorID,
@@ -129,6 +142,19 @@ public class ContractService {
 		returnDocumentHash = events.get(0).documentHash;
 
 		return byteToString(returnDocumentHash);
+	}
+
+	// 양도 서류 비동기 등록
+	public void registerTurtleGrantorDocumentAsync(
+		String turtleUUID, String applicant, String documentHash, String grantorID,
+		String aquisition, String fatherUUID, String motherUUID
+	) throws Exception {
+		// byte로 변환
+		byte[] byteArray = hexStringToByte32("0x" + documentHash);
+		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
+		turtleDocumentation.registerTurtleGrantorDocument(
+			turtleUUID, applicant, byteArray, grantorID, aquisition, fatherUUID, motherUUID
+		).sendAsync();
 	}
 
 	// 양도양수서류 조회
@@ -159,6 +185,19 @@ public class ContractService {
 		return byteToString(returnDocumentHash);
 	}
 
+	// 폐사질병서류 비동기 등록
+	public void registerTurtleDeathDocumentAsync(
+		String turtleUUID, String applicant, String documentHash, String shelter,BigInteger count,
+		String deathReason, String plan, String deathImage, String diagnosis
+	) throws Exception {
+		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
+		// byte로 변환
+		byte[] byteArray = hexStringToByte32("0x" + documentHash);
+		turtleDocumentation.registerTurtleDeathDocument(
+			turtleUUID, applicant, byteArray, shelter, count, deathReason, plan, deathImage, diagnosis
+		).sendAsync();
+	}
+
 	// 폐사질병서류 조회
 	public TurtleDocumentation.Death searchTurtleDeathDocument(String turtleUUID, String documentHash) throws Exception {
 		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
@@ -178,14 +217,14 @@ public class ContractService {
 	public void approveBreeding(String turtleUUID, String documentHash) throws Exception {
 		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
 		byte[] byteArray = hexStringToByte32("0x" + documentHash);
-		turtleDocumentation.approveMultiplicationDocByReviewer(turtleUUID, byteArray).send();
+		turtleDocumentation.approveMultiplicationDocByReviewer(turtleUUID, byteArray).sendAsync();
 	}
 
 	// 양도양수 승인
 	public void approveTransfer(String turtleUUID, String documentHash) throws Exception {
 		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
 		byte[] byteArray = hexStringToByte32("0x" + documentHash);
-		turtleDocumentation.approveTransferDocByReviewer(turtleUUID, byteArray).send();
+		turtleDocumentation.approveTransferDocByReviewer(turtleUUID, byteArray).sendAsync();
 	}
 
 	// byte32로 변환하기

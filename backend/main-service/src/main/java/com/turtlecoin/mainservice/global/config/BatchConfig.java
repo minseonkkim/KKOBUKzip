@@ -49,7 +49,7 @@ public class BatchConfig {
     @Autowired
     private ContractService contractService;
 
-    private int chunk = 10;
+    private int chunk = 100;
 
     @Bean(name = "metaJobRepository")
     public JobRepository jobRepository(@Qualifier("metaDataSource") DataSource metaDataSource, @Qualifier("metaTransactionManager") PlatformTransactionManager transactionManager) throws Exception {
@@ -95,7 +95,7 @@ public class BatchConfig {
         JpaPagingItemReader<Document> reader = new JpaPagingItemReader<>();
         reader.setEntityManagerFactory(entityManagerFactory);
         reader.setQueryString("SELECT d FROM Document d where d.applicant is null");
-        reader.setPageSize(10); // chunk 크기와 일치
+        reader.setPageSize(chunk); // chunk 크기와 일치
         return reader;
     }
 
@@ -118,8 +118,12 @@ public class BatchConfig {
                         document.getDocumentHash()).applicant;
                     break;
             }
-
-            document.assignValuesByBatch(applicant);
+            // 만약 블록체인에서 오류가 생겨서 없는 값인 경우 DB를 지워줘야 함
+            if(applicant == null || applicant.isEmpty()){
+                documentService.removeDocument(document.getDocumentHash(), document.getTurtleUUID());
+                return null;
+            }
+            else document.assignValuesByBatch(applicant);
 
             return document;
         };

@@ -42,35 +42,35 @@ import org.web3j.tx.gas.ContractGasProvider;
 public class TurtleDocumentation extends Contract {
     public static final String BINARY = "Bin file was not provided";
 
-    public static final String FUNC_OWNER = "owner";
+    public static final String FUNC_APPROVEMULTIPLICATIONDOCBYREVIEWER = "approveMultiplicationDocByReviewer";
+
+    public static final String FUNC_APPROVETRANSFERDOCBYREVIEWER = "approveTransferDocByReviewer";
+
+    public static final String FUNC_CHANGETURTLEOWNER = "changeTurtleOwner";
+
+    public static final String FUNC_REGISTERTURTLE = "registerTurtle";
+
+    public static final String FUNC_REGISTERTURTLEASSIGNEEDOCUMENT = "registerTurtleAssigneeDocument";
+
+    public static final String FUNC_REGISTERTURTLEDEATHDOCUMENT = "registerTurtleDeathDocument";
+
+    public static final String FUNC_REGISTERTURTLEGRANTORDOCUMENT = "registerTurtleGrantorDocument";
+
+    public static final String FUNC_REGISTERTURTLEMULTIPLICATIONDOCUMENT = "registerTurtleMultiplicationDocument";
 
     public static final String FUNC_RENOUNCEOWNERSHIP = "renounceOwnership";
 
     public static final String FUNC_TRANSFEROWNERSHIP = "transferOwnership";
 
-    public static final String FUNC_REGISTERTURTLE = "registerTurtle";
+    public static final String FUNC_OWNER = "owner";
 
-    public static final String FUNC_REGISTERTURTLEMULTIPLICATIONDOCUMENT = "registerTurtleMultiplicationDocument";
-
-    public static final String FUNC_SEARCHTURTLEMULTIPLICATIONDOCUMENT = "searchTurtleMultiplicationDocument";
-
-    public static final String FUNC_REGISTERTURTLEASSIGNEEDOCUMENT = "registerTurtleAssigneeDocument";
-
-    public static final String FUNC_REGISTERTURTLEGRANTORDOCUMENT = "registerTurtleGrantorDocument";
-
-    public static final String FUNC_SEARCHTURTLETRANSFERDOCUMENT = "searchTurtleTransferDocument";
-
-    public static final String FUNC_REGISTERTURTLEDEATHDOCUMENT = "registerTurtleDeathDocument";
+    public static final String FUNC_SEARCHCURRENTDOCUMENTHASH = "searchCurrentDocumentHash";
 
     public static final String FUNC_SEARCHTURTLEDEATHDOCUMENT = "searchTurtleDeathDocument";
 
-    public static final String FUNC_CHANGETURTLEOWNER = "changeTurtleOwner";
+    public static final String FUNC_SEARCHTURTLEMULTIPLICATIONDOCUMENT = "searchTurtleMultiplicationDocument";
 
-    public static final String FUNC_APPROVEMULTIPLICATIONDOCBYREVIEWER = "approveMultiplicationDocByReviewer";
-
-    public static final String FUNC_APPROVETRANSFERDOCBYREVIEWER = "approveTransferDocByReviewer";
-
-    public static final String FUNC_SEARCHCURRENTDOCUMENTHASH = "searchCurrentDocumentHash";
+    public static final String FUNC_SEARCHTURTLETRANSFERDOCUMENT = "searchTurtleTransferDocument";
 
     public static final Event CURRENTTURTLEDOCUMENT_EVENT = new Event("CurrentTurtleDocument", 
             Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>(true) {}, new TypeReference<Bytes32>(true) {}));
@@ -120,6 +120,37 @@ public class TurtleDocumentation extends Contract {
     protected TurtleDocumentation(String contractAddress, Web3j web3j,
             TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
         super(BINARY, contractAddress, web3j, transactionManager, contractGasProvider);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> approveMultiplicationDocByReviewer(
+            String _turtleId, byte[] _documentHash) {
+        final Function function = new Function(
+                FUNC_APPROVEMULTIPLICATIONDOCBYREVIEWER, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> approveTransferDocByReviewer(String _turtleId,
+            byte[] _documentHash) {
+        final Function function = new Function(
+                FUNC_APPROVETRANSFERDOCBYREVIEWER, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> changeTurtleOwner(String _turtleId,
+            String _oldOwner, String _newOwner) {
+        final Function function = new Function(
+                FUNC_CHANGETURTLEOWNER, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.Utf8String(_oldOwner), 
+                new org.web3j.abi.datatypes.Utf8String(_newOwner)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
     }
 
     public static List<CurrentTurtleDocumentEventResponse> getCurrentTurtleDocumentEvents(
@@ -190,6 +221,110 @@ public class TurtleDocumentation extends Contract {
         EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
         filter.addSingleTopic(EventEncoder.encode(OWNERSHIPTRANSFERRED_EVENT));
         return ownershipTransferredEventFlowable(filter);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> registerTurtle(String _turtleId,
+            String _applicant) {
+        final Function function = new Function(
+                FUNC_REGISTERTURTLE, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.Utf8String(_applicant)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> registerTurtleAssigneeDocument(String _turtleId,
+            String _applicant, byte[] _documentHash, String _assigneeId, BigInteger _count,
+            String _transferReason, String _purpose) {
+        final Function function = new Function(
+                FUNC_REGISTERTURTLEASSIGNEEDOCUMENT, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.Utf8String(_applicant), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash), 
+                new org.web3j.abi.datatypes.Utf8String(_assigneeId), 
+                new org.web3j.abi.datatypes.generated.Uint8(_count), 
+                new org.web3j.abi.datatypes.Utf8String(_transferReason), 
+                new org.web3j.abi.datatypes.Utf8String(_purpose)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> registerTurtleDeathDocument(String _turtleId,
+            String _applicant, byte[] _documentHash, String _shelter, BigInteger _count,
+            String _deathReason, String _plan, String _deathImage, String _diagnosis) {
+        final Function function = new Function(
+                FUNC_REGISTERTURTLEDEATHDOCUMENT, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.Utf8String(_applicant), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash), 
+                new org.web3j.abi.datatypes.Utf8String(_shelter), 
+                new org.web3j.abi.datatypes.generated.Uint8(_count), 
+                new org.web3j.abi.datatypes.Utf8String(_deathReason), 
+                new org.web3j.abi.datatypes.Utf8String(_plan), 
+                new org.web3j.abi.datatypes.Utf8String(_deathImage), 
+                new org.web3j.abi.datatypes.Utf8String(_diagnosis)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> registerTurtleGrantorDocument(String _turtleId,
+            String _applicant, byte[] _documentHash, String _grantorId, String _aquisition,
+            String _fatherId, String _motherId) {
+        final Function function = new Function(
+                FUNC_REGISTERTURTLEGRANTORDOCUMENT, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.Utf8String(_applicant), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash), 
+                new org.web3j.abi.datatypes.Utf8String(_grantorId), 
+                new org.web3j.abi.datatypes.Utf8String(_aquisition), 
+                new org.web3j.abi.datatypes.Utf8String(_fatherId), 
+                new org.web3j.abi.datatypes.Utf8String(_motherId)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> registerTurtleMultiplicationDocument(
+            String _turtleId, String _applicant, byte[] _documentHash, BigInteger _count,
+            String _area, String _purpose, String _location, String _fatherId, String _motherId,
+            String _birth, String _name, BigInteger _weight, String _gender,
+            String _locationSpecification, String _multiplicationMethod,
+            String _shelterSpecification) {
+        final Function function = new Function(
+                FUNC_REGISTERTURTLEMULTIPLICATIONDOCUMENT, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.Utf8String(_applicant), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash), 
+                new org.web3j.abi.datatypes.generated.Uint8(_count), 
+                new org.web3j.abi.datatypes.Utf8String(_area), 
+                new org.web3j.abi.datatypes.Utf8String(_purpose), 
+                new org.web3j.abi.datatypes.Utf8String(_location), 
+                new org.web3j.abi.datatypes.Utf8String(_fatherId), 
+                new org.web3j.abi.datatypes.Utf8String(_motherId), 
+                new org.web3j.abi.datatypes.Utf8String(_birth), 
+                new org.web3j.abi.datatypes.Utf8String(_name), 
+                new org.web3j.abi.datatypes.generated.Uint256(_weight), 
+                new org.web3j.abi.datatypes.Utf8String(_gender), 
+                new org.web3j.abi.datatypes.Utf8String(_locationSpecification), 
+                new org.web3j.abi.datatypes.Utf8String(_multiplicationMethod), 
+                new org.web3j.abi.datatypes.Utf8String(_shelterSpecification)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> renounceOwnership() {
+        final Function function = new Function(
+                FUNC_RENOUNCEOWNERSHIP, 
+                Arrays.<Type>asList(), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> transferOwnership(String newOwner) {
+        final Function function = new Function(
+                FUNC_TRANSFEROWNERSHIP, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(160, newOwner)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
     }
 
     public static List<TurtleDeathEventResponse> getTurtleDeathEvents(
@@ -382,126 +517,11 @@ public class TurtleDocumentation extends Contract {
         return executeRemoteCallSingleValueReturn(function, String.class);
     }
 
-    public RemoteFunctionCall<TransactionReceipt> renounceOwnership() {
-        final Function function = new Function(
-                FUNC_RENOUNCEOWNERSHIP, 
-                Arrays.<Type>asList(), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteFunctionCall<TransactionReceipt> transferOwnership(String newOwner) {
-        final Function function = new Function(
-                FUNC_TRANSFEROWNERSHIP, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(160, newOwner)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteFunctionCall<TransactionReceipt> registerTurtle(String _turtleId,
-            String _applicant) {
-        final Function function = new Function(
-                FUNC_REGISTERTURTLE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.Utf8String(_applicant)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteFunctionCall<TransactionReceipt> registerTurtleMultiplicationDocument(
-            String _turtleId, String _applicant, byte[] _documentHash, BigInteger _count,
-            String _area, String _purpose, String _location, String _fatherId, String _motherId,
-            String _birth, String _name, BigInteger _weight, String _gender,
-            String _locationSpecification, String _multiplicationMethod,
-            String _shelterSpecification) {
-        final Function function = new Function(
-                FUNC_REGISTERTURTLEMULTIPLICATIONDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.Utf8String(_applicant), 
-                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash), 
-                new org.web3j.abi.datatypes.generated.Uint8(_count), 
-                new org.web3j.abi.datatypes.Utf8String(_area), 
-                new org.web3j.abi.datatypes.Utf8String(_purpose), 
-                new org.web3j.abi.datatypes.Utf8String(_location), 
-                new org.web3j.abi.datatypes.Utf8String(_fatherId), 
-                new org.web3j.abi.datatypes.Utf8String(_motherId), 
-                new org.web3j.abi.datatypes.Utf8String(_birth), 
-                new org.web3j.abi.datatypes.Utf8String(_name), 
-                new org.web3j.abi.datatypes.generated.Uint256(_weight), 
-                new org.web3j.abi.datatypes.Utf8String(_gender), 
-                new org.web3j.abi.datatypes.Utf8String(_locationSpecification), 
-                new org.web3j.abi.datatypes.Utf8String(_multiplicationMethod), 
-                new org.web3j.abi.datatypes.Utf8String(_shelterSpecification)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteFunctionCall<Multiplication> searchTurtleMultiplicationDocument(String _turtleId,
-            byte[] _documentHash) {
-        final Function function = new Function(FUNC_SEARCHTURTLEMULTIPLICATIONDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Multiplication>() {}));
-        return executeRemoteCallSingleValueReturn(function, Multiplication.class);
-    }
-
-    public RemoteFunctionCall<TransactionReceipt> registerTurtleAssigneeDocument(String _turtleId,
-            String _applicant, byte[] _documentHash, String _assigneeId, BigInteger _count,
-            String _transferReason, String _purpose) {
-        final Function function = new Function(
-                FUNC_REGISTERTURTLEASSIGNEEDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.Utf8String(_applicant), 
-                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash), 
-                new org.web3j.abi.datatypes.Utf8String(_assigneeId), 
-                new org.web3j.abi.datatypes.generated.Uint8(_count), 
-                new org.web3j.abi.datatypes.Utf8String(_transferReason), 
-                new org.web3j.abi.datatypes.Utf8String(_purpose)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteFunctionCall<TransactionReceipt> registerTurtleGrantorDocument(String _turtleId,
-            String _applicant, byte[] _documentHash, String _grantorId, String _aquisition,
-            String _fatherId, String _motherId) {
-        final Function function = new Function(
-                FUNC_REGISTERTURTLEGRANTORDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.Utf8String(_applicant), 
-                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash), 
-                new org.web3j.abi.datatypes.Utf8String(_grantorId), 
-                new org.web3j.abi.datatypes.Utf8String(_aquisition), 
-                new org.web3j.abi.datatypes.Utf8String(_fatherId), 
-                new org.web3j.abi.datatypes.Utf8String(_motherId)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteFunctionCall<Transfer> searchTurtleTransferDocument(String _turtleId,
-            byte[] _documentHash) {
-        final Function function = new Function(FUNC_SEARCHTURTLETRANSFERDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Transfer>() {}));
-        return executeRemoteCallSingleValueReturn(function, Transfer.class);
-    }
-
-    public RemoteFunctionCall<TransactionReceipt> registerTurtleDeathDocument(String _turtleId,
-            String _applicant, byte[] _documentHash, String _shelter, BigInteger _count,
-            String _deathReason, String _plan, String _deathImage, String _diagnosis) {
-        final Function function = new Function(
-                FUNC_REGISTERTURTLEDEATHDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.Utf8String(_applicant), 
-                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash), 
-                new org.web3j.abi.datatypes.Utf8String(_shelter), 
-                new org.web3j.abi.datatypes.generated.Uint8(_count), 
-                new org.web3j.abi.datatypes.Utf8String(_deathReason), 
-                new org.web3j.abi.datatypes.Utf8String(_plan), 
-                new org.web3j.abi.datatypes.Utf8String(_deathImage), 
-                new org.web3j.abi.datatypes.Utf8String(_diagnosis)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
+    public RemoteFunctionCall<byte[]> searchCurrentDocumentHash(String _turtleId) {
+        final Function function = new Function(FUNC_SEARCHCURRENTDOCUMENTHASH, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
+        return executeRemoteCallSingleValueReturn(function, byte[].class);
     }
 
     public RemoteFunctionCall<Death> searchTurtleDeathDocument(String _turtleId,
@@ -513,42 +533,22 @@ public class TurtleDocumentation extends Contract {
         return executeRemoteCallSingleValueReturn(function, Death.class);
     }
 
-    public RemoteFunctionCall<TransactionReceipt> changeTurtleOwner(String _turtleId,
-            String _oldOwner, String _newOwner) {
-        final Function function = new Function(
-                FUNC_CHANGETURTLEOWNER, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.Utf8String(_oldOwner), 
-                new org.web3j.abi.datatypes.Utf8String(_newOwner)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteFunctionCall<TransactionReceipt> approveMultiplicationDocByReviewer(
-            String _turtleId, byte[] _documentHash) {
-        final Function function = new Function(
-                FUNC_APPROVEMULTIPLICATIONDOCBYREVIEWER, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteFunctionCall<TransactionReceipt> approveTransferDocByReviewer(String _turtleId,
+    public RemoteFunctionCall<Multiplication> searchTurtleMultiplicationDocument(String _turtleId,
             byte[] _documentHash) {
-        final Function function = new Function(
-                FUNC_APPROVETRANSFERDOCBYREVIEWER, 
+        final Function function = new Function(FUNC_SEARCHTURTLEMULTIPLICATIONDOCUMENT, 
                 Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
                 new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
+                Arrays.<TypeReference<?>>asList(new TypeReference<Multiplication>() {}));
+        return executeRemoteCallSingleValueReturn(function, Multiplication.class);
     }
 
-    public RemoteFunctionCall<byte[]> searchCurrentDocumentHash(String _turtleId) {
-        final Function function = new Function(FUNC_SEARCHCURRENTDOCUMENTHASH, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId)), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
-        return executeRemoteCallSingleValueReturn(function, byte[].class);
+    public RemoteFunctionCall<Transfer> searchTurtleTransferDocument(String _turtleId,
+            byte[] _documentHash) {
+        final Function function = new Function(FUNC_SEARCHTURTLETRANSFERDOCUMENT, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Transfer>() {}));
+        return executeRemoteCallSingleValueReturn(function, Transfer.class);
     }
 
     @Deprecated
@@ -571,6 +571,52 @@ public class TurtleDocumentation extends Contract {
     public static TurtleDocumentation load(String contractAddress, Web3j web3j,
             TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
         return new TurtleDocumentation(contractAddress, web3j, transactionManager, contractGasProvider);
+    }
+
+    public static class Death extends DynamicStruct {
+        public String applicant;
+
+        public String shelter;
+
+        public BigInteger count;
+
+        public String deathReason;
+
+        public String plan;
+
+        public String deathImage;
+
+        public String diagnosis;
+
+        public Death(String applicant, String shelter, BigInteger count, String deathReason,
+                String plan, String deathImage, String diagnosis) {
+            super(new org.web3j.abi.datatypes.Utf8String(applicant), 
+                    new org.web3j.abi.datatypes.Utf8String(shelter), 
+                    new org.web3j.abi.datatypes.generated.Uint8(count), 
+                    new org.web3j.abi.datatypes.Utf8String(deathReason), 
+                    new org.web3j.abi.datatypes.Utf8String(plan), 
+                    new org.web3j.abi.datatypes.Utf8String(deathImage), 
+                    new org.web3j.abi.datatypes.Utf8String(diagnosis));
+            this.applicant = applicant;
+            this.shelter = shelter;
+            this.count = count;
+            this.deathReason = deathReason;
+            this.plan = plan;
+            this.deathImage = deathImage;
+            this.diagnosis = diagnosis;
+        }
+
+        public Death(Utf8String applicant, Utf8String shelter, Uint8 count, Utf8String deathReason,
+                Utf8String plan, Utf8String deathImage, Utf8String diagnosis) {
+            super(applicant, shelter, count, deathReason, plan, deathImage, diagnosis);
+            this.applicant = applicant.getValue();
+            this.shelter = shelter.getValue();
+            this.count = count.getValue();
+            this.deathReason = deathReason.getValue();
+            this.plan = plan.getValue();
+            this.deathImage = deathImage.getValue();
+            this.diagnosis = diagnosis.getValue();
+        }
     }
 
     public static class Multiplication extends DynamicStruct {
@@ -719,52 +765,6 @@ public class TurtleDocumentation extends Contract {
             this.aquisition = aquisition.getValue();
             this.fatherId = fatherId.getValue();
             this.motherId = motherId.getValue();
-        }
-    }
-
-    public static class Death extends DynamicStruct {
-        public String applicant;
-
-        public String shelter;
-
-        public BigInteger count;
-
-        public String deathReason;
-
-        public String plan;
-
-        public String deathImage;
-
-        public String diagnosis;
-
-        public Death(String applicant, String shelter, BigInteger count, String deathReason,
-                String plan, String deathImage, String diagnosis) {
-            super(new org.web3j.abi.datatypes.Utf8String(applicant), 
-                    new org.web3j.abi.datatypes.Utf8String(shelter), 
-                    new org.web3j.abi.datatypes.generated.Uint8(count), 
-                    new org.web3j.abi.datatypes.Utf8String(deathReason), 
-                    new org.web3j.abi.datatypes.Utf8String(plan), 
-                    new org.web3j.abi.datatypes.Utf8String(deathImage), 
-                    new org.web3j.abi.datatypes.Utf8String(diagnosis));
-            this.applicant = applicant;
-            this.shelter = shelter;
-            this.count = count;
-            this.deathReason = deathReason;
-            this.plan = plan;
-            this.deathImage = deathImage;
-            this.diagnosis = diagnosis;
-        }
-
-        public Death(Utf8String applicant, Utf8String shelter, Uint8 count, Utf8String deathReason,
-                Utf8String plan, Utf8String deathImage, Utf8String diagnosis) {
-            super(applicant, shelter, count, deathReason, plan, deathImage, diagnosis);
-            this.applicant = applicant.getValue();
-            this.shelter = shelter.getValue();
-            this.count = count.getValue();
-            this.deathReason = deathReason.getValue();
-            this.plan = plan.getValue();
-            this.deathImage = deathImage.getValue();
-            this.diagnosis = diagnosis.getValue();
         }
     }
 

@@ -25,6 +25,7 @@ import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
 import com.turtlecoin.mainservice.domain.turtle.service.TurtleService;
+import com.turtlecoin.mainservice.domain.user.entity.Role;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
@@ -54,13 +55,17 @@ public class DocumentService {
 	}
 
 	// 서류 리스트를 조회하는 함수
-	public List<DocumentListDto> getDocumentList(Pageable pageable){
+	public List<DocumentListDto> getDocumentList(Pageable pageable) throws Exception{
 		List<Document> documents = documentRepository.findAllByProgress(Progress.DOCUMENT_REVIEWING, pageable);
 
 		List<DocumentListDto> documentListDtos = documents.stream()
 			.map(document -> {
 				// 신청자 정보 가져오기
 				User user = userService.getUserByUUID(document.getApplicant());
+				if(user == null) {
+					user = new User("알수없음", "알수없음", "알수없음", "알수없음", true, LocalDate.now(), "알수없음", "알수없음",
+						Role.ROLE_USER, "알수없음", "알수없음");
+				}
 
 				return DocumentListDto.builder()
 					.docType(docTypeService.convertToString(document.getDocType()))
@@ -226,7 +231,7 @@ public class DocumentService {
 				}
 
 				Optional<Turtle> fatherOptional = turtleRepository.findByUUID(documentResponseDto.getDetail().getFatherUUID());
-				Optional<Turtle> motherOptional = turtleRepository.findByUUID(documentResponseDto.getDetail().getFatherUUID());
+				Optional<Turtle> motherOptional = turtleRepository.findByUUID(documentResponseDto.getDetail().getMotherUUID());
 
 				if(fatherOptional.isEmpty() || motherOptional.isEmpty()){
 					throw new TurtleNotFoundException("존재하지 않는 부모 개체입니다.");
@@ -239,18 +244,14 @@ public class DocumentService {
 
 				Turtle turtle = Turtle.builder()
 					.birth(documentResponseDto.getDetail().getBirth())
-					//.birth(LocalDate.now())
 					.weight(documentResponseDto.getDetail().getWeight())
-					//.weight(240)
 					.dad(fatherOptional.get())
 					.mom(motherOptional.get())
 					.user(userOptional.get())
 					.name(documentResponseDto.getDetail().getName())
-					//.name("꼬부기")
 					.scientificName(documentResponseDto.getDetail().getScientificName())
 					.uuid(documentResponseDto.getTurtleUUID())
 					.gender(documentResponseDto.getDetail().getGender())
-					//.gender(Gender.MALE)
 					.dead(false)
 					.build();
 
@@ -276,5 +277,11 @@ public class DocumentService {
 				throw new DocumentProgressException("이미 검토 완료된 서류입니다.");
 			}
 		}
+	}
+
+	@Transactional
+	public void removeDocument(String documentHash, String turtleId) {
+		Optional<Document> documentOptional = documentRepository.findByDocumentHashAndTurtleUUID(documentHash, turtleId);
+		documentOptional.ifPresent(documentRepository::delete);
 	}
 }
