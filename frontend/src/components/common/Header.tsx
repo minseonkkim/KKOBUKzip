@@ -28,8 +28,9 @@ export default function Header() {
           <div className="text-[32px] lg:text-[40px] font-dnf-bitbit flex flex-row items-center cursor-pointer">
             <img
               src={LogoImg}
-              className="w-[45px] h-[45px] lg:w-[60px] lg:h-[60px] mr-3"
+              className="h-[45px] lg:h-[60px] mr-3"
               draggable="false"
+              alt="Logo Image"
             />
             <div className="whitespace-nowrap">
               <span className="text-[#4B721F]">꼬북</span>ZIP
@@ -55,6 +56,7 @@ export default function Header() {
               src={CoinImg}
               className="w-[27px] h-[27px]"
               draggable="false"
+              alt="Coin Image"
             />
             {!isMobile && (
               <span className="whitespace-nowrap text-white text-[17px] lg:text-[20px] tracking-widest">
@@ -75,6 +77,7 @@ export default function Header() {
                   src={MyPageImg}
                   className="whitespace-nowrap w-[25px] h-[25px]"
                   draggable="false"
+                  alt="My Page Image"
                 />
               ) : (
                 <span className="whitespace-nowrap text-white text-[17px] lg:text-[20px] tracking-widest">

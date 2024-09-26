@@ -73,12 +73,12 @@ function TransactionDetailPage() {
               </div>
               <div className="flex flex-row space-x-2">
                 <span
-                  className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] md:text-[17px] bg-[#D5F0DD] text-[#065F46]"
+                  className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] bg-[#D5F0DD] text-[#065F46]"
                 >
                   #암컷
                 </span>
                 <span
-                  className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] md:text-[17px] bg-[#D5F0DD] text-[#065F46]"
+                  className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] bg-[#D5F0DD] text-[#065F46]"
                 >
                   #베이비
                 </span>
