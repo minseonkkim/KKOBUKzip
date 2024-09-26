@@ -23,9 +23,9 @@ function LoginPage() {
   const { setLogin } = useUserStore();
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     alert("로그인 핸들");
-    console.log(email, password);
     const { success, data, error } = await loginRequest(email, password);
     if (success) {
       setLogin(data?.data!);
@@ -85,7 +85,7 @@ function LoginPage() {
                 로그인
               </h2>
 
-              <form className="space-y-5 mb-10">
+              <form onSubmit={handleLogin} className="space-y-5 mb-10">
                 <input
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -120,10 +120,7 @@ function LoginPage() {
                   )}
                 </div>
 
-                <button
-                  onClick={handleLogin}
-                  className="w-full bg-[#4B721F] text-[22px] text-white py-3 rounded hover:bg-[#3E5A1E]"
-                >
+                <button className="w-full bg-[#4B721F] text-[22px] text-white py-3 rounded hover:bg-[#3E5A1E]">
                   로그인하기
                 </button>
               </form>
