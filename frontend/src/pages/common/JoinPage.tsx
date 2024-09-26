@@ -7,7 +7,7 @@ import { JoinDataType } from "../../types/join";
 import {
   checkEmailRequest,
   createEmailRequest,
-  register,
+  registerRequest,
 } from "../../apis/userApi";
 import Header from "../../components/common/Header";
 import StopTurtleImg from "../../assets/turtle_home_stop.png";
@@ -269,13 +269,39 @@ function JoinPage() {
       isValid = false;
     }
 
-    setErrStat(newErrStat);
+    if (
+      [birth.y, birth.m, birth.d].some(
+        (val) => val == null || isNaN(Number(val))
+      )
+    ) {
+      newErrStat.birthday = "올바른 생년월일을 입력해주세요.";
+      isValid = false;
+    }
 
+    // phone number check
+    if (
+      [phoneNumber.first, phoneNumber.second, phoneNumber.third].some(
+        (val) => val == null || val.trim().length === 0 || val.trim().length > 4
+      )
+    ) {
+      newErrStat.phoneNumber = "올바른 전화번호를 입력해주세요.";
+      isValid = false;
+    }
+
+    setErrStat(newErrStat);
     if (isValid) {
-      await register({
+      const rst = await registerRequest({
         ...data,
+        birthday: birth.y! + "-" + birth.m! + "-" + birth.d!,
         address: data.address + " / " + detailedAddress,
+        phoneNumber:
+          phoneNumber.first +
+          "-" +
+          phoneNumber.second +
+          "-" +
+          phoneNumber.third,
       });
+      console.log(rst);
     }
   };
 
@@ -295,17 +321,24 @@ function JoinPage() {
     }
   };
 
-  const handleLastStep = () => {
-    if (emailConfirm) return;
-
-    checkEmailRequest(data.email, emailConfirm);
-    setStep(3);
+  const handleLastStep = async () => {
+    if (!emailConfirm) return;
+    const result = await checkEmailRequest(data.email, emailConfirm);
+    console.log(result);
+    if (result.success) {
+      setStep(3);
+      return;
+    } else {
+      alert("인증번호를 확인해주세요.");
+    }
   };
+
   const handlePrevStep = () => {
     setStep(1);
     setEmailCheck(false);
     setEmailConfirm("");
   };
+
   return (
     <>
       <Helmet>

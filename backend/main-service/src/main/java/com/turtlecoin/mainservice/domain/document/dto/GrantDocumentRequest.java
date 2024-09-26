@@ -39,4 +39,13 @@ public class GrantDocumentRequest {
 		String phoneNumber;
 		String address;
 	}
+
+	public boolean isValid(){
+		return (
+			documentHash != null && turtleUUID != null && docType != null && applicant != null && detail != null
+			&& detail.grantor != null && detail.turtleUUID != null && detail.aquisition != null
+			&& detail.motherUUID != null && detail.fatherUUID != null
+			&& detail.grantor.name != null && detail.grantor.phoneNumber != null && detail.grantor.address != null
+		);
+	}
 }

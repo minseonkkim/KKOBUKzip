@@ -1,5 +1,7 @@
 package com.turtlecoin.mainservice.domain.document.dto;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,9 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ApplicantResponseDto {
 	private String name;
-	private String foreignFlag;
+	private boolean korean;
 	private String phonenumber;
 	private String email;
-	private String birth;
+	private LocalDate birth;
 	private String address;
 }

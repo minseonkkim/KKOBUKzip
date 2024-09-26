@@ -27,7 +27,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [itemLoading, setItemLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
-  const [pages, setPages] = useState(1);
+  const [pages, setPages] = useState(1); // next page
   const [maxPage, setMaxPage] = useState(-1);
 
   const [ref, inView] = useInView({ threshold: 1 });
@@ -48,7 +48,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
       }
     };
     getData();
-  }, [fetchData, filters, pages]);
+  }, [fetchData, filters]);
 
   const loadMore = async () => {
     if (itemLoading || pages > maxPage) return;
@@ -57,6 +57,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
       const response = await fetchData(pages, filters);
       if (response.success) {
         setMaxPage(response.data.total_pages ?? -1);
+        setPages((prev) => prev + 1);
       }
     } finally {
       setItemLoading(false);
@@ -83,7 +84,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
 
       <Header />
       <div className="h-screen flex flex-col pt-[85px] px-4 lg:px-[250px]">
-        <div className="flex flex-col md:flex-row items-center justify-between pt-0 lg:pt-[40px] pb-[5px] lg:pb-[13px]">
+        <div className="flex flex-col md:flex-row items-center justify-between pt-0 lg:pt-[32px] pb-[5px] lg:pb-[13px]">
           <div className="whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 mb-2 md:mb-0">
             {title}
           </div>
@@ -110,7 +111,8 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
                 onClick={handleCheckboxChange}
                 className="cursor-pointer whitespace-nowrap text-[20px] md:text-[18px] xl:text-[21px]"
               >
-                {title.includes("판매") ? "거래가능한" : "경매중인"} 거북이만 보기
+                {title.includes("판매") ? "거래가능한" : "경매중인"} 거북이만
+                보기
               </span>
             </label>
           </div>
@@ -155,7 +157,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
           )}
         </div>
 
-        <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-[30px] mt-[10px]">
+        <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
           {initialLoad &&
             Array.from({ length: 6 }).map((_, index) => (
               <div key={`skeleton-${index}`} className="col-span-1">
