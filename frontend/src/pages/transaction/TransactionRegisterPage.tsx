@@ -45,23 +45,23 @@ export default function TransactionRegisterPage(){
 
     return <>
     <Helmet>
-        <title>경매 등록하기</title>
+        <title>판매 등록하기</title>
       </Helmet>
       <Header />
-      <div className="px-[250px] mt-[85px]">
-        <div className="text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-[32px] pb-[13px]">판매 등록하기</div>
+      <div className="px-4 lg:px-[250px] mt-[85px]">
+        <div className="text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-0 lg:pt-[32px] pb-[13px]">판매 등록하기</div>
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">
-          <img src={TmpTurtleImg} draggable="false" className="w-[170px] h-full object-cover rounded-[10px] mr-8" />
+          <img src={TmpTurtleImg} draggable="false" className="w-[150px] md:w-[170px] h-full object-cover rounded-[10px] mr-4 md:mr-8" />
           <div className="flex flex-col">
-            <div className="text-[26px] font-bold mb-2">꼬부기</div>
-            <div className="text-gray-600 text-[21px]">수컷 | 18년 3월 2일생</div>
+            <div className="text-[24px] md:text-[26px] font-bold mb-2">꼬부기</div>
+            <div className="text-gray-600 text-[18px] md:text-[21px]">수컷 | 18년 3월 2일생</div>
           </div>
         </div>
-        <form className="text-[21px] flex flex-col gap-4">
+        <form className="text-[19px] md:text-[21px] flex flex-col gap-4">
           <div className="flex flex-row items-center">
-            <label className="w-[120px]">판매가</label>
+            <label className="w-[108px] md:w-[120px]">판매가</label>
             <input
-              className="w-[350px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
+              className="w-[260px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
               type="text"
               name="bid"
               onInput={handleInputChange}
@@ -69,9 +69,9 @@ export default function TransactionRegisterPage(){
             />
           </div>
           <div className="flex flex-row items-center">
-            <label className="w-[120px]">체중</label>
+            <label className="w-[108px] md:w-[120px]">체중</label>
             <input
-              className="mr-1 w-[350px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
+              className="mr-1 w-[230px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
               type="number"
               name="weight"
               required
@@ -85,22 +85,22 @@ export default function TransactionRegisterPage(){
 
           {/* 제목 30자 이내로만 입력할 수 있게 하기 */}
           <div className="flex flex-row items-center">
-            <label className="w-[120px] mb-1">제목</label>
+            <label className="w-[108px] md:w-[120px] mb-1">제목</label>
             <input
-              className="flex-grow text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
+              className="w-[260px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
               type="text"
               name="title"
               required
             />
           </div>
           <div className="flex flex-row items-start">
-            <label className="w-[120px]">상세 설명</label>
+            <label className="w-[108px] md:w-[120px]">상세 설명</label>
             <textarea
               rows={3}
               className="flex-grow border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px] mt-2"
             ></textarea>
           </div>
-          <div className="flex flex-row items-start justify-between">
+          <div className="flex flex-col md:flex-row lg:flex-col xl:flex-row items-start justify-between">
             <div className="flex flex-col">
               <div className="flex flex-row items-center">
                 <label>사진 추가</label>
@@ -136,12 +136,12 @@ export default function TransactionRegisterPage(){
                 
               </div>
             </div>
-            <div className="flex flex-col gap-3 items-start w-[35%]">
+            <div className="flex flex-col gap-3 items-start w-[35%] my-4 md:my-0 lg:my-4 xl:my-0">
               <label className="w-[120px]">태그</label>
               <div className="flex flex-row items-center space-x-2">
                 <span className="text-[17px] w-[50px]">성별</span>
                 <span
-                  className={`px-2 py-1 rounded-full cursor-pointer text-[17px] ${
+                  className={`whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[17px] ${
                     selectedGender === "#암컷"
                       ? "bg-[#D5F0DD] text-[#065F46]"
                       : "bg-gray-300 text-gray-600"
@@ -151,7 +151,7 @@ export default function TransactionRegisterPage(){
                   #암컷
                 </span>
                 <span
-                  className={`px-2 py-1 rounded-full cursor-pointer text-[17px] ${
+                  className={`whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[17px] ${
                     selectedGender === "#수컷"
                       ? "bg-[#D5F0DD] text-[#065F46]"
                       : "bg-gray-300 text-gray-600"
@@ -166,7 +166,7 @@ export default function TransactionRegisterPage(){
                 {["#베이비", "#아성체", "#준성체", "#성체"].map((tag) => (
                   <span
                     key={tag}
-                    className={`px-2 py-1 rounded-full cursor-pointer text-[17px] ${
+                    className={`whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[17px] ${
                       selectedSize === tag
                         ? "bg-[#D5F0DD] text-[#065F46]"
                         : "bg-gray-300 text-gray-600"
