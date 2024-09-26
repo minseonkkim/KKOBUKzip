@@ -19,7 +19,7 @@ const AuctionListPage = () => {
       title="경매중인 거북이"
       items={auctionItems}
       fetchData={fetchData}
-      skeletonComponent={<AuctionTurtleSkeleton />} // Optional loading skeleton
+      skeletonComponent={<AuctionTurtleSkeleton />}
     />
   );
 };
