@@ -274,7 +274,7 @@ function JoinPage() {
     if (isValid) {
       await register({
         ...data,
-        address: data.address + " " + detailedAddress,
+        address: data.address + " / " + detailedAddress,
       });
     }
   };
