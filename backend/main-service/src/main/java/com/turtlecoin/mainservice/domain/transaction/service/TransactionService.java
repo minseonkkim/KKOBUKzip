@@ -36,6 +36,11 @@ public class TransactionService {
     private final TurtleRepository turtleRepository;
     private final TransactionRepository transactionRepository;
 
+    public Transaction findTransactionById(Long id) {
+        return transactionRepository.findById(id).orElse(null);
+    }
+
+
     public TransactionService(ImageUploadService imageUploadService, TurtleRepository turtleRepository, TransactionRepository transactionRepository) {
         this.imageUploadService = imageUploadService;
         this.turtleRepository = turtleRepository;
