@@ -44,11 +44,63 @@ function OptionFilter({
 
   return (
     <>
+      <style>{`
+        .custom-checkbox {
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+          position: relative;
+          padding-left: 30px;
+          font-size: 16px;
+        }
+
+        .custom-checkbox input {
+          position: absolute;
+          opacity: 0;
+          cursor: pointer;
+        }
+
+        .checkbox-mark {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 20px;
+          width: 20px;
+          background-color: #eee;
+          border-radius: 50%;
+          border: 2px solid #d1d1d1;
+          transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .custom-checkbox input:checked ~ .checkbox-mark {
+          background-color: #4b721f;
+          border-color: #4b721f;
+        }
+
+        .checkbox-mark:after {
+          content: "";
+          position: absolute;
+          display: none;
+        }
+
+        .custom-checkbox input:checked ~ .checkbox-mark:after {
+          display: block;
+        }
+
+        .custom-checkbox .checkbox-mark:after {
+          top: 3px;
+          left: 3px;
+          width: 9.7px;
+          height: 9.7px;
+          border-radius: 50%;
+          background: white;
+        }
+      `}</style>
       <div className="border-[2px] border-[#DADADA] rounded-[20px] px-6 py-4 mb-4 transition-all ease-in-out duration-300">
         <div className="mb-4 flex flex-row items-center">
-          <label className="block mb-2 font-bold text-lg w-[60px] md:w-[100px]">성별</label>
+          <label className="block font-bold text-lg w-[60px] md:w-[100px]">성별</label>
           <div className="flex space-x-3">
-            <label className="custom-radio">
+            <label className="custom-checkbox">
               <input
                 type="radio"
                 name="gender"
@@ -56,10 +108,10 @@ function OptionFilter({
                 checked={filters.gender === "all"}
                 onChange={(e) => updateFilter("gender", e.target.value)}
               />
-              <span className="radio-mark"></span>
+              <span className="checkbox-mark"></span>
               전체
             </label>
-            <label className="custom-radio">
+            <label className="custom-checkbox">
               <input
                 type="radio"
                 name="gender"
@@ -67,10 +119,10 @@ function OptionFilter({
                 checked={filters.gender === "male"}
                 onChange={(e) => updateFilter("gender", e.target.value)}
               />
-              <span className="radio-mark"></span>
+              <span className="checkbox-mark"></span>
               암컷
             </label>
-            <label className="custom-radio">
+            <label className="custom-checkbox">
               <input
                 type="radio"
                 name="gender"
@@ -78,13 +130,13 @@ function OptionFilter({
                 checked={filters.gender === "female"}
                 onChange={(e) => updateFilter("gender", e.target.value)}
               />
-              <span className="radio-mark"></span>
+              <span className="checkbox-mark"></span>
               수컷
             </label>
           </div>
         </div>
         <div className="mb-4 flex flex-row items-center">
-          <label className="block mb-2 font-bold text-lg w-[60px] md:w-[100px]">체중</label>
+          <label className="block font-bold text-lg w-[60px] md:w-[100px]">체중</label>
           <div className="flex space-x-4 items-center">
             <div>
               <input
@@ -117,7 +169,7 @@ function OptionFilter({
         </div>
         <div className="flex flex-row justify-between">
           <div className="flex flex-row items-center">
-            <label className="block mb-2 font-bold text-lg w-[60px] md:w-[100px]">가격</label>
+            <label className="block font-bold text-lg w-[60px] md:w-[100px]">가격</label>
             <div className="flex space-x-4 items-center">
               <input
                 value={filters.minPrice}
