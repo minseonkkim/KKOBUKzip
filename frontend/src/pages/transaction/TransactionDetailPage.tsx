@@ -35,47 +35,54 @@ function TransactionDetailPage() {
       </Helmet>
 
       <Header />
-
-      <div className="px-[250px] mt-[85px]">
-        <div className="cursor-pointer text-[33px] text-gray-900 font-dnf-bitbit pt-[40px] pb-[13px]">
+      <div className="px-4 lg:px-[250px] mt-[85px]">
+        <div className="cursor-pointer whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit pt-0 lg:pt-[40px] pb-[13px]">
           <span onClick={goBack}>&lt;&nbsp;판매중인 거북이</span>
         </div>
-        <div className="flex flex-row justify-between mt-[10px]">
-          <div className="w-[48%] h-[360px] rounded-[20px] relative">
-            <img
-              src={images[currentIndex]}
-              className="w-full h-full object-cover rounded-[20px]"
-              alt="Turtle"
-              draggable="false"
-            />
-            <button
-              onClick={handlePrev}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 text-white text-[27px] p-2 rounded-full font-bold"
-            >
-              &lt;
-            </button>
-            <button
-              onClick={handleNext}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white text-[27px] p-2 rounded-full font-bold"
-            >
-              &gt;
-            </button>
-            <div className="absolute bottom-3 right-3 bg-gray-700 text-white px-4 py-2 rounded-[20px]">
-              {currentIndex + 1} / {images.length}
+        <div className="h-full md:h-[675px] flex flex-col md:flex-row justify-between mt-[10px]">
+          <div className="flex flex-col w-full md:w-[48%] rounded-[20px] relative">
+
+            {/* Ensure this div takes available space using flex properties */}
+            <div className="relative w-full flex-grow md:flex-1 h-[240px] md:h-auto rounded-[20px] overflow-hidden">
+              <img
+                src={images[currentIndex]}
+                className="w-full h-full object-cover rounded-[20px]"
+                alt="Turtle"
+                draggable="false"
+              />
+              <button
+                onClick={handlePrev}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white text-[27px] p-2 rounded-full font-bold"
+              >
+                &lt;
+              </button>
+              <button
+                onClick={handleNext}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white text-[27px] p-2 rounded-full font-bold"
+              >
+                &gt;
+              </button>
+              <div className="absolute bottom-3 right-3 bg-black/60 text-white px-4 py-2 rounded-[20px]">
+                {currentIndex + 1} / {images.length}
+              </div>
             </div>
-            <div className="flex flex-row justify-between items-center mt-[15px] mb-[7px]">
-              <div className="text-[23px]">페닐슐라쿠터</div>
+            <div className="text-[23px] mt-[13px]">거북이 팔아용</div>
+            <div className="flex flex-row justify-between lg:justify-start xl:justify-between items-center mt-[5px] mb-[10px]">
+              <div className="text-[#9A9A9A] text-[17px]">
+                페닐슐라쿠터 | 24년 8월 10일생 | 8kg
+              </div>
               <div className="flex flex-row space-x-2">
-                <span className="px-2 py-1 rounded-full cursor-pointer text-[18px] bg-[#D5F0DD] text-[#065F46]">
+                <span
+                  className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] md:text-[17px] bg-[#D5F0DD] text-[#065F46]"
+                >
                   #암컷
                 </span>
-                <span className="px-2 py-1 rounded-full cursor-pointer text-[18px] bg-[#D5F0DD] text-[#065F46]">
+                <span
+                  className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] md:text-[17px] bg-[#D5F0DD] text-[#065F46]"
+                >
                   #베이비
                 </span>
               </div>
-            </div>
-            <div className="mb-[13px] text-[#9A9A9A] text-[17px]">
-              24년 8월 10일생 | 8kg
             </div>
             <div className="text-[17px] leading-7 border-[2px] rounded-[10px] p-2 line-clamp">
               이 붉은귀거북은 활발하고 건강한 상태로, 밝고 선명한 붉은색 귀
@@ -108,18 +115,18 @@ function TransactionDetailPage() {
             </div>
           </div>
 
-          <div className="w-[48%] h-[675px] bg-[#EAF5DD] rounded-[20px] flex flex-col justify-start items-center">
-            <div className="w-full px-[40px] w-full h-full flex justify-center items-center">
-              <div className="flex flex-col justify-center items-center mb-4">
-                <div className="flex flex-row items-center">
-                  <div className="font-bold text-[27px]">
-                    판매가&nbsp;&nbsp;
-                  </div>
-                  <div className="font-bold text-[39px] text-[#4B721F] font-stardust">
+          <div className="my-5 mb-10 md:my-0 md:mb-0 w-full md:w-[48%] h-[130px] md:h-[675px] bg-[#EAF5DD] rounded-[20px] flex flex-col justify-start items-center">
+            <div className="w-full px-[20px] md:px-[40px] w-full h-full flex justify-center items-center mt-3 md:mt-0">
+              <div className="w-full flex flex-row md:flex-col justify-between items-center mb-4">
+                <div className="whitespace-nowrap flex flex-row md:flex-col xl:flex-row items-center">
+                  <div className="font-bold text-[20px] md:text-[27px]">판매가&nbsp;&nbsp;</div>
+                  <div className="font-bold text-[31px] md:text-[39px] text-[#4B721F] font-stardust">
                     {Math.floor(8000000).toLocaleString()}원
                   </div>
                 </div>
-                <button className="mt-5 cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] active:scale-90 text-[30px] font-dnf-bitbit">
+                <button
+                  className="whitespace-nowrap mt-0 md:mt-5 cursor-pointer bg-[#4B721F] text-white py-2 px-4 md:py-3 md:px-7 rounded-[10px] active:scale-90 text-[23px] md:text-[30px] font-dnf-bitbit"
+                >
                   구매하기
                 </button>
               </div>
