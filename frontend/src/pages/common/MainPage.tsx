@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import useDeviceStore from "../../store/useDeviceStore";
 import Header from "../../components/common/Header";
 import BackgroundImg from "../../assets/Side_View_Scene.gif";
-import TurtleMoving from "../../assets/turtle_moving.png";
+import TurtleMoving from "../../assets/turtle_moving.webp";
 import TurtleStop from "../../assets/turtle_stop.gif";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -16,40 +16,29 @@ function MainPage() {
   const [showTurtle, setShowTurtle] = useState(true);
 
   useEffect(() => {
+  const timers: NodeJS.Timeout[] = []; 
 
-    const turtleTimer = setTimeout(() => {
-      setShowTurtleMoving(false);
-    }, 2300);
+  timers.push(
+    setTimeout(() => setShowTurtleMoving(false), 2300),
+    setTimeout(() => setShowContent(true), 0),
+    setTimeout(() => setShowButtons(true), 2000)
+  );
 
-    const contentTimer = setTimeout(() => {
-      setShowContent(true);
-    }, 0);
+  if (isMobile) {
+    timers.push(setTimeout(() => setShowContent(false), 2000));
+  }
 
-    let contentCloseTimer:NodeJS.Timeout;
-    if (isMobile) {
-      contentCloseTimer = setTimeout(() => {
-        setShowContent(false);
-      }, 2000);
-    }
+  return () => timers.forEach((timer) => clearTimeout(timer));
+}, [isMobile]);
 
-    const buttonTimer = setTimeout(() => {
-      setShowButtons(true);
-    }, 2000);
-
-    return () => {
-      clearTimeout(turtleTimer);
-      clearTimeout(contentTimer);
-      if (isMobile) {
-        clearTimeout(contentCloseTimer);
-      }
-      clearTimeout(buttonTimer);
-    };
-  }, [isMobile]);
 
   return (
     <>
       <Helmet>
-        <title>꼬북ZIP</title>
+      <title>꼬북ZIP</title>
+        {/* 이미지 preload */}
+        <link rel="preload" href={TurtleMoving} as="image" />
+        <link rel="preload" href={TurtleStop} as="image" />
       </Helmet>
       <Header />
       <div className="relative min-h-screen bg-[#363636] overflow-hidden ">
@@ -63,23 +52,25 @@ function MainPage() {
         </div>
 
         {showTurtle && (
-          showTurtleMoving ? (
-            <img
-              src={TurtleStop}
-              className="w-[270px] md:w-[300px] lg:w-[380px] absolute"
-              style={{ bottom: "15px", right: "10%" }}
-              draggable="false"
-              alt="Turtle Stop"
-            />
-          ) : (
-            <img
-              src={TurtleMoving}
-              className="w-[270px] md:w-[300px] lg:w-[380px] absolute turtle-animation"
-              draggable="false"
-              alt="Turtle Moving"
-            />
-          )
-        )}
+            showTurtleMoving ? (
+              <img
+                src={TurtleStop}
+                loading="lazy"
+                className="w-[270px] md:w-[300px] lg:w-[380px] absolute"
+                style={{ bottom: "15px", right: "10%" }}
+                draggable="false"
+                alt="Turtle Stop"
+              />
+            ) : (
+              <img
+                src={TurtleMoving}
+                loading="lazy"
+                className="w-[270px] md:w-[300px] lg:w-[380px] absolute turtle-animation"
+                draggable="false"
+                alt="Turtle Moving"
+              />
+            )
+          )}
         <div className="absolute top-[170px] w-full text-center flex flex-col items-center">
           {showContent && (
             <div className="left-0 text-center flex flex-col items-center">
