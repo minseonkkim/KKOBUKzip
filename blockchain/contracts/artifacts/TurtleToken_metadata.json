@@ -43,6 +43,19 @@
 					{
 						"indexed": true,
 						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "AddedToWhitelist",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
 						"name": "owner",
 						"type": "address"
 					},
@@ -85,6 +98,19 @@
 					}
 				],
 				"name": "OwnershipTransferred",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "RemovedFromWhitelist",
 				"type": "event"
 			},
 			{
@@ -173,6 +199,19 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "addToWhitelist",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -346,6 +385,25 @@
 				"inputs": [
 					{
 						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "inWhitelisted",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
 						"name": "spender",
 						"type": "address"
 					},
@@ -473,6 +531,19 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "removeFromWhitelist",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "renounceOwnership",
 				"outputs": [],
@@ -535,7 +606,7 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "to",
+						"name": "recipient",
 						"type": "address"
 					},
 					{
@@ -559,12 +630,12 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "from",
+						"name": "sender",
 						"type": "address"
 					},
 					{
 						"internalType": "address",
-						"name": "to",
+						"name": "recipient",
 						"type": "address"
 					},
 					{
@@ -622,6 +693,9 @@
 				"DOMAIN_SEPARATOR()": {
 					"details": "Returns the domain separator used in the encoding of the signature for {permit}, as defined by {EIP712}."
 				},
+				"addToWhitelist(address)": {
+					"details": "화이트리스트 관련 함수"
+				},
 				"allowance(address,address)": {
 					"details": "See {IERC20-allowance}."
 				},
@@ -663,12 +737,6 @@
 				},
 				"totalSupply()": {
 					"details": "See {IERC20-totalSupply}."
-				},
-				"transfer(address,uint256)": {
-					"details": "See {IERC20-transfer}. Requirements: - `to` cannot be the zero address. - the caller must have a balance of at least `amount`."
-				},
-				"transferFrom(address,address,uint256)": {
-					"details": "See {IERC20-transferFrom}. Emits an {Approval} event indicating the updated allowance. This is not required by the EIP. See the note at the beginning of {ERC20}. NOTE: Does not update the allowance if the current allowance is the maximum `uint256`. Requirements: - `from` and `to` cannot be the zero address. - `from` must have a balance of at least `amount`. - the caller must have allowance for ``from``'s tokens of at least `amount`."
 				},
 				"transferOwnership(address)": {
 					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
@@ -713,6 +781,14 @@
 			"urls": [
 				"bzz-raw://6e416a280c610b6b7a5f158e4a41aacfaec01ef14d5d1de13b46be9e090265fc",
 				"dweb:/ipfs/QmYZP2KrdyccBbhLZT42auhvBTMkwiwUS3V6HWb42rbwbG"
+			]
+		},
+		"@openzeppelin/contracts/security/ReentrancyGuard.sol": {
+			"keccak256": "0xa535a5df777d44e945dd24aa43a11e44b024140fc340ad0dfe42acf4002aade1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://41319e7f621f2dc3733511332c4fd032f8e32ad2aa7fd6f665c19741d9941a34",
+				"dweb:/ipfs/QmcYR3bd862GD1Bc7jwrU9bGxrhUu5na1oP964bDCu2id1"
 			]
 		},
 		"@openzeppelin/contracts/token/ERC20/ERC20.sol": {
@@ -828,11 +904,11 @@
 			]
 		},
 		"contracts/TurtleToken.sol": {
-			"keccak256": "0x1d3b4f70cf6f1b41691b125952149818a1bd6d82cc53a625ee445568b9b6539c",
+			"keccak256": "0x7c8616f622cb4acbc8abd031db9eacd35b1fe29c58a48fe182e1617246a351e0",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://be6c29fefed7b0bceed6827e944f928b3c41c4104991c30f04047d28516bf590",
-				"dweb:/ipfs/QmeTeoQoCcYCvcpArmPaPdA4BTJWn49THoTpwRmefW4LNn"
+				"bzz-raw://7c75d048c6b9f2c5e0ed6abc26a9446294ab6f163899474112c4ea066cea23a4",
+				"dweb:/ipfs/QmbdoP51yKs17dLGJ7aKgTbdywNEzpPeBRtwXfkNbwBD9B"
 			]
 		}
 	},
