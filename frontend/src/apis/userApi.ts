@@ -89,7 +89,7 @@ const checkEmailRequest = async (
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<EmailCheckResponseData>(`/main/user/email/`, {
+    guestAxios.post<EmailCheckResponseData>(`/main/user/email`, {
       email,
       verification,
     })
