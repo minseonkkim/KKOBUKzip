@@ -83,7 +83,7 @@ function AuctionDetailPage() {
         <title>경매중인 거북이</title>
       </Helmet>
       <Header />
-      <div className="px-[250px] mt-[85px]">
+      <div className="px-4 lg:px-[250px] mt-[85px]">
         {/* 테스트 드라이버 */}
         <div className="grid grid-cols-4">
           <button
@@ -113,12 +113,12 @@ function AuctionDetailPage() {
         </div>
         {/* 테스트 드라이버 끝 */}
 
-        <div className="text-[33px] text-gray-900 font-dnf-bitbit pt-[40px] pb-[13px]">
-          <span className="cursor-pointer" onClick={goBack}>
+        <div className="cursor-pointer whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit pt-0 lg:pt-[40px] pb-[13px]">
+          <span onClick={goBack}>
             &lt;&nbsp;경매중인 거북이
           </span>
         </div>
-        <div className="flex flex-row justify-between mt-[10px]">
+        <div className="h-full md:h-[675px] flex flex-col md:flex-row justify-between mt-[10px]">
           {/* 좌측 거북이 정보 */}
           {auctionStatus === null ? (
             // 스켈레톤 애니메이션
