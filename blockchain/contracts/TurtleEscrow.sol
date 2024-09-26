@@ -56,10 +56,10 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
     /**
      * @dev 이벤트 모음
      */
-    event TransactionCreated(uint256 indexed transactionId, address buyer, address seller, uint256 amount);
-    event FundsLocked(uint256 indexed transactionId);
-    event FundsReleased(uint256 indexed transactionId);
-    event FundsRefunded(uint256 indexed transactionId);
+    // event TransactionCreated(uint256 indexed transactionId, address buyer, address seller, uint256 amount);
+    // event FundsLocked(uint256 indexed transactionId);
+    // event FundsReleased(uint256 indexed transactionId);
+    // event FundsRefunded(uint256 indexed transactionId);
 
     /**
      * @dev 생성자: 중재자 주소와 사용할 ERC20 토큰 주소 설정
@@ -94,7 +94,7 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         // Interactions
         require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");  // 변경 이전 코드
         // token.safeTransferFrom(_buyer, address(this), _amount); // 변경 후 : SafeERC20 라이브러리를 사용해 안전한 전송
-        emit TransactionCreated(_transactionId, msg.sender, _seller, _amount);
+        // emit TransactionCreated(_transactionId, msg.sender, _seller, _amount);
 
         lockFunds(_transactionId);  // 자금 잠금 동시에 진행
 
@@ -105,13 +105,13 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * @dev 자금 잠금
      * @param _transactionId 거래 ID
      */
-    function lockFunds(uint256 _transactionId) external nonReentrant {
+    function lockFunds(uint256 _transactionId) internal nonReentrant {
         Transaction storage transaction = transactions[_transactionId];
         require(msg.sender == transaction.buyer, "Only buyer can lock funds");
         require(transaction.state == State.Created, "Invalid state");
 
         transaction.state = State.Locked;
-        emit FundsLocked(_transactionId);
+        // emit FundsLocked(_transactionId);
     }
 
     /**
@@ -135,7 +135,7 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         bool success = token.transfer(transaction.seller, transaction.amount);
         require(success, "Token transfer failed");
 
-        emit FundsReleased(_transactionId);
+        // emit FundsReleased(_transactionId);
     }
 
     /**
@@ -159,7 +159,7 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         // Interactions
         require(token.transfer(transaction.buyer, transaction.amount), "Token transfer failed");
 
-        emit FundsRefunded(_transactionId);
+        // emit FundsRefunded(_transactionId);
     }
 
     /**
