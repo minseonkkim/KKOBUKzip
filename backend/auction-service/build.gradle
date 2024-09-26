@@ -47,9 +47,14 @@ dependencies {
 	// redisson
 	implementation 'org.redisson:redisson-spring-boot-starter:3.27.0'
 
+	//websocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.mockito:mockito-core'
+	testImplementation 'org.redisson:redisson-spring-boot-starter:3.16.5'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 

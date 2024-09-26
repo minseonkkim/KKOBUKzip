@@ -10,10 +10,9 @@ import { AuctionItemDataType } from "../../types/auction";
 import { getAuctionDatas } from "../../apis/tradeApi";
 import OptionFilter from "../../components/common/OptionFilter";
 import useTradeFilter from "../../hooks/useTradeFilter";
-import AuctionTurtleSkeleton from "../../components/auction/AuctionTurtleSkeleton";
+import AuctionTurtleSkeleton from "../../components/auction/skeleton/AuctionTurtleSkeleton";
 import { useInView } from "react-intersection-observer";
 
-// 해야할것 -> 스크롤 구현(귀찮...)
 // 해야할 것 : 필터 조회 적용
 // api 연동하면 더미데이터 -> 실제데이터, AuctionTurtle 내부 데이터 연동하기, 스켈레톤 이미지 활성화까지 할 것 -> 대부분 주석걸려있음
 
@@ -102,7 +101,7 @@ function AuctionListPage() {
       </Helmet>
 
       <Header />
-      <div className="h-screen flex flex-col pt-[85px] px-4 lg:px-[250px]">
+      <div className="h-screen flex flex-col mt-[85px] px-4 lg:px-[250px]">
         <div className="flex flex-col md:flex-row items-center justify-between pt-0 lg:pt-[40px] pb-[5px] lg:pb-[13px]">
           <div className="whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 mb-2 md:mb-0">
             경매중인 거북이

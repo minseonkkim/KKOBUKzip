@@ -3,6 +3,7 @@ import { AuctionItemDataType } from "../types/auction";
 import authAxios from "./http-commons/authAxios";
 import guestAxios from "./http-commons/guestAxios";
 import { TransactionItemDataType } from "../types/transaction";
+import { AuctionResponseDummuy } from "../fixtures/auctionDummy";
 
 interface AuctionResponseData<T> {
   success: true;
@@ -53,8 +54,15 @@ const apiRequest = async <T>(
   }
 };
 
+interface AuctionListData {
+  status: number;
+  cnt: number;
+  auctions: AuctionItemDataType[];
+  total_pages: number;
+}
+
 /**
- * 주어진 필터를 기반으로 경매 데이터를 가져옵니다.
+ * 주어진 필터를 기반으로 경매 데이터 목록을 가져옵니다.
  *
  * @param gender - 경매 항목의 성별. 'w'는 암컷, 'm'은 수컷입니다.
  * @param sizeStart - 항목의 크기 범위를 'AbetweenB' 형식으로 지정합니다 (예: '2between5').
@@ -90,6 +98,7 @@ export const getAuctionDatas = async ({
   priceEnd?: number;
   progress?: number;
 }) => {
+  // query setting
   const pageQuery = page ? `page=${page}` : "page=1";
   const genderQuery = gender ? `&gender=${gender}` : "";
   const sizeQuery =
@@ -101,25 +110,52 @@ export const getAuctionDatas = async ({
   const query =
     pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
 
-  const response = await apiRequest<{
-    status: number;
-    cnt: number;
-    auctions: AuctionItemDataType[];
-    total_pages: number;
-  }>(() => guestAxios.get(`/auction?${query}`));
-  return response;
-};
-
-// 경매 단일 상품 조회
-export const getAuctionDetailItemData = async (auctionUUID: string) => {
-  const response = await apiRequest<AuctionItemDataType>(() =>
-    guestAxios.get(`/auction/${auctionUUID}`)
+  // request
+  const response = await apiRequest<AuctionListData>(() =>
+    guestAxios.get(`/auction?${query}`)
   );
   return response;
 };
 
-// 거래 데이터 조회
+// 경매 단일 상품 조회 search dummy
+export const getAuctionDetailItemData = async (auctionID: number) => {
+  const response = (await apiRequest)<{
+    data: { auction: AuctionItemDataType };
+  }>(() => guestAxios.get(`/auction/${auctionID}`));
+  // return response;
 
+  return {
+    success: true,
+    data: { data: AuctionResponseDummuy.data },
+  };
+};
+
+// 경매 등록
+export const addAuctionItem = async (auctionData: FormData) => {
+  const response = await apiRequest<{ status: number; message: string }>(() =>
+    authAxios.post("/auction", auctionData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      timeout: 10000,
+    })
+  );
+  return response;
+};
+
+export interface TransactionListData {
+  status: number;
+  message: string;
+  data: {
+    current_page: number;
+    total_pages: number;
+    cnt: number;
+    transactions: TransactionItemDataType[];
+  };
+}
+
+// 거래 목록 조회
 export const getTransactionData = async ({
   page,
   gender,
@@ -148,11 +184,8 @@ export const getTransactionData = async ({
   const query =
     pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
 
-  const response = await apiRequest<{
-    status: number;
-    cnt: number;
-    transactions: TransactionItemDataType[];
-    total_pages: number;
-  }>(() => guestAxios.get(`/transaction?${query}`));
+  const response = await apiRequest<TransactionListData>(() =>
+    guestAxios.get(`/transaction?${query}`)
+  );
   return response;
 };

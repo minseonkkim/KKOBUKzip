@@ -69,23 +69,23 @@ function MyPage() {
         <title>마이페이지</title>
       </Helmet>
       <Header />
-      <div className="px-[250px] mt-[85px]">
-        <div className="flex flex-row justify-between mt-[120px] px-[30px] py-[20px] h-[215px] bg-gradient-to-r from-[#e7f6d1] via-[#d5e5bd] to-[#e7f6d1] rounded-[20px]">
-          <div>
-            <div className="font-dnf-bitbit text-[#4B721F] text-[27px] mt-1 mb-5">내 정보</div>
-            <div className="text-[22px]">
+      <div className="flex flex-col h-[100vh] overflow-hidden px-4 lg:px-[250px] pt-[85px]">
+        <div className="flex flex-row justify-between items-center mt-0 lg:mt-[30px] px-[30px] py-[20px] bg-gradient-to-r from-[#e7f6d1] via-[#d5e5bd] to-[#e7f6d1] rounded-[20px]">
+          <div className="w-1/2">
+            <div className="font-dnf-bitbit text-[#4B721F] text-[24px] md:text-[27px] mt-1 mb-3 md:mb-5">내 정보</div>
+            <div className="lg:text-[22px] text-[17px]">
               <div>닉네임: 꼬북맘</div>
               <div>주소: 바다</div>
               <div>연락처: 000-0000-0000</div>
             </div>
           </div>
           <div
-            className="relative rounded-full w-[170px] h-[170px] overflow-hidden bg-[#4B721F] flex justify-center items-center group"
+            className="relative rounded-full w-[140px] h-[140px] lg:w-[170px] lg:h-[170px] overflow-hidden bg-[#4B721F] flex justify-center items-center group"
             onClick={openCustomModal}
           >
             <img
               src={profileImage}
-              className="rounded-full object-cover w-[162px] h-[162px] transition-all duration-300 group-hover:brightness-50"
+              className="rounded-full object-cover w-[132px] h-[132px] lg:w-[162px] lg:h-[162px] transition-all duration-300 group-hover:brightness-50"
               draggable="false"
             />
             <button className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-semibold rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100">
@@ -94,9 +94,9 @@ function MyPage() {
           </div>
         </div>
 
-        <div className="mt-[25px] text-[23px] flex flex-row cursor-pointer mb-[10px] font-stardust">
+        <div className="mt-[25px] text-[21px] lg:text-[23px] flex flex-row cursor-pointer mb-[10px] font-stardust">
           <div
-            className={`w-[125px] h-[42px] border-b-[4px] text-center ${
+            className={`w-1/2 lg:w-[130px] h-[42px] border-b-[4px] text-center ${
               selectedMenu === 0 && "border-[#4B721F] font-bold"
             }`}
             onClick={() => setSelectedMenu(0)}
@@ -104,7 +104,7 @@ function MyPage() {
             거래 내역
           </div>
           <div
-            className={`w-[125px] h-[42px] border-b-[4px] text-center ${
+            className={`w-1/2 lg:w-[130px] h-[42px] border-b-[4px] text-center ${
               selectedMenu === 1 && "border-[#4B721F] font-bold"
             }`}
             onClick={() => setSelectedMenu(1)}
@@ -112,11 +112,12 @@ function MyPage() {
             나의 거북이
           </div>
         </div>
+        <div className="overflow-y-auto flex-1 mb-5">
 
         {/* 거래내역 */}
         {selectedMenu === 0 && (
           // 거래 내역이 있을 경우
-          <div className="flex flex-col mb-[20px]">
+          <div className="flex flex-col space-y-3">
             <TransactionHistory/>
             <TransactionHistory/>
             <TransactionHistory/>
@@ -133,13 +134,14 @@ function MyPage() {
         {/* 나의 거북이 */}
         {selectedMenu === 1 && (
           // 나의 거북이가 있을 경우
-          <div className="flex flex-row flex-wrap mb-[20px] gap-[2%]">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
             <MyTurtle />
             <MyTurtle />
             <MyTurtle />
             <MyTurtle />
           </div>
         )}
+        </div>
       </div>
 
       {isCustomModalOpen && (
@@ -147,7 +149,7 @@ function MyPage() {
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100000]"
           onClick={handleCustomOverlayClick}
         >
-          <div className="bg-white p-6 rounded-[10px] shadow-lg w-[300px] flex justify-center items-center">
+          <div className="bg-white p-6 rounded-[10px] shadow-lg w-[280px] flex justify-center items-center">
             <div className="flex flex-col space-y-[20px]">
               <img
                 src={profileImage}

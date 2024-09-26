@@ -11,15 +11,12 @@ export default function AuctionTurtle({
   const navigate = useNavigate();
 
   const goToDetail = () => {
-    navigate("/auction-detail");
+    navigate("/auction-detail/" + (data?.id ?? 1));
   };
 
   return (
-    <>
-      <div
-        onClick={goToDetail}
-        className="bg-[#F8F9FA] shadow-lg transition-shadow duration-300 w-full max-w-sm h-[300px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative"
-      >
+    <div onClick={goToDetail}>
+      <div className="bg-[#F8F9FA] shadow-lg transition-shadow duration-300 w-full max-w-sm h-[300px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative">
         <div className="overflow-hidden rounded-t-2xl relative">
           <img
             src={TmpTurtle}
@@ -33,7 +30,9 @@ export default function AuctionTurtle({
         </div>
         <div className="px-3 py-1">
           <div className="flex justify-between items-center my-2">
-            <h3 className="text-[16px] xl:text-[17px] font-semibold whitespace-nowrap">페닐슐라쿠터</h3>
+            <h3 className="text-[16px] xl:text-[17px] font-semibold whitespace-nowrap">
+              페닐슐라쿠터
+            </h3>
             <div className="text-[15px] text-gray-700 flex space-x-1.5">
               <span className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full">
                 #태그
@@ -49,6 +48,6 @@ export default function AuctionTurtle({
           <div className="text-[18px] text-[#BA0606]">10초 뒤 가격 상승</div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

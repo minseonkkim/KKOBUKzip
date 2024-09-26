@@ -10,8 +10,8 @@ services:
       - "15672:15672"
       - "5672:5672"
     environment:
-      - RABBITMQ_DEFAULT_USER=kkobuk
-      - RABBITMQ_DEFAULT_PASS=kkobuk
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
 
   redis-master:
     image: redis:latest
@@ -28,12 +28,12 @@ services:
       "--save", "300", "10",
       "--save", "60", "10000",
       "--dbfilename", "dump.rdb",
-      "--dir", "/data",
+      "--dir", "../data",
       "--requirepass", "kkobuk",
       "--masterauth", "kkobuk"
     ]
     volumes:
-      - ./data/redis-master:/data  # RDB 및 AOF 파일이 저장될 디렉토리
+      - ../data/redis-master:/data  # RDB 및 AOF 파일이 저장될 디렉토리
 
   redis-replica-1:
     image: redis:latest
@@ -56,7 +56,7 @@ services:
       "--masterauth", "kkobuk"
     ]
     volumes:
-      - ./data/redis-replica-1:/data
+      - ../data/redis-replica-1:/data
     depends_on:
       - redis-master
 
@@ -76,12 +76,12 @@ services:
       "--save", "300", "10",
       "--save", "60", "10000",
       "--dbfilename", "dump.rdb",
-      "--dir", "/data",
+      "--dir", "../data",
       "--requirepass", "kkobuk",
       "--masterauth", "kkobuk"
     ]
     volumes:
-      - ./data/redis-replica-2:/data
+      - ../data/redis-replica-2:/data
     depends_on:
       - redis-master
 
@@ -94,7 +94,7 @@ services:
       - "26379:26379"
     command: ["redis-sentinel", "/etc/sentinel.conf"]
     volumes:
-      - ./sentinel/sentinel-1.conf:/etc/sentinel.conf
+      - ../sentinel/sentinel-1.conf:/etc/sentinel.conf
     depends_on:
       - redis-master
 
@@ -107,7 +107,7 @@ services:
       - "26380:26379"
     command: ["redis-sentinel", "/etc/sentinel.conf"]
     volumes:
-      - ./sentinel/sentinel-2.conf:/etc/sentinel.conf
+      - ../sentinel/sentinel-2.conf:/etc/sentinel.conf
     depends_on:
       - redis-master
 
@@ -120,12 +120,12 @@ services:
       - "26381:26379"
     command: ["redis-sentinel", "/etc/sentinel.conf"]
     volumes:
-      - ./sentinel/sentinel-3.conf:/etc/sentinel.conf
+      - ../sentinel/sentinel-3.conf:/etc/sentinel.conf
     depends_on:
       - redis-master
 
   eureka-service:
-    image: 1202yjk/eureka-service:${BUILD_TAG}
+    image: 1202yjk/eureka-service:kkobuk
     container_name: eureka-service
     networks:
       - kkobuk-network
@@ -133,7 +133,7 @@ services:
       - "8761:8761"
 
   config-service:
-    image: 1202yjk/config-service:${BUILD_TAG}
+    image: 1202yjk/config-service:kkobuk
     container_name: config-service
     ports:
       - "8888:8888"
@@ -149,7 +149,7 @@ services:
       retries: 5
 
   apigateway-service:
-    image: 1202yjk/apigateway-service:${BUILD_TAG}
+    image: 1202yjk/apigateway-service:kkobuk
     container_name: apigateway-service
     networks:
       - kkobuk-network
@@ -169,7 +169,7 @@ services:
         condition: service_healthy
 
   auction-service:
-    image: 1202yjk/auction-service:${BUILD_TAG}
+    image: 1202yjk/auction-service:kkobuk
     container_name: auction-service
     ports:
       - "8082:8082"
@@ -186,7 +186,7 @@ services:
       - kkobuk-network
 
   main-service:
-    image: 1202yjk/main-service:${BUILD_TAG}
+    image: 1202yjk/main-service:kkobuk
     container_name: main-service
     ports:
       - "8081:8081"

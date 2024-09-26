@@ -1,9 +1,7 @@
 package com.turtlecoin.mainservice.domain.transaction.controller;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/main/transaction")
@@ -12,4 +10,10 @@ public class TransactionController {
     public String test() {
         return "Hi! It's Test!!";
     }
+//
+//    @GetMapping("/")
+//    public ResponseEntity<?> entireTransactions(@RequestParam("gender")String gender, ){
+//
+//
+//    }
 }
