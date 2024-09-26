@@ -32,4 +32,12 @@ public class AssignDocumentRequest {
 		String phoneNumber;
 		String address;
 	}
+
+	public boolean isValid(){
+		return (
+			docType != null && applicant != null && detail != null
+			&& detail.assignee != null && detail.turtleUUID != null && detail.purpose != null && detail.transferReason != null
+			&& detail.assignee.name != null && detail.assignee.phoneNumber != null && detail.assignee.address != null
+		);
+	}
 }
