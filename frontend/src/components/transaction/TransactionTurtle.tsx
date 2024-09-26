@@ -25,7 +25,7 @@ export default function TransactionTurtle({
   return (
     <>
       <div onClick={goToDetail}
-        className="bg-[#F8F9FA] shadow-lg transition-shadow duration-300 w-full max-w-sm h-[300px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative">
+        className="bg-[#F8F9FA] shadow-lg transition-shadow duration-300 w-full max-w-sm h-[310px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative">
         <div className="overflow-hidden rounded-t-2xl relative">
           <img
             src={transaction_image}
@@ -39,9 +39,11 @@ export default function TransactionTurtle({
         <div className="absolute top-4 right-4">
           <TransactionStatusTag progress={progress} />
         </div>
-        <div className="px-3 py-1">
-          <div className="flex justify-between items-center my-2">
-            <div className="text-[16px] xl:text-[17px] font-semibold whitespace-nowrap">{scientific_name}</div>
+        <div className="px-3 py-2">
+          <div className="w-full overflow-hidden text-[20px] mb-4 text-gray-900 whitespace-nowrap text-ellipsis">거북이 팔아용 거북이 팔아용 거북이 팔아용 거북이 팔아용</div>
+
+          <div className="flex justify-between items-center">
+            <div className="text-[15px] xl:text-[17px] whitespace-nowrap text-[#9A9A9A]">{scientific_name}</div>
             <div className="text-[15px] text-gray-700 flex space-x-1.5">
               {transaction_tag.map((tag, index) => (
                 <span
@@ -53,7 +55,7 @@ export default function TransactionTurtle({
               ))}
             </div>
           </div>
-          <div className="whitespace-nowrap font-extrabold text-3xl text-[#4B721F] mt-1 font-stardust">
+          <div className="whitespace-nowrap font-extrabold text-[28px] text-[#4B721F] font-stardust">
             {price.toLocaleString("ko-KR")}원
           </div>
         </div>
