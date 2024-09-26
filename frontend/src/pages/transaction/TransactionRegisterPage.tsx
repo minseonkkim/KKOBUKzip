@@ -49,7 +49,7 @@ export default function TransactionRegisterPage(){
       </Helmet>
       <Header />
       <div className="px-[250px] mt-[85px]">
-        <div className="text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-[40px] pb-[13px]">판매 등록하기</div>
+        <div className="text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-[32px] pb-[13px]">판매 등록하기</div>
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">
           <img src={TmpTurtleImg} draggable="false" className="w-[170px] h-full object-cover rounded-[10px] mr-8" />
           <div className="flex flex-col">
@@ -81,6 +81,17 @@ export default function TransactionRegisterPage(){
               }}
             />
             kg
+          </div>
+
+          {/* 제목 30자 이내로만 입력할 수 있게 하기 */}
+          <div className="flex flex-row items-center">
+            <label className="w-[120px] mb-1">제목</label>
+            <input
+              className="w-full text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
+              type="text"
+              name="title"
+              required
+            />
           </div>
           <div className="flex flex-row items-start">
             <label className="w-[120px]">상세 설명</label>

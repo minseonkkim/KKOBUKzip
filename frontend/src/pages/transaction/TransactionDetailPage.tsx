@@ -36,7 +36,7 @@ function TransactionDetailPage() {
 
       <Header />
       <div className="px-4 lg:px-[250px] mt-[85px]">
-        <div className="cursor-pointer whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit pt-0 lg:pt-[40px] pb-[13px]">
+        <div className="cursor-pointer whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit pt-0 lg:pt-[32px] pb-[13px]">
           <span onClick={goBack}>&lt;&nbsp;판매중인 거북이</span>
         </div>
         <div className="h-full md:h-[675px] flex flex-col md:flex-row justify-between mt-[10px]">
@@ -64,8 +64,8 @@ function TransactionDetailPage() {
                 {currentIndex + 1} / {images.length}
               </div>
             </div>
-            <div className="text-[23px] mt-[13px]">거북이 팔아용</div>
-            <div className="flex flex-row justify-between lg:justify-start xl:justify-between items-center mt-[5px] mb-[10px]">
+            <div className="text-[23px] mt-[13px]">거북이 팔아용 거북이 팔아용 거북이 팔아용 거북이 팔아용</div>
+            <div className="flex flex-row justify-between lg:justify-start xl:justify-between items-center mt-[10px] mb-[10px]">
               <div className="text-[#9A9A9A] text-[18px]">
                 페닐슐라쿠터 | 24년 8월 10일생 | 8kg
               </div>

@@ -83,7 +83,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
 
       <Header />
       <div className="h-screen flex flex-col pt-[85px] px-4 lg:px-[250px]">
-        <div className="flex flex-col md:flex-row items-center justify-between pt-0 lg:pt-[40px] pb-[5px] lg:pb-[13px]">
+        <div className="flex flex-col md:flex-row items-center justify-between pt-0 lg:pt-[32px] pb-[5px] lg:pb-[13px]">
           <div className="whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 mb-2 md:mb-0">
             {title}
           </div>
@@ -155,7 +155,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
           )}
         </div>
 
-        <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-[30px] mt-[10px]">
+        <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
           {initialLoad &&
             Array.from({ length: 6 }).map((_, index) => (
               <div key={`skeleton-${index}`} className="col-span-1">
