@@ -17,8 +17,7 @@ function DuringAuction({ channelId }: { channelId: string }) {
     const init = async () => {
       setLoading(true);
       // 소켓 설정
-      const socketAddress = "ws://localhost:8080/api/main/ws";
-      // const socketAddress = import.meta.env.VITE_SOCKET_URL
+      const socketAddress = import.meta.env.VITE_SOCKET_URL_AUCTION;
       const socket = new WebSocket(socketAddress);
       auctionStompClient.current = Stomp.over(socket);
 

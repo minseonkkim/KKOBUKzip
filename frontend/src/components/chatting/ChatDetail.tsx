@@ -141,8 +141,7 @@ export default function ChatDetail({
 
   // 웹소켓 연결 설정
   const connect = () => {
-    const socketAddress = "ws://localhost:8080/api/main/ws";
-    // const socketAddress = import.meta.env.VITE_SOCKET_URL
+    const socketAddress = import.meta.env.VITE_SOCKET_URL_MAIN;
     const socket = new WebSocket(socketAddress);
     stompClient.current = Stomp.over(socket);
 

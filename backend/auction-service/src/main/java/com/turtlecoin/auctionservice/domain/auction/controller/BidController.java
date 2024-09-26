@@ -2,20 +2,11 @@ package com.turtlecoin.auctionservice.domain.auction.controller;
 
 import com.turtlecoin.auctionservice.domain.auction.dto.BidRequestDTO;
 import com.turtlecoin.auctionservice.domain.auction.service.AuctionService;
-import com.turtlecoin.auctionservice.domain.auction.service.WebSocketService;
-import com.turtlecoin.auctionservice.global.exception.AuctionNotFoundException;
-import com.turtlecoin.auctionservice.global.exception.SameUserBidException;
-import com.turtlecoin.auctionservice.global.exception.WrongBidAmountException;
-import com.turtlecoin.auctionservice.global.response.ResponseVO;
+import com.turtlecoin.auctionservice.websocket.service.WebSocketService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller

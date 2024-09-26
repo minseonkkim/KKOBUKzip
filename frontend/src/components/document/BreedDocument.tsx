@@ -73,7 +73,7 @@ function BreedDocument() {
       applicant: "d271c7d8-3f7b-4d4e-8a9e-d60f896b84cb", // storage에서 긁어올 것
       detail: {
         ...data,
-        location: postcodeData?.roadAddress + " " + detailLocation,
+        location: postcodeData?.roadAddress + " / " + detailLocation,
         registerDate: new Date().toISOString().substring(0, 10),
       },
     };
