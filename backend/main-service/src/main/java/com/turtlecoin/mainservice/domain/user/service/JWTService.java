@@ -49,14 +49,16 @@ public class JWTService {
 
             // Redis에 refresh token 저장 (email, 토큰, 만료시간을 함께 저장)
             redisTemplate.opsForValue().set(email, refresh, 86400000L, TimeUnit.SECONDS);
-
-            // 응답 데이터 준비
-            Map<String, String> data = new HashMap<>();
+            ResponseVO responseVO = ResponseVO.success("로그인 성공");
+            Map<String, Object> data = new HashMap<>();
             data.put("accessToken", access);
             data.put("refreshToken", refresh);
             data.put("role", role);
+            data.put("nickname", user.get().getNickname());
+            data.put("email", user.get().getEmail());
 
-            ResponseVO<Map<String, String>> responseVO = ResponseVO.success("로그인 성공", data);
+            responseVO.setData(data);
+
             return new ResponseEntity<>(responseVO, HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(ResponseVO.failure("500","서버 에러 발생"),HttpStatus.INTERNAL_SERVER_ERROR);
@@ -80,7 +82,7 @@ public class JWTService {
     public ResponseEntity<?> refreshTokenRotate(String refreshToken){
         //refreshToken 유효성 확인
         if(refreshToken == null) {
-            return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(ResponseVO.failure("400","refresh token null"), HttpStatus.BAD_REQUEST);
         }
 
         // Check token format
@@ -88,7 +90,7 @@ public class JWTService {
         if (parts.length == 2 && "Bearer".equals(parts[0])) {
             refreshToken = parts[1];
         }else{
-            return new ResponseEntity<>("Invalid token format", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(ResponseVO.failure("400","Invalid token format"), HttpStatus.BAD_REQUEST);
         }
 
         // Check Token expired

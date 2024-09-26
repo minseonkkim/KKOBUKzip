@@ -18,7 +18,6 @@ public class UserRequestDto {
     private LocalDate birth;
     private String phonenumber;
     private String address;
-    private MultipartFile profileImage;
     private Role role;
 
     public Role getRole() {

@@ -1,7 +1,7 @@
 package com.turtlecoin.mainservice.domain.turtle.entity;
 
 import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
-import com.turtlecoin.mainservice.domain.global.entity.BaseEntity;
+import com.turtlecoin.mainservice.global.entity.BaseEntity;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
