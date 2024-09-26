@@ -87,7 +87,7 @@ export default function TransactionRegisterPage(){
           <div className="flex flex-row items-center">
             <label className="w-[120px] mb-1">제목</label>
             <input
-              className="w-full text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
+              className="flex-grow text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
               type="text"
               name="title"
               required
