@@ -7,18 +7,26 @@
 
 @font-face {
   font-family: "DNFBitBitv2";
-  font-style: normal;
+  src: url("/fonts/DNFBitBitv2.otf") format("opentype");
   font-weight: 300;
-  src: url("//cdn.df.nexon.com/img/common/font/DNFBitBitv2.otf")
-    format("opentype");
+  font-style: normal;
+  font-display: swap;
 }
 
-@font-face {
+/* @font-face {
   font-family: "PFStardust";
   src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/PFStardust.woff")
     format("woff");
   font-weight: normal;
   font-style: normal;
+} */
+
+@font-face {
+  font-family: "PFStardust";
+  src: url("/fonts/PFStardust3.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
 body {
