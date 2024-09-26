@@ -13,6 +13,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +35,8 @@ public class BidService {
         Map<Object, Object> currentBidData = getCurrentBid(auctionId);
         Double currentBid = (Double) currentBidData.get("bidAmount");
         Long currentUserId = (Long) currentBidData.get("userId");
+
+        LocalDateTime auctionEndTime = auctionRepository.findById(auctionId).get().getEndTime();
 
         // 현재 입찰가가 없을 경우 최소 입찰가로 시작
         if (currentBid == null) {
