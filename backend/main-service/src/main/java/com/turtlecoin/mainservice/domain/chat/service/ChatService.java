@@ -4,11 +4,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.turtlecoin.mainservice.domain.chat.dto.ChatRequestDto;
+import com.turtlecoin.mainservice.domain.chat.dto.ChatResponseDto;
+import com.turtlecoin.mainservice.domain.chat.dto.ChatTextResponseDto;
+import com.turtlecoin.mainservice.domain.chat.dto.ChatTurtleResponseDto;
 import com.turtlecoin.mainservice.domain.chat.entity.Chat;
 import com.turtlecoin.mainservice.domain.chat.entity.ChatMessage;
 import com.turtlecoin.mainservice.domain.chat.entity.ChatTextMessage;
@@ -72,11 +77,24 @@ public class ChatService {
 	}
 
 	// 채팅 리스트에서 넘어와서 채팅 목록을 조회하는 경우
-	public List<ChatMessage> getChatListFromUser(Long smallUserId, Long bigUserId, Pageable pageable) throws Exception {
-		return chatRepository.getChatByPage(smallUserId, bigUserId, pageable.getPageNumber(), pageable.getPageSize());
+	public List<ChatResponseDto> getChatListFromUser(Long userId, Long opponentId, Pageable pageable) throws Exception {
+		// 더 작은 쪽이 왼쪽 매개변수로 들어가게 해야 함
+		Long left = Math.min(opponentId, userId);
+		Long right = Math.max(opponentId, userId);
+
+		return chatRepository.getChatByPage(left, right, pageable.getPageNumber(), pageable.getPageSize())
+			.stream().map((chatMessage) ->{
+				if(chatMessage instanceof ChatTextMessage) {
+					return new ChatTextResponseDto((ChatTextMessage) chatMessage);
+				}
+				else{
+					return new ChatTurtleResponseDto((ChatTurtleMessage) chatMessage);
+				}
+			})
+			.collect(Collectors.toList());
 	}
 
-	public List<ChatMessage> getChatListFromTransaction(Long userId, Long transactionId, Pageable pageable) throws Exception {
+	public List<ChatResponseDto> getChatListFromTransaction(Long userId, Long transactionId, Pageable pageable) throws Exception {
 		Transaction transaction = transactionService.findTransactionById(transactionId);
 		if(transaction == null){
 			throw new TransactionNotFoundException("거래를 찾을 수 없습니다.");
@@ -93,7 +111,16 @@ public class ChatService {
 		}
 		addChatTurtleMessage(left, right, transaction.getTitle(), transaction.getPrice(), transaction.getTransactionPhotos().get(0).getImageAddress());
 
-		return chatRepository.getChatByPage(left, right, pageable.getPageNumber(), pageable.getPageSize());
+		return chatRepository.getChatByPage(left, right, pageable.getPageNumber(), pageable.getPageSize())
+			.stream().map((chatMessage) ->{
+				if(chatMessage instanceof ChatTextMessage) {
+					return new ChatTextResponseDto((ChatTextMessage) chatMessage);
+				}
+				else{
+					return new ChatTurtleResponseDto((ChatTurtleMessage) chatMessage);
+				}
+			})
+			.collect(Collectors.toList());
 	}
 
 }
