@@ -47,7 +47,7 @@ export const apiHelper = async <T>(
       errorMessage = error.message;
       errorCode = ~~error?.code!;
     }
-
+    console.error(`Document API Request: ${errorCode} - ${errorMessage}`);
     return {
       success: false,
       message: errorMessage,

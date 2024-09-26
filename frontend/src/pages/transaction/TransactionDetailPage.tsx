@@ -73,12 +73,12 @@ function TransactionDetailPage() {
               </div>
               <div className="flex flex-row space-x-2">
                 <span
-                  className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] md:text-[17px] bg-[#D5F0DD] text-[#065F46]"
+                  className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] bg-[#D5F0DD] text-[#065F46]"
                 >
                   #암컷
                 </span>
                 <span
-                  className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] md:text-[17px] bg-[#D5F0DD] text-[#065F46]"
+                  className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] bg-[#D5F0DD] text-[#065F46]"
                 >
                   #베이비
                 </span>
@@ -107,7 +107,7 @@ function TransactionDetailPage() {
                 <span className="text-[20px]">꼬북맘</span>
               </div>
               <div
-                onClick={() => openChatDetail(1, userNickname)}
+                onClick={() => openChatDetail(1, "꼬북맘")}
                 className="cursor-pointer bg-[#7CBBF9] h-fit flex justify-center items-center rounded-[10px] font-bold px-3 py-2 text-white"
               >
                 채팅하기

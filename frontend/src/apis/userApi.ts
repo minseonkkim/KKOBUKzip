@@ -33,7 +33,7 @@ const apiRequest = async <T>(
       // 일반 JavaScript Error 처리
       errorMessage = error.message;
     }
-
+    console.error(`User API Request: ${errorMessage}`);
     return { success: false, error: errorMessage };
   }
 };
@@ -55,18 +55,14 @@ const logout = async (): Promise<{ success: boolean; error?: string }> => {
 
 // 회원가입
 const register = async (
-  user: JoinDataType
+  data: JoinDataType
 ): Promise<{
   success: boolean;
   data?: RegisterResponseData;
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<RegisterResponseData>("/main/user/signup", user, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
+    guestAxios.post<RegisterResponseData>("/main/user/signup", { data })
   );
 };
 
@@ -89,7 +85,7 @@ const checkEmailRequest = async (
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<EmailCheckResponseData>(`/main/user/email/`, {
+    guestAxios.post<EmailCheckResponseData>(`/main/user/email`, {
       email,
       verification,
     })

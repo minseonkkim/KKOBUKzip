@@ -45,7 +45,7 @@ function GrantorDocument() {
       detail: {
         granter: {
           ...grantor,
-          address: postcodeData?.roadAddress + " " + detailLocation,
+          address: postcodeData?.roadAddress + " / " + detailLocation,
         },
 
         // UUID 부분 데이터 들어오면 할당할 것
@@ -117,7 +117,9 @@ function GrantorDocument() {
             </div>
           </div>
           <div className="flex items-center">
-            <label className="w-[31%] md:w-1/5 font-medium break-keep">인공증식 시설 소재지</label>
+            <label className="w-[31%] md:w-1/5 font-medium break-keep">
+              인공증식 시설 소재지
+            </label>
 
             <button
               ref={addressBtnRef}

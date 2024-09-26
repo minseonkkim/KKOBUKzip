@@ -7,6 +7,5 @@ export interface JoinDataType {
   birthday: string;
   phoneNumber: string;
   address: string;
-  //   detailedAddress: string;
   profileImage?: File;
 }

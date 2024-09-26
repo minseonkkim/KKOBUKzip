@@ -34,12 +34,18 @@ function AuctionDetailPage() {
   const [auctionItemData, setAuctionItemData] =
     useState<AuctionItemDataType | null>(null);
   const params = useParams();
+  const auctionId = params.auctionId;
+  const [isValidId, setIsValidId] = useState(true);
+
   useLayoutEffect(() => {
     // 처음 옥션 데이터 로딩하는 부분
 
     const getData = async () => {
-      if (!Number.isSafeInteger(params.auctionId)) navigate("/");
       const auctionId = Number(params.auctionId);
+      if (isNaN(auctionId) || !Number.isInteger(auctionId)) {
+        setIsValidId(false);
+        return; // 이후 코드를 실행하지 않도록 합니다.
+      }
       const response = await getAuctionDetailItemData(auctionId);
       if (response.success) {
         console.log(response.data.data.auction);
@@ -52,9 +58,15 @@ function AuctionDetailPage() {
     };
 
     getData();
-  }, []);
+  }, [auctionId]);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isValidId) {
+      navigate("/");
+    }
+  }, [isValidId, navigate]);
 
   const goBack = useCallback(() => {
     navigate(-1); // 이전 페이지로 이동
@@ -64,6 +76,7 @@ function AuctionDetailPage() {
   const changeAuctionStatus = useCallback(() => {
     setAuctionStatus("DURING_AUCTION");
   }, []);
+
   return (
     <>
       <Helmet>
