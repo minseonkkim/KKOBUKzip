@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -36,8 +37,10 @@ public class UserController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<ResponseVO<?>> joinProcess(@RequestBody UserRequestDto userDto) {
-        return userService.saveUser(userDto);
+    public ResponseEntity<ResponseVO<?>> joinProcess(
+            @RequestPart("data") UserRequestDto userDto,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        return userService.saveUser(userDto,image);
     }
 
     @PostMapping("/login")

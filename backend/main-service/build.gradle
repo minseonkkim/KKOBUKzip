@@ -74,6 +74,12 @@ dependencies {
 
 	//feign client
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+
+	//file upload
+	implementation group: 'commons-io', name: 'commons-io', version: '2.16.1'
+	implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
+
 }
 
 dependencyManagement {

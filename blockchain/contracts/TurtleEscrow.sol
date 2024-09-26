@@ -2,7 +2,6 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
@@ -13,7 +12,7 @@ using SafeERC20 for IERC20;
  * @author 서규범
  * @notice 이 컨트랙트는 거북이 거래 에스크로 서비스를 제공합니다.
  */
-contract TurtleEscrow is Ownable, ReentrancyGuard {
+contract TurtleEscrow is Ownable {
     /**
      * @dev 거래 상태를 나타내는 열거형
      * @notice 거래 상태는 다음과 같이 정의됩니다.
@@ -47,7 +46,8 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         uint256 lockPeriod; // 잠금 기간
     }
 
-    mapping(uint256 => Transaction) public transactions; // 거래 ID에 따른 거래 정보 매핑
+    mapping(uint256 => Transaction) public auctionTransactions; // 경매 거래 ID에 따른 경매 거래 정보 매핑
+    mapping(uint256 => Transaction) public normalTransactions; // 일반 거래 ID에 따른 일반 거래 정보 매핑
 
     address public arbiter; // 중재자 주소
     uint256 public constant LOCK_PERIOD = 7 days; // 기본 잠금 기간 (7일)
@@ -56,10 +56,10 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
     /**
      * @dev 이벤트 모음
      */
-    event TransactionCreated(uint256 indexed transactionId, address buyer, address seller, uint256 amount);
-    event FundsLocked(uint256 indexed transactionId);
-    event FundsReleased(uint256 indexed transactionId);
-    event FundsRefunded(uint256 indexed transactionId);
+    // event TransactionCreated(uint256 indexed transactionId, address buyer, address seller, uint256 amount);
+    // event FundsLocked(uint256 indexed transactionId);
+    // event FundsReleased(uint256 indexed transactionId);
+    // event FundsRefunded(uint256 indexed transactionId);
 
     /**
      * @dev 생성자: 중재자 주소와 사용할 ERC20 토큰 주소 설정
@@ -82,36 +82,41 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * - Interactions: 토큰 전송
      */
     // 새로운 거래 생성
-    function createTransaction(uint256 _transactionId, address _seller, uint256 _amount) external nonReentrant returns (uint256) {
+    function createTransaction(bool _isAuction, uint256 _transactionId, address _seller, uint256 _amount) external returns (bool, uint256) {
         // Check
         require(_seller != address(0), "Invalid seller address");
         require(_amount > 0, "Invalid amount! Amount must be greater than 0");
         // require(transactions[_transactionId].buyer == address(0), "Transaction ID already exists")
 
         // Effects
-        transactions[_transactionId] = Transaction({buyer: msg.sender, seller: _seller, amount: _amount, state: State.Created, createdAt: block.timestamp, lockPeriod: LOCK_PERIOD});
+        uint256 convertedAmount = _amount * 1e18;
+        if (_isAuction) {
+            auctionTransactions[_transactionId] = Transaction({buyer: msg.sender, seller: _seller, amount: convertedAmount, state: State.Created, createdAt: block.timestamp, lockPeriod: LOCK_PERIOD});
+        } else {
+            normalTransactions[_transactionId] = Transaction({buyer: msg.sender, seller: _seller, amount: convertedAmount, state: State.Created, createdAt: block.timestamp, lockPeriod: LOCK_PERIOD});
+        }
 
         // Interactions
-        require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");  // 변경 이전 코드
-        // token.safeTransferFrom(_buyer, address(this), _amount); // 변경 후 : SafeERC20 라이브러리를 사용해 안전한 전송
-        emit TransactionCreated(_transactionId, msg.sender, _seller, _amount);
+        require(token.transferFrom(msg.sender, address(this), convertedAmount), "Token transfer failed");  // 변경 이전 코드
+        // token.safeTransferFrom(_buyer, address(this), convertedAmount); // 변경 후 : SafeERC20 라이브러리를 사용해 안전한 전송
+        // emit TransactionCreated(_transactionId, msg.sender, _seller, convertedAmount);
 
-        lockFunds(_transactionId);  // 자금 잠금 동시에 진행
+        lockFunds(_isAuction, _transactionId);  // 자금 잠금 동시에 진행
 
-        return _transactionId;
+        return (_isAuction, _transactionId);
     }
 
     /**
      * @dev 자금 잠금
      * @param _transactionId 거래 ID
      */
-    function lockFunds(uint256 _transactionId) external nonReentrant {
-        Transaction storage transaction = transactions[_transactionId];
+    function lockFunds(bool _isAuction, uint256 _transactionId) internal {
+        Transaction storage transaction = _isAuction ? auctionTransactions[_transactionId] : normalTransactions[_transactionId];
         require(msg.sender == transaction.buyer, "Only buyer can lock funds");
         require(transaction.state == State.Created, "Invalid state");
 
         transaction.state = State.Locked;
-        emit FundsLocked(_transactionId);
+        // emit FundsLocked(_transactionId);
     }
 
     /**
@@ -122,9 +127,9 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * - Effects: 거래 상태 업데이트
      * - Interactions: 토큰 전송
      */
-    function releaseFunds(uint256 _transactionId) external nonReentrant {
+    function releaseFunds(bool _isAuction, uint256 _transactionId) external returns (bool, uint256) {
         // Checks
-        Transaction storage transaction = transactions[_transactionId];
+        Transaction storage transaction = _isAuction ? auctionTransactions[_transactionId] : normalTransactions[_transactionId];
         require(msg.sender == transaction.buyer || msg.sender == arbiter, "Unauthorized");
         require(transaction.state == State.Locked, "Invalid state");
 
@@ -135,7 +140,9 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         bool success = token.transfer(transaction.seller, transaction.amount);
         require(success, "Token transfer failed");
 
-        emit FundsReleased(_transactionId);
+        // emit FundsReleased(_transactionId);
+
+        return (_isAuction, _transactionId);
     }
 
     /**
@@ -146,9 +153,9 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * - Effects: 거래 상태 업데이트
      * - Interactions: 토큰 전송
      */
-    function refund(uint256 _transactionId) external nonReentrant {
+    function refund(bool _isAuction, uint256 _transactionId) external returns (bool, uint256) {
         // Checks
-        Transaction storage transaction = transactions[_transactionId];
+        Transaction storage transaction = _isAuction ? auctionTransactions[_transactionId] : normalTransactions[_transactionId];
         require(msg.sender == transaction.seller || msg.sender == arbiter, "Unauthorized");
         require(transaction.state == State.Locked, "Invalid state");
         require(block.timestamp >= transaction.createdAt + transaction.lockPeriod || msg.sender == arbiter, "Lock period not expired");
@@ -159,7 +166,8 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         // Interactions
         require(token.transfer(transaction.buyer, transaction.amount), "Token transfer failed");
 
-        emit FundsRefunded(_transactionId);
+        // emit FundsRefunded(_transactionId);
+        return (_isAuction, _transactionId);
     }
 
     /**
@@ -167,8 +175,8 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * @param _transactionId 거래 ID
      * @return 구매자 주소, 판매자 주소, 거래 금액, 거래 상태, 거래 생성 시간, 잠금 기간
      */
-    function getTransactionDetails(uint256 _transactionId) external view returns (address, address, uint256, State, uint256, uint256) {
-        Transaction storage transaction = transactions[_transactionId];
+    function getTransactionDetails(bool _isAuction, uint256 _transactionId) external view returns (address, address, uint256, State, uint256, uint256) {
+        Transaction memory transaction = _isAuction ? auctionTransactions[_transactionId] : normalTransactions[_transactionId];
         return (transaction.buyer, transaction.seller, transaction.amount, transaction.state, transaction.createdAt, transaction.lockPeriod);
     }
 
@@ -185,10 +193,12 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * @param _transactionId 거래 ID
      * @param _newLockPeriod 새로운 잠금 기간
      */
-    function updateLockPeriod(uint256 _transactionId, uint256 _newLockPeriod) external {
+    function updateLockPeriod(bool _isAuction, uint256 _transactionId, uint256 _newLockPeriod) external returns (bool, uint256) {
 
-        Transaction storage transaction = transactions[_transactionId];
+        Transaction storage transaction = _isAuction ? auctionTransactions[_transactionId] : normalTransactions[_transactionId];
         require(msg.sender == arbiter, "Only arbiter can update lock period");
         transaction.lockPeriod = _newLockPeriod;
+
+        return (_isAuction, _transactionId);
     }
 }
