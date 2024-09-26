@@ -27,7 +27,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [itemLoading, setItemLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
-  const [pages, setPages] = useState(1);
+  const [pages, setPages] = useState(1); // next page
   const [maxPage, setMaxPage] = useState(-1);
 
   const [ref, inView] = useInView({ threshold: 1 });
@@ -48,7 +48,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
       }
     };
     getData();
-  }, [fetchData, filters, pages]);
+  }, [fetchData, filters]);
 
   const loadMore = async () => {
     if (itemLoading || pages > maxPage) return;
@@ -57,6 +57,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
       const response = await fetchData(pages, filters);
       if (response.success) {
         setMaxPage(response.data.total_pages ?? -1);
+        setPages((prev) => prev + 1);
       }
     } finally {
       setItemLoading(false);
@@ -110,7 +111,8 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
                 onClick={handleCheckboxChange}
                 className="cursor-pointer whitespace-nowrap text-[20px] md:text-[18px] xl:text-[21px]"
               >
-                {title.includes("판매") ? "거래가능한" : "경매중인"} 거북이만 보기
+                {title.includes("판매") ? "거래가능한" : "경매중인"} 거북이만
+                보기
               </span>
             </label>
           </div>
