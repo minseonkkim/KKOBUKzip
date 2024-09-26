@@ -61,6 +61,7 @@ public class Turtle extends BaseEntity {
 
     @OneToMany(mappedBy = "turtle", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "turtle_photos")
+    @Builder.Default
     private List<TurtlePhoto> turtlePhotos = new ArrayList<>();
 
     public void turtleDie(){
