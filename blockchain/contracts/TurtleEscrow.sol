@@ -89,12 +89,13 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         // require(transactions[_transactionId].buyer == address(0), "Transaction ID already exists")
 
         // Effects
-        transactions[_transactionId] = Transaction({buyer: msg.sender, seller: _seller, amount: _amount, state: State.Created, createdAt: block.timestamp, lockPeriod: LOCK_PERIOD});
+        uint256 convertedAmount = _amount * 1e18;
+        transactions[_transactionId] = Transaction({buyer: msg.sender, seller: _seller, amount: convertedAmount, state: State.Created, createdAt: block.timestamp, lockPeriod: LOCK_PERIOD});
 
         // Interactions
-        require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");  // 변경 이전 코드
-        // token.safeTransferFrom(_buyer, address(this), _amount); // 변경 후 : SafeERC20 라이브러리를 사용해 안전한 전송
-        // emit TransactionCreated(_transactionId, msg.sender, _seller, _amount);
+        require(token.transferFrom(msg.sender, address(this), convertedAmount), "Token transfer failed");  // 변경 이전 코드
+        // token.safeTransferFrom(_buyer, address(this), convertedAmount); // 변경 후 : SafeERC20 라이브러리를 사용해 안전한 전송
+        // emit TransactionCreated(_transactionId, msg.sender, _seller, convertedAmount);
 
         lockFunds(_transactionId);  // 자금 잠금 동시에 진행
 

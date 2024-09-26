@@ -440,11 +440,11 @@
 			]
 		},
 		"contracts/TurtleEscrow.sol": {
-			"keccak256": "0xace305099d915ecc3047fbbe250ca106f2fff82fc46f1293ef562e130a2f0f7b",
+			"keccak256": "0xd3f4d366b7ece03a112b70371e8e0ef65e734cc3ea68e76d6eb03a4f98af5149",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://491755037d4bd4889f9b67451f484ab5c561e97ed73062f55b4f96e9f51ca889",
-				"dweb:/ipfs/QmefXQ1EcH9tkJ5NvY2m9bVZJ8HWQCvReTwtcSdocuajWr"
+				"bzz-raw://74235c1e28984a2de6e2538f339063ec005329ab4e091932655d2ac1d7a0c239",
+				"dweb:/ipfs/QmZsikKyLubyELdBNhkSDhuZDFxu1ZktSrLH6B2gN3zfn3"
 			]
 		}
 	},
