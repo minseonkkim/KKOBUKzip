@@ -12,8 +12,10 @@ interface TransactionHistoryProps {
     // status: string;
 }
 
-export default function TransactionHistory(){
+export default function TransactionHistory(props: TransactionHistoryProps | Partial<TransactionHistoryProps>){
     const { initializeEscrowWeb3, createTransaction, releaseFunds } = useEscrowStore();
+    
+    console.log(props);  // 임시 코드(추후 삭제 예정!!)
     
     // 컴포넌트 마운트 시 MetaMask SDK 초기화
     useEffect(() => {
@@ -21,7 +23,7 @@ export default function TransactionHistory(){
     }, [initializeEscrowWeb3]);
 
     // const handleDeposit = async () => {
-    //     createTransaction(props.isAuction, props.transactionId, props.sellerAddress, props.amount);
+        // await createTransaction(props.isAuction, props.transactionId, props.sellerAddress, props.amount);
     // }
 
     // const startPapework = async () => {
@@ -30,7 +32,7 @@ export default function TransactionHistory(){
     // }
 
     // const finalizeTransaction = async () => {
-    //     releaseFunds(props.isAuction, props.transactionId);
+    //     await releaseFunds(props.isAuction, props.transactionId);
     // }
 
     return <>
