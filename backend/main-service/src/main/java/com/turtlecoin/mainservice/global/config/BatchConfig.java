@@ -111,7 +111,7 @@ public class BatchConfig {
                     break;
                 case TRANSFER:
                     applicant = contractService.searchTurtleTransferDocument(document.getTurtleUUID(),
-                        document.getDocumentHash()).grantApplicant;
+                        document.getDocumentHash()).assignApplicant;
                     break;
                 case DEATH:
                     applicant = contractService.searchTurtleDeathDocument(document.getTurtleUUID(),

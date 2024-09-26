@@ -371,7 +371,7 @@ public class DocumentController {
 				.progress(Progress.DOCUMENT_REVIEWING)
 				.turtleUUID(turtleUUID)
 				.docType(DocType.DEATH)
-				.applicant(requestData.getApplicant())
+				.applicant(null)
 				.build();
 			documentService.save(document);
 		}
