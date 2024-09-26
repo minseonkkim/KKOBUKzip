@@ -3,13 +3,16 @@ import useDeviceStore from "../../store/useDeviceStore";
 import LogoImg from '../../assets/logo.webp';
 import CoinImg from '../../assets/Coin.webp';
 import MyPageImg from '../../assets/mypage.webp';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Wallet from './Wallet';
 import Modal from './Modal';
 
 export default function Header() {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const [isWalletOpen, setIsWalletOpen] = useState(false);
+   const location = useLocation(); 
+
+  const headerBackgroundColor = location.pathname === '/' ? '#AAE0F2' : '#fff';
 
   const toggleWallet = () => {
     setIsWalletOpen((prev) => !prev);
@@ -19,6 +22,7 @@ export default function Header() {
     <header>
       <div
         className="fixed top-0 left-0 w-full h-[65px] lg:h-[85px] px-4 lg:px-[250px] flex flex-row justify-between items-center shadow-md z-50"
+        style={{ backgroundColor: headerBackgroundColor }}
       >
         <Link to="/">
           <div className="text-[32px] lg:text-[40px] font-dnf-bitbit flex flex-row items-center cursor-pointer">

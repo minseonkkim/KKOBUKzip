@@ -41,8 +41,6 @@ function TransactionDetailPage() {
         </div>
         <div className="h-full md:h-[675px] flex flex-col md:flex-row justify-between mt-[10px]">
           <div className="flex flex-col w-full md:w-[48%] rounded-[20px] relative">
-
-            {/* Ensure this div takes available space using flex properties */}
             <div className="relative w-full flex-grow md:flex-1 h-[240px] md:h-auto rounded-[20px] overflow-hidden">
               <img
                 src={images[currentIndex]}
@@ -68,7 +66,7 @@ function TransactionDetailPage() {
             </div>
             <div className="text-[23px] mt-[13px]">거북이 팔아용</div>
             <div className="flex flex-row justify-between lg:justify-start xl:justify-between items-center mt-[5px] mb-[10px]">
-              <div className="text-[#9A9A9A] text-[17px]">
+              <div className="text-[#9A9A9A] text-[18px]">
                 페닐슐라쿠터 | 24년 8월 10일생 | 8kg
               </div>
               <div className="flex flex-row space-x-2">
