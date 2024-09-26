@@ -45,7 +45,7 @@ const apiRequest = async <T>(
       // 일반 JavaScript Error 처리
       errorMessage = error.message;
     }
-    console.error(errorMessage);
+    console.error(`Trade API Request: ${statusCode} - ${errorMessage}`);
     return {
       success: false,
       status: statusCode,

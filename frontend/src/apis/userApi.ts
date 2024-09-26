@@ -33,7 +33,7 @@ const apiRequest = async <T>(
       // 일반 JavaScript Error 처리
       errorMessage = error.message;
     }
-
+    console.error(`User API Request: ${errorMessage}`);
     return { success: false, error: errorMessage };
   }
 };
