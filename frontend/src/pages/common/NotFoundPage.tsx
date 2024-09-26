@@ -13,7 +13,6 @@ import Seaweed2 from "../../assets/NotFound/seaweed2.png";
 import Shark from "../../assets/NotFound/shark.png";
 import { Helmet } from "react-helmet-async";
 
-// Define types for obstacles and fish
 type ObstacleType = {
   id: string;
   left: number;
@@ -229,10 +228,11 @@ function NotFoundPage() {
                 : ""
             }`}
           >
-            <img src={TurtleWalk} className="w-[60px] sm:w-[90px] h-auto" alt="Turtle" />
+            <img src={TurtleWalk} draggable="false" className="w-[60px] sm:w-[90px] h-auto" alt="Turtle" />
           </div>
           {obstacles.map((obstacle, index) => (
             <img
+              draggable="false"
               key={index}
               src={obstacle.img}
               alt={obstacle.type}
@@ -247,6 +247,7 @@ function NotFoundPage() {
           ))}
           {sharkObstacles.map((shark, index) => (
             <img
+              draggable="false"
               key={index}
               src={shark.img}
               alt="Shark"
