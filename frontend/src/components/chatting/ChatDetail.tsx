@@ -1,6 +1,6 @@
 import { IoClose } from "react-icons/io5";
 import TmpProfileImg from "../../assets/tmp_profile.gif";
-import { ChatListItem, ChatData } from "../../types/chatting";
+import { ChatData } from "../../types/chatting";
 import { useEffect, useRef, useState } from "react";
 import OtherChatItem from "./OtherChatItem";
 import MyChatItem from "./MyChatItem";
@@ -8,11 +8,12 @@ import ChatDayDivider from "./ChatDayDivider";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import formatDate from "../../utils/formatDate";
 import { fetchChatMessageData } from "../../apis/chatApi";
+import SystemMessageItem from "./SystemMessageItem";
 
 interface ChatDetailProps {
-  closeChatDetail: () => void; // 함수에서 인자가 없기 때문에 () => void
-  chattingId: number; // chat의 타입을 지정 (name과 message를 가지는 객체)
-  toggleChat: () => void; // toggleChat 함수의 타입 추가
+  closeChatDetail: () => void;
+  chattingId: number;
+  toggleChat: () => void;
   chattingTitle: string;
 }
 
@@ -84,25 +85,30 @@ const data: ChatData[] = [
   },
 ];
 
+interface SystemMessageType {
+  title: string;
+  price: number;
+  image: string;
+}
+
 export default function ChatDetail({
   chattingTitle,
   chattingId,
   closeChatDetail,
   toggleChat,
 }: ChatDetailProps) {
-  // const [chat, setChat] = useState<ChatData[]>(data);
   const [inputValue, setInputValue] = useState("");
   const stompClient = useRef<CompatClient | null>(null);
   const [groupedChat, setGroupedChat] = useState<
-    { date: string; messages: ChatData[] }[]
+    { date: string; messages: (ChatData | SystemMessageType)[] }[]
   >([]);
 
   const myNickName = "판매자";
-
+  const chatId = Math.min(1, chattingId) + "-" + Math.max(1, chattingId);
   useEffect(() => {
     const getChatData = async () => {
       await initData();
-      console.log("chattingId", chattingId);
+      console.log("chattingId", chatId);
     };
     getChatData();
     connect();
@@ -144,7 +150,7 @@ export default function ChatDetail({
       { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
       () => {
         stompClient.current!.subscribe(
-          `/웹소켓하위주소/${chattingId}`,
+          `/${chatId}`,
           (message) => {
             const newMessage: ChatData = JSON.parse(message.body);
             const messageDate = formatDate(newMessage.registTime);
@@ -166,7 +172,7 @@ export default function ChatDetail({
               });
             }
           },
-          { Authorization: `Bearer ${sessionStorage.getItem("accessToken")}` }
+          { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
         );
       },
       (error: unknown) => {}
@@ -181,6 +187,7 @@ export default function ChatDetail({
   };
 
   useEffect(() => {}, []);
+
   const sendMessage = () => {
     if (inputValue.trim() !== "" && stompClient.current) {
       const message = {
@@ -220,18 +227,31 @@ export default function ChatDetail({
 
                 <ChatDayDivider date={group.date} />
 
-                {group.messages.map((message) =>
-                  myNickName === message.nickname ? (
-                    // 보낸 메세지
-                    <MyChatItem message={message.message} />
-                  ) : (
-                    // 받은 메세지
-                    <OtherChatItem
-                      message={message.message}
-                      profileImg={TmpProfileImg}
-                    />
-                  )
-                )}
+                {group.messages.map((message, index) => {
+                  if ("title" in message) {
+                    // 시스템 메시지 처리
+                    return (
+                      <SystemMessageItem
+                        key={index}
+                        title={message.title}
+                        price={message.price}
+                        image={message.image}
+                      />
+                    );
+                  } else if (myNickName === message.nickname) {
+                    // 보낸 메시지 처리
+                    return <MyChatItem key={index} message={message.message} />;
+                  } else {
+                    // 받은 메시지 처리
+                    return (
+                      <OtherChatItem
+                        key={index}
+                        message={message.message}
+                        profileImg={message.userProfile}
+                      />
+                    );
+                  }
+                })}
               </div>
             ))}
           </div>

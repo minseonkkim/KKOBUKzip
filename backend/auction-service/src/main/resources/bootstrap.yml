@@ -2,7 +2,7 @@ spring:
   application:
     name: auction-service
   profiles:
-    active: local
+    active: jun
   cloud:
     loadbalancer:
       enabled: true

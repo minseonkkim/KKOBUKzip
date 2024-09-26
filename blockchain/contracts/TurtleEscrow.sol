@@ -6,8 +6,6 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import "./TurtleDocumentation.sol";
-
 using SafeERC20 for IERC20;
 
 /**
@@ -55,7 +53,6 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
     address public arbiter; // 중재자 주소
     uint256 public constant LOCK_PERIOD = 7 days; // 기본 잠금 기간 (7일)
     IERC20 public token; // 사용할 ERC20 토큰
-    TurtleDocumentation public turtleDocumentation; // TurtleDocumentation 컨트랙트 참조
 
     /**
      * @dev 이벤트 모음
@@ -68,45 +65,38 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
     /**
      * @dev 생성자: 중재자 주소와 사용할 ERC20 토큰 주소 설정
      * @param _token 사용할 ERC20 토큰 주소
-     * @param _turtleDocumentation TurtleDocumentation 컨트랙트 주소
      */
-    constructor(address _token, address _turtleDocumentation) {
-        require(_token != address(0) && _turtleDocumentation != address(0), "Invalid address");
+    constructor(address _token) {
+        require(_token != address(0), "Invalid address");
         token = IERC20(_token);
-        turtleDocumentation = TurtleDocumentation(_turtleDocumentation);
-        arbiter = turtleDocumentation.owner();
+        arbiter = msg.sender;
     }
 
     /**
      * @dev 새로운 거래 생성
      * @param _seller 판매자 주소
      * @param _amount 거래 금액
-     * @return 생성된 거래 ID
+     * @return 거래 ID
      * @notice CEI 패턴 적용(Checks-Effects-Interactions)
      * - Checks: 입력 값 검증 먼저 수행
      * - Effects: 거래 정보 상태에 저장
      * - Interactions: 토큰 전송
      */
     // 새로운 거래 생성
-    function createTransaction(address _seller, uint256 _amount) external returns (uint256) {
+    function createTransaction(uint256 _transactionId, address _seller, uint256 _amount) external returns (uint256) {
         // Check
         require(_seller != address(0), "Invalid seller address");
         require(_amount > 0, "Invalid amount! Amount must be greater than 0");
 
         // Effects
-        uint256 transactionId;
-        unchecked {
-            // 오버픞로우 검사 생략
-            transactionId = transactionCount++;
-        }
-        transactions[transactionId] = Transaction({buyer: msg.sender, seller: _seller, amount: _amount, state: State.Created, createdAt: block.timestamp, lockPeriod: LOCK_PERIOD});
+        transactions[_transactionId] = Transaction({buyer: msg.sender, seller: _seller, amount: _amount, state: State.Created, createdAt: block.timestamp, lockPeriod: LOCK_PERIOD});
 
         // Interactions
-        // require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");  // 변경 이전 코드
-        token.safeTransferFrom(msg.sender, address(this), _amount); // 변경 후 : SafeERC20 라이브러리를 사용해 안전한 전송
+        require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");  // 변경 이전 코드
+        // token.safeTransferFrom(_buyer, address(this), _amount); // 변경 후 : SafeERC20 라이브러리를 사용해 안전한 전송
 
-        emit TransactionCreated(transactionId, msg.sender, _seller, _amount);
-        return transactionId;
+        emit TransactionCreated(_transactionId, msg.sender, _seller, _amount);
+        return _transactionId;
     }
 
     /**

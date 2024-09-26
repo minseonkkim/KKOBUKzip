@@ -4,7 +4,7 @@ import { ChatListItem } from "../../types/chatting";
 import formatDate from "../../utils/formatDate";
 
 interface ChatCardProps {
-  openChatDetail: (chat: ChatListItem) => void;
+  openChatDetail: (id: number, nickname: string) => void;
   chat: ChatListItem;
 }
 export default function ChatCard({ openChatDetail, chat }: ChatCardProps) {
@@ -13,7 +13,7 @@ export default function ChatCard({ openChatDetail, chat }: ChatCardProps) {
   return (
     <div
       className="text-black bg-white rounded-[10px] px-2.5 py-2 flex flex-row justify-between items-center my-3 mx-1 cursor-pointer"
-      onClick={() => openChatDetail(chat)}
+      onClick={() => openChatDetail(chat.otherUserId, chat.otherUserNickname)}
     >
       <div className="flex flex-row">
         <img

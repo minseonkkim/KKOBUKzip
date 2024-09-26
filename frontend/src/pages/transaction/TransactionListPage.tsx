@@ -43,8 +43,8 @@ function TransactionListPage() {
 
         const response = await getTransactionData({ page: pages });
         if (response.success) {
-          setTransactionData(response.data.transactions);
-          setMaxPage(response.data.total_pages);
+          setTransactionData(response.data.data.transactions);
+          setMaxPage(response.data.data.total_pages);
         }
       } finally {
         setItemLoading(false);
@@ -68,8 +68,11 @@ function TransactionListPage() {
       });
 
       if (response.success) {
-        setTransactionData((prev) => [...prev, ...response.data.transactions]);
-        setMaxPage(response.data.total_pages ?? -1);
+        setTransactionData((prev) => [
+          ...prev,
+          ...response.data.data.transactions,
+        ]);
+        setMaxPage(response.data.data.total_pages ?? -1);
       }
     } finally {
       setItemLoading(false);
@@ -125,7 +128,10 @@ function TransactionListPage() {
               >
                 {isChecked && <FaCheck />}
               </div>
-              <span onClick={handleCheckboxChange} className="cursor-pointer whitespace-nowrap text-[20px] md:text-[18px] xl:text-[21px]">
+              <span
+                onClick={handleCheckboxChange}
+                className="cursor-pointer whitespace-nowrap text-[20px] md:text-[18px] xl:text-[21px]"
+              >
                 거래가능한 거북이만 보기
               </span>
             </label>

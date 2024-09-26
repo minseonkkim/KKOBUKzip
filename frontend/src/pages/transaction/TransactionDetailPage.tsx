@@ -5,10 +5,12 @@ import TmpTurtleImg2 from "../../assets/tmp_turtle_2.jpg";
 import tmpProfileImg from "../../assets/tmp_profile.gif";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import useChatStore from "../../store/useChatStore";
 
 function TransactionDetailPage() {
+  const { openChatDetail } = useChatStore();
   const navigate = useNavigate();
-
+  const userNickname = "ASdf";
   const goBack = () => {
     navigate(-1); // 이전 페이지로 이동
   };
@@ -31,6 +33,7 @@ function TransactionDetailPage() {
       <Helmet>
         <title>판매중인 거북이</title>
       </Helmet>
+
       <Header />
       <div className="px-4 lg:px-[250px] mt-[85px]">
         <div className="cursor-pointer whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit pt-0 lg:pt-[40px] pb-[13px]">
@@ -82,9 +85,9 @@ function TransactionDetailPage() {
               </div>
             </div>
             <div className="text-[17px] leading-7 border-[2px] rounded-[10px] p-2 line-clamp">
-              이 붉은귀거북은 활발하고 건강한 상태로, 밝고 선명한 붉은색 귀 무늬가
-              특징입니다. 현재까지 특별한 질병 없이 건강하게 자라왔으며, 균형
-              잡힌 사료와 신선한 채소로 영양 관리가 잘 되어 있습니다. 특히
+              이 붉은귀거북은 활발하고 건강한 상태로, 밝고 선명한 붉은색 귀
+              무늬가 특징입니다. 현재까지 특별한 질병 없이 건강하게 자라왔으며,
+              균형 잡힌 사료와 신선한 채소로 영양 관리가 잘 되어 있습니다. 특히
               수영을 좋아하며, 물속에서의 활동이 활발해 관찰하는 재미가 큽니다.
               이 거북이는 비교적 온순한 성격을 가지고 있어 손을 자주 타지는
               않지만, 스트레스를 주지 않는 선에서 손길을 허용하는 편입니다.
@@ -103,7 +106,10 @@ function TransactionDetailPage() {
                 />
                 <span className="text-[20px]">꼬북맘</span>
               </div>
-              <div className="cursor-pointer bg-[#7CBBF9] h-fit flex justify-center items-center rounded-[10px] font-bold px-3 py-2 text-white">
+              <div
+                onClick={() => openChatDetail(1, userNickname)}
+                className="cursor-pointer bg-[#7CBBF9] h-fit flex justify-center items-center rounded-[10px] font-bold px-3 py-2 text-white"
+              >
                 채팅하기
               </div>
             </div>

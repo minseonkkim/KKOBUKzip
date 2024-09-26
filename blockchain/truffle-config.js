@@ -1,5 +1,5 @@
-const HDWalletProvider = require("@truffle/hdwallet-provider");
 require('dotenv').config()
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 
 /**
  * Use this file to configure your truffle project. It's seeded with some
@@ -80,7 +80,7 @@ module.exports = {
       ),
       network_id: 17000,      // Holesky 체인 ID
       gas: 5000000,           // 사용할 가스 양 설정
-      gasPrice: 20000000000,  // 가스 가격 (wei 단위)
+      gasPrice: 50000000000,  // 가스 가격 (wei 단위)
       confirmations: 2,       // 블록 확인 횟수 (테스트 환경에서 2개로 설정)
       timeoutBlocks: 200,     // 블록 타임아웃
     }
