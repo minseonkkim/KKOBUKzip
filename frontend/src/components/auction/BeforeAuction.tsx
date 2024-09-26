@@ -10,7 +10,7 @@ function BeforeAuction({
   changeAuctionStatus: () => void;
 }) {
   useEffect(() => {
-    const SSE_URL = import.meta.env.VITE_SSE_URL;
+    const SSE_URL = import.meta.env.VITE_SSE_URL_AUCTION;
     const eventSource = new EventSource(SSE_URL);
     // 여기에서 SSE 연결하기
 
