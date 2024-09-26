@@ -1,6 +1,6 @@
 {
   "name": "TurtleEscrow",
-  "address": "0x72fa38b2122befd90bd86883b9ebf4e2b2812cf4",
+  "address": "0x8c690ec6092038d27ce39b0b91a3ae242911a803",
   "abi": [
     {
       "inputs": [
@@ -280,5 +280,5 @@
     }
   ],
   "filePath": " - connect to localhost - /contracts/TurtleEscrow.sol",
-  "pinnedAt": 1727313987353
+  "pinnedAt": 1727319473286
 }

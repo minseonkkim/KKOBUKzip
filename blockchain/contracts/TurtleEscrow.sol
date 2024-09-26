@@ -2,7 +2,6 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
@@ -13,7 +12,7 @@ using SafeERC20 for IERC20;
  * @author 서규범
  * @notice 이 컨트랙트는 거북이 거래 에스크로 서비스를 제공합니다.
  */
-contract TurtleEscrow is Ownable, ReentrancyGuard {
+contract TurtleEscrow is Ownable {
     /**
      * @dev 거래 상태를 나타내는 열거형
      * @notice 거래 상태는 다음과 같이 정의됩니다.
@@ -82,7 +81,7 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * - Interactions: 토큰 전송
      */
     // 새로운 거래 생성
-    function createTransaction(uint256 _transactionId, address _seller, uint256 _amount) external nonReentrant returns (uint256) {
+    function createTransaction(uint256 _transactionId, address _seller, uint256 _amount) external returns (uint256) {
         // Check
         require(_seller != address(0), "Invalid seller address");
         require(_amount > 0, "Invalid amount! Amount must be greater than 0");
@@ -106,7 +105,7 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * @dev 자금 잠금
      * @param _transactionId 거래 ID
      */
-    function lockFunds(uint256 _transactionId) internal nonReentrant {
+    function lockFunds(uint256 _transactionId) internal {
         Transaction storage transaction = transactions[_transactionId];
         require(msg.sender == transaction.buyer, "Only buyer can lock funds");
         require(transaction.state == State.Created, "Invalid state");
@@ -123,7 +122,7 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * - Effects: 거래 상태 업데이트
      * - Interactions: 토큰 전송
      */
-    function releaseFunds(uint256 _transactionId) external nonReentrant {
+    function releaseFunds(uint256 _transactionId) external {
         // Checks
         Transaction storage transaction = transactions[_transactionId];
         require(msg.sender == transaction.buyer || msg.sender == arbiter, "Unauthorized");
@@ -147,7 +146,7 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * - Effects: 거래 상태 업데이트
      * - Interactions: 토큰 전송
      */
-    function refund(uint256 _transactionId) external nonReentrant {
+    function refund(uint256 _transactionId) external {
         // Checks
         Transaction storage transaction = transactions[_transactionId];
         require(msg.sender == transaction.seller || msg.sender == arbiter, "Unauthorized");
