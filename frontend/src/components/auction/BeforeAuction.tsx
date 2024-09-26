@@ -10,8 +10,8 @@ function BeforeAuction({
   changeAuctionStatus: () => void;
 }) {
   useEffect(() => {
-    // const SSE_URL = import.meta.env.VITE_SSE_URL;
-    const eventSource = new EventSource("http://localhost:3000/events");
+    const SSE_URL = import.meta.env.VITE_SSE_AUCTION_URL;
+    const eventSource = new EventSource(SSE_URL);
     // 여기에서 SSE 연결하기
 
     eventSource.onmessage = (event) => {
@@ -38,14 +38,14 @@ function BeforeAuction({
   return (
     <>
       {/* 경매전 */}
-      <div className="w-[48%] h-[675px] bg-[#F2F2F2] rounded-[20px] flex flex-col justify-center items-center">
-        <div className="text-[#5E5E5E] font-bold text-[23px]">
+      <div className="my-5 mb-10 md:my-0 md:mb-0 h-[130px] md:h-[675px] w-full md:w-[48%] bg-[#F2F2F2] rounded-[20px] flex flex-col justify-center items-center">
+        <div className="text-[#5E5E5E] font-bold text-[19px] md:text-[23px] text-center mx-5">
           {/* 24년 09월 30일 14:30:00 경매 시작 */}
           {formattedDate} 경매 시작
         </div>
-        <div className="flex flex-row items-center mt-[15px]">
-          <div className="font-bold text-[27px]">최소 입찰가&nbsp;&nbsp;</div>
-          <div className="font-bold text-[37px] text-[#4B721F]">
+        <div className="flex flex-row items-center mt-[15px] whitespace-nowrap mx-2">
+          <div className="font-bold text-[20px] md:text-[27px]">최소 입찰가&nbsp;&nbsp;</div>
+          <div className="font-bold text-[31px] md:text-[39px] text-[#4B721F] font-stardust">
             {minBid.toLocaleString("ko-KR")}원
           </div>
         </div>

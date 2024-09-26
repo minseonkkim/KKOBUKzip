@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -118,5 +119,20 @@ public class UserService {
         // 정규식 패턴과 입력 비밀번호를 매칭
         Pattern pattern = Pattern.compile(regex);
         return pattern.matcher(password).matches();
+    }
+
+    public User getUserByUUID(String uuid) {
+        Optional<User> userOption = userRepository.findUserByUUID(uuid);
+		return userOption.orElse(null);
+    }
+
+    public User getUserByNameAndPhoneNumber(String name, String phonenumber) {
+        Optional<User> userOption = userRepository.findUserByNameAndPhoneNumber(name, phonenumber);
+        return userOption.orElse(null);
+    }
+
+    public User getUserByEmail(String email) {
+        Optional<User> userOptional = Optional.ofNullable(userRepository.findByemail(email));
+        return userOptional.orElse(null);
     }
 }

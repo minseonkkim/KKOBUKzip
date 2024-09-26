@@ -20,10 +20,19 @@ public class DeathDocumentRequest {
 	@Data
 	@AllArgsConstructor
 	public static class Detail {
+		String turtleUUID;
 		String shelter;
-		int count;
+		Integer count;
 		String deathReason;
 		String plan;
 		LocalDate registerDate;
+	}
+
+	public boolean isValid(){
+		return (
+			docType != null && applicant != null && detail != null
+			&& detail.turtleUUID != null && detail.shelter != null && detail.count != null
+			&& detail.deathReason != null && detail.plan != null && detail.registerDate != null
+		);
 	}
 }

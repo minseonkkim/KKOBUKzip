@@ -5,6 +5,8 @@ import com.turtlecoin.mainservice.global.entity.BaseEntity;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +17,8 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Turtle extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,7 +31,7 @@ public class Turtle extends BaseEntity {
     private Gender gender;
 
     @Column(nullable = false)
-    private Double weight;
+    private int weight;
 
     @Column(nullable = false)
     private LocalDate birth;
@@ -49,10 +53,20 @@ public class Turtle extends BaseEntity {
     @Column(nullable = false)
     private String uuid;
 
+    @Column(nullable = false)
+    private boolean dead;
+
     @OneToMany(mappedBy = "turtle", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transaction;
 
     @OneToMany(mappedBy = "turtle", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "turtle_photos")
     private List<TurtlePhoto> turtlePhotos = new ArrayList<>();
+
+    public void turtleDie(){
+        this.dead = true;
+    }
 }
+
+
+

@@ -11,6 +11,9 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
+import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
+
+@Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     // 모든 거래를 반환하는 메서드
     List<Transaction> findAll();

@@ -1,13 +1,13 @@
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AuctionItemDataType } from "../../types/auction";
 import { getAuctionDetailItemData } from "../../apis/tradeApi";
 import AuctionItemInfo from "../../components/auction/AuctionItemInfo";
 import AuctionItemInfoSkeleton from "../../components/auction/skeleton/AuctionItemInfoSkeleton";
 import BeforeAuction from "../../components/auction/BeforeAuction";
-import DuringAucion from "../../components/auction/DuringAucion";
+import DuringAuction from "../../components/auction/DuringAuction";
 import AfterAuction from "../../components/auction/AfterAuction";
 
 // flow
@@ -33,40 +33,57 @@ function AuctionDetailPage() {
   const [auctionStatus, setAuctionStatus] = useState<AuctionType>(null); // 경매 상태, 13은 false, 2는 true
   const [auctionItemData, setAuctionItemData] =
     useState<AuctionItemDataType | null>(null);
+  const params = useParams();
+  const auctionId = params.auctionId;
+  const [isValidId, setIsValidId] = useState(true);
 
   useLayoutEffect(() => {
     // 처음 옥션 데이터 로딩하는 부분
+
     const getData = async () => {
-      const response = await getAuctionDetailItemData(1); // 상품 id 넣을 것
+      const auctionId = Number(params.auctionId);
+      if (isNaN(auctionId) || !Number.isInteger(auctionId)) {
+        setIsValidId(false);
+        return; // 이후 코드를 실행하지 않도록 합니다.
+      }
+      const response = await getAuctionDetailItemData(auctionId);
       if (response.success) {
         console.log(response.data.data.auction);
         setAuctionStatus(response.data.data.auction.progress);
         setAuctionItemData(response.data.data.auction);
       } else {
-        navigate("/");
+        // 요청 실패 혹은 없는 거북이면 되돌아감
+        goBack();
       }
     };
 
     getData();
-  }, []);
+  }, [auctionId]);
 
   const navigate = useNavigate();
 
-  const goBack = () => {
+  useEffect(() => {
+    if (!isValidId) {
+      navigate("/");
+    }
+  }, [isValidId, navigate]);
+
+  const goBack = useCallback(() => {
     navigate(-1); // 이전 페이지로 이동
-  };
+  }, [navigate]);
 
   // 옥션 전-> 옥션 진행
-  const changeAuctionStatus = () => {
+  const changeAuctionStatus = useCallback(() => {
     setAuctionStatus("DURING_AUCTION");
-  };
+  }, []);
+
   return (
     <>
       <Helmet>
         <title>경매중인 거북이</title>
       </Helmet>
       <Header />
-      <div className="px-[250px] mt-[85px]">
+      <div className="px-4 lg:px-[250px] mt-[85px]">
         {/* 테스트 드라이버 */}
         <div className="grid grid-cols-4">
           <button
@@ -95,15 +112,19 @@ function AuctionDetailPage() {
           </button>
         </div>
         {/* 테스트 드라이버 끝 */}
-        <div className="cursor-pointer text-[33px] text-gray-900 font-dnf-bitbit pt-[40px] pb-[13px]">
-          <span onClick={goBack}>&lt;&nbsp;경매중인 거북이</span>
+
+        <div className="cursor-pointer whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit pt-0 lg:pt-[32px] pb-[13px]">
+          <span onClick={goBack}>
+            &lt;&nbsp;경매중인 거북이
+          </span>
         </div>
-        <div className="flex flex-row justify-between mt-[10px]">
+        <div className="h-full md:h-[675px] flex flex-col md:flex-row justify-between mt-[10px]">
           {/* 좌측 거북이 정보 */}
           {auctionStatus === null ? (
+            // 스켈레톤 애니메이션
             <AuctionItemInfoSkeleton />
           ) : (
-            <AuctionItemInfo images={auctionItemData?.images!} />
+            <AuctionItemInfo itemData={auctionItemData!} />
           )}
 
           {/* 경매 상태별 컴포넌트 */}
@@ -114,7 +135,9 @@ function AuctionDetailPage() {
               minBid={auctionItemData?.minBid!}
             />
           )}
-          {auctionStatus === "DURING_AUCTION" && <DuringAucion />}
+          {auctionStatus === "DURING_AUCTION" && (
+            <DuringAuction channelId={String(auctionItemData?.id)} />
+          )}
           {auctionStatus === ("NO_BID" || "SUCCESSFUL_BID") && <AfterAuction />}
         </div>
       </div>

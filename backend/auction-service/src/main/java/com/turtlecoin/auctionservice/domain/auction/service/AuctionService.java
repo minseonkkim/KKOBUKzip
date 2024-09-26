@@ -176,74 +176,23 @@ public class AuctionService {
         return AuctionResponseDTO.from(auction, turtleInfo);
     }
 
-    // 입찰 가격 갱신
-    @Transactional
-    public void processBidWithoutLock(Long auctionId, Long userId, Double bidAmount) {
-        String redisKey = AUCTION_BID_KEY + auctionId;
-
-        Map<String, Object> bidData = new HashMap<>();
-        bidData.put("userId", userId);
-        bidData.put("bidAmount", bidAmount);
-
-        Map<Object, Object> currentBidData = getCurrentBid(auctionId);
-        Double currentBid = (Double) currentBidData.get("nowBid");
-        Long currentUserId = (Long) currentBidData.get("userId");
-
-        if (currentBid == null) {
-            currentBid = getMinBid(auctionId);
-        }
-
-        if ((currentBid == null || bidAmount > currentBid) &&
-                (currentUserId == null || !currentUserId.equals(userId))) {
-
-            if (currentBid == null) {
-                currentBid = getMinBid(auctionId);
-            }
-
-            Long bidIncrement = calculateBidIncrement(currentBid);
-            Double newBidAmount = currentBid + bidIncrement;
-
-            bidData.put("bidAmount", newBidAmount);
-            redisTemplate.opsForHash().putAll(redisKey, bidData);
-
-            String bidHistory = redisKey + ":history";
-            String bidRecord = "userId: " + userId + ", bidAmount: " + newBidAmount;
-            redisTemplate.opsForList().rightPush(bidHistory, bidRecord);
-
-            log.info("입찰 갱신 : auctionID = {}, userId = {}, newBidAmount = {}", auctionId, userId, newBidAmount);
-        } else {
-            if (currentUserId != null && currentUserId.equals(userId)) {
-                throw new SameUserBidException("자신의 입찰에 재입찰할 수 없습니다");
-            }
-            throw new WrongBidAmountException("현재 입찰가보다 낮은 금액으로 입찰할 수 없습니다");
-        }
-    }
-
-    public Map<Object, Object> getCurrentBid (Long auctionId) {
-        String redisKey = AUCTION_BID_KEY + auctionId;
-        return redisTemplate.opsForHash().entries(redisKey);
-    }
-
-    public Double getMinBid(Long auctionId) {
-        Auction auction = auctionRepository.findById(auctionId)
-                .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다."));
-        return auction.getMinBid();
-    }
-
-    private Long calculateBidIncrement(Double currentBid) {
-        // 경매 가격에 따라 구분 필요
-        if (currentBid >= 0 && currentBid <= 10000) {
-            return 500L; // 0 ~ 10000 : 500
-        } else if (currentBid >= 10001 && currentBid <= 100000) {
-            return 2000L; // 10001 ~ 100000 : 2000
-        } else if (currentBid >= 100001 && currentBid <= 200000) {
-            return 5000L; // 100001 ~ 200000 : 5000
-        } else {
-            return 10000L; // 그 외 : 10000 (기본 값)
-        }
-    }
-
     public void processBid(Long auctionId, Long userId, Double newBidAmount) {
         redissonLockFacade.updateBidWithLock(auctionId, userId, newBidAmount);
+    }
+
+    public void endAuction(Long auctionId) {
+        // 상태 종료로 변경
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new AuctionNotFoundException("경매가 존재하지 않습니다."));
+
+        String redisKey = "auction:" + auctionId + ":status";
+        Map<Object, Object> currentBidData = redisTemplate.opsForHash().entries(redisKey);
+
+        if (currentBidData == null || currentBidData.isEmpty()) {
+            log.error("Redis에서 경매를 찾을 수 없습니다. 경매ID: {}", auctionId);
+            throw new AuctionNotFoundException("경매 정보를 찾을 수 없습니다.");
+        }
+
+        // redis에 담긴 마지막 입찰자와 종료 시간 변경
     }
 }

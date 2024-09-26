@@ -1,4 +1,4 @@
-package contract;
+package com.turtlecoin.mainservice.domain.document.entity.contract;
 
 import io.reactivex.Flowable;
 import java.math.BigInteger;
@@ -15,6 +15,7 @@ import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.Type;
 import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Bytes32;
+import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.abi.datatypes.generated.Uint8;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
@@ -41,52 +42,62 @@ import org.web3j.tx.gas.ContractGasProvider;
 public class TurtleDocumentation extends Contract {
     public static final String BINARY = "Bin file was not provided";
 
-    public static final String FUNC_OWNER = "owner";
+    public static final String FUNC_APPROVEMULTIPLICATIONDOCBYREVIEWER = "approveMultiplicationDocByReviewer";
+
+    public static final String FUNC_APPROVETRANSFERDOCBYREVIEWER = "approveTransferDocByReviewer";
+
+    public static final String FUNC_CHANGETURTLEOWNER = "changeTurtleOwner";
+
+    public static final String FUNC_REGISTERTURTLE = "registerTurtle";
+
+    public static final String FUNC_REGISTERTURTLEASSIGNEEDOCUMENT = "registerTurtleAssigneeDocument";
+
+    public static final String FUNC_REGISTERTURTLEDEATHDOCUMENT = "registerTurtleDeathDocument";
+
+    public static final String FUNC_REGISTERTURTLEGRANTORDOCUMENT = "registerTurtleGrantorDocument";
+
+    public static final String FUNC_REGISTERTURTLEMULTIPLICATIONDOCUMENT = "registerTurtleMultiplicationDocument";
 
     public static final String FUNC_RENOUNCEOWNERSHIP = "renounceOwnership";
 
     public static final String FUNC_TRANSFEROWNERSHIP = "transferOwnership";
 
-    public static final String FUNC_REGISTERTURTLE = "registerTurtle";
+    public static final String FUNC_OWNER = "owner";
 
-    public static final String FUNC_REGISTERTURTLEMULTIPLICATIONDOCUMENT = "registerTurtleMultiplicationDocument";
-
-    public static final String FUNC_SEARCHTUTLEMULTIPLICATIONDOCUMENT = "searchTutleMultiplicationDocument";
-
-    public static final String FUNC_REGISTERTURTLEASSIGNEEDOCUMENT = "registerTurtleAssigneeDocument";
-
-    public static final String FUNC_REGISTERTURTLEGRANTORDOCUMENT = "registerTurtleGrantorDocument";
-
-    public static final String FUNC_SEARCHTURTLETRANSFERDOCUMENT = "searchTurtleTransferDocument";
-
-    public static final String FUNC_REGISTERTURTLERDEATHDOCUMENT = "registerTurtlerDeathDocument";
+    public static final String FUNC_SEARCHCURRENTDOCUMENTHASH = "searchCurrentDocumentHash";
 
     public static final String FUNC_SEARCHTURTLEDEATHDOCUMENT = "searchTurtleDeathDocument";
 
-    public static final String FUNC_CHANGETURTLEOWNER = "changeTurtleOwner";
+    public static final String FUNC_SEARCHTURTLEMULTIPLICATIONDOCUMENT = "searchTurtleMultiplicationDocument";
+
+    public static final String FUNC_SEARCHTURTLETRANSFERDOCUMENT = "searchTurtleTransferDocument";
+
+    public static final Event CURRENTTURTLEDOCUMENT_EVENT = new Event("CurrentTurtleDocument", 
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>(true) {}, new TypeReference<Bytes32>(true) {}));
+    ;
 
     public static final Event OWNERSHIPTRANSFERRED_EVENT = new Event("OwnershipTransferred", 
             Arrays.<TypeReference<?>>asList(new TypeReference<Address>(true) {}, new TypeReference<Address>(true) {}));
     ;
 
     public static final Event TURTLEDEATH_EVENT = new Event("TurtleDeath", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Bytes32>() {}));
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>(true) {}, new TypeReference<Utf8String>(true) {}, new TypeReference<Bytes32>(true) {}));
     ;
 
     public static final Event TURTLEMULTIPLICATION_EVENT = new Event("TurtleMultiplication", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Bytes32>() {}));
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>(true) {}, new TypeReference<Utf8String>(true) {}, new TypeReference<Bytes32>(true) {}));
     ;
 
     public static final Event TURTLEOWNERCHANGED_EVENT = new Event("TurtleOwnerChanged", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}));
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>(true) {}, new TypeReference<Utf8String>(true) {}, new TypeReference<Utf8String>(true) {}));
     ;
 
     public static final Event TURTLEREGISTERED_EVENT = new Event("TurtleRegistered", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}));
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>(true) {}, new TypeReference<Utf8String>(true) {}));
     ;
 
     public static final Event TURTLETRANSFERRED_EVENT = new Event("TurtleTransferred", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Bytes32>() {}));
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>(true) {}, new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Bytes32>(true) {}));
     ;
 
     @Deprecated
@@ -109,6 +120,72 @@ public class TurtleDocumentation extends Contract {
     protected TurtleDocumentation(String contractAddress, Web3j web3j,
             TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
         super(BINARY, contractAddress, web3j, transactionManager, contractGasProvider);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> approveMultiplicationDocByReviewer(
+            String _turtleId, byte[] _documentHash) {
+        final Function function = new Function(
+                FUNC_APPROVEMULTIPLICATIONDOCBYREVIEWER, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> approveTransferDocByReviewer(String _turtleId,
+            byte[] _documentHash) {
+        final Function function = new Function(
+                FUNC_APPROVETRANSFERDOCBYREVIEWER, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> changeTurtleOwner(String _turtleId,
+            String _oldOwner, String _newOwner) {
+        final Function function = new Function(
+                FUNC_CHANGETURTLEOWNER, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.Utf8String(_oldOwner), 
+                new org.web3j.abi.datatypes.Utf8String(_newOwner)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public static List<CurrentTurtleDocumentEventResponse> getCurrentTurtleDocumentEvents(
+            TransactionReceipt transactionReceipt) {
+        List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(CURRENTTURTLEDOCUMENT_EVENT, transactionReceipt);
+        ArrayList<CurrentTurtleDocumentEventResponse> responses = new ArrayList<CurrentTurtleDocumentEventResponse>(valueList.size());
+        for (Contract.EventValuesWithLog eventValues : valueList) {
+            CurrentTurtleDocumentEventResponse typedResponse = new CurrentTurtleDocumentEventResponse();
+            typedResponse.log = eventValues.getLog();
+            typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+            typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+            responses.add(typedResponse);
+        }
+        return responses;
+    }
+
+    public static CurrentTurtleDocumentEventResponse getCurrentTurtleDocumentEventFromLog(Log log) {
+        Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(CURRENTTURTLEDOCUMENT_EVENT, log);
+        CurrentTurtleDocumentEventResponse typedResponse = new CurrentTurtleDocumentEventResponse();
+        typedResponse.log = log;
+        typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+        typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+        return typedResponse;
+    }
+
+    public Flowable<CurrentTurtleDocumentEventResponse> currentTurtleDocumentEventFlowable(
+            EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getCurrentTurtleDocumentEventFromLog(log));
+    }
+
+    public Flowable<CurrentTurtleDocumentEventResponse> currentTurtleDocumentEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(CURRENTTURTLEDOCUMENT_EVENT));
+        return currentTurtleDocumentEventFlowable(filter);
     }
 
     public static List<OwnershipTransferredEventResponse> getOwnershipTransferredEvents(
@@ -146,6 +223,110 @@ public class TurtleDocumentation extends Contract {
         return ownershipTransferredEventFlowable(filter);
     }
 
+    public RemoteFunctionCall<TransactionReceipt> registerTurtle(String _turtleId,
+            String _applicant) {
+        final Function function = new Function(
+                FUNC_REGISTERTURTLE, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.Utf8String(_applicant)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> registerTurtleAssigneeDocument(String _turtleId,
+            String _applicant, byte[] _documentHash, String _assigneeId, BigInteger _count,
+            String _transferReason, String _purpose) {
+        final Function function = new Function(
+                FUNC_REGISTERTURTLEASSIGNEEDOCUMENT, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.Utf8String(_applicant), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash), 
+                new org.web3j.abi.datatypes.Utf8String(_assigneeId), 
+                new org.web3j.abi.datatypes.generated.Uint8(_count), 
+                new org.web3j.abi.datatypes.Utf8String(_transferReason), 
+                new org.web3j.abi.datatypes.Utf8String(_purpose)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> registerTurtleDeathDocument(String _turtleId,
+            String _applicant, byte[] _documentHash, String _shelter, BigInteger _count,
+            String _deathReason, String _plan, String _deathImage, String _diagnosis) {
+        final Function function = new Function(
+                FUNC_REGISTERTURTLEDEATHDOCUMENT, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.Utf8String(_applicant), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash), 
+                new org.web3j.abi.datatypes.Utf8String(_shelter), 
+                new org.web3j.abi.datatypes.generated.Uint8(_count), 
+                new org.web3j.abi.datatypes.Utf8String(_deathReason), 
+                new org.web3j.abi.datatypes.Utf8String(_plan), 
+                new org.web3j.abi.datatypes.Utf8String(_deathImage), 
+                new org.web3j.abi.datatypes.Utf8String(_diagnosis)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> registerTurtleGrantorDocument(String _turtleId,
+            String _applicant, byte[] _documentHash, String _grantorId, String _aquisition,
+            String _fatherId, String _motherId) {
+        final Function function = new Function(
+                FUNC_REGISTERTURTLEGRANTORDOCUMENT, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.Utf8String(_applicant), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash), 
+                new org.web3j.abi.datatypes.Utf8String(_grantorId), 
+                new org.web3j.abi.datatypes.Utf8String(_aquisition), 
+                new org.web3j.abi.datatypes.Utf8String(_fatherId), 
+                new org.web3j.abi.datatypes.Utf8String(_motherId)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> registerTurtleMultiplicationDocument(
+            String _turtleId, String _applicant, byte[] _documentHash, BigInteger _count,
+            String _area, String _purpose, String _location, String _fatherId, String _motherId,
+            String _birth, String _name, BigInteger _weight, String _gender,
+            String _locationSpecification, String _multiplicationMethod,
+            String _shelterSpecification) {
+        final Function function = new Function(
+                FUNC_REGISTERTURTLEMULTIPLICATIONDOCUMENT, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.Utf8String(_applicant), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash), 
+                new org.web3j.abi.datatypes.generated.Uint8(_count), 
+                new org.web3j.abi.datatypes.Utf8String(_area), 
+                new org.web3j.abi.datatypes.Utf8String(_purpose), 
+                new org.web3j.abi.datatypes.Utf8String(_location), 
+                new org.web3j.abi.datatypes.Utf8String(_fatherId), 
+                new org.web3j.abi.datatypes.Utf8String(_motherId), 
+                new org.web3j.abi.datatypes.Utf8String(_birth), 
+                new org.web3j.abi.datatypes.Utf8String(_name), 
+                new org.web3j.abi.datatypes.generated.Uint256(_weight), 
+                new org.web3j.abi.datatypes.Utf8String(_gender), 
+                new org.web3j.abi.datatypes.Utf8String(_locationSpecification), 
+                new org.web3j.abi.datatypes.Utf8String(_multiplicationMethod), 
+                new org.web3j.abi.datatypes.Utf8String(_shelterSpecification)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> renounceOwnership() {
+        final Function function = new Function(
+                FUNC_RENOUNCEOWNERSHIP, 
+                Arrays.<Type>asList(), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> transferOwnership(String newOwner) {
+        final Function function = new Function(
+                FUNC_TRANSFEROWNERSHIP, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(160, newOwner)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
     public static List<TurtleDeathEventResponse> getTurtleDeathEvents(
             TransactionReceipt transactionReceipt) {
         List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(TURTLEDEATH_EVENT, transactionReceipt);
@@ -153,9 +334,9 @@ public class TurtleDocumentation extends Contract {
         for (Contract.EventValuesWithLog eventValues : valueList) {
             TurtleDeathEventResponse typedResponse = new TurtleDeathEventResponse();
             typedResponse.log = eventValues.getLog();
-            typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-            typedResponse.applicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
-            typedResponse.documentHash = (byte[]) eventValues.getNonIndexedValues().get(2).getValue();
+            typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+            typedResponse.applicant = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+            typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(2).getValue();
             responses.add(typedResponse);
         }
         return responses;
@@ -165,9 +346,9 @@ public class TurtleDocumentation extends Contract {
         Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(TURTLEDEATH_EVENT, log);
         TurtleDeathEventResponse typedResponse = new TurtleDeathEventResponse();
         typedResponse.log = log;
-        typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-        typedResponse.applicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
-        typedResponse.documentHash = (byte[]) eventValues.getNonIndexedValues().get(2).getValue();
+        typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+        typedResponse.applicant = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+        typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(2).getValue();
         return typedResponse;
     }
 
@@ -189,9 +370,9 @@ public class TurtleDocumentation extends Contract {
         for (Contract.EventValuesWithLog eventValues : valueList) {
             TurtleMultiplicationEventResponse typedResponse = new TurtleMultiplicationEventResponse();
             typedResponse.log = eventValues.getLog();
-            typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-            typedResponse.applicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
-            typedResponse.documentHash = (byte[]) eventValues.getNonIndexedValues().get(2).getValue();
+            typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+            typedResponse.applicant = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+            typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(2).getValue();
             responses.add(typedResponse);
         }
         return responses;
@@ -201,9 +382,9 @@ public class TurtleDocumentation extends Contract {
         Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(TURTLEMULTIPLICATION_EVENT, log);
         TurtleMultiplicationEventResponse typedResponse = new TurtleMultiplicationEventResponse();
         typedResponse.log = log;
-        typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-        typedResponse.applicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
-        typedResponse.documentHash = (byte[]) eventValues.getNonIndexedValues().get(2).getValue();
+        typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+        typedResponse.applicant = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+        typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(2).getValue();
         return typedResponse;
     }
 
@@ -226,9 +407,9 @@ public class TurtleDocumentation extends Contract {
         for (Contract.EventValuesWithLog eventValues : valueList) {
             TurtleOwnerChangedEventResponse typedResponse = new TurtleOwnerChangedEventResponse();
             typedResponse.log = eventValues.getLog();
-            typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-            typedResponse.oldOwner = (String) eventValues.getNonIndexedValues().get(1).getValue();
-            typedResponse.newOwner = (String) eventValues.getNonIndexedValues().get(2).getValue();
+            typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+            typedResponse.oldOwner = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+            typedResponse.newOwner = (byte[]) eventValues.getIndexedValues().get(2).getValue();
             responses.add(typedResponse);
         }
         return responses;
@@ -238,9 +419,9 @@ public class TurtleDocumentation extends Contract {
         Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(TURTLEOWNERCHANGED_EVENT, log);
         TurtleOwnerChangedEventResponse typedResponse = new TurtleOwnerChangedEventResponse();
         typedResponse.log = log;
-        typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-        typedResponse.oldOwner = (String) eventValues.getNonIndexedValues().get(1).getValue();
-        typedResponse.newOwner = (String) eventValues.getNonIndexedValues().get(2).getValue();
+        typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+        typedResponse.oldOwner = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+        typedResponse.newOwner = (byte[]) eventValues.getIndexedValues().get(2).getValue();
         return typedResponse;
     }
 
@@ -263,8 +444,8 @@ public class TurtleDocumentation extends Contract {
         for (Contract.EventValuesWithLog eventValues : valueList) {
             TurtleRegisteredEventResponse typedResponse = new TurtleRegisteredEventResponse();
             typedResponse.log = eventValues.getLog();
-            typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-            typedResponse.applicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
+            typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+            typedResponse.applicant = (byte[]) eventValues.getIndexedValues().get(1).getValue();
             responses.add(typedResponse);
         }
         return responses;
@@ -274,8 +455,8 @@ public class TurtleDocumentation extends Contract {
         Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(TURTLEREGISTERED_EVENT, log);
         TurtleRegisteredEventResponse typedResponse = new TurtleRegisteredEventResponse();
         typedResponse.log = log;
-        typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-        typedResponse.applicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
+        typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+        typedResponse.applicant = (byte[]) eventValues.getIndexedValues().get(1).getValue();
         return typedResponse;
     }
 
@@ -297,10 +478,10 @@ public class TurtleDocumentation extends Contract {
         for (Contract.EventValuesWithLog eventValues : valueList) {
             TurtleTransferredEventResponse typedResponse = new TurtleTransferredEventResponse();
             typedResponse.log = eventValues.getLog();
-            typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-            typedResponse.grantApplicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
-            typedResponse.assignApplicant = (String) eventValues.getNonIndexedValues().get(2).getValue();
-            typedResponse.docuemntHash = (byte[]) eventValues.getNonIndexedValues().get(3).getValue();
+            typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+            typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+            typedResponse.grantApplicant = (String) eventValues.getNonIndexedValues().get(0).getValue();
+            typedResponse.assignApplicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
             responses.add(typedResponse);
         }
         return responses;
@@ -310,10 +491,10 @@ public class TurtleDocumentation extends Contract {
         Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(TURTLETRANSFERRED_EVENT, log);
         TurtleTransferredEventResponse typedResponse = new TurtleTransferredEventResponse();
         typedResponse.log = log;
-        typedResponse.turtleId = (String) eventValues.getNonIndexedValues().get(0).getValue();
-        typedResponse.grantApplicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
-        typedResponse.assignApplicant = (String) eventValues.getNonIndexedValues().get(2).getValue();
-        typedResponse.docuemntHash = (byte[]) eventValues.getNonIndexedValues().get(3).getValue();
+        typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
+        typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+        typedResponse.grantApplicant = (String) eventValues.getNonIndexedValues().get(0).getValue();
+        typedResponse.assignApplicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
         return typedResponse;
     }
 
@@ -336,117 +517,11 @@ public class TurtleDocumentation extends Contract {
         return executeRemoteCallSingleValueReturn(function, String.class);
     }
 
-    public RemoteFunctionCall<TransactionReceipt> renounceOwnership() {
-        final Function function = new Function(
-                FUNC_RENOUNCEOWNERSHIP, 
-                Arrays.<Type>asList(), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteFunctionCall<TransactionReceipt> transferOwnership(String newOwner) {
-        final Function function = new Function(
-                FUNC_TRANSFEROWNERSHIP, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(160, newOwner)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteFunctionCall<TransactionReceipt> registerTurtle(String _turtleId,
-            String _applicant) {
-        final Function function = new Function(
-                FUNC_REGISTERTURTLE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.Utf8String(_applicant)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteFunctionCall<TransactionReceipt> registerTurtleMultiplicationDocument(
-            String _turtleId, String _applicant, BigInteger _count, String _area, String _purpose,
-            String _location, String _fatherId, String _motherId, String _locationSpecification,
-            String _multiplicationMethod, String _shelterSpecification) {
-        final Function function = new Function(
-                FUNC_REGISTERTURTLEMULTIPLICATIONDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.Utf8String(_applicant), 
-                new org.web3j.abi.datatypes.generated.Uint8(_count), 
-                new org.web3j.abi.datatypes.Utf8String(_area), 
-                new org.web3j.abi.datatypes.Utf8String(_purpose), 
-                new org.web3j.abi.datatypes.Utf8String(_location), 
-                new org.web3j.abi.datatypes.Utf8String(_fatherId), 
-                new org.web3j.abi.datatypes.Utf8String(_motherId), 
-                new org.web3j.abi.datatypes.Utf8String(_locationSpecification), 
-                new org.web3j.abi.datatypes.Utf8String(_multiplicationMethod), 
-                new org.web3j.abi.datatypes.Utf8String(_shelterSpecification)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteFunctionCall<Multiplication> searchTutleMultiplicationDocument(String _turtleId,
-            byte[] _documentHash) {
-        final Function function = new Function(FUNC_SEARCHTUTLEMULTIPLICATIONDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Multiplication>() {}));
-        return executeRemoteCallSingleValueReturn(function, Multiplication.class);
-    }
-
-    public RemoteFunctionCall<TransactionReceipt> registerTurtleAssigneeDocument(String _turtleId,
-            String _applicant, String _assigneeId, BigInteger _count, String _transferReason,
-            String _purpose) {
-        final Function function = new Function(
-                FUNC_REGISTERTURTLEASSIGNEEDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.Utf8String(_applicant), 
-                new org.web3j.abi.datatypes.Utf8String(_assigneeId), 
-                new org.web3j.abi.datatypes.generated.Uint8(_count), 
-                new org.web3j.abi.datatypes.Utf8String(_transferReason), 
-                new org.web3j.abi.datatypes.Utf8String(_purpose)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteFunctionCall<TransactionReceipt> registerTurtleGrantorDocument(String _turtleId,
-            String _applicant, byte[] _documentHash, String _grantorId, String _aquisition,
-            String _fatherId, String _motherId) {
-        final Function function = new Function(
-                FUNC_REGISTERTURTLEGRANTORDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.Utf8String(_applicant), 
-                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash), 
-                new org.web3j.abi.datatypes.Utf8String(_grantorId), 
-                new org.web3j.abi.datatypes.Utf8String(_aquisition), 
-                new org.web3j.abi.datatypes.Utf8String(_fatherId), 
-                new org.web3j.abi.datatypes.Utf8String(_motherId)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
-    }
-
-    public RemoteFunctionCall<Transfer> searchTurtleTransferDocument(String _turtleId,
-            byte[] _documentHash) {
-        final Function function = new Function(FUNC_SEARCHTURTLETRANSFERDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Transfer>() {}));
-        return executeRemoteCallSingleValueReturn(function, Transfer.class);
-    }
-
-    public RemoteFunctionCall<TransactionReceipt> registerTurtlerDeathDocument(String _turtleId,
-            String _applicant, String _shelter, BigInteger _count, String _deathReason,
-            String _plan, String _deathImage, String _diagnosis) {
-        final Function function = new Function(
-                FUNC_REGISTERTURTLERDEATHDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.Utf8String(_applicant), 
-                new org.web3j.abi.datatypes.Utf8String(_shelter), 
-                new org.web3j.abi.datatypes.generated.Uint8(_count), 
-                new org.web3j.abi.datatypes.Utf8String(_deathReason), 
-                new org.web3j.abi.datatypes.Utf8String(_plan), 
-                new org.web3j.abi.datatypes.Utf8String(_deathImage), 
-                new org.web3j.abi.datatypes.Utf8String(_diagnosis)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
+    public RemoteFunctionCall<byte[]> searchCurrentDocumentHash(String _turtleId) {
+        final Function function = new Function(FUNC_SEARCHCURRENTDOCUMENTHASH, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
+        return executeRemoteCallSingleValueReturn(function, byte[].class);
     }
 
     public RemoteFunctionCall<Death> searchTurtleDeathDocument(String _turtleId,
@@ -458,15 +533,22 @@ public class TurtleDocumentation extends Contract {
         return executeRemoteCallSingleValueReturn(function, Death.class);
     }
 
-    public RemoteFunctionCall<TransactionReceipt> changeTurtleOwner(String _turtleId,
-            String _oldOwner, String _newOwner) {
-        final Function function = new Function(
-                FUNC_CHANGETURTLEOWNER, 
+    public RemoteFunctionCall<Multiplication> searchTurtleMultiplicationDocument(String _turtleId,
+            byte[] _documentHash) {
+        final Function function = new Function(FUNC_SEARCHTURTLEMULTIPLICATIONDOCUMENT, 
                 Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.Utf8String(_oldOwner), 
-                new org.web3j.abi.datatypes.Utf8String(_newOwner)), 
-                Collections.<TypeReference<?>>emptyList());
-        return executeRemoteCallTransaction(function);
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Multiplication>() {}));
+        return executeRemoteCallSingleValueReturn(function, Multiplication.class);
+    }
+
+    public RemoteFunctionCall<Transfer> searchTurtleTransferDocument(String _turtleId,
+            byte[] _documentHash) {
+        final Function function = new Function(FUNC_SEARCHTURTLETRANSFERDOCUMENT, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Transfer>() {}));
+        return executeRemoteCallSingleValueReturn(function, Transfer.class);
     }
 
     @Deprecated
@@ -491,6 +573,52 @@ public class TurtleDocumentation extends Contract {
         return new TurtleDocumentation(contractAddress, web3j, transactionManager, contractGasProvider);
     }
 
+    public static class Death extends DynamicStruct {
+        public String applicant;
+
+        public String shelter;
+
+        public BigInteger count;
+
+        public String deathReason;
+
+        public String plan;
+
+        public String deathImage;
+
+        public String diagnosis;
+
+        public Death(String applicant, String shelter, BigInteger count, String deathReason,
+                String plan, String deathImage, String diagnosis) {
+            super(new org.web3j.abi.datatypes.Utf8String(applicant), 
+                    new org.web3j.abi.datatypes.Utf8String(shelter), 
+                    new org.web3j.abi.datatypes.generated.Uint8(count), 
+                    new org.web3j.abi.datatypes.Utf8String(deathReason), 
+                    new org.web3j.abi.datatypes.Utf8String(plan), 
+                    new org.web3j.abi.datatypes.Utf8String(deathImage), 
+                    new org.web3j.abi.datatypes.Utf8String(diagnosis));
+            this.applicant = applicant;
+            this.shelter = shelter;
+            this.count = count;
+            this.deathReason = deathReason;
+            this.plan = plan;
+            this.deathImage = deathImage;
+            this.diagnosis = diagnosis;
+        }
+
+        public Death(Utf8String applicant, Utf8String shelter, Uint8 count, Utf8String deathReason,
+                Utf8String plan, Utf8String deathImage, Utf8String diagnosis) {
+            super(applicant, shelter, count, deathReason, plan, deathImage, diagnosis);
+            this.applicant = applicant.getValue();
+            this.shelter = shelter.getValue();
+            this.count = count.getValue();
+            this.deathReason = deathReason.getValue();
+            this.plan = plan.getValue();
+            this.deathImage = deathImage.getValue();
+            this.diagnosis = diagnosis.getValue();
+        }
+    }
+
     public static class Multiplication extends DynamicStruct {
         public String applicant;
 
@@ -506,6 +634,14 @@ public class TurtleDocumentation extends Contract {
 
         public String motherId;
 
+        public String birth;
+
+        public String name;
+
+        public BigInteger weight;
+
+        public String gender;
+
         public String locationSpecification;
 
         public String multiplicationMethod;
@@ -513,7 +649,8 @@ public class TurtleDocumentation extends Contract {
         public String shelterSpecification;
 
         public Multiplication(String applicant, BigInteger count, String area, String purpose,
-                String location, String fatherId, String motherId, String locationSpecification,
+                String location, String fatherId, String motherId, String birth, String name,
+                BigInteger weight, String gender, String locationSpecification,
                 String multiplicationMethod, String shelterSpecification) {
             super(new org.web3j.abi.datatypes.Utf8String(applicant), 
                     new org.web3j.abi.datatypes.generated.Uint8(count), 
@@ -522,6 +659,10 @@ public class TurtleDocumentation extends Contract {
                     new org.web3j.abi.datatypes.Utf8String(location), 
                     new org.web3j.abi.datatypes.Utf8String(fatherId), 
                     new org.web3j.abi.datatypes.Utf8String(motherId), 
+                    new org.web3j.abi.datatypes.Utf8String(birth), 
+                    new org.web3j.abi.datatypes.Utf8String(name), 
+                    new org.web3j.abi.datatypes.generated.Uint256(weight), 
+                    new org.web3j.abi.datatypes.Utf8String(gender), 
                     new org.web3j.abi.datatypes.Utf8String(locationSpecification), 
                     new org.web3j.abi.datatypes.Utf8String(multiplicationMethod), 
                     new org.web3j.abi.datatypes.Utf8String(shelterSpecification));
@@ -532,6 +673,10 @@ public class TurtleDocumentation extends Contract {
             this.location = location;
             this.fatherId = fatherId;
             this.motherId = motherId;
+            this.birth = birth;
+            this.name = name;
+            this.weight = weight;
+            this.gender = gender;
             this.locationSpecification = locationSpecification;
             this.multiplicationMethod = multiplicationMethod;
             this.shelterSpecification = shelterSpecification;
@@ -539,9 +684,10 @@ public class TurtleDocumentation extends Contract {
 
         public Multiplication(Utf8String applicant, Uint8 count, Utf8String area,
                 Utf8String purpose, Utf8String location, Utf8String fatherId, Utf8String motherId,
+                Utf8String birth, Utf8String name, Uint256 weight, Utf8String gender,
                 Utf8String locationSpecification, Utf8String multiplicationMethod,
                 Utf8String shelterSpecification) {
-            super(applicant, count, area, purpose, location, fatherId, motherId, locationSpecification, multiplicationMethod, shelterSpecification);
+            super(applicant, count, area, purpose, location, fatherId, motherId, birth, name, weight, gender, locationSpecification, multiplicationMethod, shelterSpecification);
             this.applicant = applicant.getValue();
             this.count = count.getValue();
             this.area = area.getValue();
@@ -549,6 +695,10 @@ public class TurtleDocumentation extends Contract {
             this.location = location.getValue();
             this.fatherId = fatherId.getValue();
             this.motherId = motherId.getValue();
+            this.birth = birth.getValue();
+            this.name = name.getValue();
+            this.weight = weight.getValue();
+            this.gender = gender.getValue();
             this.locationSpecification = locationSpecification.getValue();
             this.multiplicationMethod = multiplicationMethod.getValue();
             this.shelterSpecification = shelterSpecification.getValue();
@@ -618,50 +768,10 @@ public class TurtleDocumentation extends Contract {
         }
     }
 
-    public static class Death extends DynamicStruct {
-        public String applicant;
+    public static class CurrentTurtleDocumentEventResponse extends BaseEventResponse {
+        public byte[] turtleId;
 
-        public String shelter;
-
-        public BigInteger count;
-
-        public String deathReason;
-
-        public String plan;
-
-        public String deathImage;
-
-        public String diagnosis;
-
-        public Death(String applicant, String shelter, BigInteger count, String deathReason,
-                String plan, String deathImage, String diagnosis) {
-            super(new org.web3j.abi.datatypes.Utf8String(applicant), 
-                    new org.web3j.abi.datatypes.Utf8String(shelter), 
-                    new org.web3j.abi.datatypes.generated.Uint8(count), 
-                    new org.web3j.abi.datatypes.Utf8String(deathReason), 
-                    new org.web3j.abi.datatypes.Utf8String(plan), 
-                    new org.web3j.abi.datatypes.Utf8String(deathImage), 
-                    new org.web3j.abi.datatypes.Utf8String(diagnosis));
-            this.applicant = applicant;
-            this.shelter = shelter;
-            this.count = count;
-            this.deathReason = deathReason;
-            this.plan = plan;
-            this.deathImage = deathImage;
-            this.diagnosis = diagnosis;
-        }
-
-        public Death(Utf8String applicant, Utf8String shelter, Uint8 count, Utf8String deathReason,
-                Utf8String plan, Utf8String deathImage, Utf8String diagnosis) {
-            super(applicant, shelter, count, deathReason, plan, deathImage, diagnosis);
-            this.applicant = applicant.getValue();
-            this.shelter = shelter.getValue();
-            this.count = count.getValue();
-            this.deathReason = deathReason.getValue();
-            this.plan = plan.getValue();
-            this.deathImage = deathImage.getValue();
-            this.diagnosis = diagnosis.getValue();
-        }
+        public byte[] documentHash;
     }
 
     public static class OwnershipTransferredEventResponse extends BaseEventResponse {
@@ -671,42 +781,42 @@ public class TurtleDocumentation extends Contract {
     }
 
     public static class TurtleDeathEventResponse extends BaseEventResponse {
-        public String turtleId;
+        public byte[] turtleId;
 
-        public String applicant;
+        public byte[] applicant;
 
         public byte[] documentHash;
     }
 
     public static class TurtleMultiplicationEventResponse extends BaseEventResponse {
-        public String turtleId;
+        public byte[] turtleId;
 
-        public String applicant;
+        public byte[] applicant;
 
         public byte[] documentHash;
     }
 
     public static class TurtleOwnerChangedEventResponse extends BaseEventResponse {
-        public String turtleId;
+        public byte[] turtleId;
 
-        public String oldOwner;
+        public byte[] oldOwner;
 
-        public String newOwner;
+        public byte[] newOwner;
     }
 
     public static class TurtleRegisteredEventResponse extends BaseEventResponse {
-        public String turtleId;
+        public byte[] turtleId;
 
-        public String applicant;
+        public byte[] applicant;
     }
 
     public static class TurtleTransferredEventResponse extends BaseEventResponse {
-        public String turtleId;
+        public byte[] turtleId;
+
+        public byte[] documentHash;
 
         public String grantApplicant;
 
         public String assignApplicant;
-
-        public byte[] docuemntHash;
     }
 }

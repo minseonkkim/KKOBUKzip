@@ -33,13 +33,13 @@ const apiRequest = async <T>(
       // 일반 JavaScript Error 처리
       errorMessage = error.message;
     }
-
+    console.error(`User API Request: ${errorMessage}`);
     return { success: false, error: errorMessage };
   }
 };
 
 // 로그인
-const login = async (
+const loginRequest = async (
   email: string,
   password: string
 ): Promise<{ success: boolean; data?: LoginResponseData; error?: string }> => {
@@ -54,19 +54,15 @@ const logout = async (): Promise<{ success: boolean; error?: string }> => {
 };
 
 // 회원가입
-const register = async (
-  user: JoinDataType
+const registerRequest = async (
+  data: JoinDataType
 ): Promise<{
   success: boolean;
   data?: RegisterResponseData;
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<RegisterResponseData>("/main/user/signup", user, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
+    guestAxios.post<RegisterResponseData>("/main/user/signup", { data })
   );
 };
 
@@ -89,7 +85,7 @@ const checkEmailRequest = async (
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<EmailCheckResponseData>(`/main/user/email/`, {
+    guestAxios.post<EmailCheckResponseData>(`/main/user/email`, {
       email,
       verification,
     })
@@ -121,6 +117,11 @@ interface LoginResponseData {
     accessToken: string;
     refreshToken: string;
     role: string; // 유저는 user 관리자는 admin
+    id: number;
+    email: string;
+    addres: string;
+    CP: string;
+    nickname: string;
   };
 }
 
@@ -162,8 +163,8 @@ interface CreateEmailRequestResponseData {
 // 내 거래 내역 상세 조회
 
 export {
-  register,
-  login,
+  registerRequest,
+  loginRequest,
   logout,
   checkToken,
   checkEmailRequest,

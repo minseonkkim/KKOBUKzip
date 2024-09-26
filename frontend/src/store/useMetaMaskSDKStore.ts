@@ -6,7 +6,7 @@ import { AbiItem } from "web3-utils";
 import TurtleTokenAbi from "../abi/TurtleToken.json";
 
 const TURTLE_TOKEN_ABI: AbiItem[] = TurtleTokenAbi.abi as AbiItem[];
-const TURTLE_TOKEN_ADDRESS = "0x73b0697A8A69193e5842497Cc010cB1F34A93a0a";
+const TURTLE_TOKEN_ADDRESS = "0xe01a5F9cb53755236d1E754eb4d42286E1b62166";
 
 interface MetaMaskSDKState {
   MMSDK: MetaMaskSDK | null;

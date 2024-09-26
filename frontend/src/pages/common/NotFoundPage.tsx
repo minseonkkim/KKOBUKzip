@@ -4,16 +4,15 @@ import { FaHome } from "react-icons/fa";
 import "react-chrome-dino-ts/index.css";
 import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid'; // 고유 ID 생성 라이브러리
-import TurtleWalk from "../../assets/turtle_walk.gif";
-import Coral1 from "../../assets/NotFound/coral.png";
-import Coral2 from "../../assets/NotFound/coral2.png";
-import Coral3 from "../../assets/NotFound/coral3.png";
-import Seaweed from "../../assets/NotFound/seaweed.png";
-import Seaweed2 from "../../assets/NotFound/seaweed2.png";
-import Shark from "../../assets/NotFound/shark.png";
+import TurtleWalk from "../../assets/NotFound/turtle_walk.gif";
+import Coral1 from "../../assets/NotFound/coral.webp";
+import Coral2 from "../../assets/NotFound/coral2.webp";
+import Coral3 from "../../assets/NotFound/coral3.webp";
+import Seaweed from "../../assets/NotFound/seaweed.webp";
+import Seaweed2 from "../../assets/NotFound/seaweed2.webp";
+import Shark from "../../assets/NotFound/shark.webp";
 import { Helmet } from "react-helmet-async";
 
-// Define types for obstacles and fish
 type ObstacleType = {
   id: string;
   left: number;
@@ -229,14 +228,16 @@ function NotFoundPage() {
                 : ""
             }`}
           >
-            <img src={TurtleWalk} className="w-[60px] sm:w-[90px] h-auto" alt="Turtle" />
+            <img src={TurtleWalk} loading="lazy" draggable="false" className="w-[60px] sm:w-[90px] h-auto" alt="Turtle" />
           </div>
           {obstacles.map((obstacle, index) => (
             <img
+              draggable="false"
               key={index}
               src={obstacle.img}
               alt={obstacle.type}
               className="absolute"
+              loading="lazy"
               style={{
                 left: `${obstacle.left * 1.5}px`,
                 bottom: "0px",
@@ -247,10 +248,12 @@ function NotFoundPage() {
           ))}
           {sharkObstacles.map((shark, index) => (
             <img
+              draggable="false"
               key={index}
               src={shark.img}
               alt="Shark"
               className="absolute"
+              loading="lazy"
               style={{
                 left: `${shark.left * 1.5}px`,
                 bottom: `${shark.height * 1.5}px`,

@@ -7,7 +7,7 @@ contract("TurtleDocumentation", (accounts) => {
   const turtleId = "turtle-003";
 
   // 배포된 계약 주소를 입력합니다. (Ganache에서 배포된 주소)
-  const deployedAddress = "0x275b279353A759A660503aD6292be0D6746E9B3b"; // 실제 배포된 계약 주소로 변경하세요.
+  const deployedAddress = "0x8797eFA7a29b6Cd8024164D9B9682DB045e91B08"; // 실제 배포된 계약 주소로 변경하세요.
 
   let turtleDocInstance;
 
