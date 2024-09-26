@@ -544,7 +544,7 @@
 						"type": "bytes32"
 					}
 				],
-				"stateMutability": "nonpayable",
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -801,7 +801,7 @@
 					"details": "Returns the address of the current owner."
 				},
 				"renounceOwnership()": {
-					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
 				},
 				"transferOwnership(address)": {
 					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
@@ -833,27 +833,27 @@
 	},
 	"sources": {
 		"@openzeppelin/contracts/access/Ownable.sol": {
-			"keccak256": "0xba43b97fba0d32eb4254f6a5a297b39a19a247082a02d6e69349e071e2946218",
+			"keccak256": "0xa94b34880e3c1b0b931662cb1c09e5dfa6662f31cba80e07c5ee71cd135c9673",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://fc980984badf3984b6303b377711220e067722bbd6a135b24669ff5069ef9f32",
-				"dweb:/ipfs/QmPHXMSXj99XjSVM21YsY6aNtLLjLVXDbyN76J5HQYvvrz"
+				"bzz-raw://40fb1b5102468f783961d0af743f91b9980cf66b50d1d12009f6bb1869cea4d2",
+				"dweb:/ipfs/QmYqEbJML4jB1GHbzD4cUZDtJg5wVwNm3vDJq1GbyDus8y"
 			]
 		},
 		"@openzeppelin/contracts/utils/Context.sol": {
-			"keccak256": "0xa92e4fa126feb6907daa0513ddd816b2eb91f30a808de54f63c17d0e162c3439",
+			"keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a367861093b74443b137564d3f3c472f70bcf114739e62059c939f25e315706c",
-				"dweb:/ipfs/Qmd7JMpcxD9RuQjK3uM3EzJUgSqdN8vzp8eytEiuwxQJ6h"
+				"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
+				"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
 			]
 		},
 		"contracts/TurtleDocumentation.sol": {
-			"keccak256": "0xc702fa5eba7a9077f2caf8472d55885116c0dd4178000b90ba8a3381a9443e50",
+			"keccak256": "0x32e5f81f09c68c03e73911d0ad409877a70f1dd475a4786996a394d610260ee7",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://5871b739d148f475d2bb227a3bcfd46e87b64d11a39ad1164d9571c34f074193",
-				"dweb:/ipfs/QmUdSsbqXDwzAs3GMBSQVkQ3ZaT99cWAfnGG7MH8mVSzZS"
+				"bzz-raw://5fa7f340f48b4a5fc1a015ab1ed6efaec1c9b7545c71581b67c4a1a6be9a5ca9",
+				"dweb:/ipfs/QmZ6bP9iLgqZBgoV9uWvrLHNYpdAQburJMch6xgnoSQGtX"
 			]
 		}
 	},

@@ -48,7 +48,6 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
     }
 
     mapping(uint256 => Transaction) public transactions; // 거래 ID에 따른 거래 정보 매핑
-    uint256 public transactionCount; // 총 거래 수
 
     address public arbiter; // 중재자 주소
     uint256 public constant LOCK_PERIOD = 7 days; // 기본 잠금 기간 (7일)
@@ -83,10 +82,11 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * - Interactions: 토큰 전송
      */
     // 새로운 거래 생성
-    function createTransaction(uint256 _transactionId, address _seller, uint256 _amount) external returns (uint256) {
+    function createTransaction(uint256 _transactionId, address _seller, uint256 _amount) external nonReentrant returns (uint256) {
         // Check
         require(_seller != address(0), "Invalid seller address");
         require(_amount > 0, "Invalid amount! Amount must be greater than 0");
+        // require(transactions[_transactionId].buyer == address(0), "Transaction ID already exists")
 
         // Effects
         transactions[_transactionId] = Transaction({buyer: msg.sender, seller: _seller, amount: _amount, state: State.Created, createdAt: block.timestamp, lockPeriod: LOCK_PERIOD});
@@ -94,8 +94,10 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
         // Interactions
         require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");  // 변경 이전 코드
         // token.safeTransferFrom(_buyer, address(this), _amount); // 변경 후 : SafeERC20 라이브러리를 사용해 안전한 전송
-
         emit TransactionCreated(_transactionId, msg.sender, _seller, _amount);
+
+        lockFunds(_transactionId);  // 자금 잠금 동시에 진행
+
         return _transactionId;
     }
 
@@ -184,9 +186,9 @@ contract TurtleEscrow is Ownable, ReentrancyGuard {
      * @param _newLockPeriod 새로운 잠금 기간
      */
     function updateLockPeriod(uint256 _transactionId, uint256 _newLockPeriod) external {
+
         Transaction storage transaction = transactions[_transactionId];
-        require(msg.sender == transaction.buyer || msg.sender == transaction.seller, "Unauthorized");
-        require(transaction.state == State.Locked, "Invalid state");
+        require(msg.sender == arbiter, "Only arbiter can update lock period");
         transaction.lockPeriod = _newLockPeriod;
     }
 }
