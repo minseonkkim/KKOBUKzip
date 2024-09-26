@@ -65,6 +65,55 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "auctionTransactions",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "buyer",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum TurtleEscrow.State",
+						"name": "state",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "createdAt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "lockPeriod",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bool",
+						"name": "_isAuction",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
 						"name": "_transactionId",
 						"type": "uint256"
 					},
@@ -82,6 +131,11 @@
 				"name": "createTransaction",
 				"outputs": [
 					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					},
+					{
 						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
@@ -92,6 +146,11 @@
 			},
 			{
 				"inputs": [
+					{
+						"internalType": "bool",
+						"name": "_isAuction",
+						"type": "bool"
+					},
 					{
 						"internalType": "uint256",
 						"name": "_transactionId",
@@ -135,6 +194,50 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "normalTransactions",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "buyer",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum TurtleEscrow.State",
+						"name": "state",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "createdAt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "lockPeriod",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "owner",
 				"outputs": [
@@ -150,18 +253,39 @@
 			{
 				"inputs": [
 					{
+						"internalType": "bool",
+						"name": "_isAuction",
+						"type": "bool"
+					},
+					{
 						"internalType": "uint256",
 						"name": "_transactionId",
 						"type": "uint256"
 					}
 				],
 				"name": "refund",
-				"outputs": [],
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
 				"inputs": [
+					{
+						"internalType": "bool",
+						"name": "_isAuction",
+						"type": "bool"
+					},
 					{
 						"internalType": "uint256",
 						"name": "_transactionId",
@@ -169,7 +293,18 @@
 					}
 				],
 				"name": "releaseFunds",
-				"outputs": [],
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			},
@@ -209,50 +344,6 @@
 			{
 				"inputs": [
 					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "transactions",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "buyer",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "seller",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "enum TurtleEscrow.State",
-						"name": "state",
-						"type": "uint8"
-					},
-					{
-						"internalType": "uint256",
-						"name": "createdAt",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "lockPeriod",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
 						"internalType": "address",
 						"name": "newOwner",
 						"type": "address"
@@ -266,6 +357,11 @@
 			{
 				"inputs": [
 					{
+						"internalType": "bool",
+						"name": "_isAuction",
+						"type": "bool"
+					},
+					{
 						"internalType": "uint256",
 						"name": "_transactionId",
 						"type": "uint256"
@@ -277,7 +373,18 @@
 					}
 				],
 				"name": "updateLockPeriod",
-				"outputs": [],
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			}
@@ -292,7 +399,7 @@
 						"_token": "사용할 ERC20 토큰 주소"
 					}
 				},
-				"createTransaction(uint256,address,uint256)": {
+				"createTransaction(bool,uint256,address,uint256)": {
 					"details": "새로운 거래 생성",
 					"params": {
 						"_amount": "거래 금액",
@@ -302,7 +409,7 @@
 						"_0": "거래 ID"
 					}
 				},
-				"getTransactionDetails(uint256)": {
+				"getTransactionDetails(bool,uint256)": {
 					"details": "거래 세부 정보 조회",
 					"params": {
 						"_transactionId": "거래 ID"
@@ -314,13 +421,13 @@
 				"owner()": {
 					"details": "Returns the address of the current owner."
 				},
-				"refund(uint256)": {
+				"refund(bool,uint256)": {
 					"details": "환불 (구매자에게 반환)",
 					"params": {
 						"_transactionId": "거래 ID"
 					}
 				},
-				"releaseFunds(uint256)": {
+				"releaseFunds(bool,uint256)": {
 					"details": "자금 해제 (판매자에게 전송)",
 					"params": {
 						"_transactionId": "거래 ID"
@@ -338,7 +445,7 @@
 				"transferOwnership(address)": {
 					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
 				},
-				"updateLockPeriod(uint256,uint256)": {
+				"updateLockPeriod(bool,uint256,uint256)": {
 					"details": "잠금 기간 업데이트",
 					"params": {
 						"_newLockPeriod": "새로운 잠금 기간",
@@ -352,13 +459,13 @@
 		"userdoc": {
 			"kind": "user",
 			"methods": {
-				"createTransaction(uint256,address,uint256)": {
+				"createTransaction(bool,uint256,address,uint256)": {
 					"notice": "CEI 패턴 적용(Checks-Effects-Interactions) - Checks: 입력 값 검증 먼저 수행 - Effects: 거래 정보 상태에 저장 - Interactions: 토큰 전송"
 				},
-				"refund(uint256)": {
+				"refund(bool,uint256)": {
 					"notice": "CEI 패턴 적용(Checks-Effects-Interactions) - Checks: 권한, 상태, 잠금 기간 확인 수행 - Effects: 거래 상태 업데이트 - Interactions: 토큰 전송"
 				},
-				"releaseFunds(uint256)": {
+				"releaseFunds(bool,uint256)": {
 					"notice": "CEI 패턴 적용(Checks-Effects-Interactions) - Checks: 권한 및 상태 확인 수행 - Effects: 거래 상태 업데이트 - Interactions: 토큰 전송"
 				}
 			},
@@ -432,11 +539,11 @@
 			]
 		},
 		"contracts/TurtleEscrow.sol": {
-			"keccak256": "0x614f2baa1110216af5c5c523a83be51b5a0cc3eeff8d83f7f5397ac9949b5653",
+			"keccak256": "0xbbde29706a5f0a625e8d323c63eb4527d44551175cbee6217a942f6506028160",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://c93122e21ebf6cff57b4dc92657b4c3c235b2f8897029475bf4deeb9675903fe",
-				"dweb:/ipfs/QmXMnwvgXYzwWa7wKPdPCcNA2UNyQKRarQUZNwZQ7YnZng"
+				"bzz-raw://ab3a9bfe64e76fdec6dbf611b32f7be08d72c5c06f92c366d821183cb4ade8f2",
+				"dweb:/ipfs/QmVGavMLLfMAcKFPprrE376ydYVejxjzTqWRgT6pBhoFJJ"
 			]
 		}
 	},
