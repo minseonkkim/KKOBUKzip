@@ -1,7 +1,6 @@
 package com.turtlecoin.mainservice.domain.document.entity;
 
-import com.turtlecoin.mainservice.domain.global.entity.BaseEntity;
-
+import com.turtlecoin.mainservice.global.entity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import jakarta.persistence.*;

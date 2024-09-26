@@ -45,9 +45,11 @@ public class Transaction extends BaseEntity {
 
     @OneToMany(mappedBy = "transaction")
     @Column(name = "transaction_photos")
+    @Builder.Default
     private List<TransactionPhoto> transactionPhotos = new ArrayList<>();
 
     @OneToMany(mappedBy = "transaction")
+    @Builder.Default
     private List<TransactionTag> tags = new ArrayList<>();
 
 
