@@ -4,10 +4,12 @@ import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import TmpTurtleImg2 from "../../assets/tmp_turtle_2.jpg";
 import tmpProfileImg from "../../assets/tmp_profile.gif";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useChatStore from "../../store/useChatStore";
+import { useEscrowStore } from "../../store/useEscrowStore";
 
 function TransactionDetailPage() {
+  const { initializeEscrowWeb3, createTransaction } = useEscrowStore();
   const { openChatDetail } = useChatStore();
   const navigate = useNavigate();
   const userNickname = "ASdf";
@@ -18,6 +20,10 @@ function TransactionDetailPage() {
   const images = [TmpTurtleImg2, TmpTurtleImg];
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  useEffect(() => {
+    initializeEscrowWeb3();
+  }, [initializeEscrowWeb3]);
+
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
@@ -27,6 +33,11 @@ function TransactionDetailPage() {
       prevIndex === 0 ? images.length - 1 : prevIndex - 1
     );
   };
+
+  const handleDeposit = async () => {
+    // await createTransaction(isAuction, transactionId, sellerAddress, amount);
+    alert("결제가 완료되었습니다. 마이페이지로 이동하여 서류 작성을 진행해 주세요!")
+  }
 
   return (
     <>
@@ -109,7 +120,7 @@ function TransactionDetailPage() {
           </div>
 
           <div className="w-[48%] h-[675px] bg-[#EAF5DD] rounded-[20px] flex flex-col justify-start items-center">
-            <div className="w-full px-[40px] w-full h-full flex justify-center items-center">
+            <div className="px-[40px] w-full h-full flex justify-center items-center">
               <div className="flex flex-col justify-center items-center mb-4">
                 <div className="flex flex-row items-center">
                   <div className="font-bold text-[27px]">
@@ -119,7 +130,7 @@ function TransactionDetailPage() {
                     {Math.floor(8000000).toLocaleString()}원
                   </div>
                 </div>
-                <button className="mt-5 cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] active:scale-90 text-[30px] font-dnf-bitbit">
+                <button className="mt-5 cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] active:scale-90 text-[30px] font-dnf-bitbit" onClick={handleDeposit}>
                   구매하기
                 </button>
               </div>
