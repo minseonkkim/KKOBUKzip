@@ -38,8 +38,7 @@ export default function ChatList() {
 
     // SSE 연결하는 함수
     const initializeSSE = () => {
-      const SSE_URL = import.meta.env.VITE_SSE_MAIN_UR;
-
+      const SSE_URL = import.meta.env.VITE_SSE_MAIN_URL;
       const eventSource = new EventSource(SSE_URL);
 
       eventSource.onmessage = (event) => {
