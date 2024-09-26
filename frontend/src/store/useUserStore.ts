@@ -5,10 +5,13 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 // define the interface for the userStore
 interface UserInfo {
-  id: string;
+  id: number;
   name: string;
   email: string;
+  addres: string;
+  CP: string;
   avatar: string;
+  nickname: string;
 }
 
 // set the interface for the userStore
@@ -21,11 +24,21 @@ interface UserStore {
   setExtraData: (extraData: any) => void;
 }
 
+const info = {
+  id: 1,
+  name: "Jone Doe",
+  email: "2mail@1.com",
+  addres: "대전 서구 둔산북로 36 1층 114호.",
+  CP: "010-1234-5678",
+  avatar: "XXXXXXXXXXXXXXXXXXXXXXXXX",
+  nickname: "구북맘",
+};
+
 // create zustand userStore and persist it in local storage, so that the user can be accessed across different pages. save userInfo, login status and extra data. especially partial save only userInfo.
 export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
-      userInfo: null,
+      userInfo: info,
       isLogin: false,
       extraData: null,
 

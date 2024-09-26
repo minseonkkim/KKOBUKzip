@@ -5,10 +5,7 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
-// const BASE_URL = import.meta.env.VITE_BASE_URL;
-const BASE_URL =
-  "https://7529ce6e-dc11-40ce-bb94-9812611cbeb3.mock.pstmn.io/api";
-// 포스트맨 mock-server주소 -> 필요시 자기껄로 변경
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const REFRESH_URL = BASE_URL + "/main/jwt/refresh";
 

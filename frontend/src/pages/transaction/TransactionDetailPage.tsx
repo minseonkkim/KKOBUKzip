@@ -107,7 +107,7 @@ function TransactionDetailPage() {
                 <span className="text-[20px]">꼬북맘</span>
               </div>
               <div
-                onClick={() => openChatDetail(1, userNickname)}
+                onClick={() => openChatDetail(1, "꼬북맘")}
                 className="cursor-pointer bg-[#7CBBF9] h-fit flex justify-center items-center rounded-[10px] font-bold px-3 py-2 text-white"
               >
                 채팅하기
