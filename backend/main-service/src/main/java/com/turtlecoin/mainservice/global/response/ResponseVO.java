@@ -36,11 +36,13 @@ public class ResponseVO<T> {
 	}
 
 
+
 	public static <T> ResponseVO<T> success(String name, T data) {
 		Map<String, T> dataMap = new HashMap<>();
 		dataMap.put(name, data);
 		return new ResponseVO<>("200", "Success", dataMap);
 	}
+
 
 	public static <T> ResponseVO<T> failure(String status,String message) {
 		return new ResponseVO<>(status, message, null);

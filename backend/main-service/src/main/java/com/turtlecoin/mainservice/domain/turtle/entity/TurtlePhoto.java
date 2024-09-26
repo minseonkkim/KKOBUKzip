@@ -1,6 +1,6 @@
 package com.turtlecoin.mainservice.domain.turtle.entity;
 
-import com.turtlecoin.mainservice.domain.global.entity.BaseEntity;
+import com.turtlecoin.mainservice.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

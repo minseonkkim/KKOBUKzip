@@ -1,6 +1,6 @@
 package com.turtlecoin.mainservice.domain.transaction.entity;
 
-import com.turtlecoin.mainservice.domain.global.entity.BaseEntity;
+import com.turtlecoin.mainservice.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,4 +20,9 @@ public class TransactionTag extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transaction_id")
     private Transaction transaction;
+
+    public TransactionTag(String tag, Transaction transaction) {
+        this.tag = tag;
+        this.transaction = transaction;
+    }
 }

@@ -9,16 +9,19 @@ import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import io.jsonwebtoken.Jwts;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
@@ -30,7 +33,8 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
-    public ResponseEntity<ResponseVO<?>> saveUser(UserRequestDto dto) {
+    @Transactional
+    public ResponseEntity<ResponseVO<?>> saveUser(UserRequestDto dto, MultipartFile image) {
         dto.setPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
         // 이메일 중복 체크
         if (userRepository.findByemail(dto.getEmail()) != null) {
@@ -39,12 +43,12 @@ public class UserService {
         }
 
         Role role = (dto.getRole() == null) ? Role.ROLE_USER : dto.getRole();
-        String uuid = String.valueOf(new SecretKeySpec(dto.getEmail().getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm()));
+        String uuid = UUID.randomUUID().toString();
         String imageUrl = null;
 
         try {
             // 이미지 업로드
-            imageUrl = imageUploadService.upload(dto.getProfileImage(), uuid + "Profile");
+            imageUrl = imageUploadService.upload(image, uuid + "Profile");
         } catch (IOException e) {
             e.printStackTrace();
             // 이미지 업로드 실패 시 에러 메시지 반환

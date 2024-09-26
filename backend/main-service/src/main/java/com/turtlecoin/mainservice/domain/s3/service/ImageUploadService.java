@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -51,6 +53,15 @@ public class ImageUploadService {
 		removeNewFile(uploadFile);
 		// 업로드된 파일의 URL 반환
 		return uploadImageUrl;
+	}
+
+	public List<String> uploadMultiple(List<MultipartFile> multipartFiles, String dir) throws IOException {
+		List<String> uploadedImageUrls = new ArrayList<>();
+		for (MultipartFile multipartFile : multipartFiles) {
+			String imageUrl = upload(multipartFile, dir);
+			uploadedImageUrls.add(imageUrl);
+		}
+		return uploadedImageUrls;
 	}
 
 	// 로컬 서버에서 임시 파일을 삭제하는 메서드
