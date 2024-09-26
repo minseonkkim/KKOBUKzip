@@ -12,28 +12,26 @@ interface TransactionHistoryProps {
     // status: string;
 }
 
-export default function TransactionHistory(props: TransactionHistoryProps){
+export default function TransactionHistory(){
     const { initializeEscrowWeb3, createTransaction, releaseFunds } = useEscrowStore();
-
-    console.log(props) // 에러(빨간 줄) 방지용 임시 코드!!!!!!!!!!!!!
     
     // 컴포넌트 마운트 시 MetaMask SDK 초기화
     useEffect(() => {
         initializeEscrowWeb3();
     }, [initializeEscrowWeb3]);
 
-    const handleDeposit = async () => {
-        createTransaction(props.isAuction, props.transactionId, props.sellerAddress, props.amount);
-    }
+    // const handleDeposit = async () => {
+    //     createTransaction(props.isAuction, props.transactionId, props.sellerAddress, props.amount);
+    // }
 
-    const startPapework = async () => {
-        // 서류 페이지로 넘어가는 로직
-        // 여기에 구매자(양수인), 판매자(양도인) 여부에 따라 네비게이트하는 로직 구체화하여 코드 작성해야 할듯
-    }
+    // const startPapework = async () => {
+    //     // 서류 페이지로 넘어가는 로직
+    //     // 여기에 구매자(양수인), 판매자(양도인) 여부에 따라 네비게이트하는 로직 구체화하여 코드 작성해야 할듯
+    // }
 
-    const finalizeTransaction = async () => {
-        releaseFunds(props.isAuction, props.transactionId);
-    }
+    // const finalizeTransaction = async () => {
+    //     releaseFunds(props.isAuction, props.transactionId);
+    // }
 
     return <>
         <div className="w-full border-[2px] rounded-[20px] p-[15px] bg-[#f8f8f8] flex flex-col md:flex-row lg:flex-col xl:flex-row">
