@@ -1,64 +1,29 @@
-import { useEffect, useState } from "react";
-import Web3 from "web3";
-import { AbiItem } from "web3-utils";
-import { Contract } from "web3-eth-contract";
+import { useEffect } from "react";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import BabyTurtleImg from "../../assets/babyturtle.png";
 import { IoCheckmark } from "react-icons/io5";
+import { useEscrowStore } from "../../store/useEscrowStore";
 
 interface TransactionHistoryProps {
-    sellerAddress?: string;
-    amount?: number;
-    // transactionId: string;
+    isAuction: boolean;
+    transactionId: number;
+    sellerAddress: string;
+    amount: number;
     // status: string;
 }
 
-// 컨트랙트 ABI 타입
-const CONTRACT_ABI: AbiItem[] = [];
-const CONTRACT_ADDRESS = "추후에 추가";
-
 export default function TransactionHistory(props: TransactionHistoryProps){
-    const [web3, setWeb3] = useState<Web3 | null>(null);
-    const [contract, setContract] = useState<Contract<AbiItem[]> | null>(null);
-    const [account, setAccount] = useState<string | null>(null);
+    const { initializeEscrowWeb3, createTransaction, releaseFunds } = useEscrowStore();
 
     console.log(props) // 에러(빨간 줄) 방지용 임시 코드!!!!!!!!!!!!!
     
+    // 컴포넌트 마운트 시 MetaMask SDK 초기화
     useEffect(() => {
-        const initWeb3 = async () => {
-            if (window.ethereum) {
-                const web3Instance = new Web3(window.ethereum);
-                try {
-                    await window.ethereum.request({ method: "eth_requestAccounts" })
-                    const accounts = await web3Instance.eth.getAccounts();
-                    setAccount(accounts[0]);
-                    setWeb3(web3Instance);
+        initializeEscrowWeb3();
+    }, [initializeEscrowWeb3]);
 
-                    const contractInstance = new web3Instance.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-                    setContract(contractInstance);
-                } catch (error) {
-                    console.error("User denied account access!! => ", error);
-                }
-            } else {
-                console.log("Non-Ethereum browser detected. You should consider trying MetaMask!")
-            }
-        }
-
-        initWeb3();
-    }, [])
-
-    const handleDeposit = async (sellerAddress: string, amount: number) => {
-        if (!contract || !account || !web3) return;
-
-        try {
-            const transactionId = await contract.methods.createTransaction(sellerAddress, amount).send({ from: account });
-            console.log("Transaction created and successfully deposited!!");
-
-            await contract.methods.lockFunds(transactionId).send({ from: account })
-            console.log("Funds locked successfully!");
-        } catch (error) {
-            console.error("Error depositing: ", error);
-        }
+    const handleDeposit = async () => {
+        createTransaction(props.isAuction, props.transactionId, props.sellerAddress, props.amount);
     }
 
     const startPapework = async () => {
@@ -66,15 +31,8 @@ export default function TransactionHistory(props: TransactionHistoryProps){
         // 여기에 구매자(양수인), 판매자(양도인) 여부에 따라 네비게이트하는 로직 구체화하여 코드 작성해야 할듯
     }
 
-    const finalizeTransaction = async (transactionId: string) => {
-        if (!contract || !account) return;
-
-        try {
-            await contract.methods.finalizeTransaction(transactionId).send({ from: account });
-            console.log("Transaction finalized successfully!");
-        } catch (error) {
-            console.error("Error in finalizeTransaction: ", error)
-        }
+    const finalizeTransaction = async () => {
+        releaseFunds(props.isAuction, props.transactionId);
     }
 
     return <>
@@ -90,11 +48,11 @@ export default function TransactionHistory(props: TransactionHistoryProps){
                     {/* 아래 버튼은 거래 진행 상황에 따라 on/off하기! */}
                     <div className="text-[19px] font-bold">
                         {/* 경매 거래인 경우에만 활성화 해당(입금 대기 상태일 때) */}
-                        {/* <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={() => {handleDeposit()}}>입금하기</button> */}
+                        {/* <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={handleDeposit}>입금하기</button> */}
                         {/* 예약 단계에 활성화 */}
-                        {/* <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={()=>{startPapework()}}>서류 작성</button> */}
+                        {/* <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={startPapework}>서류 작성</button> */}
                         {/* 서류 검토 */}
-                        {/* <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={()=>{finalizeTransaction()}}>구매 확정</button> */}
+                        {/* <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={finalizeTransaction}>구매 확정</button> */}
                     </div>
                 </div>
             </div>
