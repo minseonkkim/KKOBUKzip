@@ -45,47 +45,34 @@ function LoginPage() {
       </Helmet>
       <Header />
       <main
-        className={
-          isMobile
-            ? "absolute top-16 left-0 right-0 flex justify-center items-center h-full"
-            : "absolute top-0 left-0 right-0 px-[250px] flex justify-center items-center h-full"
-        }
+        className="px-4 lg:px-[250px] lg:top-0 left-0 right-0 flex justify-center items-center mt-[60px] h-[calc(100vh-60px)]"
+
       >
         {/* 로그인 컴포넌트 */}
         <section
-          className={
-            isMobile
-              ? "relative w-full h-[750px] bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex flex-col"
-              : "relative w-full h-[600px] bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex flex-row"
-          }
+          className="relative w-full bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex h-[640px] md:h-[600px] flex-col md:flex-row"
+
         >
           <div
-            className={isMobile ? "w-full h-[300px]" : "rounded-l-[20px] w-1/2"}
+          
+            className="w-full md:w-1/2 h-[190px] md:h-full rounded-l-[20px]"
           >
             <img
               src={StopTurtleImg}
-              className={
-                isMobile
-                  ? "rounded-t-[20px] w-full h-[300px] object-none"
-                  : "rounded-l-[20px] h-full object-cover"
-              }
+              className="w-full rounded-tl-[20px] rounded-tr-[20px] md:rounded-tr-none rounded-bl-none md:rounded-bl-[20px] h-full object-cover"
               draggable="false"
             />
           </div>
 
           <div
-            className={`${
-              isMobile ? "w-full" : "w-1/2"
-            } h-full rounded-r-[20px] ${
-              isMobile ? "" : "m-auto"
-            } flex justify-center items-center`}
+            className="h-full rounded-r-[20px] w-full md:w-1/2 m-0 md:m-auto flex justify-center items-center"
           >
             <div className="w-2/3">
-              <h2 className="text-[38px] text-center mb-8 font-dnf-bitbit">
+              <h2 className="text-[35px] md:text-[38px] text-center mb-5 md:mb-8 font-dnf-bitbit">
                 로그인
               </h2>
 
-              <form onSubmit={handleLogin} className="space-y-5 mb-10">
+              <form onSubmit={handleLogin} className="space-y-5 mb-7 md:mb-10">
                 <input
                   onChange={(e) => {
                     setEmail(e.target.value);

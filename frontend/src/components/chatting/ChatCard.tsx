@@ -12,7 +12,7 @@ export default function ChatCard({ openChatDetail, chat }: ChatCardProps) {
 
   return (
     <div
-      className="w-full text-black bg-white rounded-[10px] py-2 lg:py-3 lg:my-3 my-4 mx-1 w-full cursor-pointer"
+      className="w-full text-black bg-white rounded-[10px] py-2 lg:my-3 my-4 mx-1 w-full cursor-pointer"
       onClick={() => openChatDetail(chat.otherUserId, chat.otherUserNickname)}
     >
       <div className="flex flex-row justify-between items-center w-full">
