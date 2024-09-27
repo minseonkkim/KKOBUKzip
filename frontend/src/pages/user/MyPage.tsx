@@ -6,20 +6,20 @@ import MyTurtle from "../../components/user/MyTurtle";
 import TransactionHistory from "../../components/user/TransactionHistory";
 // import NoImage from "../../assets/no_image.png";
 import { FaRandom } from '@react-icons/all-files/fa/FaRandom';
-import CustomProfile1 from "../../assets/custom_profile/profile1.gif";
-import CustomProfile2 from "../../assets/custom_profile/profile2.gif";
-import CustomProfile3 from "../../assets/custom_profile/profile3.gif";
-import CustomProfile4 from "../../assets/custom_profile/profile4.gif";
-import CustomProfile5 from "../../assets/custom_profile/profile5.gif";
-import CustomProfile6 from "../../assets/custom_profile/profile6.gif";
-import CustomProfile7 from "../../assets/custom_profile/profile7.gif";
-import CustomProfile8 from "../../assets/custom_profile/profile8.gif";
-import CustomProfile9 from "../../assets/custom_profile/profile9.gif";
-import CustomProfile10 from "../../assets/custom_profile/profile10.gif";
-import CustomProfile11 from "../../assets/custom_profile/profile11.gif";
-import CustomProfile12 from "../../assets/custom_profile/profile12.gif";
-import CustomProfile13 from "../../assets/custom_profile/profile13.gif";
-import CustomProfile14 from "../../assets/custom_profile/profile14.gif";
+import CustomProfile1 from "../../../public/custom_profile/profile1.gif";
+import CustomProfile2 from "../../../public/custom_profile/profile2.gif";
+import CustomProfile3 from "../../../public/custom_profile/profile3.gif";
+import CustomProfile4 from "../../../public/custom_profile/profile4.gif";
+import CustomProfile5 from "../../../public/custom_profile/profile5.gif";
+import CustomProfile6 from "../../../public/custom_profile/profile6.gif";
+import CustomProfile7 from "../../../public/custom_profile/profile7.gif";
+import CustomProfile8 from "../../../public/custom_profile/profile8.gif";
+import CustomProfile9 from "../../../public/custom_profile/profile9.gif";
+import CustomProfile10 from "../../../public/custom_profile/profile10.gif";
+import CustomProfile11 from "../../../public/custom_profile/profile11.gif";
+import CustomProfile12 from "../../../public/custom_profile/profile12.gif";
+import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
+import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 
 
 function MyPage() {
