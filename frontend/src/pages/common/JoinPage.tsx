@@ -323,9 +323,8 @@ function JoinPage() {
       }));
     } else {
       setErrStat((prev) => ({ ...prev, email: "" }));
-      setEmailCheckLoading(true);
 
-      // 여기에서 이메일 인증 요청
+      setEmailCheckLoading(true);
       try {
         const response = await createEmailRequest(data.email);
         if (response.success) {
@@ -513,17 +512,23 @@ function JoinPage() {
                             />
                             <button
                               type="button"
-                              disabled={emailCheck}
+                              disabled={emailCheckLoading || emailCheck}
                               className={`border col-span-3 text-sm ${
-                                !emailCheck ? "bg-blue-300" : "bg-indigo-200"
+                                emailCheck || emailCheckLoading
+                                  ? "bg-indigo-200"
+                                  : "bg-blue-300"
                               } rounded rainbow-text`}
-                              onClick={!emailCheck ? confirmEmail : () => {}}
+                              onClick={
+                                emailCheckLoading || emailCheck
+                                  ? () => {}
+                                  : confirmEmail
+                              }
                             >
-                              {!emailCheck
-                                ? "인증하기"
-                                : emailCheckLoading
+                              {emailCheckLoading
                                 ? "발송중.."
-                                : "발송완료"}
+                                : emailCheck
+                                ? "발송완료"
+                                : "인증하기"}
                             </button>
                           </div>
                         </div>
