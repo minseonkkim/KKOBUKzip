@@ -1,5 +1,6 @@
 package com.turtlecoin.mainservice.domain.user.service;
 
+import com.turtlecoin.mainservice.domain.chat.service.SseService;
 import com.turtlecoin.mainservice.domain.user.dto.LoginUserDto;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
@@ -24,13 +25,16 @@ public class JWTService {
     private final RedisTemplate<String,String> redisTemplate;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final SseService sseService;
 
     @Autowired
-    JWTService(JWTUtil jwtUtil, RedisTemplate<String, String> redisTemplate, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    JWTService(JWTUtil jwtUtil, RedisTemplate<String, String> redisTemplate, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
+        SseService sseService) {
         this.jwtUtil = jwtUtil;
         this.redisTemplate = redisTemplate;
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.sseService = sseService;
     }
 
     public ResponseEntity<?> loginService(LoginUserDto loginUserDto) {
@@ -56,6 +60,9 @@ public class JWTService {
             data.put("role", role);
             data.put("nickname", user.get().getNickname());
             data.put("email", user.get().getEmail());
+
+            // SSE 연결 실행
+            sseService.subscribe(user.get().getId());
 
             responseVO.setData(data);
 

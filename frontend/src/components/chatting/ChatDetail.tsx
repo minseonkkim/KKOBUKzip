@@ -149,11 +149,17 @@ export default function ChatDetail({
       { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
       () => {
         stompClient.current!.subscribe(
-          `/${chatId}`,
+          `/sub/main/${chatId}`,
           (message) => {
             const newMessage: ChatData = JSON.parse(message.body);
             const messageDate = formatDate(newMessage.registTime);
             const lastGroup = groupedChat[groupedChat.length - 1];
+
+            console.log("Sender:", newMessage.userId);
+            console.log("NickName:", newMessage.nickname);
+            console.log("Register Time:", newMessage.registTime);
+            console.log("Message:", newMessage.message);
+            console.log("ProfileImg:", newMessage.userProfile);
 
             // 날짜별로 분류
             if (!lastGroup || lastGroup.date !== messageDate) {
@@ -193,9 +199,10 @@ export default function ChatDetail({
         userId: 1,
         message: inputValue,
         // 뭘보내야할까요...
+        // 이거 2개만 보내시면 됩니다.. 시간같은건 백에서 체크할게요
       };
       stompClient.current?.send(
-        "/웹소켓메세지주소",
+        `/pub/main/${chatId}`,
         { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
         JSON.stringify(message)
       );

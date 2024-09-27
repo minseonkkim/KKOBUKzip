@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 // 테스트를 위한 컨트롤러이므로 사용하지 않기
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/main/chatting")
+@RequestMapping("/main/chatting")
 public class ChatController {
 	private final ChatService chatService;
 	private final JWTUtil jwtUtil;
