@@ -10,10 +10,10 @@ interface StompFrame {
 }
 
 interface message {
-  auctionId: number;
-  userId: number;
-  bidAmount: number;
-  nextBid: number;
+  auctionId: string;
+  userId: string;
+  bidAmount: string;
+  nextBid: string;
   nickname: string;
 }
 
@@ -50,11 +50,15 @@ function DuringAuction({
             (message) => {
               const newMessage: message = JSON.parse(message.body);
               // 다음 가격 수신
-              setBidPrice(newMessage.nextBid);
-              setNextBid(newMessage.nextBid);
+              const newNextBid = Number(newMessage.nextBid);
+              setBidPrice(newNextBid);
+              setNextBid(newNextBid);
               setBidHistory((prev) => {
                 const newHistory = [
-                  { bidder: newMessage.nickname, price: newMessage.bidAmount },
+                  {
+                    bidder: newMessage.nickname,
+                    price: Number(newMessage.bidAmount),
+                  },
                   ...prev,
                 ];
                 return newHistory.slice(0, 8);
@@ -97,7 +101,7 @@ function DuringAuction({
     const data = {
       auctionId,
       userId: 1, // store에서 가져올 것
-      bidAmount: 3000000, // 현재입찰가
+      bidAmount: bidPrice, // 현재입찰가
     };
 
     if (auctionStompClient.current && auctionStompClient.current.connected)
