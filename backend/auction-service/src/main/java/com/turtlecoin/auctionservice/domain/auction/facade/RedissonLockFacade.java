@@ -24,6 +24,7 @@ public class RedissonLockFacade {
 
             if (!available) {
                 System.out.println("Lock 획득 실패");
+                bidService.notifyClient(auctionId, null, true, "다른 사람이 입찰 중입니다. 잠시 후 시도하세요");
                 return;
             }
 

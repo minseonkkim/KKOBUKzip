@@ -26,21 +26,21 @@ public class BidService {
     private final AuctionRepository auctionRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private static final String AUCTION_BID_KEY = "auction_bid_";
+    private final AuctionService auctionService;
 
     // 입찰 가격 갱신
     @Transactional
     public void processBidWithRedis(Long auctionId, Long userId, Double bidAmount) {
-        String redisKey = AUCTION_BID_KEY + auctionId + ":history";
+        String redisKey = AUCTION_BID_KEY + auctionId;
 
-        // Redis에서 현재 입찰가와 입찰자 정보 가져오기
-        List<Object> bidHistory = redisTemplate.opsForList().range(redisKey, 0, -1);
+        Map<Object, Object> currentBidData = redisTemplate.opsForHash().entries(redisKey);
         Long currentUserId = null;
         Double currentBid = null;
 
-        if (bidHistory != null && !bidHistory.isEmpty()) {
-            String latestBidRecord = (String) bidHistory.get(0);
-            currentUserId = Long.parseLong(latestBidRecord.split(":")[1]);
-            currentBid = Double.parseDouble(latestBidRecord.split(":")[2]);
+        if (!currentBidData.isEmpty()) {
+            currentUserId = Long.parseLong(currentBidData.get("userId").toString());
+            currentBid = Double.parseDouble(currentBidData.get("bidAmount").toString());
+            log.info("currentUserId: {}, currentBid: {}", currentUserId, currentBid);
         }
 
         LocalDateTime auctionEndTime = getAuctionEndTime(auctionId);
@@ -48,10 +48,10 @@ public class BidService {
         if (LocalDateTime.now().isAfter(auctionEndTime)) {
             notifyClient(auctionId, null, true, "입찰시간이 종료됐습니다");
             log.info("입찰 실패: auctionID{}, userId{}, bidAmount{}", auctionId, userId, bidAmount);
+            // 에러 던져주기
             return;
         }
 
-        // 입찰가 계산
         Double bidIncrement = calculateBidIncrement(bidAmount);
         Double newBidAmount = bidAmount + bidIncrement;
 
@@ -62,29 +62,19 @@ public class BidService {
             }
 
             // 현재 입찰가보다 낮은 금액으로 입찰할 경우 예외 처리
-            if (newBidAmount <= currentBid) {
+            if (currentBid != null && newBidAmount <= currentBid) {
                 throw new WrongBidAmountException("현재 입찰가보다 낮은 금액으로 입찰할 수 없습니다: " +
                         "currentBid = " + currentBid + ", bidAmount = " + newBidAmount);
             }
 
-            String bidRecord = "auctionId: " + auctionId + ", userId: " + userId + ", bidAmount: " + newBidAmount;
-//            redisTemplate.opsForList()
-
-            // Redis에 새로운 입찰 정보 저장
             Map<String, Object> bidData = new HashMap<>();
             bidData.put("userId", userId);
-            bidData.put("bidAmount", newBidAmount);
+            bidData.put("bidAmount", bidAmount);
             redisTemplate.opsForHash().putAll(redisKey, bidData);
 
-            Auction auction = auctionRepository.findById(auctionId)
-                    .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다."));
-            auction.updateEndTime();
-//            (auctionId, LocalDateTime.now().plusSeconds(30));
-
-            // 입찰 기록 로그에 저장 (optional)
+            String bidRecord = "auctionId: " + auctionId + ", userId: " + userId + ", bidAmount: " + newBidAmount;
             redisTemplate.opsForList().rightPush(redisKey + ":history", bidRecord);
 
-            // 클라이언트에게 실시간 입찰 정보 전송
             notifyClient(auctionId, bidRecord, false, null);
 
             log.info("입찰 처리 완료: auctionID = {}, userId = {}, bidAmount = {}", auctionId, userId, newBidAmount);
@@ -92,11 +82,9 @@ public class BidService {
             notifyClient(auctionId, null, true, e.getMessage());
             log.error("입찰 처리 실패: auctionID = {}, userId = {}, error: {}", auctionId, userId, e.getMessage());
         }
-
-
-        // 입찰 기록 생성
-
     }
+
+
 
 //    private void updateAuctionEndTime(Long auctionId, LocalDateTime localDateTime) {
 //        Auction auction = auctionRepository.findById(auctionId)
@@ -120,13 +108,13 @@ public class BidService {
     private Double calculateBidIncrement(Double currentBid) {
         // 경매 가격에 따라 구분 필요
         if (currentBid >= 0 && currentBid < 10000) {
-            return 500.0; // 0 ~ 10000 : 500
+            return 1000.0; // 0 ~ 10000 : 500
         } else if (currentBid >= 10001 && currentBid < 100000) {
-            return 2000.0; // 10001 ~ 100000 : 2000
-        } else if (currentBid >= 100001 && currentBid < 200000) {
-            return 5000.0; // 100001 ~ 200000 : 5000
+            return 10000.0; // 10001 ~ 100000 : 2000
+        } else if (currentBid >= 100001 && currentBid < 1000000) {
+            return 20000.0; // 100001 ~ 200000 : 5000
         } else {
-            return 10000.0; // 그 외 : 10000 (기본 값)
+            return 30000.0; // 그 외 : 10000 (기본 값)
         }
     }
 
@@ -140,7 +128,8 @@ public class BidService {
             response = ResponseVO.success("Bid successful", "bidRecord", bidRecord);
         }
         // 클라이언트에게 ResponseVO 객체를 전송
-        messagingTemplate.convertAndSend("/auction/topic/" + auctionId, response);
+        log.info("AuctionID: {}", auctionId, "에게 데이터 전송함 with notifyClient");
+        messagingTemplate.convertAndSend("/sub/auction/" + auctionId, response);
     }
 
     public LocalDateTime getAuctionEndTime(Long auctionId) {

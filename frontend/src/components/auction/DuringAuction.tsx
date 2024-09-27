@@ -44,6 +44,7 @@ function DuringAuction({ channelId }: { channelId: string }) {
             },
             { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           );
+          console.log("메세지 송신 테스트")
         },
         (error: unknown) => {
           console.error("Connection error: ", error);
@@ -74,6 +75,7 @@ function DuringAuction({ channelId }: { channelId: string }) {
         },
         JSON.stringify(data)
       );
+      console.log("메세지 수신 테스트")
   };
 
   // ------------------여기까지 작성했음--------------
