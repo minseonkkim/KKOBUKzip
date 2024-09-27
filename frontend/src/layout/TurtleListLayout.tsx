@@ -1,10 +1,10 @@
 // TurtleListLayout.tsx
 import { Helmet } from "react-helmet-async";
 import Header from "../components/common/Header";
-import { GrPowerReset } from "react-icons/gr";
-import { FaCheck } from "react-icons/fa6";
-import { IoIosSearch } from "react-icons/io";
-import { IoFilterOutline } from "react-icons/io5";
+import { GrPowerReset } from "@react-icons/all-files/gr/GrPowerReset";
+import { FaCheck } from "@react-icons/all-files/fa/FaCheck";
+import { IoIosSearch } from "@react-icons/all-files/io/IoIosSearch";
+import { IoFilterOutline } from "@react-icons/all-files/io5/IoFilterOutline";
 import { useEffect, useState } from "react";
 import OptionFilter from "../components/common/OptionFilter";
 import { useInView } from "react-intersection-observer";

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Web3 from "web3";
-import { FaArrowRightArrowLeft, FaSpinner } from "react-icons/fa6";
+import { FaSpinner } from "@react-icons/all-files/fa/FaSpinner"
+import { FaExchangeAlt } from "@react-icons/all-files/fa/FaExchangeAlt";
 import { useMetaMaskSDKStore } from "../../store/useMetaMaskSDKStore";
 
 // 토큰 교환 비율 설정
@@ -188,7 +189,7 @@ const Wallet: React.FC = () => {
             </div>
             {/* 통화 교환 버튼 */}
             <button onClick={handleSwap} className="self-center p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
-              <FaArrowRightArrowLeft />
+              <FaExchangeAlt />
             </button>
             <div className="relative flex-1">
               <input
