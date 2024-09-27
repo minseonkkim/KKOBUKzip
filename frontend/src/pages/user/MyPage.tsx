@@ -6,21 +6,21 @@ import MyTurtle from "../../components/user/MyTurtle";
 import TransactionHistory from "../../components/user/TransactionHistory";
 // import NoImage from "../../assets/no_image.png";
 import { LiaRandomSolid } from "react-icons/lia";
-import CustomProfile1 from "../../assets/custom_profile/profile1.gif";
-import CustomProfile2 from "../../assets/custom_profile/profile2.gif";
-import CustomProfile3 from "../../assets/custom_profile/profile3.gif";
-import CustomProfile4 from "../../assets/custom_profile/profile4.gif";
-import CustomProfile5 from "../../assets/custom_profile/profile5.gif";
-import CustomProfile6 from "../../assets/custom_profile/profile6.gif";
-import CustomProfile7 from "../../assets/custom_profile/profile7.gif";
-import CustomProfile8 from "../../assets/custom_profile/profile8.gif";
-import CustomProfile9 from "../../assets/custom_profile/profile9.gif";
-import CustomProfile10 from "../../assets/custom_profile/profile10.gif";
-import CustomProfile11 from "../../assets/custom_profile/profile11.gif";
-import CustomProfile12 from "../../assets/custom_profile/profile12.gif";
-import CustomProfile13 from "../../assets/custom_profile/profile13.gif";
-import CustomProfile14 from "../../assets/custom_profile/profile14.gif";
-
+// import CustomProfile1 from "../../assets/custom_profile/profile1.gif";
+import CustomProfile1 from "/custom_profile/profile1.gif";
+import CustomProfile2 from "/custom_profile/profile2.gif";
+import CustomProfile3 from "/custom_profile/profile3.gif";
+import CustomProfile4 from "/custom_profile/profile4.gif";
+import CustomProfile5 from "/custom_profile/profile5.gif";
+import CustomProfile6 from "/custom_profile/profile6.gif";
+import CustomProfile7 from "/custom_profile/profile7.gif";
+import CustomProfile8 from "/custom_profile/profile8.gif";
+import CustomProfile9 from "/custom_profile/profile9.gif";
+import CustomProfile10 from "/custom_profile/profile10.gif";
+import CustomProfile11 from "/custom_profile/profile11.gif";
+import CustomProfile12 from "/custom_profile/profile12.gif";
+import CustomProfile13 from "/custom_profile/profile13.gif";
+import CustomProfile14 from "/custom_profile/profile14.gif";
 
 function MyPage() {
   const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
@@ -38,7 +38,7 @@ function MyPage() {
     CustomProfile8,
     CustomProfile9,
     CustomProfile10,
-    CustomProfile11,  
+    CustomProfile11,
     CustomProfile12,
     CustomProfile13,
     CustomProfile14,
@@ -52,7 +52,9 @@ function MyPage() {
     setIsCustomModalOpen(false);
   };
 
-  const handleCustomOverlayClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleCustomOverlayClick = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
     if (e.target === e.currentTarget) {
       closeCustomModal();
     }
@@ -72,7 +74,9 @@ function MyPage() {
       <div className="flex flex-col h-[100vh] overflow-hidden px-4 lg:px-[250px] pt-[85px]">
         <div className="flex flex-row justify-between items-center mt-0 lg:mt-[30px] px-[30px] py-[20px] bg-gradient-to-r from-[#e7f6d1] via-[#d5e5bd] to-[#e7f6d1] rounded-[20px]">
           <div className="w-1/2">
-            <div className="font-dnf-bitbit text-[#4B721F] text-[24px] md:text-[27px] mt-1 mb-3 md:mb-5">내 정보</div>
+            <div className="font-dnf-bitbit text-[#4B721F] text-[24px] md:text-[27px] mt-1 mb-3 md:mb-5">
+              내 정보
+            </div>
             <div className="lg:text-[22px] text-[17px]">
               <div>닉네임: 꼬북맘</div>
               <div>주소: 바다</div>
@@ -113,34 +117,32 @@ function MyPage() {
           </div>
         </div>
         <div className="overflow-y-auto flex-1 mb-5">
+          {/* 거래내역 */}
+          {selectedMenu === 0 && (
+            // 거래 내역이 있을 경우
+            <div className="flex flex-col space-y-3">
+              <TransactionHistory />
+              <TransactionHistory />
+              <TransactionHistory />
+            </div>
 
-        {/* 거래내역 */}
-        {selectedMenu === 0 && (
-          // 거래 내역이 있을 경우
-          <div className="flex flex-col space-y-3">
-            <TransactionHistory/>
-            <TransactionHistory/>
-            <TransactionHistory/>
-          </div>
+            // 거래내역이 없을 경우
+            // <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
+            //   <img src={NoImage} className="w-[200px] mb-7" draggable="false" />
+            //   <div className="text-[25px] font-bold text-center font-stardust">거래 내역이 없어요.</div>
+            // </div>
+          )}
 
-
-          // 거래내역이 없을 경우
-          // <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
-          //   <img src={NoImage} className="w-[200px] mb-7" draggable="false" />
-          //   <div className="text-[25px] font-bold text-center font-stardust">거래 내역이 없어요.</div>
-          // </div>
-        )}
-
-        {/* 나의 거북이 */}
-        {selectedMenu === 1 && (
-          // 나의 거북이가 있을 경우
-          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-            <MyTurtle />
-            <MyTurtle />
-            <MyTurtle />
-            <MyTurtle />
-          </div>
-        )}
+          {/* 나의 거북이 */}
+          {selectedMenu === 1 && (
+            // 나의 거북이가 있을 경우
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+              <MyTurtle />
+              <MyTurtle />
+              <MyTurtle />
+              <MyTurtle />
+            </div>
+          )}
         </div>
       </div>
 
@@ -166,7 +168,9 @@ function MyPage() {
                 </div>
               </div>
 
-              <button className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white">수정하기</button>
+              <button className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white">
+                수정하기
+              </button>
             </div>
           </div>
         </div>
