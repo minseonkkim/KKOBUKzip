@@ -2,7 +2,7 @@ spring:
   application:
     name: auction-service
   profiles:
-    active: prod
+    active: {SPRING_PROFILES_ACTIVE}
   cloud:
     loadbalancer:
       enabled: true
