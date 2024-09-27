@@ -14,7 +14,7 @@ const DocumentListPage = React.lazy(
   () => import("./pages/document/DocumentListPage")
 );
 
-// 하단 5개 컴포넌트는 개별 최적화 -> socket, sse 연결이 우선적으로 적용되어야 함.
+// 하단 5개 컴포넌트는 개별 최적화 -> socket, sse 연결이 우선적으로 적용되어야 함.(레이아웃 공유라서 거래 포함)
 import TransactionDetailPage from "./pages/transaction/TransactionDetailPage";
 import TransactionListPage from "./pages/transaction/TransactionListPage";
 import AuctionDetailPage from "./pages/auction/AuctionDetailPage";
