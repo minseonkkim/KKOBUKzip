@@ -221,7 +221,7 @@ function DuringAuction({
             className="absolute -top-8"
             style={turtlePositionSpring}
           >
-            <img src={MovingTurtle} className="w-[57px]" draggable="false" />
+            <img src={MovingTurtle} className="w-[57px]" draggable="false" alt="turtle image"/>
           </animated.div>
         </div>
         <div className="w-full mb-3">

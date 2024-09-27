@@ -85,6 +85,7 @@ export default function AuctionRegisterPage() {
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">
           <img
             src={TmpTurtleImg}
+            alt="turtle image"
             draggable="false"
             className="w-[150px] md:w-[170px] h-full object-cover rounded-[10px] mr-4 md:mr-8"
           />

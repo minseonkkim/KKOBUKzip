@@ -22,7 +22,7 @@ export default function AuctionTurtle({
             src={TmpTurtle}
             className="w-full h-[200px] object-cover transition-transform duration-300 hover:scale-110"
             draggable="false"
-            alt="거북이 이미지"
+            alt="turtle image"
           />
         </div>
         <div className="absolute top-4 right-4">

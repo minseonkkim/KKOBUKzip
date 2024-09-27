@@ -112,6 +112,7 @@ function TransactionDetailPage() {
                   src={tmpProfileImg}
                   className="rounded-full w-[43px] h-[43px] mr-3"
                   draggable="false"
+                  alt="profile image"
                 />
                 <span className="text-[20px]">꼬북맘</span>
               </div>

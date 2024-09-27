@@ -76,6 +76,7 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
               // 데이터에 판매자 프사가 없음...
               className="rounded-full w-[43px] h-[43px] mr-3"
               draggable="false"
+              alt="profile image"
             />
             <span className="text-[20px]">꼬북맘</span>
           </div>
