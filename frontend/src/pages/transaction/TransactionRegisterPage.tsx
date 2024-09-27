@@ -44,7 +44,7 @@ export default function TransactionRegisterPage(){
     };
 
     return <>
-    <Helmet>
+      <Helmet>
         <title>판매 등록하기</title>
       </Helmet>
       <Header />
@@ -61,17 +61,18 @@ export default function TransactionRegisterPage(){
           <div className="flex flex-row items-center">
             <label className="w-[108px] md:w-[120px]">판매가</label>
             <input
-              className="w-[260px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
+              className="mr-1 w-[250px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
               type="text"
               name="bid"
               onInput={handleInputChange}
               required
             />
+            원
           </div>
           <div className="flex flex-row items-center">
             <label className="w-[108px] md:w-[120px]">체중</label>
             <input
-              className="mr-1 w-[230px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
+              className="mr-1 w-[250px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
               type="number"
               name="weight"
               required
@@ -85,9 +86,9 @@ export default function TransactionRegisterPage(){
 
           {/* 제목 30자 이내로만 입력할 수 있게 하기 */}
           <div className="flex flex-row items-center">
-            <label className="w-[108px] md:w-[120px] mb-1">제목</label>
+            <label className="w-[108px] md:w-[120px]">제목</label>
             <input
-              className="w-[260px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
+              className="md:w-[540px] w-[270px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
               type="text"
               name="title"
               required
@@ -97,7 +98,7 @@ export default function TransactionRegisterPage(){
             <label className="w-[108px] md:w-[120px]">상세 설명</label>
             <textarea
               rows={3}
-              className="flex-grow border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px] mt-2"
+              className="flex-grow text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
             ></textarea>
           </div>
           <div className="flex flex-col md:flex-row lg:flex-col xl:flex-row items-start justify-between">
