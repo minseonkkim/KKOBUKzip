@@ -72,7 +72,6 @@ public class AuctionController {
                     uploadedPhotos.add(auctionPhoto);
                 }
             }
-
             // 경매 및 사진 정보 저장
             auctionRepository.save(registeredAuction);
             log.info("이미지 및 경매 정보 저장 완료");

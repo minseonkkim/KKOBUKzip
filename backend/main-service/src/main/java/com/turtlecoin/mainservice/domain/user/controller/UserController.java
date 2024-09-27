@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -36,10 +37,10 @@ public class UserController {
         this.jwtService = jwtService;
     }
 
-    @PostMapping("/join")
+    @PostMapping(value="/join",consumes={MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<ResponseVO<?>> joinProcess(
             @RequestPart("data") UserRequestDto userDto,
-            @RequestPart(value = "image", required = false) MultipartFile image) {
+            @RequestPart(value = "profileImage", required = false) MultipartFile image) {
         return userService.saveUser(userDto,image);
     }
 
