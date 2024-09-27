@@ -25,7 +25,7 @@ export default function AuctionSuccessPage(){
     <div>
       {showConfetti && <Confetti width={width} height={height} style={{ zIndex: 51, position: 'fixed' }}/>}
       <div className="flex flex-col items-center justify-center mt-[200px]">
-        <img src={TmpTurtleImg} className="rounded-[20px] w-[570px] h-[400px] object-cover"/>
+        <img src={TmpTurtleImg} className="rounded-[20px] w-[570px] h-[400px] object-cover" draggable="false" alt="turtle image"/>
         <div className="font-bold text-[38px] text-center mt-[48px]">축하합니다.<br/><span className="text-[#4B721F]">3,000,000원</span>에 낙찰되셨습니다.</div>
     </div>
     </div>

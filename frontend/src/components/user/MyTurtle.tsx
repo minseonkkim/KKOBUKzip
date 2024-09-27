@@ -156,6 +156,7 @@ export default function MyTurtle() {
           src={TmpTurtleImg}
           className="rounded-[10px] w-full lg:h-[190px] md:h-[170px] h-[130px] object-cover"
           draggable="false"
+          alt="turtle image"
         />
         <div className="flex flex-row justify-between mt-4 lg:text-[17px] text-[16px]">
           <button
@@ -200,7 +201,7 @@ export default function MyTurtle() {
             
             <div className="flex flex-row w-full space-x-5">
                 <div className="w-1/2 h-[180px] overflow-hidden">
-                    <img src={TmpTurtleImg} className="object-cover rounded-[10px] w-full h-[155px] md:h-[180px]" draggable="false"/>
+                    <img src={TmpTurtleImg} className="object-cover rounded-[10px] w-full h-[155px] md:h-[180px]" draggable="false" alt="turtle image"/>
                 </div>
                 <div className="w-1/2 md:text-[19px] text-[17px] flex flex-col space-y-2">
                     <div>이름: 김거북</div>
@@ -213,11 +214,11 @@ export default function MyTurtle() {
             <div className="flex flex-row mt-1 md:mt-7">
                 <div className="flex flex-col space-y-2 w-1/2 text-[19px]">
                     <div>부개체 : 저거북</div>
-                    <img src={TmpTurtleImg2} className="object-cover rounded-[10px] w-full h-[155px] md:h-[180px]" draggable="false"/>
+                    <img src={TmpTurtleImg2} className="object-cover rounded-[10px] w-full h-[155px] md:h-[180px]" draggable="false" alt="father turtle image"/>
                 </div>
                 <div className="flex flex-col space-y-2 w-1/2 text-[19px]">
                     <div>모개체 : 이거북</div>
-                    <img src={TmpTurtleImg3} className="object-cover rounded-[10px] w-full h-[155px] md:h-[180px]" draggable="false"/>
+                    <img src={TmpTurtleImg3} className="object-cover rounded-[10px] w-full h-[155px] md:h-[180px]" draggable="false" alt="mother turtle image"/>
                 </div>
             </div>
           </div>
