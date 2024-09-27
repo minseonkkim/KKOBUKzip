@@ -63,8 +63,8 @@ function DuringAuction({ channelId }: { channelId: string }) {
   const sendBidRequest = () => {
     const data = {
       auctionId,
-      userId: 1, // store에서 가져올 것
-      bidAmount: 3000000, // 현재입찰가
+      userId: 2, // store에서 가져올 것
+      bidAmount: 300000, // 현재입찰가
     };
 
     if (auctionStompClient.current && auctionStompClient.current.connected)

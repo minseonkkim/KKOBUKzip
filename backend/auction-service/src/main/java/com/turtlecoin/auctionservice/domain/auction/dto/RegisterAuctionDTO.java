@@ -39,6 +39,7 @@ public class RegisterAuctionDTO {
                 .title(title)
                 .nowBid(minBid)
                 .auctionProgress(AuctionProgress.BEFORE_AUCTION)
+                .endTime(LocalDateTime.now())
                 .build();
     }
 }
