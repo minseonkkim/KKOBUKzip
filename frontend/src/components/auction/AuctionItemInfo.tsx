@@ -18,39 +18,41 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
 
   return (
     <>
-      <div className="flex flex-col w-full md:w-[48%] rounded-[20px] relative">
+      <article className="flex flex-col w-full md:w-[48%] rounded-[20px] relative">
+        <figure>
           <div className="relative w-full flex-grow md:flex-1 h-[240px] md:h-auto rounded-[20px] overflow-hidden">
-              <img
-                src={itemData.images[currentIndex]}
-                className="w-full h-full object-cover rounded-[20px]"
-                alt="Turtle"
-                draggable="false"
-              />
-              <button
-                onClick={handlePrev}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white text-[27px] p-2 rounded-full font-bold"
-              >
-                &lt;
-              </button>
-              <button
-                onClick={handleNext}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white text-[27px] p-2 rounded-full font-bold"
-              >
-                &gt;
-              </button>
-              <div className="absolute bottom-3 right-3 bg-black/60 text-white px-4 py-2 rounded-[20px]">
-                {currentIndex + 1} / {itemData.images.length}
-              </div>
+            <img
+              src={itemData.images[currentIndex]}
+              className="w-full h-full object-cover rounded-[20px]"
+              alt="Turtle"
+              draggable="false"
+            />
+            <button
+              onClick={handlePrev}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white text-[27px] p-2 rounded-full font-bold"
+            >
+              &lt;
+            </button>
+            <button
+              onClick={handleNext}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white text-[27px] p-2 rounded-full font-bold"
+            >
+              &gt;
+            </button>
+            <div className="absolute bottom-3 right-3 bg-black/60 text-white px-4 py-2 rounded-[20px]">
+              {currentIndex + 1} / {itemData.images.length}
             </div>
-       
-          <div className="text-[23px] mt-[13px]">{itemData.title}</div>
-       
-         <div className="flex flex-row justify-between justify-between lg:justify-start xl:justify-between items-center mt-[5px] mb-[10px]"> 
-        <div className="text-[#9A9A9A] text-[17px]">
-          {/* {itemData.turtleInfo.} */} | {itemData.turtleInfo.weight}kg
-          {/* 24년 8월 10일생 | 8kg */}
-        </div>
-        <div className="flex flex-row space-x-2">
+          </div>
+        </figure>
+
+        <div className="text-[23px] mt-[13px]">{itemData.title}</div>
+
+        <div className="flex flex-row justify-between lg:justify-start xl:justify-between items-center mt-[5px] mb-[10px]">
+          <div className="text-[#9A9A9A] text-[17px]">
+            {/* {itemData.turtleInfo.} */} | {itemData.turtleInfo.weight}kg
+            {/* 24년 8월 10일생 | 8kg */}
+          </div>
+          <div className="flex flex-row space-x-2">
             {itemData.tags.map((tag, index) => (
               <span
                 key={index}
@@ -84,7 +86,7 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
             채팅하기
           </div> */}
         </div>
-      </div>
+      </article>
     </>
   );
 }

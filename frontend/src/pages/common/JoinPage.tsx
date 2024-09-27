@@ -64,6 +64,7 @@ function JoinPage() {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [emailConfirm, setEmailConfirm] = useState("");
   const [emailCheck, setEmailCheck] = useState(false);
+  const [emailCheckLoading, setEmailCheckLoading] = useState(false);
   const [errStat, setErrStat] = useState<ErrorStateType>({
     email: "",
     password: "",
@@ -305,7 +306,7 @@ function JoinPage() {
     }
   };
 
-  const confirmEmail = () => {
+  const confirmEmail = async () => {
     // Implement email confirmation logic
 
     if (!validateEmail(data.email)) {
@@ -315,16 +316,25 @@ function JoinPage() {
       }));
     } else {
       setErrStat((prev) => ({ ...prev, email: "" }));
+
       // 여기에서 이메일 인증 요청
-      setEmailCheck(true);
-      createEmailRequest(data.email);
+      try {
+        setEmailCheckLoading(true);
+        const response = await createEmailRequest(data.email);
+        if (response.success) {
+          setEmailCheck(true);
+        } else {
+          alert(response.error);
+        }
+      } finally {
+        setEmailCheckLoading(false);
+      }
     }
   };
 
   const handleLastStep = async () => {
     if (!emailConfirm) return;
     const result = await checkEmailRequest(data.email, emailConfirm);
-    console.log(result);
     if (result.success) {
       setStep(3);
       return;
@@ -496,10 +506,17 @@ function JoinPage() {
                             />
                             <button
                               type="button"
-                              className="border col-span-3 text-sm bg-blue-300 rounded rainbow-text"
-                              onClick={confirmEmail}
+                              disabled={emailCheck}
+                              className={`border col-span-3 text-sm ${
+                                !emailCheck ? "bg-blue-300" : "bg-indigo-200"
+                              } rounded rainbow-text`}
+                              onClick={!emailCheck ? confirmEmail : () => {}}
                             >
-                              인증하기
+                              {!emailCheck
+                                ? "인증하기"
+                                : emailCheckLoading
+                                ? "발송중.."
+                                : "발송완료"}
                             </button>
                           </div>
                         </div>
@@ -739,7 +756,7 @@ function JoinPage() {
                               onClick={() => addressBtnRef.current?.click()}
                               value={postcodeData?.roadAddress || ""}
                               placeholder="주소를 검색해주세요."
-                              className="text-[18px] flex-grow min-w-0 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
+                              className="text-[18px] cursor-pointer hover:bg-gray-50 flex-grow min-w-0 px-3 py-2 border rounded bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-[#4B721F]"
                               readOnly
                             />
                           </div>
