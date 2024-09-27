@@ -13,12 +13,21 @@ interface message {
   auctionId: number;
   userId: number;
   bidAmount: number;
+  nextBid: number;
+  nickname: string;
 }
 
 const auctionId = 1;
-function DuringAuction({ channelId }: { channelId: string }) {
+function DuringAuction({
+  channelId,
+  minBid,
+}: {
+  channelId: string;
+  minBid: number;
+}) {
   const auctionStompClient = useRef<CompatClient | null>(null);
   const [loading, setLoading] = useState(true);
+  // const [isBidStarted, setIsBidStarted] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -32,7 +41,7 @@ function DuringAuction({ channelId }: { channelId: string }) {
       // 메세지 수신
       auctionStompClient.current.connect(
         {
-          //  Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoidGVzdEB0ZXN0LmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MjczMjc1ODQsImV4cCI6MTcyNzMyODE4NH0.CZ0rgjiGXJmXbdkeUa-AZCCMgKLImW2Cwt5euIuUuNM`
+          //  Authorization:
         },
         (frame: StompFrame) => {
           console.log("Connected: " + frame);
@@ -40,11 +49,31 @@ function DuringAuction({ channelId }: { channelId: string }) {
             `/sub/auction/${auctionId}`,
             (message) => {
               const newMessage: message = JSON.parse(message.body);
+
+              setBidPrice(newMessage.nextBid);
+              setBidHistory((prev) => {
+                const newHistory = [
+                  { bidder: newMessage.nickname, price: newMessage.bidAmount },
+                  ...prev,
+                ];
+                return newHistory.slice(0, 8);
+              });
+              setTimeLeft(30);
+              setProgress(100); // 입찰 시 progress 값 초기화
+              emojiApi.start({
+                from: { opacity: 0, transform: "translateY(50px)" },
+                to: { opacity: 1, transform: "translateY(0px)" },
+                onRest: () => {
+                  emojiApi.start({
+                    opacity: 0,
+                    transform: "translateY(-50px)",
+                  });
+                },
+              });
               console.log(newMessage);
             },
             { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           );
-          console.log("메세지 송신 테스트")
         },
         (error: unknown) => {
           console.error("Connection error: ", error);
@@ -75,14 +104,14 @@ function DuringAuction({ channelId }: { channelId: string }) {
         },
         JSON.stringify(data)
       );
-      console.log("메세지 수신 테스트")
+    console.log("메세지 수신 테스트");
   };
 
-  // ------------------여기까지 작성했음--------------
-
-  const [bidPrice, setBidPrice] = useState(3000000); // 입찰가
-  const [bidHistory, setBidHistory] = useState([
-    { bidder: "민굥", price: 3400000 },
+  const [bidPrice, setBidPrice] = useState(minBid); // 입찰가
+  const [bidHistory, setBidHistory] = useState<
+    { bidder: string; price: number }[]
+  >([
+    // { bidder: "민굥", price: 3400000 },
   ]);
 
   const [springProps, api] = useSpring(() => ({
@@ -140,32 +169,33 @@ function DuringAuction({ channelId }: { channelId: string }) {
     // 프로그레스 값을 실시간으로 업데이트하여 자연스러운 진행 표시
     setProgress((100 * timeLeft) / 30);
   }, [timeLeft]);
+  // ------------------여기까지 작성했음--------------
 
-  const handleBid = () => {
-    if (!auctionEnded) {
-      const newPrice = bidPrice + 100000;
-      setBidPrice(newPrice);
-      setTimeLeft(30);
-      setProgress(100); // 입찰 시 progress 값 초기화
+  // const handleBid = () => {
+  //   if (!auctionEnded) {
+  //     const newPrice = bidPrice + 100000;
+  //     setBidPrice(newPrice);
+  //     setTimeLeft(30);
+  //     setProgress(100); // 입찰 시 progress 값 초기화
 
-      setBidHistory((prevHistory) => {
-        const newHistory = [
-          { bidder: "꼬북맘", price: newPrice },
-          ...prevHistory,
-        ];
-        return newHistory.slice(0, 8);
-      });
+  //     setBidHistory((prevHistory) => {
+  //       const newHistory = [
+  //         { bidder: "꼬북맘", price: newPrice },
+  //         ...prevHistory,
+  //       ];
+  //       return newHistory.slice(0, 8);
+  //     });
 
-      setShowEmoji(true);
-      emojiApi.start({
-        from: { opacity: 0, transform: "translateY(50px)" },
-        to: { opacity: 1, transform: "translateY(0px)" },
-        onRest: () => {
-          emojiApi.start({ opacity: 0, transform: "translateY(-50px)" });
-        },
-      });
-    }
-  };
+  //     setShowEmoji(true);
+  //     emojiApi.start({
+  //       from: { opacity: 0, transform: "translateY(50px)" },
+  //       to: { opacity: 1, transform: "translateY(0px)" },
+  //       onRest: () => {
+  //         emojiApi.start({ opacity: 0, transform: "translateY(-50px)" });
+  //       },
+  //     });
+  //   }
+  // };
 
   useEffect(() => {
     api.start({ price: bidPrice });
@@ -199,7 +229,8 @@ function DuringAuction({ channelId }: { channelId: string }) {
           <div className="flex flex-col justify-center items-center mb-4">
             <div className="flex flex-row items-center">
               <div className="font-bold text-[27px]">
-                현재 입찰가&nbsp;&nbsp;
+                {minBid === bidPrice ? "최소 입찰가" : "현재 입찰가"}
+                &nbsp;&nbsp;
               </div>
               <animated.div className="font-bold text-[39px] text-[#4B721F] font-stardust">
                 {springProps.price.to(
@@ -209,7 +240,7 @@ function DuringAuction({ channelId }: { channelId: string }) {
             </div>
             <button
               onClick={() => {
-                handleBid();
+                // handleBid();
                 sendBidRequest();
               }}
               className="mt-5 cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] active:scale-90 text-[30px] font-dnf-bitbit"
