@@ -5,21 +5,22 @@ import { useState } from "react";
 import MyTurtle from "../../components/user/MyTurtle";
 import TransactionHistory from "../../components/user/TransactionHistory";
 // import NoImage from "../../assets/no_image.png";
-import { FaRandom } from "@react-icons/all-files/fa/FaRandom";
-const CustomProfile1 = "/custom_profile/profile1.gif";
-const CustomProfile2 = "/custom_profile/profile2.gif";
-const CustomProfile3 = "/custom_profile/profile3.gif";
-const CustomProfile4 = "/custom_profile/profile4.gif";
-const CustomProfile5 = "/custom_profile/profile5.gif";
-const CustomProfile6 = "/custom_profile/profile6.gif";
-const CustomProfile7 = "/custom_profile/profile7.gif";
-const CustomProfile8 = "/custom_profile/profile8.gif";
-const CustomProfile9 = "/custom_profile/profile9.gif";
-const CustomProfile10 = "/custom_profile/profile10.gif";
-const CustomProfile11 = "/custom_profile/profile11.gif";
-const CustomProfile12 = "/custom_profile/profile12.gif";
-const CustomProfile13 = "/custom_profile/profile13.gif";
-const CustomProfile14 = "/custom_profile/profile14.gif";
+import { FaRandom } from '@react-icons/all-files/fa/FaRandom';
+import CustomProfile1 from "../../../public/custom_profile/profile1.gif";
+import CustomProfile2 from "../../../public/custom_profile/profile2.gif";
+import CustomProfile3 from "../../../public/custom_profile/profile3.gif";
+import CustomProfile4 from "../../../public/custom_profile/profile4.gif";
+import CustomProfile5 from "../../../public/custom_profile/profile5.gif";
+import CustomProfile6 from "../../../public/custom_profile/profile6.gif";
+import CustomProfile7 from "../../../public/custom_profile/profile7.gif";
+import CustomProfile8 from "../../../public/custom_profile/profile8.gif";
+import CustomProfile9 from "../../../public/custom_profile/profile9.gif";
+import CustomProfile10 from "../../../public/custom_profile/profile10.gif";
+import CustomProfile11 from "../../../public/custom_profile/profile11.gif";
+import CustomProfile12 from "../../../public/custom_profile/profile12.gif";
+import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
+import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
+
 
 function MyPage() {
   const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
