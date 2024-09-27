@@ -1,13 +1,21 @@
 package com.turtlecoin.mainservice.domain.user.controller;
 
+import com.turtlecoin.mainservice.domain.transaction.dto.DetailTransactionResponseDto;
+import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
+import com.turtlecoin.mainservice.domain.transaction.repository.TransactionRepository;
+import com.turtlecoin.mainservice.domain.transaction.service.TransactionService;
 import com.turtlecoin.mainservice.domain.turtle.dto.TurtleResponseDTO;
+import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
 import com.turtlecoin.mainservice.domain.user.dto.EmailDto;
 import com.turtlecoin.mainservice.domain.user.dto.LoginUserDto;
 import com.turtlecoin.mainservice.domain.user.dto.UserRequestDto;
 import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
+import com.turtlecoin.mainservice.domain.user.entity.User;
+import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.domain.user.service.EmailService;
 import com.turtlecoin.mainservice.domain.user.service.JWTService;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
+import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -20,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequestMapping("/main/user")
 @Controller
@@ -30,11 +39,14 @@ public class UserController {
     private final EmailService emailService;
     private final UserService userService;;
     private final JWTService jwtService;
+    private final TransactionService transactionService;
 
-    public UserController(EmailService emailService, UserService userService, JWTService jwtService ) {
+
+    public UserController(EmailService emailService, UserService userService, JWTService jwtService, TransactionService transactionService) {
         this.emailService = emailService;
         this.userService = userService;
         this.jwtService = jwtService;
+        this.transactionService = transactionService;
     }
 
     @PostMapping(value="/join",consumes={MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -102,6 +114,17 @@ public class UserController {
         }
 
         return ResponseEntity.ok(turtles);
+    }
+
+
+    // !~!~userId 토큰에서 가져오는거 여기 참고하기~!~!
+    @GetMapping("/transaction")
+    public ResponseEntity<?> myTransaction(@RequestHeader("Authorization") String token){
+        Optional<User> user = jwtService.getUserByToken(token); // token 기준으로 User 객체 가져오기!
+        if(user.isEmpty()){
+            return new ResponseEntity<>(ResponseVO.failure("400","유효한 token이 아닙니다."),HttpStatus.UNAUTHORIZED);
+        }
+        return new ResponseEntity<>(ResponseVO.success("요청이 정상적으로 처리되었습니다.","transaction",transactionService.findAllTransactions(user.get()) ),HttpStatus.OK);
     }
 
 }

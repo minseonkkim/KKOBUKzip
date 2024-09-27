@@ -33,6 +33,9 @@ public class JWTService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    public Optional<User> getUserByToken(String token) {
+        return userRepository.findById(jwtUtil.getIdFromToken(token.split(" ")[1]));
+    }
     public ResponseEntity<?> loginService(LoginUserDto loginUserDto) {
         Optional<User> user = Optional.ofNullable(userRepository.findByemail(loginUserDto.getEmail()));
         if (user.isEmpty() || !bCryptPasswordEncoder.matches(loginUserDto.getPassword(),user.get().getPassword())) {
