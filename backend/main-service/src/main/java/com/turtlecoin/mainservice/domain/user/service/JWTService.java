@@ -48,7 +48,7 @@ public class JWTService {
             Long id = user.get().getId();
 
             // Access token과 Refresh token 생성
-            String access = jwtUtil.createToken("access", email, role,id, 600000L);
+            String access = jwtUtil.createToken("access", email, role,id, 6000000L);
             String refresh = jwtUtil.createToken("refresh", email, role, id,86400000L);
 
             // Redis에 refresh token 저장 (email, 토큰, 만료시간을 함께 저장)
