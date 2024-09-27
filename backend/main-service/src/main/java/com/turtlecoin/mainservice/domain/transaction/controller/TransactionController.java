@@ -6,6 +6,9 @@ import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
 import com.turtlecoin.mainservice.domain.transaction.repository.TransactionRepository;
 import com.turtlecoin.mainservice.domain.transaction.service.TransactionService;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
+import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
+import com.turtlecoin.mainservice.domain.user.entity.User;
+import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,10 +28,14 @@ import java.util.Map;
 public class TransactionController {
     private final TransactionService transactionService;
     private final TransactionRepository transactionRepository;
+    private final UserRepository userRepository;
+    private final TurtleRepository turtleRepository;
 
-    public TransactionController(TransactionService transactionService, TransactionRepository transactionRepository) {
+    public TransactionController(TransactionService transactionService, TransactionRepository transactionRepository, UserRepository userRepository, TurtleRepository turtleRepository) {
         this.transactionService = transactionService;
         this.transactionRepository = transactionRepository;
+        this.userRepository = userRepository;
+        this.turtleRepository = turtleRepository;
     }
 
     @GetMapping("/test")
