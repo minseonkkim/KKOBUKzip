@@ -23,8 +23,8 @@ interface ErrorStateType {
   emailConfirm: string;
   name: string;
   nickname: string;
-  birthday: string;
-  phoneNumber: string;
+  birth: string;
+  phonenumber: string;
   address: string;
   detailedAddress: string;
 }
@@ -73,8 +73,8 @@ function JoinPage() {
     emailConfirm: "",
     name: "",
     nickname: "",
-    birthday: "",
-    phoneNumber: "",
+    birth: "",
+    phonenumber: "",
     address: "",
     detailedAddress: "",
   });
@@ -196,8 +196,8 @@ function JoinPage() {
       emailConfirm: "",
       name: "",
       nickname: "",
-      birthday: "",
-      phoneNumber: "",
+      birth: "",
+      phonenumber: "",
       address: "",
       detailedAddress: "",
     };
@@ -241,14 +241,14 @@ function JoinPage() {
       emailConfirm: "",
       name: "",
       nickname: "",
-      birthday: "",
-      phoneNumber: "",
+      birth: "",
+      phonenumber: "",
       address: "",
       detailedAddress: "",
     };
 
     if (!validateBirthday(birth.y, birth.m, birth.d)) {
-      newErrStat.birthday = "올바른 생년월일을 입력해주세요.";
+      newErrStat.birth = "올바른 생년월일을 입력해주세요.";
       isValid = false;
     }
 
@@ -259,7 +259,7 @@ function JoinPage() {
         phoneNumber.third
       )
     ) {
-      newErrStat.phoneNumber = "올바른 전화번호를 입력해주세요.";
+      newErrStat.phonenumber = "올바른 전화번호를 입력해주세요.";
       isValid = false;
     }
 
@@ -278,7 +278,7 @@ function JoinPage() {
         (val) => val == null || isNaN(Number(val))
       )
     ) {
-      newErrStat.birthday = "올바른 생년월일을 입력해주세요.";
+      newErrStat.birth = "올바른 생년월일을 입력해주세요.";
       isValid = false;
     }
 
@@ -288,7 +288,7 @@ function JoinPage() {
         (val) => val == null || val.trim().length === 0 || val.trim().length > 4
       )
     ) {
-      newErrStat.phoneNumber = "올바른 전화번호를 입력해주세요.";
+      newErrStat.phonenumber = "올바른 전화번호를 입력해주세요.";
       isValid = false;
     }
 
@@ -322,6 +322,7 @@ function JoinPage() {
         type: "application/json",
       });
       formData.append("data", blob);
+      console.log(jsonData);
       const rst = await registerRequest(formData);
       if (rst.success) {
         alert("회원가입 완료!");
@@ -663,9 +664,7 @@ function JoinPage() {
                             </div>
                           </div>
                         </div>
-                        {errStat.birthday && (
-                          <ErrorMessage msg={errStat.birthday} />
-                        )}
+                        {errStat.birth && <ErrorMessage msg={errStat.birth} />}
                       </div>
                       {/* 국적 */}
                       <div>
@@ -762,8 +761,8 @@ function JoinPage() {
                             </div>
                           </div>
                         </div>
-                        {errStat.phoneNumber && (
-                          <ErrorMessage msg={errStat.phoneNumber} />
+                        {errStat.phonenumber && (
+                          <ErrorMessage msg={errStat.phonenumber} />
                         )}
                       </div>
                       {/* 주소 */}
