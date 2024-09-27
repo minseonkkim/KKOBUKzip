@@ -67,7 +67,7 @@ public class TransactionService {
                 savedTransaction.getTransactionPhotos().addAll(stringToDto(imageUrls, savedTransaction));
                 savedTransaction.getTags().addAll(stringToTransactionTag(dto.getTransactionTags(), savedTransaction));
             }
-
+            System.out.println(savedTransaction.getTransactionPhotos().toString());
             // 저장된 거래 정보를 데이터베이스에 저장
             transactionRepository.save(savedTransaction);
         }catch (IOException e) {
