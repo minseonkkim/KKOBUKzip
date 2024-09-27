@@ -1,7 +1,9 @@
 export interface UserInfo {
-  id: number;
+  role: string;
+  userId: number;
   email: string;
-  addres: string;
-  CP: string;
+  address: string;
+  phoneNumber: string;
   nickname: string;
+  profileImage: string;
 }

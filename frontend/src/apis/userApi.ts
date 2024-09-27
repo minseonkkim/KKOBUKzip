@@ -121,11 +121,12 @@ interface LoginResponseData {
     accessToken: string;
     refreshToken: string;
     role: string; // 유저는 user 관리자는 admin
-    id: number;
+    userId: number;
     email: string;
-    addres: string;
-    CP: string;
+    address: string;
+    phoneNumber: string;
     nickname: string;
+    profileImage: string;
   };
 }
 
