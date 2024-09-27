@@ -20,20 +20,9 @@ services:
       - kkobuk-network
     ports:
       - "6379:6379"
-    command: [
-      "redis-server",
-      "--appendonly", "yes",
-      "--appendfsync", "everysec",
-      "--save", "900", "1",
-      "--save", "300", "10",
-      "--save", "60", "10000",
-      "--dbfilename", "dump.rdb",
-      "--dir", "../data",
-      "--requirepass", "kkobuk",
-      "--masterauth", "kkobuk"
-    ]
+    command: [ "redis-server", "--appendonly", "yes", "--appendfsync", "everysec", "--save", "900", "1", "--save", "300", "10", "--save", "60", "10000", "--dbfilename", "dump.rdb", "--dir", "../data", "--requirepass", "kkobuk", "--masterauth", "kkobuk" ]
     volumes:
-      - ../data/redis:/data  # RDB 및 AOF 파일이 저장될 디렉토리
+      - ../data/redis:/data # RDB 및 AOF 파일이 저장될 디렉토리
 
   redis-replica-1:
     image: redis:latest
@@ -42,19 +31,7 @@ services:
       - kkobuk-network
     ports:
       - "6380:6379"
-    command: [
-      "redis-server",
-      "--slaveof", "redis", "6379",
-      "--appendonly", "yes",
-      "--appendfsync", "everysec",
-      "--save", "900", "1",
-      "--save", "300", "10",
-      "--save", "60", "10000",
-      "--dbfilename", "dump.rdb",
-      "--dir", "/data",
-      "--requirepass", "kkobuk",
-      "--masterauth", "kkobuk"
-    ]
+    command: [ "redis-server", "--slaveof", "redis", "6379", "--appendonly", "yes", "--appendfsync", "everysec", "--save", "900", "1", "--save", "300", "10", "--save", "60", "10000", "--dbfilename", "dump.rdb", "--dir", "/data", "--requirepass", "kkobuk", "--masterauth", "kkobuk" ]
     volumes:
       - ../data/redis-replica-1:/data
     depends_on:
@@ -67,19 +44,7 @@ services:
       - kkobuk-network
     ports:
       - "6381:6379"
-    command: [
-      "redis-server",
-      "--slaveof", "redis", "6379",
-      "--appendonly", "yes",
-      "--appendfsync", "everysec",
-      "--save", "900", "1",
-      "--save", "300", "10",
-      "--save", "60", "10000",
-      "--dbfilename", "dump.rdb",
-      "--dir", "../data",
-      "--requirepass", "kkobuk",
-      "--masterauth", "kkobuk"
-    ]
+    command: [ "redis-server", "--slaveof", "redis", "6379", "--appendonly", "yes", "--appendfsync", "everysec", "--save", "900", "1", "--save", "300", "10", "--save", "60", "10000", "--dbfilename", "dump.rdb", "--dir", "../data", "--requirepass", "kkobuk", "--masterauth", "kkobuk" ]
     volumes:
       - ../data/redis-replica-2:/data
     depends_on:
@@ -92,7 +57,7 @@ services:
       - kkobuk-network
     ports:
       - "26379:26379"
-    command: ["redis-sentinel", "/etc/sentinel.conf"]
+    command: [ "redis-sentinel", "/etc/sentinel.conf" ]
     volumes:
       - ../sentinel/sentinel-1.conf:/etc/sentinel.conf
     depends_on:
@@ -105,7 +70,7 @@ services:
       - kkobuk-network
     ports:
       - "26380:26379"
-    command: ["redis-sentinel", "/etc/sentinel.conf"]
+    command: [ "redis-sentinel", "/etc/sentinel.conf" ]
     volumes:
       - ../sentinel/sentinel-2.conf:/etc/sentinel.conf
     depends_on:
@@ -118,7 +83,7 @@ services:
       - kkobuk-network
     ports:
       - "26381:26379"
-    command: ["redis-sentinel", "/etc/sentinel.conf"]
+    command: [ "redis-sentinel", "/etc/sentinel.conf" ]
     volumes:
       - ../sentinel/sentinel-3.conf:/etc/sentinel.conf
     depends_on:
@@ -143,7 +108,7 @@ services:
       - spring.rabbitmq.host=rabbitmq
       - spring.profiles.active=local
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://config-service:8888/actuator/health"]
+      test: [ "CMD", "curl", "-f", "http://config-service:8888/actuator/health" ]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -159,8 +124,9 @@ services:
       - spring.cloud.config.uri=http://config-service:8888
       - spring.rabbitmq.host=rabbitmq
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
+      - SPRING_PROFILES_ACTIVE=dev
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/actuator/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/actuator/health" ]
       interval: 20s
       timeout: 10s
       retries: 10
@@ -176,9 +142,10 @@ services:
     environment:
       - spring.cloud.config.uri=http://config-service:8888
       - spring.rabbitmq.host=rabbitmq
-      - spring.redis.host=redis  # Redis 마스터 설정
+      - spring.redis.host=redis # Redis 마스터 설정
       - spring.redis.password=kkobuk # Redis 암호 설정
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
+      - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       apigateway-service:
         condition: service_healthy
@@ -193,9 +160,10 @@ services:
     environment:
       - spring.cloud.config.uri=http://config-service:8888
       - spring.rabbitmq.host=rabbitmq
-      - spring.redis.host=redis  # Redis 마스터 설정
+      - spring.redis.host=redis # Redis 마스터 설정
       - spring.redis.password=kkobuk # Redis 암호 설정
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
+      - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       apigateway-service:
         condition: service_healthy

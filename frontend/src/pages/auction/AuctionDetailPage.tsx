@@ -83,7 +83,7 @@ function AuctionDetailPage() {
         <title>경매중인 거북이</title>
       </Helmet>
       <Header />
-      <div className="px-4 lg:px-[250px] mt-[85px]">
+      <main className="px-4 lg:px-[250px] mt-[85px]">
         {/* 테스트 드라이버 */}
         <div className="grid grid-cols-4">
           <button
@@ -138,9 +138,10 @@ function AuctionDetailPage() {
           {auctionStatus === "DURING_AUCTION" && (
             <DuringAuction channelId={String(auctionItemData?.id)} />
           )}
-          {auctionStatus === ("NO_BID" || "SUCCESSFUL_BID") && <AfterAuction />}
+          {(auctionStatus === "NO_BID" ||
+            auctionStatus === "SUCCESSFUL_BID") && <AfterAuction />}
         </div>
-      </div>
+      </main>
     </>
   );
 }
