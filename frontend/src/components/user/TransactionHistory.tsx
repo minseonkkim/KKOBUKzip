@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
-import BabyTurtleImg from "../../assets/babyturtle.png";
+import BabyTurtleImg from "../../assets/babyturtle.webp";
 import { IoCheckmark } from "@react-icons/all-files/io5/IoCheckmark";
 import { useEscrowStore } from "../../store/useEscrowStore";
 
