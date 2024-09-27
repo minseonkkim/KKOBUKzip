@@ -207,7 +207,7 @@ export default function ChatDetail({
 
   return (
     <>
-      <div className="text-black bg-gray-100 rounded-[10px] flex flex-col justify-between w-full">
+      <div className="text-black bg-gray-100 rounded-[10px] flex flex-col justify-between w-full h-full">
         <div>
           <div className="text-[#43493A] p-[10px] flex flex-row justify-between items-center text-[29px] font-dnf-bitbit absolute bg-gray-100 w-full">
             <span className="cursor-pointer" onClick={closeChatDetail}>
@@ -267,7 +267,7 @@ export default function ChatDetail({
               }
             }}
             placeholder="메시지를 입력하세요..."
-            className="w-full p-2 border rounded-lg"
+            className="w-full p-2 border rounded-lg text-[19px] lg:text-[17px]"
           />
         </div>
       </div>
