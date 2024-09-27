@@ -8,7 +8,7 @@ interface StompFrame {
   headers: Record<string, string>;
   body?: string;
 }
-
+const auctionId = 1;
 function DuringAuction({ channelId }: { channelId: string }) {
   const auctionStompClient = useRef<CompatClient | null>(null);
   const [loading, setLoading] = useState(true);
@@ -18,17 +18,19 @@ function DuringAuction({ channelId }: { channelId: string }) {
       setLoading(true);
       // 소켓 설정
       const socketAddress = import.meta.env.VITE_SOCKET_AUCTION_URL;
-      console.log(socketAddress)
+      console.log(socketAddress);
       const socket = new WebSocket(socketAddress);
       auctionStompClient.current = Stomp.over(socket);
 
       // 메세지 수신
       auctionStompClient.current.connect(
-        // { Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoidGVzdEB0ZXN0LmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MjczMjc1ODQsImV4cCI6MTcyNzMyODE4NH0.CZ0rgjiGXJmXbdkeUa-AZCCMgKLImW2Cwt5euIuUuNM` },
+        {
+          //  Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoidGVzdEB0ZXN0LmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MjczMjc1ODQsImV4cCI6MTcyNzMyODE4NH0.CZ0rgjiGXJmXbdkeUa-AZCCMgKLImW2Cwt5euIuUuNM`
+        },
         (frame: StompFrame) => {
           console.log("Connected: " + frame);
           auctionStompClient.current!.subscribe(
-            `/${channelId}`,
+            `/pub/auction/${auctionId}/bid`,
             (message) => {
               const newMessage = JSON.parse(message.body);
               console.log(newMessage);
@@ -49,6 +51,18 @@ function DuringAuction({ channelId }: { channelId: string }) {
       }
     };
   }, [channelId]);
+
+  const sendWSRequest = () => {
+    if (auctionStompClient.current && auctionStompClient.current.connected)
+      auctionStompClient.current.send(
+        `/sub/auction/${auctionId}`,
+        {
+          //  Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`
+        },
+        JSON.stringify("메세지 송신 테스트" + new Date())
+      );
+  };
+
   // ------------------여기까지 작성했음--------------
 
   const [bidPrice, setBidPrice] = useState(3000000); // 입찰가
@@ -185,7 +199,16 @@ function DuringAuction({ channelId }: { channelId: string }) {
             >
               {auctionEnded ? "낙찰 완료" : "👋🏻 입찰하기"}
             </button>
-
+            {/* 테스트 버튼 */}
+            <>
+              <button
+                className="mt-5 cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] active:scale-90 text-[30px] font-dnf-bitbit"
+                onClick={sendWSRequest}
+              >
+                웹소켓메세지보내기버튼
+              </button>
+            </>
+            {/* 테스트 버튼 끝 */}
             <div className="flex flex-col w-full text-[23px] mt-[80px]">
               {bidHistory.map((bid, index) => (
                 <div
