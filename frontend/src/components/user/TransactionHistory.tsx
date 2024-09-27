@@ -38,7 +38,7 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
     return <>
         <div className="w-full border-[2px] rounded-[20px] p-[15px] bg-[#f8f8f8] flex flex-col md:flex-row lg:flex-col xl:flex-row">
             <div className="flex flex-row">
-                <img src={TmpTurtleImg} className="w-[200px] h-[150px] rounded-[10px] object-cover" draggable="false"/>
+                <img src={TmpTurtleImg} className="w-[200px] h-[150px] rounded-[10px] object-cover" draggable="false" alt="turtle image"/>
                 <div className="flex flex-col justify-between w-[420px] ml-[20px]">
                     <div>
                         <div>분양자 정보</div>

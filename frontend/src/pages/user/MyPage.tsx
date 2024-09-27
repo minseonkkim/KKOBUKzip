@@ -91,6 +91,7 @@ function MyPage() {
               src={profileImage}
               className="rounded-full object-cover w-[132px] h-[132px] lg:w-[162px] lg:h-[162px] transition-all duration-300 group-hover:brightness-50"
               draggable="false"
+              alt="profile image"
             />
             <button className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-semibold rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100">
               캐릭터 수정
@@ -157,6 +158,7 @@ function MyPage() {
                 src={profileImage}
                 className="rounded-full object-cover w-[162px] h-[162px] transition-all duration-300 group-hover:brightness-50"
                 draggable="false"
+                alt="profile image"
               />
               <div
                 className="rounded-[5px] border-[1px] border-[#B8B8B8] text-[#B8B8B8] cursor-pointer p-1 flex justify-center items-center"

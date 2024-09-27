@@ -32,7 +32,7 @@ export default function Header() {
           <div className="text-[32px] lg:text-[40px] font-dnf-bitbit flex flex-row items-center cursor-pointer">
             <img
               src={LogoImg}
-              className="w-auto h-[45px] lg:h-[60px] mr-3"
+              className="w-[60px] h-[60px] lg:h-[60px] mr-3 object-contain"
               draggable="false"
               alt="Logo Image"
             />

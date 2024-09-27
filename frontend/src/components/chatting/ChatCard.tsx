@@ -20,6 +20,7 @@ export default function ChatCard({ openChatDetail, chat }: ChatCardProps) {
           src={TmpProfileImg}
           className="rounded-full w-[60px] h-[60px] lg:w-[52px] lg:h-[52px] mx-2"
           draggable="false"
+          alt="profile image"
         />
         <div className="flex flex-col justify-between w-full pr-3">
           <div className="flex flex-row justify-between mb-1">

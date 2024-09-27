@@ -12,6 +12,7 @@ function OtherChatItem({
           src={profileImg}
           className="rounded-full w-[45px] h-[45px] lg:w-[40px] lg:h-[40px] mr-2"
           draggable="false"
+          alt="profile image"
         />
         <div className="p-2.5 bg-white rounded-[10px] w-fit max-w-[230px] break-words mr-1 text-[18px] lg:text-[16px]">
           {message}
