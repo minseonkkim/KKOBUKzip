@@ -1,9 +1,9 @@
 import { Helmet } from "react-helmet-async";
 import useDeviceStore from "../../store/useDeviceStore";
 import Header from "../../components/common/Header";
-import BackgroundImg from "../../assets/Side_View_Scene.gif";
+import BackgroundImg from "../../assets/Side_View_Scene.webp";
 import TurtleMoving from "../../assets/turtle_moving.webp";
-import TurtleStop from "../../assets/turtle_stop.gif";
+import TurtleStop from "../../assets/turtle_stop.webp";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -16,63 +16,58 @@ function MainPage() {
   const [showTurtle, setShowTurtle] = useState(true);
 
   useEffect(() => {
-  const timers: NodeJS.Timeout[] = []; 
+    const timers: NodeJS.Timeout[] = [];
 
-  timers.push(
-    setTimeout(() => setShowTurtleMoving(false), 2300),
-    setTimeout(() => setShowContent(true), 0),
-    setTimeout(() => setShowButtons(true), 2000)
-  );
+    timers.push(
+      setTimeout(() => setShowTurtleMoving(false), 2300),
+      setTimeout(() => setShowContent(true), 0),
+      setTimeout(() => setShowButtons(true), 2000)
+    );
 
-  if (isMobile) {
-    timers.push(setTimeout(() => setShowContent(false), 2000));
-  }
+    if (isMobile) {
+      timers.push(setTimeout(() => setShowContent(false), 2000));
+    }
 
-  return () => timers.forEach((timer) => clearTimeout(timer));
-}, [isMobile]);
+    return () => timers.forEach((timer) => clearTimeout(timer));
+  }, [isMobile]);
 
+  useEffect(() => {
+    const preloadImage = new Image();
+    preloadImage.src = BackgroundImg;
+    preloadImage.loading = "eager";
+  }, []);
 
   return (
     <>
       <Helmet>
-      <title>꼬북ZIP</title>
-        {/* 이미지 preload */}
+        <title>꼬북ZIP</title>
         <link rel="preload" href={TurtleMoving} as="image" />
         <link rel="preload" href={TurtleStop} as="image" />
-        <link rel="preload" href={BackgroundImg} as="image" />
       </Helmet>
       <Header />
-      <div className="relative min-h-screen bg-white overflow-hidden ">
+      <div className="relative min-h-screen bg-white overflow-hidden">
         <div className="img-box-center">
-        <img
-          src={BackgroundImg}
-          className="absolute inset-0 w-full h-[100vh] object-cover object-center"
-          loading="lazy"
-          alt="Background"
-          draggable="false"
-        />
+          <img
+            src={BackgroundImg}
+            className="absolute inset-0 w-full h-[100vh] object-cover object-center"
+            loading="lazy"
+            alt="Background"
+            draggable="false"
+          />
         </div>
 
         {showTurtle && (
-            showTurtleMoving ? (
-              <img
-                src={TurtleStop}
-                loading="lazy"
-                className="w-[270px] md:w-[300px] lg:w-[380px] h-auto absolute"
-                style={{ bottom: "15px", right: "10%" }}
-                draggable="false"
-                alt="Turtle Stop"
-              />
-            ) : (
-              <img
-                src={TurtleMoving}
-                loading="lazy"
-                className="w-[270px] md:w-[300px] lg:w-[380px] h-auto absolute turtle-animation"
-                draggable="false"
-                alt="Turtle Moving"
-              />
-            )
-          )}
+          <img
+            src={showTurtleMoving ? TurtleStop : TurtleMoving}
+            loading="lazy"
+            className={`w-[270px] md:w-[300px] lg:w-[380px] h-auto absolute ${
+              !showTurtleMoving ? "turtle-animation" : ""
+            }`}
+            style={{ bottom: "15px", right: "10%" }}
+            draggable="false"
+            alt={showTurtleMoving ? "Turtle Stop" : "Turtle Moving"}
+          />
+        )}
         <div className="absolute top-[170px] w-full text-center flex flex-col items-center">
           {showContent && (
             <div className="left-0 text-center flex flex-col items-center">
@@ -179,41 +174,6 @@ function MainPage() {
             bottom: 13%;
             right: 39.3%;
             transform: scale(0.67) translate(0%, 0%) rotate(0deg);
-          }
-        }
-
-        @media (max-height: 700px) {
-          @keyframes moveTurtle {
-            0% {
-              bottom: 4.5%;
-              right: 18.5%;
-              transform: scale(0.97) rotate(0deg);
-            }
-            20% {
-              bottom: 5%;
-              right: 25%;
-              transform: scale(0.94) rotate(2deg);
-            }
-            40% {
-              bottom: 5.5%;
-              right: 30%;
-              transform: scale(0.9) rotate(-2deg);
-            }
-            60% {
-              bottom: 6%;
-              right: 35%;
-              transform: scale(0.85) rotate(1deg);
-            }
-            80% {
-              bottom: 6.3%;
-              right: 37%;
-              transform: scale(0.78) rotate(-1deg);
-            }
-            100% {
-              bottom: 6.5%;
-              right: 39%;
-              transform: scale(0.67) rotate(0deg);
-            }
           }
         }
 

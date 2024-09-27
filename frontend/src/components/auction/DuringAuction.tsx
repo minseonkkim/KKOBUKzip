@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import MovingTurtle from "../../assets/moving_turtle.gif";
+import MovingTurtle from "../../assets/moving_turtle.webp";
 import { useSpring, animated } from "@react-spring/web";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 

@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { HelmetProvider } from "react-helmet-async";
-import React, { Suspense } from "react";
-import LoadingImage from "../src/assets/loading.gif";
+import React, { Suspense, useEffect } from "react";
+import LoadingImage from "../src/assets/loading.webp";
 
 const MainPage = React.lazy(() => import("./pages/common/MainPage"));
 const LoginPage = React.lazy(() => import("./pages/common/LoginPage"));
@@ -53,6 +53,13 @@ const TransactionRegisterPage = React.lazy(
 );
 
 function App() {
+  useEffect(() => {
+    const preloadImage = new Image();
+    preloadImage.src = LoadingImage;
+    preloadImage.loading = "eager";
+    preloadImage.decode().catch(() => {});
+  }, []);
+
   return (
     <HelmetProvider>
       <BrowserRouter>

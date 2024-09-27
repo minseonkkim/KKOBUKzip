@@ -4,7 +4,7 @@ import Header from "../../components/common/Header";
 import { useState } from "react";
 import MyTurtle from "../../components/user/MyTurtle";
 import TransactionHistory from "../../components/user/TransactionHistory";
-// import NoImage from "../../assets/no_image.png";
+// import NoImage from "../../assets/no_image.webp";
 import { FaRandom } from '@react-icons/all-files/fa/FaRandom';
 import CustomProfile1 from "../../../public/custom_profile/profile1.gif";
 import CustomProfile2 from "../../../public/custom_profile/profile2.gif";
