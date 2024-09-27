@@ -1,93 +1,131 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { HelmetProvider } from "react-helmet-async";
-import MainPage from "./pages/common/MainPage";
-import LoginPage from "./pages/common/LoginPage";
-import JoinPage from "./pages/common/JoinPage";
-import DocumentFormPage from "./pages/document/DocumentFormPage";
-import DocumentListPage from "./pages/document/DocumentListPage";
-import TransactionDetailPage from "./pages/transaction/TransactionDetailPage";
-import TransactionListPage from "./pages/transaction/TransactionListPage";
-import AuctionDetailPage from "./pages/auction/AuctionDetailPage";
-import AuctionListPage from "./pages/auction/AuctionListPage";
-import MyPage from "./pages/user/MyPage";
-import AdminDocsListPage from "./pages/user/admin/AdminDocsListPage";
-import AdminDocsDetailPage from "./pages/user/admin/AdminDocsDetailPage";
-import ChatList from "./components/chatting/ChatList";
-import BreedDocument from "./components/document/BreedDocument";
-import AssignDocument from "./components/document/AssignDocument";
-import GrantorDocument from "./components/document/GrantorDocument";
-import DeathDocument from "./components/document/DeathDocument";
-import AuctionSuccessPage from "./pages/auction/AuctionSuccessPage";
-import AuctionRegisterPage from "./pages/auction/AuctionRegisterPage";
-import NotFoundPage from "./pages/common/NotFoundPage";
-import TransactionRegisterPage from "./pages/transaction/TransactionRegisterPage";
+import React, { Suspense } from "react";
+import LoadingImage from "../src/assets/loading.gif";
+
+const MainPage = React.lazy(() => import("./pages/common/MainPage"));
+const LoginPage = React.lazy(() => import("./pages/common/LoginPage"));
+const JoinPage = React.lazy(() => import("./pages/common/JoinPage"));
+const DocumentFormPage = React.lazy(() =>
+  import("./pages/document/DocumentFormPage")
+);
+const DocumentListPage = React.lazy(() =>
+  import("./pages/document/DocumentListPage")
+);
+const TransactionDetailPage = React.lazy(() =>
+  import("./pages/transaction/TransactionDetailPage")
+);
+const TransactionListPage = React.lazy(() =>
+  import("./pages/transaction/TransactionListPage")
+);
+const AuctionDetailPage = React.lazy(() =>
+  import("./pages/auction/AuctionDetailPage")
+);
+const AuctionListPage = React.lazy(() =>
+  import("./pages/auction/AuctionListPage")
+);
+const MyPage = React.lazy(() => import("./pages/user/MyPage"));
+const AdminDocsListPage = React.lazy(() =>
+  import("./pages/user/admin/AdminDocsListPage")
+);
+const AdminDocsDetailPage = React.lazy(() =>
+  import("./pages/user/admin/AdminDocsDetailPage")
+);
+const ChatList = React.lazy(() => import("./components/chatting/ChatList"));
+const BreedDocument = React.lazy(() =>
+  import("./components/document/BreedDocument")
+);
+const AssignDocument = React.lazy(() =>
+  import("./components/document/AssignDocument")
+);
+const GrantorDocument = React.lazy(() =>
+  import("./components/document/GrantorDocument")
+);
+const DeathDocument = React.lazy(() =>
+  import("./components/document/DeathDocument")
+);
+const AuctionSuccessPage = React.lazy(() =>
+  import("./pages/auction/AuctionSuccessPage")
+);
+const AuctionRegisterPage = React.lazy(() =>
+  import("./pages/auction/AuctionRegisterPage")
+);
+const NotFoundPage = React.lazy(() => import("./pages/common/NotFoundPage"));
+const TransactionRegisterPage = React.lazy(() =>
+  import("./pages/transaction/TransactionRegisterPage")
+);
 
 function App() {
   return (
     <HelmetProvider>
       <BrowserRouter>
-        <Routes>
-          {/* Common Domain */}
-          <Route path="/" element={<MainPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/join" element={<JoinPage />} />
-          {/* 이하 다른 도메인 자유롭게 수정해주세요... path 라던가... */}
+        <Suspense
+          fallback={
+            <div className="w-full h-[100vh] flex flex-col justify-center items-center">
+              <img
+                src={LoadingImage}
+                className="loading-image"
+                alt="Loading"
+                draggable="false"
+              />
+              <p className="typing-effect font-stardust font-bold text-[30px]">Loading...</p>
+            </div>
+          }
+        >
+          <Routes>
+            {/* Common Domain */}
+            <Route path="/" element={<MainPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/join" element={<JoinPage />} />
 
-          {/* Document Domain */}
-          {/* nested routing */}
-          <Route path="/doc-form" element={<DocumentFormPage />}>
-            <Route
-              path="/doc-form/breed" // 증식페이지
-              element={<BreedDocument />}
-            />
-            <Route
-              path="/doc-form/assign" // 양수 페이지
-              element={<AssignDocument />}
-            />
-            <Route
-              path="/doc-form/grant" // 양도 페이지
-              element={<GrantorDocument />}
-            />
-            <Route
-              path="/doc-form/death" // 사망 페이지
-              element={<DeathDocument />}
-            />
-          </Route>
-          <Route path="/doc-list" element={<DocumentListPage />} />
+            {/* Document Domain */}
+            <Route path="/doc-form" element={<DocumentFormPage />}>
+              <Route path="/doc-form/breed" element={<BreedDocument />} />
+              <Route path="/doc-form/assign" element={<AssignDocument />} />
+              <Route path="/doc-form/grant" element={<GrantorDocument />} />
+              <Route path="/doc-form/death" element={<DeathDocument />} />
+            </Route>
+            <Route path="/doc-list" element={<DocumentListPage />} />
 
-          {/* Auction Domain - 경매 */}
-          <Route
-            path="/auction-detail/:auctionId"
-            element={<AuctionDetailPage />}
-          />
-          <Route path="/auction-list" element={<AuctionListPage />} />
-          <Route path="/auction-success" element={<AuctionSuccessPage />} />
-          <Route path="/auction-register" element={<AuctionRegisterPage />} />
-          {/* Transaction Domain - 거래 */}
-          <Route
-            path="/transaction-detail"
-            element={<TransactionDetailPage />}
-          />
-          <Route path="/transaction-list" element={<TransactionListPage />} />
-          <Route
-            path="/transaction-register"
-            element={<TransactionRegisterPage />}
-          />
-          {/* User Domain - 유저 */}
-          <Route path="/mypage" element={<MyPage />} />
-          {/* Admin */}
-          <Route
-            path="/admin/document/list" // 관리자 문서 리스트 조회 페이지
-            element={<AdminDocsListPage />}
-          />
-          <Route
-            path="/admin/:turtleUUID/:documentHash" // 관리자 문서 디테일 조회
-            element={<AdminDocsDetailPage />}
-          />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-        <ChatList />
+            {/* Auction Domain - 경매 */}
+            <Route
+              path="/auction-detail/:auctionId"
+              element={<AuctionDetailPage />}
+            />
+            <Route path="/auction-list" element={<AuctionListPage />} />
+            <Route path="/auction-success" element={<AuctionSuccessPage />} />
+            <Route path="/auction-register" element={<AuctionRegisterPage />} />
+
+            {/* Transaction Domain - 거래 */}
+            <Route
+              path="/transaction-detail"
+              element={<TransactionDetailPage />}
+            />
+            <Route path="/transaction-list" element={<TransactionListPage />} />
+            <Route
+              path="/transaction-register"
+              element={<TransactionRegisterPage />}
+            />
+
+            {/* User Domain - 유저 */}
+            <Route path="/mypage" element={<MyPage />} />
+
+            {/* Admin */}
+            <Route
+              path="/admin/document/list"
+              element={<AdminDocsListPage />}
+            />
+            <Route
+              path="/admin/:turtleUUID/:documentHash"
+              element={<AdminDocsDetailPage />}
+            />
+
+            {/* Not Found */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+          <ChatList />
+        </Suspense>
       </BrowserRouter>
     </HelmetProvider>
   );
