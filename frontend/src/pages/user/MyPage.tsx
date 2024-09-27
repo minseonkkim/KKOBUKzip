@@ -5,22 +5,22 @@ import { useState } from "react";
 import MyTurtle from "../../components/user/MyTurtle";
 import TransactionHistory from "../../components/user/TransactionHistory";
 // import NoImage from "../../assets/no_image.png";
-import { LiaRandomSolid } from "react-icons/lia";
-// import CustomProfile1 from "../../assets/custom_profile/profile1.gif";
-const CustomProfile1 = "/custom_profile/profile1.gif";
-const CustomProfile2 = "/custom_profile/profile2.gif";
-const CustomProfile3 = "/custom_profile/profile3.gif";
-const CustomProfile4 = "/custom_profile/profile4.gif";
-const CustomProfile5 = "/custom_profile/profile5.gif";
-const CustomProfile6 = "/custom_profile/profile6.gif";
-const CustomProfile7 = "/custom_profile/profile7.gif";
-const CustomProfile8 = "/custom_profile/profile8.gif";
-const CustomProfile9 = "/custom_profile/profile9.gif";
-const CustomProfile10 = "/custom_profile/profile10.gif";
-const CustomProfile11 = "/custom_profile/profile11.gif";
-const CustomProfile12 = "/custom_profile/profile12.gif";
-const CustomProfile13 = "/custom_profile/profile13.gif";
-const CustomProfile14 = "/custom_profile/profile14.gif";
+import { FaRandom } from '@react-icons/all-files/fa/FaRandom';
+import CustomProfile1 from "../../assets/custom_profile/profile1.gif";
+import CustomProfile2 from "../../assets/custom_profile/profile2.gif";
+import CustomProfile3 from "../../assets/custom_profile/profile3.gif";
+import CustomProfile4 from "../../assets/custom_profile/profile4.gif";
+import CustomProfile5 from "../../assets/custom_profile/profile5.gif";
+import CustomProfile6 from "../../assets/custom_profile/profile6.gif";
+import CustomProfile7 from "../../assets/custom_profile/profile7.gif";
+import CustomProfile8 from "../../assets/custom_profile/profile8.gif";
+import CustomProfile9 from "../../assets/custom_profile/profile9.gif";
+import CustomProfile10 from "../../assets/custom_profile/profile10.gif";
+import CustomProfile11 from "../../assets/custom_profile/profile11.gif";
+import CustomProfile12 from "../../assets/custom_profile/profile12.gif";
+import CustomProfile13 from "../../assets/custom_profile/profile13.gif";
+import CustomProfile14 from "../../assets/custom_profile/profile14.gif";
+
 
 function MyPage() {
   const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
@@ -163,7 +163,7 @@ function MyPage() {
                 onClick={getRandomProfileImage}
               >
                 <div className="flex flex-row items-center">
-                  <LiaRandomSolid className="mr-1" />
+                  <FaRandom className="mr-1" />
                   랜덤 뽑기
                 </div>
               </div>

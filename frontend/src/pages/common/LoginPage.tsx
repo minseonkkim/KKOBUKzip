@@ -6,7 +6,8 @@ import naver_logo from "../../assets/login/naver_logo2.png";
 import kakao_logo from "../../assets/login/kakao_logo.png";
 import Header from "../../components/common/Header";
 import StopTurtleImg from "../../assets/turtle_home_stop.png";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import { FaRegEye } from "@react-icons/all-files/fa/FaRegEye";
+import { FaRegEyeSlash } from "@react-icons/all-files/fa/FaRegEyeSlash"
 import { loginRequest } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
 

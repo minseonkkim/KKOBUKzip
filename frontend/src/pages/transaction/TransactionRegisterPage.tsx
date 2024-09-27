@@ -1,8 +1,8 @@
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg"
-import { IoClose } from "react-icons/io5";
-import { IoMdAddCircle } from "react-icons/io";
+import { IoClose } from "@react-icons/all-files/io5/IoClose";
+import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
 import { ChangeEvent, useState } from "react";
 
 export default function TransactionRegisterPage(){

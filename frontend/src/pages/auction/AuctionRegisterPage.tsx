@@ -1,9 +1,9 @@
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
-import { IoMdAddCircle } from "react-icons/io";
+import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
 import { ChangeEvent, useState } from "react";
-import { IoClose } from "react-icons/io5";
+import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import { addAuctionItem } from "../../apis/tradeApi";
 
 export default function AuctionRegisterPage() {
