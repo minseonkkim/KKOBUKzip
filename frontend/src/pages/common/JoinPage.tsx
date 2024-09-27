@@ -317,8 +317,8 @@ function JoinPage() {
 
       // 이미지 파일 fetch
       const response = await fetch(selectedImagePath);
-      const blob = await response.blob();
-      const file = new File([blob], `profile${randomIndex}.gif`, {
+      const blobImage = await response.blob();
+      const file = new File([blobImage], `profile${randomIndex}.gif`, {
         type: "image/gif",
       });
 
@@ -327,12 +327,16 @@ function JoinPage() {
 
       const jsonData = {
         ...data,
-        birthday: `${birth.y}-${birth.m}-${birth.d}`,
+        birth: `${birth.y}-${birth.m}-${birth.d}`,
         address: `${data.address} / ${detailedAddress}`,
-        phoneNumber: `${phoneNumber.first}-${phoneNumber.second}-${phoneNumber.third}`,
+        phonenumber: `${phoneNumber.first}-${phoneNumber.second}-${phoneNumber.third}`,
       };
-      formData.append("data", JSON.stringify(jsonData));
+      // formData.append("data", JSON.stringify(jsonData));
 
+      const blob = new Blob([JSON.stringify(jsonData)], {
+        type: "application/json",
+      });
+      formData.append("data", blob);
       const rst = await registerRequest(formData);
       if (rst.success) {
         alert("회원가입 완료!");
