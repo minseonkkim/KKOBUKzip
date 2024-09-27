@@ -28,7 +28,7 @@ function DuringAuction({
   const auctionStompClient = useRef<CompatClient | null>(null);
   const [loading, setLoading] = useState(true);
   // const [isBidStarted, setIsBidStarted] = useState(false);
-
+  const [nextBid, setNextBid] = useState(minBid);
   useEffect(() => {
     const init = async () => {
       setLoading(true);
@@ -49,8 +49,9 @@ function DuringAuction({
             `/sub/auction/${auctionId}`,
             (message) => {
               const newMessage: message = JSON.parse(message.body);
-
+              // 다음 가격 수신
               setBidPrice(newMessage.nextBid);
+              setNextBid(newMessage.nextBid);
               setBidHistory((prev) => {
                 const newHistory = [
                   { bidder: newMessage.nickname, price: newMessage.bidAmount },
@@ -58,8 +59,11 @@ function DuringAuction({
                 ];
                 return newHistory.slice(0, 8);
               });
+              // 여기까지 기존 거래 반영
+              // 하단은 UI효과
               setTimeLeft(30);
               setProgress(100); // 입찰 시 progress 값 초기화
+              setShowEmoji(true);
               emojiApi.start({
                 from: { opacity: 0, transform: "translateY(50px)" },
                 to: { opacity: 1, transform: "translateY(0px)" },
@@ -70,7 +74,7 @@ function DuringAuction({
                   });
                 },
               });
-              console.log(newMessage);
+              console.log("새로운 Message :", newMessage);
             },
             { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           );
