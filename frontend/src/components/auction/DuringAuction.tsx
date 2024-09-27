@@ -8,6 +8,13 @@ interface StompFrame {
   headers: Record<string, string>;
   body?: string;
 }
+
+interface message {
+  auctionId: number;
+  userId: number;
+  bidAmount: number;
+}
+
 const auctionId = 1;
 function DuringAuction({ channelId }: { channelId: string }) {
   const auctionStompClient = useRef<CompatClient | null>(null);
@@ -30,9 +37,9 @@ function DuringAuction({ channelId }: { channelId: string }) {
         (frame: StompFrame) => {
           console.log("Connected: " + frame);
           auctionStompClient.current!.subscribe(
-            `/pub/auction/${auctionId}/bid`,
+            `/sub/auction/${auctionId}`,
             (message) => {
-              const newMessage = JSON.parse(message.body);
+              const newMessage: message = JSON.parse(message.body);
               console.log(newMessage);
             },
             { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
@@ -52,14 +59,20 @@ function DuringAuction({ channelId }: { channelId: string }) {
     };
   }, [channelId]);
 
-  const sendWSRequest = () => {
+  const sendBidRequest = () => {
+    const data = {
+      auctionId,
+      userId: 1, // store에서 가져올 것
+      bidAmount: 3000000, // 현재입찰가
+    };
+
     if (auctionStompClient.current && auctionStompClient.current.connected)
       auctionStompClient.current.send(
-        `/sub/auction/${auctionId}`,
+        `/pub/auction/${auctionId}/bid`,
         {
           //  Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`
         },
-        JSON.stringify("메세지 송신 테스트" + new Date())
+        JSON.stringify(data)
       );
   };
 
@@ -193,22 +206,16 @@ function DuringAuction({ channelId }: { channelId: string }) {
               </animated.div>
             </div>
             <button
-              onClick={handleBid}
+              onClick={() => {
+                handleBid();
+                sendBidRequest();
+              }}
               className="mt-5 cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] active:scale-90 text-[30px] font-dnf-bitbit"
               disabled={auctionEnded}
             >
               {auctionEnded ? "낙찰 완료" : "👋🏻 입찰하기"}
             </button>
-            {/* 테스트 버튼 */}
-            <>
-              <button
-                className="mt-5 cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] active:scale-90 text-[30px] font-dnf-bitbit"
-                onClick={sendWSRequest}
-              >
-                웹소켓메세지보내기버튼
-              </button>
-            </>
-            {/* 테스트 버튼 끝 */}
+
             <div className="flex flex-col w-full text-[23px] mt-[80px]">
               {bidHistory.map((bid, index) => (
                 <div
