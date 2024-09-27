@@ -17,14 +17,12 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     private final JWTUtil jwtUtil;
     public AuthorizationHeaderFilter(JWTUtil jwtUtil) {
         super(Config.class);  // Config 클래스를 상위 클래스에 전달
-        System.out.println("검증 시작1");
         this.jwtUtil = jwtUtil;
     }
     public static class Config {
     }
     @Override
     public GatewayFilter apply(AuthorizationHeaderFilter.Config config) {
-        System.out.println("검증 시작2");
         return (exchange,chain)->{
             // 1. 요청 헤더에서 Authorization 헤더를 가져옴
             String authorizationHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
@@ -51,7 +49,6 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
             String role = jwtUtil.getRoleFromToken(token);
 
 
-            // 6. 필터 체인에 요청을 넘김
             return chain.filter(exchange);
         };
     }
