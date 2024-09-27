@@ -1,16 +1,20 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import useDeviceStore from "../../store/useDeviceStore";
+import usePriorityLoading from "../../hooks/usePriorityLoading";
 import LogoImg from '../../assets/logo.webp';
 import CoinImg from '../../assets/Coin.webp';
 import MyPageImg from '../../assets/mypage.webp';
 import { Link, useLocation } from 'react-router-dom';
-import Wallet from './Wallet';
 import Modal from './Modal';
+
+// Wallet 컴포넌트를 lazy로 import
+const Wallet = lazy(() => import('./Wallet'));
 
 export default function Header() {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const [isWalletOpen, setIsWalletOpen] = useState(false);
-   const location = useLocation(); 
+  const location = useLocation();
+  const shouldLoadWallet = usePriorityLoading(1);
 
   const headerBackgroundColor = location.pathname === '/' ? '#AAE0F2' : '#fff';
 
@@ -90,9 +94,13 @@ export default function Header() {
           </Link>
         </div>
 
-        <Modal isOpen={isWalletOpen} onClose={toggleWallet}>
-          <Wallet />
-        </Modal>
+        {shouldLoadWallet && (
+          <Suspense fallback={null}>
+            <Modal isOpen={isWalletOpen} onClose={toggleWallet}>
+              <Wallet />
+            </Modal>
+          </Suspense>
+        )}
       </div>
     </header>
   );
