@@ -612,7 +612,6 @@ function JoinPage() {
                         >
                           다음
                         </button>
-                        <div onClick={() => setStep(3)}>asdf</div>
                       </div>
                     </form>
                   </div>
