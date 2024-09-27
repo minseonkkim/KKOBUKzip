@@ -55,14 +55,18 @@ const logout = async (): Promise<{ success: boolean; error?: string }> => {
 
 // 회원가입
 const registerRequest = async (
-  data: JoinDataType
+  data: FormData
 ): Promise<{
   success: boolean;
   data?: RegisterResponseData;
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<RegisterResponseData>("/main/user/join", { data })
+    guestAxios.post<RegisterResponseData>("/main/user/join", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
   );
 };
 

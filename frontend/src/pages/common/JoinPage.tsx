@@ -13,6 +13,21 @@ import Header from "../../components/common/Header";
 import StopTurtleImg from "../../assets/turtle_home_stop.png";
 import { useNavigate } from "react-router-dom";
 
+// import CustomProfile1 from "../../assets/custom_profile/profile1.gif";
+// import CustomProfile2 from "../../assets/custom_profile/profile2.gif";
+// import CustomProfile3 from "../../assets/custom_profile/profile3.gif";
+// import CustomProfile4 from "../../assets/custom_profile/profile4.gif";
+// import CustomProfile5 from "../../assets/custom_profile/profile5.gif";
+// import CustomProfile6 from "../../assets/custom_profile/profile6.gif";
+// import CustomProfile7 from "../../assets/custom_profile/profile7.gif";
+// import CustomProfile8 from "../../assets/custom_profile/profile8.gif";
+// import CustomProfile9 from "../../assets/custom_profile/profile9.gif";
+// import CustomProfile10 from "../../assets/custom_profile/profile10.gif";
+// import CustomProfile11 from "../../assets/custom_profile/profile11.gif";
+// import CustomProfile12 from "../../assets/custom_profile/profile12.gif";
+// import CustomProfile13 from "../../assets/custom_profile/profile13.gif";
+// import CustomProfile14 from "../../assets/custom_profile/profile14.gif";
+
 // 1. 인증하기를 누르고 인증이 된다-> 그냥 다음으로 보냄(step 3) 넘어가먼 못돌아옴
 // 2. 인증 직전까지는 -> 이전으로 가서 정보 수정 ok
 
@@ -294,19 +309,33 @@ function JoinPage() {
 
     setErrStat(newErrStat);
     if (isValid) {
-      const rst = await registerRequest({
-        ...data,
-        birthday: birth.y! + "-" + birth.m! + "-" + birth.d!,
-        address: data.address + " / " + detailedAddress,
-        phoneNumber:
-          phoneNumber.first +
-          "-" +
-          phoneNumber.second +
-          "-" +
-          phoneNumber.third,
+      const formData = new FormData();
+
+      // 랜덤 인덱스 생성 (1부터 14까지)
+      const randomIndex = Math.floor(Math.random() * 14) + 1;
+      const selectedImagePath = `custom_profile/profile${randomIndex}.gif`; // public 폴더는 경로에서 제외
+
+      // 이미지 파일 fetch
+      const response = await fetch(selectedImagePath);
+      const blob = await response.blob();
+      const file = new File([blob], `profile${randomIndex}.gif`, {
+        type: "image/gif",
       });
+
+      // FormData에 파일 추가
+      formData.append("profileImage", file);
+
+      const jsonData = {
+        ...data,
+        birthday: `${birth.y}-${birth.m}-${birth.d}`,
+        address: `${data.address} / ${detailedAddress}`,
+        phoneNumber: `${phoneNumber.first}-${phoneNumber.second}-${phoneNumber.third}`,
+      };
+      formData.append("data", JSON.stringify(jsonData));
+
+      const rst = await registerRequest(formData);
       if (rst.success) {
-        alert("회원가입완료!");
+        alert("회원가입 완료!");
         navigate("/login");
       }
       console.log(rst);
@@ -579,6 +608,7 @@ function JoinPage() {
                         >
                           다음
                         </button>
+                        <div onClick={() => setStep(3)}>asdf</div>
                       </div>
                     </form>
                   </div>
@@ -795,16 +825,16 @@ function JoinPage() {
                       </div>
 
                       <div className="flex justify-between">
-                        <button
+                        {/* <button
                           type="button"
                           onClick={() => setStep(1)}
                           className="w-[48%] bg-gray-300 text-[22px] text-black py-3 rounded hover:bg-gray-400"
                         >
                           이전
-                        </button>
+                        </button> */}
                         <button
                           type="submit"
-                          className="w-[48%] bg-[#4B721F] text-[22px] text-white py-3 rounded hover:bg-[#3E5A1E]"
+                          className="w-full bg-[#4B721F] text-[22px] text-white py-3 rounded hover:bg-[#3E5A1E]"
                         >
                           회원가입하기
                         </button>

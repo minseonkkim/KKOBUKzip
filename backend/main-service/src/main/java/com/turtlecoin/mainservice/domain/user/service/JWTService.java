@@ -57,6 +57,10 @@ public class JWTService {
             data.put("role", role);
             data.put("nickname", user.get().getNickname());
             data.put("email", user.get().getEmail());
+            data.put("address",user.get().getAddress());
+            data.put("phoneNumber",user.get().getPhonenumber());
+            data.put("profileImage",user.get().getProfileImage());
+            data.put("userId",user.get().getId());
 
             responseVO.setData(data);
 
