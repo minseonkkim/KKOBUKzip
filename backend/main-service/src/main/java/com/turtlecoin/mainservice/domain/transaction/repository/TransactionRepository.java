@@ -3,6 +3,7 @@ package com.turtlecoin.mainservice.domain.transaction.repository;
 import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
 import com.turtlecoin.mainservice.domain.transaction.entity.TransactionProgress;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
+import com.turtlecoin.mainservice.domain.user.entity.User;
 import feign.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,4 +35,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                                                @Param("progressList") List<TransactionProgress> progressList,
                                                Pageable pageable);
     Transaction findOneById(Long id);
+    @Query("SELECT t FROM Transaction t WHERE t.turtle.user = :user")
+    List<Transaction> findAllByUser(User user);
 }

@@ -12,6 +12,7 @@ import com.turtlecoin.mainservice.domain.transaction.repository.TransactionRepos
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
+import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.DataAccessException;
@@ -47,6 +48,9 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
 
+    public List<DetailTransactionResponseDto> findAllTransactions(User user) {
+        return transactionRepository.findAllByUser(user).stream().map(Transaction::toResponseDTO).collect(Collectors.toList());
+    }
     // 거래 등록하는 서비스
     @Transactional
     public ResponseEntity<?> enrollTransaction(TransactionRequestDto dto, List<MultipartFile> photos) {
