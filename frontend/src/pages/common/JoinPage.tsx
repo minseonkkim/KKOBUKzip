@@ -496,10 +496,13 @@ function JoinPage() {
                             />
                             <button
                               type="button"
-                              className="border col-span-3 text-sm bg-blue-300 rounded rainbow-text"
-                              onClick={confirmEmail}
+                              disabled={emailCheck}
+                              className={`border col-span-3 text-sm ${
+                                !emailCheck ? "bg-blue-300" : "bg-indigo-200"
+                              } rounded rainbow-text`}
+                              onClick={!emailCheck ? confirmEmail : () => {}}
                             >
-                              인증하기
+                              {!emailCheck ? "인증하기" : "발송완료"}
                             </button>
                           </div>
                         </div>
