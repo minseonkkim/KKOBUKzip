@@ -97,7 +97,7 @@ public class JWTService {
         try {
             jwtUtil.isTokenExpired(refreshToken);
         } catch (ExpiredJwtException e) {
-            return new ResponseEntity<>("refresh token expired", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(ResponseVO.failure("400","refresh token expired"), HttpStatus.UNAUTHORIZED);
         }
 
         // Redis에서 refresh token 조회
@@ -105,7 +105,7 @@ public class JWTService {
         String storedToken = valueOps.get(jwtUtil.getUsernameFromToken(refreshToken)); // Key 패턴에 맞게 수정
 
         if (storedToken == null || !storedToken.equals(refreshToken)) {
-            return new ResponseEntity<>("Invalid refresh token", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(ResponseVO.failure("400","Invalid refresh token"), HttpStatus.BAD_REQUEST);
         }
 
         String username = jwtUtil.getUsernameFromToken(refreshToken);
