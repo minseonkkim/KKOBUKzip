@@ -11,6 +11,7 @@ import {
 } from "../../apis/userApi";
 import Header from "../../components/common/Header";
 import StopTurtleImg from "../../assets/turtle_home_stop.png";
+import { useNavigate } from "react-router-dom";
 
 // 1. 인증하기를 누르고 인증이 된다-> 그냥 다음으로 보냄(step 3) 넘어가먼 못돌아옴
 // 2. 인증 직전까지는 -> 이전으로 가서 정보 수정 ok
@@ -77,6 +78,8 @@ function JoinPage() {
     address: "",
     detailedAddress: "",
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (postcodeData?.jibunAddress) {
@@ -302,6 +305,10 @@ function JoinPage() {
           "-" +
           phoneNumber.third,
       });
+      if (rst.success) {
+        alert("회원가입완료!");
+        navigate("/login");
+      }
       console.log(rst);
     }
   };
@@ -316,10 +323,10 @@ function JoinPage() {
       }));
     } else {
       setErrStat((prev) => ({ ...prev, email: "" }));
+      setEmailCheckLoading(true);
 
       // 여기에서 이메일 인증 요청
       try {
-        setEmailCheckLoading(true);
         const response = await createEmailRequest(data.email);
         if (response.success) {
           setEmailCheck(true);

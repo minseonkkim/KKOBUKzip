@@ -62,7 +62,7 @@ const registerRequest = async (
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<RegisterResponseData>("/main/user/signup", { data })
+    guestAxios.post<RegisterResponseData>("/main/user/join", { data })
   );
 };
 
