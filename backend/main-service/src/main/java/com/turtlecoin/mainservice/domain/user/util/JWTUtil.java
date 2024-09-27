@@ -32,15 +32,19 @@ public class JWTUtil {
     public String getCategoryFromToken(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
+    public Long getIdFromToken(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("id", Long.class);
+    }
     public Boolean isTokenExpired(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String createToken(String category, String username, String role,Long exp) {
+    public String createToken(String category, String username, String role,Long id, Long exp) {
         return Jwts.builder()
                 .claim("category", category)
                 .claim("username",username)
                 .claim("role",role)
+                .claim("id",id)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis()+exp))
                 .signWith(secretKey)
