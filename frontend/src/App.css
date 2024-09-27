@@ -1,0 +1,54 @@
+.typing-effect {
+  display: inline-block;
+  overflow: hidden;
+  border-right: 0.15em solid orange; /* Cursor effect */
+  white-space: nowrap;
+  letter-spacing: 0.15em;
+  animation: typing 3s steps(10, end) infinite, blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  0% {
+    width: 0;
+  }
+  10% {
+    width: 1ch;
+  }
+  20% {
+    width: 2ch;
+  }
+  30% {
+    width: 3ch;
+  }
+  40% {
+    width: 4ch;
+  }
+  50% {
+    width: 5ch;
+  }
+  60% {
+    width: 6ch;
+  }
+  70% {
+    width: 7ch;
+  }
+  80% {
+    width: 8ch;
+  }
+  90% {
+    width: 9ch;
+  }
+  100% {
+    width: 10ch;
+  }
+}
+
+@keyframes blink-caret {
+  0%,
+  100% {
+    border-color: transparent;
+  }
+  50% {
+    border-color: orange;
+  }
+}
