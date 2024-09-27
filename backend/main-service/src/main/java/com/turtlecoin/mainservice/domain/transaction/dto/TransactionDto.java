@@ -2,6 +2,8 @@ package com.turtlecoin.mainservice.domain.transaction.dto;
 
 import com.turtlecoin.mainservice.domain.transaction.entity.*;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
+import com.turtlecoin.mainservice.global.entity.BaseEntity;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +11,8 @@ import java.util.List;
 
 @Getter
 @Setter
-public class TransactionDto {
+@Transactional
+public class TransactionDto extends BaseEntity {
     private String title;
     private String content;
     private String sellerAddress;
@@ -19,6 +22,8 @@ public class TransactionDto {
     private TransactionProgress progress;
     private List<TransactionTag> transactionTags;
     private List<TransactionPhoto> transactionPhotos;
+
+    @Transactional
     public Transaction toEntity() {
         return Transaction.builder()
                 .title(title)

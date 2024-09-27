@@ -124,7 +124,7 @@ services:
       - spring.cloud.config.uri=http://config-service:8888
       - spring.rabbitmq.host=rabbitmq
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=prod
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/actuator/health" ]
       interval: 20s
@@ -145,7 +145,7 @@ services:
       - spring.redis.host=redis # Redis 마스터 설정
       - spring.redis.password=kkobuk # Redis 암호 설정
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=prod
     depends_on:
       apigateway-service:
         condition: service_healthy
@@ -163,7 +163,7 @@ services:
       - spring.redis.host=redis # Redis 마스터 설정
       - spring.redis.password=kkobuk # Redis 암호 설정
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=prod
     depends_on:
       apigateway-service:
         condition: service_healthy
