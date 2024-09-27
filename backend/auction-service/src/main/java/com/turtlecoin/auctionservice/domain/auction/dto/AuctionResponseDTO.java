@@ -44,7 +44,7 @@ public class AuctionResponseDTO {
                 .buyerId(auction.getBuyerId())
                 .sellerId(auction.getUserId())
                 .startTime(auction.getStartTime())
-                .endTime(auction.getEndTime())
+                .endTime(LocalDateTime.now())
                 .content(auction.getContent())
                 .progress(auction.getAuctionProgress().toString())
                 .tags(auction.getAuctionTags().stream()
