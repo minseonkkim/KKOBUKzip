@@ -9,12 +9,20 @@ interface StompFrame {
   body?: string;
 }
 
-interface message {
+interface MessageType {
   auctionId: string;
   userId: string;
   bidAmount: string;
   nextBid: string;
   nickname: string;
+}
+
+interface WsResponseType {
+  status: string;
+  data: {
+    bidRecord: MessageType;
+  };
+  message: string;
 }
 
 const auctionId = 1;
@@ -48,16 +56,16 @@ function DuringAuction({
           auctionStompClient.current!.subscribe(
             `/sub/auction/${auctionId}`,
             (message) => {
-              const newMessage: message = JSON.parse(message.body);
+              const newMessage: WsResponseType = JSON.parse(message.body);
               // 다음 가격 수신
-              const newNextBid = Number(newMessage.nextBid);
+              const newNextBid = Number(newMessage.data.bidRecord.nextBid);
               setBidPrice(newNextBid);
               setNextBid(newNextBid);
               setBidHistory((prev) => {
                 const newHistory = [
                   {
-                    bidder: newMessage.nickname,
-                    price: Number(newMessage.bidAmount),
+                    bidder: newMessage.data.bidRecord.nickname,
+                    price: Number(newMessage.data.bidRecord.bidAmount),
                   },
                   ...prev,
                 ];
