@@ -43,6 +43,9 @@ public class Transaction extends BaseEntity {
     @Column(name = "document_hash")
     private String documentHash;
 
+    @Column(name="seller_address")
+    private String sellerAddress;
+
     @OneToMany(mappedBy = "transaction")
     @Column(name = "transaction_photos")
     @Builder.Default

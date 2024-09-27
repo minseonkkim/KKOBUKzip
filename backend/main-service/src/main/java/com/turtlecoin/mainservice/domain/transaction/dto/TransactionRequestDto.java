@@ -9,6 +9,7 @@ import java.util.List;
 public class TransactionRequestDto {
     private String title;
     private String content;
+    private String sellerAddress;
     private double price;
     private double weight;
     private Long turtle_id;
