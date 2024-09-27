@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import useDeviceStore from "../../store/useDeviceStore";
-import naver_logo from "../../assets/login/naver_logo2.png";
-import kakao_logo from "../../assets/login/kakao_logo.png";
+import naver_logo from "../../assets/login/naver_logo2.webp";
+import kakao_logo from "../../assets/login/kakao_logo.webp";
 import Header from "../../components/common/Header";
 import StopTurtleImg from "../../assets/turtle_home_stop.png";
 import { FaRegEye } from "@react-icons/all-files/fa/FaRegEye";
@@ -46,7 +46,7 @@ function LoginPage() {
       </Helmet>
       <Header />
       <main
-        className="px-4 lg:px-[250px] lg:top-0 left-0 right-0 flex justify-center items-center mt-[60px] h-[calc(100vh-60px)]"
+        className="px-4 lg:px-[250px] flex justify-center items-center mt-[60px] h-[calc(100vh-60px)]"
 
       >
         {/* 로그인 컴포넌트 */}
@@ -56,7 +56,7 @@ function LoginPage() {
         >
           <div
           
-            className="w-full md:w-1/2 h-[190px] md:h-full rounded-l-[20px]"
+            className="w-full md:w-1/2 h-[190px] md:h-full"
           >
             <img
               src={StopTurtleImg}

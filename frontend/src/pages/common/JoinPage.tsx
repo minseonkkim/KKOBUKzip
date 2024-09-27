@@ -327,8 +327,9 @@ function JoinPage() {
       if (rst.success) {
         alert("회원가입 완료!");
         navigate("/login");
+      } else {
+        console.log(rst.error);
       }
-      console.log(rst);
     }
   };
 
@@ -381,13 +382,13 @@ function JoinPage() {
       </Helmet>
       <Header />
       <main>
-        <div className="absolute top-16 md:top-0 left-0 right-0 md:px-[250px] flex justify-center items-center h-full">
-          <div className="relative w-full bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 grid md:grid-cols-2">
+        <div className="px-4 lg:px-[250px] flex justify-center items-center mt-[60px] h-[calc(100vh-60px)]">
+          <div className="relative w-full bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex h-[640px] md:h-[600px] flex-col md:flex-row">
             {step === 1 && (
-              <section className="p-2.5 my-10 order-2 md:order-1">
+              <section className="p-2.5 my-3 w-full md:w-1/2">
                 <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
                   <div className="w-4/5">
-                    <h2 className="text-[38px] text-center mb-6 font-dnf-bitbit">
+                    <h2 className="text-[35px] md:text-[38px] text-center mb-5 md:mb-8 font-dnf-bitbit">
                       회원가입
                     </h2>
                     <form
@@ -505,7 +506,7 @@ function JoinPage() {
             )}
 
             {step === 2 && (
-              <section className="p-2.5 my-10 order-2 md:order-1">
+              <section className="p-2.5 my-3 w-full md:w-1/2">
                 <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
                   <div className="w-4/5">
                     <h2 className="text-[38px] text-center mb-6 font-dnf-bitbit">
@@ -606,7 +607,7 @@ function JoinPage() {
             )}
 
             {step === 3 && (
-              <section className="p-2.5 my-10 order-2 md:order-1">
+              <section className="p-2.5 my-3 w-full md:w-1/2">
                 <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
                   <div className="w-4/5">
                     <h2 className="text-[38px] text-center mb-6 font-dnf-bitbit">
@@ -832,14 +833,11 @@ function JoinPage() {
               </section>
             )}
 
-            <div className="rounded-r-[20px] order-1 md:order-2">
+            <div className="w-full md:w-1/2 h-[190px] md:h-full">
               <img
                 src={StopTurtleImg}
-                className={
-                  isMobile
-                    ? "rounded-t-[20px] w-full h-[300px] object-none"
-                    : "rounded-r-[20px] h-full object-cover"
-                }
+                className="w-full rounded-tr-none md:rounded-tr-[20px] rounded-bl-[20px] md:rounded-bl-none rounded-br-[20px] md:rounded-br-none md:rounded-br-[20px] h-full object-cover"
+                draggable="false"
               />
             </div>
           </div>
