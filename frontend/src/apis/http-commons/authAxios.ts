@@ -19,10 +19,9 @@ const authAxios = axios.create({
 });
 
 /*
-1. 요청 인터셉터에서 만료시간을 1차적으로 걸러줌
-2. 그럼에도 토큰 만료 혹은 에러라면 응답 인터셉터에서 2차적으로 재발송
+1. 토큰 만료 혹은 에러라면 응답 인터셉터에서 2차적으로 재발송
 
-3. 한 후에 기존의 요청을 다시 전송
+2. 한 후에 기존의 요청을 다시 전송
 + 테스트해볼것
 */
 
@@ -30,19 +29,8 @@ const authAxios = axios.create({
 authAxios.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem("accessToken");
-    const expiresAt = localStorage.getItem("expiresAt");
 
-    if (token && expiresAt && Date.now() > parseInt(expiresAt)) {
-      // 만료된 토큰인 경우 리프레시를 시도합니다.
-      try {
-        const newToken = await refreshToken();
-        config.headers["Authorization"] = `Bearer ${newToken}`;
-      } catch (error) {
-        // 리프레시 토큰 에러 처리
-        console.error("Error refreshing token:", error);
-        return Promise.reject(error);
-      }
-    } else if (token) {
+    if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
 
