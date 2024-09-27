@@ -39,9 +39,10 @@ function MainPage() {
         {/* 이미지 preload */}
         <link rel="preload" href={TurtleMoving} as="image" />
         <link rel="preload" href={TurtleStop} as="image" />
+        <link rel="preload" href={BackgroundImg} as="image" />
       </Helmet>
       <Header />
-      <div className="relative min-h-screen bg-[#363636] overflow-hidden ">
+      <div className="relative min-h-screen bg-white overflow-hidden ">
         <div className="img-box-center">
         <img
           src={BackgroundImg}
