@@ -327,8 +327,9 @@ function JoinPage() {
       if (rst.success) {
         alert("회원가입 완료!");
         navigate("/login");
+      } else {
+        console.log(rst.error);
       }
-      console.log(rst);
     }
   };
 
