@@ -12,7 +12,7 @@ import { fetchChatListData } from "../../apis/chatApi";
 const dummyData = chatsData;
 
 export default function ChatList() {
-  const isMobile = useDeviceStore((state) => state.isMobile);
+  const isTablet = useDeviceStore((state) => state.isTablet);
   const {
     isChattingOpen,
     selectedChat,
@@ -71,13 +71,13 @@ export default function ChatList() {
     <>
       <div
         className={
-          isMobile
+          isTablet
             ? ` fixed ${
-                isOpen ? "bottom-0 right-0" : "bottom-5 right-5"
+                isOpen ? "inset-0" : "bottom-5 right-5"
               } z-[1000] bg-[#D7E7F7] ${
                 isOpen ? "rounded-[10px]" : "rounded-full"
               } flex flex-col justify-between items-center transition-all duration-500 ${
-                isOpen ? "h-[calc(100vh-150px)] w-full" : "h-[60px] w-[60px]"
+                isOpen ? "h-[100vh] w-full" : "h-[60px] w-[60px]"
               } animate-float`
             : ` fixed w-[380px] bottom-0 right-0 z-[1000] bg-[#D7E7F7] rounded-t-[10px] flex flex-col justify-between items-center transition-all duration-500 ${
                 isOpen ? "h-[480px]" : "h-[60px]"
@@ -93,7 +93,7 @@ export default function ChatList() {
         {!selectedChat && (
           <div
             className={`p-[10px] flex flex-row items-center w-full cursor-pointer ${
-              isMobile
+              isTablet
                 ? isOpen
                   ? "justify-between"
                   : "h-[60px] justify-center"
@@ -101,9 +101,9 @@ export default function ChatList() {
             }`}
             onClick={toggleChat}
           >
-            {isMobile ? (
+            {isTablet ? (
               isOpen ? (
-                <div className="font-dnf-bitbit text-[29px]">
+                <div className="font-dnf-bitbit text-[31px]">
                   <span className="text-[#6396C6]">꼬북</span>
                   <span className="text-[#43493A]">TALK</span>
                 </div>
@@ -118,7 +118,7 @@ export default function ChatList() {
             )}
 
             {!isOpen ? (
-              !isMobile && (
+              !isTablet && (
                 <div className="rounded-full bg-[#DE0000] w-[30px] h-[30px] flex justify-center items-center text-white font-bold text-[20px] animate-bounce">
                   1
                 </div>
