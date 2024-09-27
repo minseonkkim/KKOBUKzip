@@ -1,22 +1,33 @@
 import { ChangeEvent } from "react";
 
-type FilterType = "gender" | "minWeight" | "maxWeight" | "minPrice" | "maxPrice";
+type FilterType =
+  | "gender"
+  | "minWeight"
+  | "maxWeight"
+  | "minPrice"
+  | "maxPrice";
 
 function OptionFilter({
   filters,
   updateFilter,
   filterApplyHandle,
 }: {
-  filters: { gender: string; minWeight: string; maxWeight: string; minPrice: string; maxPrice: string };
+  filters: {
+    gender: string;
+    minWeight: string;
+    maxWeight: string;
+    minPrice: string;
+    maxPrice: string;
+  };
   updateFilter: (filterType: FilterType, value: string) => void;
   filterApplyHandle: () => void;
 }) {
   const formatNumberWithCommas = (value: string): string => {
-    const numberValue = value.replace(/,/g, '');
-    if (!isNaN(Number(numberValue)) && numberValue !== '') {
+    const numberValue = value.replace(/,/g, "");
+    if (!isNaN(Number(numberValue)) && numberValue !== "") {
       return Number(numberValue).toLocaleString();
     }
-    return '';
+    return "";
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -26,8 +37,8 @@ function OptionFilter({
   const handleFilterApply = () => {
     const minWeight = Number(filters.minWeight);
     const maxWeight = Number(filters.maxWeight);
-    const minPrice = Number(filters.minPrice.replace(/,/g, ''));
-    const maxPrice = Number(filters.maxPrice.replace(/,/g, ''));
+    const minPrice = Number(filters.minPrice.replace(/,/g, ""));
+    const maxPrice = Number(filters.maxPrice.replace(/,/g, ""));
 
     if (minWeight > maxWeight) {
       alert("최소 체중은 최대 체중보다 클 수 없습니다.");
@@ -98,29 +109,20 @@ function OptionFilter({
       `}</style>
       <div className="border-[2px] border-[#DADADA] rounded-[20px] px-6 py-4 mb-4 transition-all ease-in-out duration-300">
         <div className="mb-4 flex flex-row items-center">
-          <label className="block font-bold text-lg w-[60px] md:w-[100px]">성별</label>
+          <label className="block font-bold text-lg w-[60px] md:w-[100px]">
+            성별
+          </label>
           <div className="flex space-x-3">
             <label className="custom-checkbox">
               <input
                 type="radio"
                 name="gender"
-                value="all"
-                checked={filters.gender === "all"}
+                value=""
+                checked={filters.gender === ""}
                 onChange={(e) => updateFilter("gender", e.target.value)}
               />
               <span className="checkbox-mark"></span>
               전체
-            </label>
-            <label className="custom-checkbox">
-              <input
-                type="radio"
-                name="gender"
-                value="male"
-                checked={filters.gender === "male"}
-                onChange={(e) => updateFilter("gender", e.target.value)}
-              />
-              <span className="checkbox-mark"></span>
-              암컷
             </label>
             <label className="custom-checkbox">
               <input
@@ -131,12 +133,25 @@ function OptionFilter({
                 onChange={(e) => updateFilter("gender", e.target.value)}
               />
               <span className="checkbox-mark"></span>
+              암컷
+            </label>
+            <label className="custom-checkbox">
+              <input
+                type="radio"
+                name="gender"
+                value="male"
+                checked={filters.gender === "male"}
+                onChange={(e) => updateFilter("gender", e.target.value)}
+              />
+              <span className="checkbox-mark"></span>
               수컷
             </label>
           </div>
         </div>
         <div className="mb-4 flex flex-row items-center">
-          <label className="block font-bold text-lg w-[60px] md:w-[100px]">체중</label>
+          <label className="block font-bold text-lg w-[60px] md:w-[100px]">
+            체중
+          </label>
           <div className="flex space-x-4 items-center">
             <div>
               <input
@@ -146,7 +161,7 @@ function OptionFilter({
                 placeholder="최소 체중"
                 onInput={(e) => {
                   const target = e.target as HTMLInputElement;
-                  target.value = target.value.replace(/[^0-9]/g, '');
+                  target.value = target.value.replace(/[^0-9]/g, "");
                 }}
               />
               <span>kg</span>
@@ -160,7 +175,7 @@ function OptionFilter({
                 placeholder="최대 체중"
                 onInput={(e) => {
                   const target = e.target as HTMLInputElement;
-                  target.value = target.value.replace(/[^0-9]/g, '');
+                  target.value = target.value.replace(/[^0-9]/g, "");
                 }}
               />
               <span>kg</span>
@@ -169,7 +184,9 @@ function OptionFilter({
         </div>
         <div className="flex flex-row justify-between">
           <div className="flex flex-row items-center">
-            <label className="block font-bold text-lg w-[60px] md:w-[100px]">가격</label>
+            <label className="block font-bold text-lg w-[60px] md:w-[100px]">
+              가격
+            </label>
             <div className="flex space-x-4 items-center">
               <input
                 value={filters.minPrice}

@@ -9,14 +9,15 @@ RUN npm install
 COPY . .
 
 ENV VITE_BASE_URL=https://j11c107.p.ssafy.io/api
-# ENV VITE_SSE_MAIN_URL=https://j11c107.p.ssafy.io
-# ENV VITE_SSE_AUCTION_URL=https://j11c107.p.ssafy.io
+ENV VITE_SSE_MAIN_URL=https://j11c107.p.ssafy.io
+ENV VITE_SSE_AUCTION_URL=https://j11c107.p.ssafy.io
 ENV VITE_SOCKET_MAIN_URL=wss://j11c107.p.ssafy.io/ws/main
 ENV VITE_SOCKET_AUCTION_URL=wss://j11c107.p.ssafy.io/ws/auction
 
 #포트번호
 EXPOSE 3000
 #빌드
+
 RUN npm run build
 #서버 실행
 CMD ["npm","start"]
