@@ -30,13 +30,14 @@ function DuringAuction({ channelId }: { channelId: string }) {
         (frame: StompFrame) => {
           console.log("Connected: " + frame);
           auctionStompClient.current!.subscribe(
-            `/pub/auction/${auctionId}/bid`,
+            `/sub/auction/${auctionId}`,
             (message) => {
               const newMessage = JSON.parse(message.body);
               console.log(newMessage);
             },
             { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           );
+          console.log("메세지 송신 테스트")
         },
         (error: unknown) => {
           console.error("Connection error: ", error);
@@ -55,12 +56,13 @@ function DuringAuction({ channelId }: { channelId: string }) {
   const sendWSRequest = () => {
     if (auctionStompClient.current && auctionStompClient.current.connected)
       auctionStompClient.current.send(
-        `/sub/auction/${auctionId}`,
+        `/pub/auction/${auctionId}/bid`,
         {
           //  Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`
         },
         JSON.stringify("메세지 송신 테스트" + new Date())
       );
+      console.log("메세지 수신 테스트")
   };
 
   // ------------------여기까지 작성했음--------------
