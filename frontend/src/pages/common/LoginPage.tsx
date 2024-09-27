@@ -46,7 +46,7 @@ function LoginPage() {
       </Helmet>
       <Header />
       <main
-        className="px-4 lg:px-[250px] lg:top-0 left-0 right-0 flex justify-center items-center mt-[60px] h-[calc(100vh-60px)]"
+        className="px-4 lg:px-[250px] flex justify-center items-center mt-[60px] h-[calc(100vh-60px)]"
 
       >
         {/* 로그인 컴포넌트 */}
@@ -56,7 +56,7 @@ function LoginPage() {
         >
           <div
           
-            className="w-full md:w-1/2 h-[190px] md:h-full rounded-l-[20px]"
+            className="w-full md:w-1/2 h-[190px] md:h-full"
           >
             <img
               src={StopTurtleImg}
