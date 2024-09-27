@@ -63,6 +63,7 @@ public class TransactionController {
             Transaction transaction = transactionRepository.findById(transactionId)
                     .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 거래 ID입니다."));
             transaction.changeStatusToReviewDocument();
+            transactionRepository.save(transaction);
             return new ResponseEntity<>(ResponseVO.success("거래 상태가 정상적으로 업데이트되었습니다."), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             // 거래 ID가 유효하지 않을 때 처리
@@ -79,6 +80,7 @@ public class TransactionController {
             Transaction transaction = transactionRepository.findById(transactionId)
                     .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 거래 ID입니다."));
             transaction.changeStatusToCompleteDocument();
+            transactionRepository.save(transaction);
             return new ResponseEntity<>(ResponseVO.success("거래 상태가 정상적으로 업데이트되었습니다."), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             // 거래 ID가 유효하지 않을 때 처리
