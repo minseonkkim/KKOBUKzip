@@ -2,7 +2,7 @@ package com.turtlecoin.auctionservice.domain.auction.controller;
 
 import com.turtlecoin.auctionservice.domain.auction.dto.BidRequestDTO;
 import com.turtlecoin.auctionservice.domain.auction.service.AuctionService;
-import com.turtlecoin.auctionservice.domain.auction.service.WebSocketService;
+import com.turtlecoin.auctionservice.domain.websocket.service.WebSocketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;

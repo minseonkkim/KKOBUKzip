@@ -1,4 +1,4 @@
-package com.turtlecoin.auctionservice.domain.auction.service;
+package com.turtlecoin.auctionservice.domain.websocket.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
