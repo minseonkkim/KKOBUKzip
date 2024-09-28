@@ -172,19 +172,31 @@ export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
         return true; // MetaMask가 설치되어 있음
       }
 
-      // 모바일 환경에서 MetaMask 딥링크 확인
-      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        const mmLink = 'https://metamask.app.link/dapp/' + window.location.host + window.location.pathname;
-        window.open(mmLink, '_blank');
-        return false; // 사용자가 MetaMask 앱으로 리다이렉트됨
-      }
+      // 모바일 환경 확인
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-      // 데스크톱 환경에서 MetaMask 설치 안내
-      const confirmed = window.confirm("MetaMask가 설치되어 있지 않습니다. 설치 페이지로 이동하시겠습니까?");
-      if (confirmed) {
-        window.open("https://metamask.io/download/", "_blank");
+      if (isMobile) {
+        // 모바일에서는 MetaMask 앱 설치 여부를 사용자에게 직접 확인
+        const hasMetaMask = window.confirm("MetaMask 앱이 설치되어 있나요? '확인'을 눌러 앱을 실행하거나, '취소'를 눌러 설치 페이지로 이동합니다.");
+        
+        if (hasMetaMask) {
+          // MetaMask 앱 실행 시도
+          const mmLink = 'https://metamask.app.link/dapp/' + window.location.host + window.location.pathname;
+          window.location.href = mmLink;
+          return false; // 페이지를 떠나므로 false 반환
+        } else {
+          // MetaMask 설치 페이지로 이동
+          window.open('https://metamask.io/download/', '_blank');
+          return false;
+        }
+      } else {
+        // 데스크톱 환경에서 MetaMask 설치 안내
+        const confirmed = window.confirm("MetaMask가 설치되어 있지 않습니다. 설치 페이지로 이동하시겠습니까?");
+        if (confirmed) {
+          window.open("https://metamask.io/download/", "_blank");
+        }
+        return false;
       }
-      return false;
     } catch (error) {
       console.error("MetaMask 설치 확인 실패:", error);
       set({ error: "MetaMask 설치 확인에 실패했습니다. 잠시 후 다시 시도해주세요." });
