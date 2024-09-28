@@ -3,13 +3,10 @@ import { MetaMaskSDK, MetaMaskSDKOptions, SDKProvider } from "@metamask/sdk";
 import Web3 from "web3";
 import { Contract } from "web3-eth-contract";
 import { AbiItem } from "web3-utils";
-import { detect } from "detect-browser";
 import TurtleTokenAbi from "../abi/TurtleToken.json";
 
 const TURTLE_TOKEN_ABI: AbiItem[] = TurtleTokenAbi.abi as AbiItem[];
 const TURTLE_TOKEN_ADDRESS = "0xe01a5F9cb53755236d1E754eb4d42286E1b62166";
-
-const browser = detect();
 
 interface MetaMaskSDKState {
   MMSDK: MetaMaskSDK | null;
