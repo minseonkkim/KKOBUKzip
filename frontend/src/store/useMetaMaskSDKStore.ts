@@ -1,12 +1,15 @@
 import { create } from "zustand";
-import { MetaMaskSDK, MetaMaskSDKOptions } from "@metamask/sdk";
+import { MetaMaskSDK, MetaMaskSDKOptions, SDKProvider } from "@metamask/sdk";
 import Web3 from "web3";
 import { Contract } from "web3-eth-contract";
 import { AbiItem } from "web3-utils";
+import { detect } from "detect-browser";
 import TurtleTokenAbi from "../abi/TurtleToken.json";
 
 const TURTLE_TOKEN_ABI: AbiItem[] = TurtleTokenAbi.abi as AbiItem[];
 const TURTLE_TOKEN_ADDRESS = "0xe01a5F9cb53755236d1E754eb4d42286E1b62166";
+
+const browser = detect();
 
 interface MetaMaskSDKState {
   MMSDK: MetaMaskSDK | null;
@@ -15,11 +18,16 @@ interface MetaMaskSDKState {
   contract: Contract<typeof TURTLE_TOKEN_ABI> | null;
   error: string | null;
   isInitialized: boolean;
-  isMobile: boolean;
+  isMobile: boolean | null;
   initializeSDK: () => Promise<void>;
   connectWallet: () => Promise<void>;
   handleAccountsChanged: (accounts: string[]) => void;
   checkAndPromptForMetaMask: () => Promise<boolean>;
+}
+
+interface ExtendedSDKProvider extends SDKProvider {
+  on(event: string, listener: (...args: any[]) => void): this;
+  // 필요한 이벤트와 메서드를 구체적으로 정의할 수도 있습니다.
 }
 
 export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
@@ -30,7 +38,7 @@ export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
   error: null,
   isInitialized: false,
   // 모바일 기기 감지
-  isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+  isMobile: browser?.os?.includes('Android') || browser?.os?.includes('iOS') || false,
 
   // MetaMask SDK 초기화 함수
   initializeSDK: async () => {
@@ -51,7 +59,6 @@ export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
 
       // SDK 인스턴스 생성 및 초기화
       const MMSDK = new MetaMaskSDK(options);
-      await MMSDK.init();
 
       // 초기화 성공 시 상태 업데이트
       set({ MMSDK, isInitialized: true, error: null });
@@ -82,33 +89,54 @@ export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
       }
 
       // 프로바이더 가져오기
-      const provider = await MMSDK!.getProvider();
+      const provider = MMSDK!.getProvider();
       if (!provider) {
         throw new Error("MetaMask 프로바이더를 가져올 수 없습니다.");
       }
 
-      // Web3 인스턴스 및 컨트랙트 생성
-      const web3Instance = new Web3(provider);
-      const tokenContract = new web3Instance.eth.Contract(
-        TURTLE_TOKEN_ABI,
-        TURTLE_TOKEN_ADDRESS
-      ) as unknown as Contract<typeof TURTLE_TOKEN_ABI>;
+      const extendedProvider = provider as ExtendedSDKProvider;
+
+      // Web3 인스턴스 생성 또는 재사용
+      let web3Instance = get().web3;
+      if (!web3Instance) {
+        web3Instance = new Web3(provider as SDKProvider);
+        set({ web3: web3Instance });
+      }
+
+      // 컨트랙트 인스턴스 생성 또는 재사용
+      let tokenContract = get().contract;
+      if (!tokenContract) {
+        tokenContract = new web3Instance.eth.Contract(
+          TURTLE_TOKEN_ABI,
+          TURTLE_TOKEN_ADDRESS
+        ) as unknown as Contract<typeof TURTLE_TOKEN_ABI>;
+        set({ contract: tokenContract });
+      }
 
       // 계정 연결
-      const accounts = await MMSDK!.connect();
+      const accounts = await provider.request({ method: "eth_requestAccounts"}) as string[];
       if (accounts && accounts.length > 0) {
         // 연결 성공 시 상태 업데이트
-        set({ 
-          web3: web3Instance,
-          contract: tokenContract,
-          account: accounts[0], 
-          error: null 
+        set((state) => {
+          if (
+            state.account !== accounts[0] ||
+            state.web3 !== web3Instance ||
+            state.contract !== tokenContract
+          ) {
+            return {
+              ...state,
+              web3: web3Instance,
+              contract: tokenContract,
+              account: accounts[0],
+              error: null,
+            };
+          }
+          return state;
         });
 
         // 계정 변경 이벤트 리스너 설정
-        provider.on('accountsChanged', (...args: unknown[]) => {
-          const changedAccounts = args[0] as string[];
-          get().handleAccountsChanged(changedAccounts);
+        extendedProvider.on('accountsChanged', (accounts: string[]) => {
+          get().handleAccountsChanged(accounts);
         });
       } else {
         throw new Error("연결된 계정이 없습니다.");
@@ -121,11 +149,24 @@ export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
 
   // 계정 변경 처리 함수
   handleAccountsChanged: (accounts: string[]) => {
-    if (accounts.length === 0) {
-      set({ account: "", error: "MetaMask가 잠겨있거나 계정이 연결되지 않았습니다." });
-    } else if (accounts[0] !== get().account) {
-      set({ account: accounts[0], error: null });
-    }
+    set((state) => {
+      if (accounts.length === 0) {
+        if (state.account !== "") {
+          return {
+            ...state,
+            account: "",
+            error: "MetaMask가 잠겨있거나 계정이 연결되지 않았습니다.",
+          };
+        }
+      } else if (accounts[0] !== state.account) {
+        return {
+          ...state,
+          account: accounts[0],
+          error: null,
+        };
+      }
+      return state;
+    });
   },
 
   // MetaMask 설치 확인 및 설치 안내 함수
@@ -135,7 +176,7 @@ export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
 
     try {
       // MetaMask 설치 여부 확인
-      const provider = await MMSDK.getProvider();
+      const provider = MMSDK.getProvider();
       const isMetaMaskInstalled = !!provider;
 
       if (!isMetaMaskInstalled) {
