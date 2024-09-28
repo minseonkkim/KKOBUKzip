@@ -9,8 +9,7 @@ const EXCHANGE_RATE = 5000000; // 1 ETH = 5,000,000 TURT
 
 const Wallet: React.FC = () => {
   // Zustand 스토어에서 필요한 상태와 함수 가져오기
-  const { web3, account, contract, error: sdkError, initializeSDK, connectWallet, isMobile, checkAndPromptForMetaMask } = useMetaMaskSDKStore();
-
+  const { web3, account, contract, error: sdkError, initializeSDK, connectWallet } = useMetaMaskSDKStore();
 
   // 지갑 관련 상태 관리
   const [balance, setBalance] = useState<string>("0");
@@ -137,10 +136,6 @@ const Wallet: React.FC = () => {
 
   // 지갑 연결 함수
   const handleConnectWallet = async () => {
-    if (isMobile) {
-      const isMetaMaskInstalled = await checkAndPromptForMetaMask();
-      if (!isMetaMaskInstalled) return;
-    }
     await connectWallet();
   };
 
@@ -162,13 +157,6 @@ const Wallet: React.FC = () => {
       {(error || sdkError) && (
         <div className="text-red-500 mb-4">
           {error || sdkError}
-          {isMobile && !account && (
-            <div>
-              <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
-                MetaMask 설치하기
-              </a>
-            </div>
-          )}
         </div>
       )}
       {account ? (
