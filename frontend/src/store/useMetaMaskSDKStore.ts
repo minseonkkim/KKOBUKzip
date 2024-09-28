@@ -3,13 +3,10 @@ import { MetaMaskSDK, MetaMaskSDKOptions, SDKProvider } from "@metamask/sdk";
 import Web3 from "web3";
 import { Contract } from "web3-eth-contract";
 import { AbiItem } from "web3-utils";
-import { detect } from "detect-browser";
 import TurtleTokenAbi from "../abi/TurtleToken.json";
 
 const TURTLE_TOKEN_ABI: AbiItem[] = TurtleTokenAbi.abi as AbiItem[];
 const TURTLE_TOKEN_ADDRESS = "0xe01a5F9cb53755236d1E754eb4d42286E1b62166";
-
-const browser = detect();
 
 interface MetaMaskSDKState {
   MMSDK: MetaMaskSDK | null;
@@ -18,7 +15,6 @@ interface MetaMaskSDKState {
   contract: Contract<typeof TURTLE_TOKEN_ABI> | null;
   error: string | null;
   isInitialized: boolean;
-  isMobile: boolean | null;
   initializeSDK: () => Promise<void>;
   connectWallet: () => Promise<void>;
   handleAccountsChanged: (accounts: string[]) => void;
@@ -27,7 +23,6 @@ interface MetaMaskSDKState {
 
 interface ExtendedSDKProvider extends SDKProvider {
   on(event: string, listener: (...args: any[]) => void): this;
-  // 필요한 이벤트와 메서드를 구체적으로 정의할 수도 있습니다.
 }
 
 export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
@@ -37,8 +32,6 @@ export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
   contract: null,
   error: null,
   isInitialized: false,
-  // 모바일 기기 감지
-  isMobile: browser?.os?.includes('Android') || browser?.os?.includes('iOS') || false,
 
   // MetaMask SDK 초기화 함수
   initializeSDK: async () => {
@@ -70,7 +63,7 @@ export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
 
   // 지갑 연결 함수
   connectWallet: async () => {
-    const { MMSDK, isInitialized, isMobile } = get();
+    const { MMSDK, isInitialized } = get();
     // SDK가 초기화되지 않은 경우 초기화 시도
     if (!MMSDK || !isInitialized) {
       try {
@@ -82,11 +75,8 @@ export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
     }
 
     try {
-      // 모바일인 경우 MetaMask 설치 확인
-      if (isMobile) {
-        const isMetaMaskInstalled = await get().checkAndPromptForMetaMask();
-        if (!isMetaMaskInstalled) return;
-      }
+      const isMetaMaskAvailable = await get().checkAndPromptForMetaMask();
+      if (!isMetaMaskAvailable) return;
 
       // 프로바이더 가져오기
       const provider = MMSDK!.getProvider();
@@ -175,19 +165,26 @@ export const useMetaMaskSDKStore = create<MetaMaskSDKState>((set, get) => ({
     if (!MMSDK) return false;
 
     try {
-      // MetaMask 설치 여부 확인
       const provider = MMSDK.getProvider();
-      const isMetaMaskInstalled = !!provider;
-
-      if (!isMetaMaskInstalled) {
-        // MetaMask 미설치 시 설치 안내
-        const confirmed = window.confirm("MetaMask가 설치되어 있지 않습니다. 앱 스토어로 이동하여 설치하시겠습니까?");
-        if (confirmed) {
-          window.open("https://metamask.io/download/", "_blank");
-        }
-        return false;
+      
+      // MetaMask 프로바이더가 있는지 확인
+      if (provider && typeof provider.isMetaMask !== 'undefined') {
+        return true; // MetaMask가 설치되어 있음
       }
-      return true;
+
+      // 모바일 환경에서 MetaMask 딥링크 확인
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        const mmLink = 'https://metamask.app.link/dapp/' + window.location.host + window.location.pathname;
+        window.open(mmLink, '_blank');
+        return false; // 사용자가 MetaMask 앱으로 리다이렉트됨
+      }
+
+      // 데스크톱 환경에서 MetaMask 설치 안내
+      const confirmed = window.confirm("MetaMask가 설치되어 있지 않습니다. 설치 페이지로 이동하시겠습니까?");
+      if (confirmed) {
+        window.open("https://metamask.io/download/", "_blank");
+      }
+      return false;
     } catch (error) {
       console.error("MetaMask 설치 확인 실패:", error);
       set({ error: "MetaMask 설치 확인에 실패했습니다. 잠시 후 다시 시도해주세요." });
