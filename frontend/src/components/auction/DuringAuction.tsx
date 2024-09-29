@@ -20,12 +20,16 @@ interface MessageType {
 interface WsResponseType {
   status: string;
   data: {
-    bidRecord: MessageType;
+    data: BidRecordData;
   };
   message: string;
 }
 
-const auctionId = 1;
+interface BidRecordData {
+  bidRecord: MessageType;
+}
+
+const auctionId = 3;
 function DuringAuction({
   channelId,
   minBid,
@@ -56,16 +60,17 @@ function DuringAuction({
           auctionStompClient.current!.subscribe(
             `/sub/auction/${auctionId}`,
             (message) => {
+              console.log("Received message:", message.body);
               const newMessage: WsResponseType = JSON.parse(message.body);
               // 다음 가격 수신
-              const newNextBid = Number(newMessage.data.bidRecord.nextBid);
+              const newNextBid = Number(newMessage.data.data.bidRecord.nextBid);
               setBidPrice(newNextBid);
               setNextBid(newNextBid);
               setBidHistory((prev) => {
                 const newHistory = [
                   {
-                    bidder: newMessage.data.bidRecord.nickname,
-                    price: Number(newMessage.data.bidRecord.bidAmount),
+                    bidder: newMessage.data.data.bidRecord.nickname,
+                    price: Number(newMessage.data.data.bidRecord.bidAmount),
                   },
                   ...prev,
                 ];
