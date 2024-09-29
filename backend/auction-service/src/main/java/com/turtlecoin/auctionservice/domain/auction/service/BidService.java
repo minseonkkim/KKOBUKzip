@@ -2,6 +2,7 @@ package com.turtlecoin.auctionservice.domain.auction.service;
 
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
+import com.turtlecoin.auctionservice.domain.websocket.dto.BidMessage;
 import com.turtlecoin.auctionservice.global.exception.AuctionNotFoundException;
 import com.turtlecoin.auctionservice.global.exception.SameUserBidException;
 import com.turtlecoin.auctionservice.global.exception.WrongBidAmountException;
@@ -31,6 +32,7 @@ public class BidService {
     // 입찰 가격 갱신
     @Transactional
     public void processBidWithRedis(Long auctionId, Long userId, Double bidAmount) {
+        System.out.println(auctionId);
         Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다."));
 
         String redisKey = AUCTION_BID_KEY + auctionId;
@@ -100,9 +102,18 @@ public class BidService {
             redisTemplate.opsForHash().putAll(redisKey, bidData);  // 최신 입찰 정보로 덮어쓰기
 
             // 클라이언트에게 최신 입찰 정보 및 nextBid 정보 전송
-            String responseMessage = "userId: " + userId + ", bidAmount: " + bidAmount + ", nextBid: " + newBidAmount;
-            System.out.println("responseMessage: " + responseMessage);
-            notifyClient(auctionId, responseMessage, false, null);
+            BidMessage bidRecord = BidMessage.builder()
+                    .userId(userId)
+                    .auctionId(auctionId)
+                    .bidAmount(bidAmount)
+                    .nextBid(newBidAmount)
+                    .build();
+
+
+            System.out.println("=====");
+
+
+            notifyClient(auctionId, bidRecord, false, null);
 
             log.info("입찰 처리 완료: auctionID = {}, userId = {}, bidAmount = {}, nextBid = {}", auctionId, userId, bidAmount, newBidAmount);
         } catch (Exception e) {
@@ -146,19 +157,26 @@ public class BidService {
         }
     }
 
-    public void notifyClient(Long auctionId, String bidRecord, boolean isError, String errorMessage) {
-        ResponseVO<String> response;
+    public void notifyClient(Long auctionId, BidMessage bidMessage, boolean isError, String errorMessage) {
+        ResponseVO<Object> response;
         if (isError) {
             // 에러가 발생한 경우
             response = ResponseVO.failure("500", errorMessage);
         } else {
             // 성공적인 입찰인 경우
-            response = ResponseVO.success("Bid successful", "bidRecord", bidRecord);
+            Map<String, Object> data = new HashMap<>();
+            data.put("bidRecord", bidMessage);
+            System.out.println("===");
+            System.out.println(data.get("bidRecord").toString());
+            System.out.println("===");
+            response = ResponseVO.success("data", data);
         }
+
         // 클라이언트에게 ResponseVO 객체를 전송
-        log.info("AuctionID: {}", auctionId, "에게 데이터 전송함 with notifyClient");
+        log.info("AuctionID: {} 에게 데이터 전송", auctionId);
         messagingTemplate.convertAndSend("/sub/auction/" + auctionId, response);
     }
+
 
     public LocalDateTime getAuctionEndTime(Long auctionId) {
         Auction auction = auctionRepository.findById(auctionId)

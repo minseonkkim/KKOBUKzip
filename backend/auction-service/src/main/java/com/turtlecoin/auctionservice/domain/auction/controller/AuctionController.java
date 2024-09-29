@@ -58,6 +58,7 @@ public class AuctionController {
             log.info("경매 정보 저장");
 
             // 이미지가 있다면 처리
+            // 이미지 두번 더하는 코드 수정할 것
             if (multipartFiles != null && !multipartFiles.isEmpty()) {
                 for (MultipartFile file : multipartFiles) {
                     String imagePath = imageUploadService.upload(file, "auctionImages"); // 이미지 업로드 후 경로 반환

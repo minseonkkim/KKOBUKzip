@@ -16,6 +16,7 @@ import com.turtlecoin.mainservice.domain.user.service.EmailService;
 import com.turtlecoin.mainservice.domain.user.service.JWTService;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
+import com.turtlecoin.mainservice.global.exception.UserNotFoundException;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -40,13 +41,15 @@ public class UserController {
     private final UserService userService;;
     private final JWTService jwtService;
     private final TransactionService transactionService;
+    private final UserRepository userRepository;
 
 
-    public UserController(EmailService emailService, UserService userService, JWTService jwtService, TransactionService transactionService) {
+    public UserController(EmailService emailService, UserService userService, JWTService jwtService, TransactionService transactionService, UserRepository userRepository) {
         this.emailService = emailService;
         this.userService = userService;
         this.jwtService = jwtService;
         this.transactionService = transactionService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping(value="/join",consumes={MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -99,7 +102,14 @@ public class UserController {
     @GetMapping("/{userId}")
     // 유저 없을 때 에러 던져주기
     public UserResponseDTO getUserById(@PathVariable Long userId) {
-        return userService.getByUserId(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
+
+        return new UserResponseDTO(
+                user.getId(),
+                user.getNickname(),
+                user.getName(),
+                user.getEmail()
+        );
     }
 
     @GetMapping("/{userId}/turtle")

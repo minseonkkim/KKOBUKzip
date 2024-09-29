@@ -53,7 +53,7 @@ public class AuctionService {
             auction.getAuctionPhotos().addAll(uploadImages(images, auction));
         }
 
-        return auctionRepository.save(auction);
+        return auction;
     }
 
     // 이미지 업로드 처리 메서드
