@@ -1,39 +1,62 @@
-import { useEffect } from "react";
+// import { useState, useEffect } from "react";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import BabyTurtleImg from "../../assets/babyturtle.webp";
 import { IoCheckmark } from "@react-icons/all-files/io5/IoCheckmark";
 import { useEscrowStore } from "../../store/useEscrowStore";
+import { useWeb3Store } from "../../store/useWeb3Store";
+import { useUserStore } from "../../store/useUserStore";
 
 interface TransactionHistoryProps {
     isAuction: boolean;
+    turtleId: number;
     transactionId: number;
+    sellerId: number;
     sellerAddress: string;
     amount: number;
-    // status: string;
 }
 
 export default function TransactionHistory(props: TransactionHistoryProps | Partial<TransactionHistoryProps>){
-    const { initializeEscrowWeb3, createTransaction, releaseFunds } = useEscrowStore();
+    const { userInfo } = useUserStore();
+
+    // const { createTransaction, releaseFunds, getTransactionDetails } = useEscrowStore();
+    // const { account } = useWeb3Store();
+    // const [transactionState, setTransactionState] = useState<number | null>(null);
     
-    console.log(props);  // 임시 코드(추후 삭제 예정!!)
-    
-    // 컴포넌트 마운트 시 MetaMask SDK 초기화
-    useEffect(() => {
-        initializeEscrowWeb3();
-    }, [initializeEscrowWeb3]);
+    // useEffect(() => {
+    //     const fetchTransactionDetails = async () => {
+    //         if (props.transactionId) {
+    //             await getTransactionDetails(props.isAuction!, props.transactionId);
+    //             const details = useEscrowStore.getState().transactionDetails;
+    //             if (details) {
+    //                 setTransactionState(details.state);
+    //             }
+    //         }
+    //     };
+
+    //     fetchTransactionDetails();
+    // }, [props.isAuction, props.transactionId, getTransactionDetails]);
 
     // const handleDeposit = async () => {
-        // await createTransaction(props.isAuction, props.transactionId, props.sellerAddress, props.amount);
-    // }
+    //     if (account && props.transactionId !== undefined && props.sellerAddress && props.amount !== undefined) {
+    //         await createTransaction(props.isAuction, props.transactionId, props.sellerAddress, props.amount);
+    //     } else {
+    //         console.error("Missing required props for createTransaction");
+    //     }
+    // };
 
-    // const startPapework = async () => {
+    // const startPaperwork = () => {
     //     // 서류 페이지로 넘어가는 로직
-    //     // 여기에 구매자(양수인), 판매자(양도인) 여부에 따라 네비게이트하는 로직 구체화하여 코드 작성해야 할듯
-    // }
+    //     // 여기에 구매자(양수인), 판매자(양도인) 여부에 따라 네비게이트하는 로직 구체화
+    //     console.log("Navigate to paperwork page");
+    // };
 
     // const finalizeTransaction = async () => {
-    //     await releaseFunds(props.isAuction, props.transactionId);
-    // }
+    //     if (props.transactionId !== undefined) {
+    //         await releaseFunds(props.isAuction, props.transactionId);
+    //     } else {
+    //         console.error("TransactionId is undefined");
+    //     }
+    // };
 
     return <>
         <div className="w-full border-[2px] rounded-[20px] p-[15px] bg-[#f8f8f8] flex flex-col md:flex-row lg:flex-col xl:flex-row">

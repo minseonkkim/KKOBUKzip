@@ -2,14 +2,18 @@ import React, { useState, useEffect, useCallback } from "react";
 import Web3 from "web3";
 import { FaSpinner } from "@react-icons/all-files/fa/FaSpinner"
 import { FaExchangeAlt } from "@react-icons/all-files/fa/FaExchangeAlt";
+import { useWeb3Store } from "../../store/useWeb3Store";
 import { useMetaMaskSDKStore } from "../../store/useMetaMaskSDKStore";
 
 // 토큰 교환 비율 설정
 const EXCHANGE_RATE = 5000000; // 1 ETH = 5,000,000 TURT
 
 const Wallet: React.FC = () => {
-  // Zustand 스토어에서 필요한 상태와 함수 가져오기
-  const { web3, account, contract, error: sdkError, initializeSDK, connectWallet } = useMetaMaskSDKStore();
+  // useWeb3Store에서 필요한 상태와 함수 가져오기
+  const { web3, account, tokenContract, error: web3Error, connectWallet } = useWeb3Store();
+  
+  // useMetaMaskSDKStore에서 필요한 함수 가져오기
+  const { initializeSDK } = useMetaMaskSDKStore();
 
   // 지갑 관련 상태 관리
   const [balance, setBalance] = useState<string>("0");
@@ -28,21 +32,21 @@ const Wallet: React.FC = () => {
 
   // 잔액 로드 함수
   const loadBalances = useCallback(async () => {
-    if (web3 && contract && account) {
+    if (web3 && tokenContract && account) {
       try {
         // TURT 잔액 조회
-        const turtBalance: number = await contract.methods.balanceOf(account).call();
+        const turtBalance: number = await tokenContract.methods.balanceOf(account).call();
         setBalance(Web3.utils.fromWei(turtBalance, "ether"));
 
         // ETH 잔액 조회
-        const ethBalance: bigint = await web3.eth.getBalance(account);
+        const ethBalance = await web3.eth.getBalance(account);
         setEthBalance(Web3.utils.fromWei(ethBalance, "ether"));
       } catch (error) {
         console.error("Error updating balances:", error);
         setError("잔액을 업데이트하는 중 오류가 발생했습니다");
       }
     }
-  }, [web3, contract, account]);
+  }, [web3, tokenContract, account]);
 
   // 계정 변경 시 잔액 업데이트
   useEffect(() => {
@@ -78,7 +82,7 @@ const Wallet: React.FC = () => {
 
   // TURT 구매 함수
   const handleBuyTurt = async () => {
-    if (!web3 || !contract || !account) {
+    if (!web3 || !tokenContract || !account) {
       setError("Web3 또는 계정이 초기화되지 않았습니다");
       return;
     }
@@ -88,7 +92,7 @@ const Wallet: React.FC = () => {
 
     try {
       // buyTokens 함수 호출
-      const result = await contract.methods.buyTokens().send({
+      const result = await tokenContract.methods.buyTokens().send({
         from: account,
         value: Web3.utils.toWei(fromAmount, "ether"),
       });
@@ -108,7 +112,7 @@ const Wallet: React.FC = () => {
 
   // TURT 판매 함수
   const handleSellTurt = async () => {
-    if (!web3 || !contract || !account) {
+    if (!web3 || !tokenContract || !account) {
       setError("Web3 또는 계정이 초기화되지 않았습니다");
       return;
     }
@@ -119,7 +123,7 @@ const Wallet: React.FC = () => {
     try {
       // sellTokens 함수 호출
       const turtAmountWei = Web3.utils.toWei(fromAmount, "ether");
-      const result = await contract.methods.sellTokens(turtAmountWei).send({ from: account });
+      const result = await tokenContract.methods.sellTokens(turtAmountWei).send({ from: account });
 
       if (result.status) {
         await loadBalances();
@@ -134,16 +138,11 @@ const Wallet: React.FC = () => {
     }
   };
 
-  // 지갑 연결 함수
-  const handleConnectWallet = async () => {
-    await connectWallet();
-  };
-
   return (
     <div className="bg-yellow-400 text-black p-6 rounded-[10px] w-full shadow-md">
       {/* 계정 정보 및 잔액 표시 */}
       <div className="mt-4 mb-4">
-        <div className="truncate">
+        <div className="truncate w-96">
           <span className="font-semibold">활성 지갑 주소 |</span> {account || "연결되지 않음"}
         </div>
         <div>
@@ -154,9 +153,9 @@ const Wallet: React.FC = () => {
         </div>
       </div>
       {/* 오류 메시지 표시 */}
-      {(error || sdkError) && (
+      {(error || web3Error) && (
         <div className="text-red-500 mb-4">
-          {error || sdkError}
+          {error || web3Error}
         </div>
       )}
       {account ? (
@@ -211,7 +210,7 @@ const Wallet: React.FC = () => {
       ) : (
         // 지갑 연결 버튼
         <button
-          onClick={handleConnectWallet}
+          onClick={connectWallet}
           className="w-full bg-white text-black py-2 px-4 rounded transition duration-200 font-semibold hover:ring-4 hover:ring-yellow-300"
         >
           MetaMask 연결

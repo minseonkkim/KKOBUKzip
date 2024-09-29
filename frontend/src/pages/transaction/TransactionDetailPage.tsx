@@ -9,7 +9,7 @@ import useChatStore from "../../store/useChatStore";
 import { useEscrowStore } from "../../store/useEscrowStore";
 
 function TransactionDetailPage() {
-  const { initializeEscrowWeb3, createTransaction } = useEscrowStore();
+  const { createTransaction } = useEscrowStore();
   const { openChatDetail } = useChatStore();
   const navigate = useNavigate();
   const userNickname = "ASdf";
@@ -19,10 +19,6 @@ function TransactionDetailPage() {
 
   const images = [TmpTurtleImg2, TmpTurtleImg];
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    initializeEscrowWeb3();
-  }, [initializeEscrowWeb3]);
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
