@@ -14,16 +14,20 @@ import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
 import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.feign.MainClient;
+import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
 import com.turtlecoin.auctionservice.global.exception.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -31,7 +35,6 @@ import java.util.*;
 public class AuctionService {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private static final String AUCTION_BID_KEY = "auction_bid_";
 
     private final AuctionRepository auctionRepository;
     private final ImageUploadService imageUploadService;  // ImageUploadService도 주입합니다.
@@ -47,10 +50,21 @@ public class AuctionService {
         validateUserOwnsTurtle(registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
         validateTurtleNotAlreadyRegistered(registerAuctionDTO.getTurtleId());
 
+        // 경매 저장
         Auction auction = auctionRepository.save(registerAuctionDTO.toEntity());
 
-        if (images != null && !images.isEmpty()) {
-            auction.getAuctionPhotos().addAll(uploadImages(images, auction));
+        // 이미지 업로드 처리
+        List<AuctionPhoto> uploadedPhotos = new ArrayList<>();
+        try {
+            if (images != null && !images.isEmpty()) {
+                uploadedPhotos = uploadImages(images, auction);  // 이미지 업로드
+                auction.getAuctionPhotos().addAll(uploadedPhotos);  // 업로드된 이미지 경매와 연결
+            }
+        } catch (Exception e) {
+            // 예외 발생 시 업로드된 이미지 삭제
+            // 예외 발생 추가
+            deleteUploadedImages(uploadedPhotos);
+            throw new IOException("이미지 업로드 중 오류가 발생했습니다.", e);
         }
 
         return auction;
@@ -124,9 +138,10 @@ public class AuctionService {
         log.info("경매 ID로 경매 조회");
 
         TurtleResponseDTO turtle = mainClient.getTurtle(auctionId);
+        UserResponseDTO user = mainClient.getUserById(auction.getUserId());
 
         // 경매 정보를 빌더 패턴을 사용해 DTO로 변환
-        return AuctionResponseDTO.from(auction, turtle);
+        return AuctionResponseDTO.from(auction, turtle, user);
     }
 
     // 경매 필터링 후 조회
@@ -171,9 +186,14 @@ public class AuctionService {
         if (turtleInfo == null) {
             throw new TurtleNotFoundException("Main-service에서 거북이를 가져올 수 없습니다.");
         }
+        UserResponseDTO userInfo = mainClient.getUserById(auction.getUserId());
+        if (userInfo == null) {
+            throw new UserNotFoundException("Main-service에서 유저 정보를 가져올 수 없습니다.");
+        }
 
         log.info("Turtle info retrieved: {}", turtleInfo);
-        return AuctionResponseDTO.from(auction, turtleInfo);
+        log.info("User info retrieved: {}", userInfo);
+        return AuctionResponseDTO.from(auction, turtleInfo, userInfo);
     }
 
     public void processBid(Long auctionId, Long userId, Double newBidAmount) {

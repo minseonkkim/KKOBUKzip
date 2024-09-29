@@ -10,6 +10,7 @@ import lombok.*;
 public class BidMessage {
     private Long auctionId;
     private Long userId;
+    private String nickname;
     private Double bidAmount;
     private Double nextBid;
 }
