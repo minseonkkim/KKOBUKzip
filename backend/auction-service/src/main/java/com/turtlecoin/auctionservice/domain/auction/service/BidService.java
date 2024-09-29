@@ -1,8 +1,11 @@
 package com.turtlecoin.auctionservice.domain.auction.service;
 
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
+import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.websocket.dto.BidMessage;
+import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
+import com.turtlecoin.auctionservice.feign.service.UserService;
 import com.turtlecoin.auctionservice.global.exception.AuctionNotFoundException;
 import com.turtlecoin.auctionservice.global.exception.SameUserBidException;
 import com.turtlecoin.auctionservice.global.exception.WrongBidAmountException;
@@ -10,6 +13,7 @@ import com.turtlecoin.auctionservice.global.response.ResponseVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -27,7 +32,17 @@ public class BidService {
     private final AuctionRepository auctionRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private static final String AUCTION_BID_KEY = "auction_bid_";
-//    private final AuctionService auctionService;
+    private final UserService userService;
+    private static final String AUCTION_END_KEY_PREFIX = "auction_end_";
+
+    // 경매 시작 로직... 그런데 어떻게 경매가 시작된줄 알 수 있을까?
+    @Transactional
+    public void startAuction(Long auctionId) {
+        Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다: " + auctionId));
+
+        setAuctionEndTime(auctionId, LocalDateTime.now().plusSeconds(30));
+        auction.updateStatus(AuctionProgress.DURING_AUCTION);
+    }
 
     // 입찰 가격 갱신
     @Transactional
@@ -66,8 +81,7 @@ public class BidService {
 
         // 경매 종료 시간 확인
         LocalDateTime auctionEndTime = getAuctionEndTime(auctionId);
-
-        System.out.println("auctionEndTime: " + auctionEndTime);
+        log.info("경매 종료 시간: {}", auctionEndTime);
 
         if (LocalDateTime.now().isAfter(auctionEndTime)) {
             notifyClient(auctionId, null, true, "입찰시간이 종료됐습니다");
@@ -78,8 +92,7 @@ public class BidService {
         // 입찰가 계산
         Double bidIncrement = calculateBidIncrement(bidAmount);
         Double newBidAmount = bidAmount + bidIncrement;
-
-        log.info("newBidAmount: {}", newBidAmount);
+        log.info("입찰가 증가: {} -> {}", bidAmount, newBidAmount);
 
         try {
             // 동일 사용자가 재입찰 시 예외 처리
@@ -101,29 +114,31 @@ public class BidService {
 
             redisTemplate.opsForHash().putAll(redisKey, bidData);  // 최신 입찰 정보로 덮어쓰기
 
+            UserResponseDTO user = userService.getUserNicknameById(userId);
+            String nickname = user.getNickname();
+
             // 클라이언트에게 최신 입찰 정보 및 nextBid 정보 전송
             BidMessage bidRecord = BidMessage.builder()
                     .userId(userId)
+                    .nickname(nickname)
                     .auctionId(auctionId)
                     .bidAmount(bidAmount)
                     .nextBid(newBidAmount)
                     .build();
 
-
-            System.out.println("=====");
-
-
             notifyClient(auctionId, bidRecord, false, null);
+            resetAuctionEndTime(auctionId);
+            log.info("경매 종료 시간 TTL 재설정 완료");
 
             log.info("입찰 처리 완료: auctionID = {}, userId = {}, bidAmount = {}, nextBid = {}", auctionId, userId, bidAmount, newBidAmount);
-        } catch (Exception e) {
+        } catch (SameUserBidException | WrongBidAmountException e) {
             notifyClient(auctionId, null, true, e.getMessage());
+            log.error("입찰 처리 실패: auctionID = {}, userId = {}, error: {}", auctionId, userId, e.getMessage());
+        } catch (Exception e) {
+            notifyClient(auctionId, null, true, "입찰 처리 중 예상치 못한 오류가 발생했습니다.");
             log.error("입찰 처리 실패: auctionID = {}, userId = {}, error: {}", auctionId, userId, e.getMessage());
         }
     }
-
-
-
 
 //    private void updateAuctionEndTime(Long auctionId, LocalDateTime localDateTime) {
 //        Auction auction = auctionRepository.findById(auctionId)
@@ -131,7 +146,6 @@ public class BidService {
 //
 //        auction
 //    }
-
 
     public Map<Object, Object> getCurrentBid (Long auctionId) {
         String redisKey = AUCTION_BID_KEY + auctionId;
@@ -177,10 +191,26 @@ public class BidService {
         messagingTemplate.convertAndSend("/sub/auction/" + auctionId, response);
     }
 
+    // 경매 종료 시간 설정 및 TTL 적용
+    public void setAuctionEndTime(Long auctionId, LocalDateTime endTime) {
+        String key = AUCTION_END_KEY_PREFIX + auctionId;
+        ValueOperations<String, Object> ops = redisTemplate.opsForValue();
+        ops.set(key, endTime, 30, TimeUnit.SECONDS); // TTL 30초 설정
+    }
 
+    // 경매 종료 시간 갱신
+    public void resetAuctionEndTime(Long auctionId) {
+        String key = AUCTION_END_KEY_PREFIX + auctionId;
+        redisTemplate.expire(key, 30, TimeUnit.SECONDS); // TTL 30초 재설정
+    }
+
+    // 경매 종료 시간 조회
     public LocalDateTime getAuctionEndTime(Long auctionId) {
-        Auction auction = auctionRepository.findById(auctionId)
-                .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다."+auctionId));
-        return auction.getEndTime();
+        String key = AUCTION_END_KEY_PREFIX + auctionId;
+        Object endTimeObj = redisTemplate.opsForValue().get(key);
+        if (endTimeObj instanceof LocalDateTime) {
+            return (LocalDateTime) endTimeObj;
+        }
+        return null;
     }
 }

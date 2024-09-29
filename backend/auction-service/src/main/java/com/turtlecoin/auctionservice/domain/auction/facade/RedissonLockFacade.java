@@ -21,7 +21,7 @@ public class RedissonLockFacade {
         RLock lock = redissonClient.getLock(auctionId.toString());
         System.out.println("redisson 락 걸기");
         try {
-            boolean available = lock.tryLock(10, 1, TimeUnit.SECONDS);
+            boolean available = lock.tryLock(5, 2, TimeUnit.SECONDS);
 
             if (!available) {
                 System.out.println("Lock 획득 실패");
@@ -33,9 +33,8 @@ public class RedissonLockFacade {
 
         } catch (InterruptedException e) {
             System.out.println("인터럽트 익셉션");
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
-        } catch (AuctionNotFoundException e) {
-            System.out.println("해당 경매가 없습니다.");
         } finally {
             if (lock.isHeldByCurrentThread()) {
                 lock.unlock();
