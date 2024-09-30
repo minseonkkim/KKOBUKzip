@@ -76,6 +76,11 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
     setIsFilterOpen(!isFilterOpen);
   };
 
+  const searchHandle = async () => {
+    setPages(0);
+    await fetchData(0, filters);
+    // console.log(filters);
+  };
   return (
     <>
       <Helmet>
@@ -150,7 +155,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
         >
           {isFilterOpen && (
             <OptionFilter
-              filterApplyHandle={() => console.log(filters)}
+              filterApplyHandle={searchHandle}
               filters={filters}
               updateFilter={updateFilter}
             />
