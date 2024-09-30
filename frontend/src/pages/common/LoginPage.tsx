@@ -107,7 +107,7 @@ function LoginPage() {
                   회원가입
                 </Link>
               </div> */}
-
+              {/* 
               <div className="flex flex-row justify-center gap-12">
                 <div className="cursor-pointer w-[53px] h-[53px] bg-[#03C75A] rounded-full flex justify-center items-center">
                   <img
@@ -126,7 +126,7 @@ function LoginPage() {
                     draggable="false"
                   />
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </section>

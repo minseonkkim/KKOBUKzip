@@ -4,7 +4,7 @@ import usePriorityLoading from "../../hooks/usePriorityLoading";
 import LogoImg from "../../assets/logo.webp";
 import CoinImg from "../../assets/Coin.webp";
 import MyPageImg from "../../assets/mypage.webp";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Modal from "./Modal";
 import { useUserStore } from "../../store/useUserStore";
 import { RiLogoutBoxLine } from "@react-icons/all-files/ri/RiLogoutBoxLine";
@@ -14,17 +14,21 @@ const Wallet = lazy(() => import("./Wallet"));
 
 export default function Header() {
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const { isLogin, userInfo } = useUserStore();
+  const { isLogin, userInfo, setLogout } = useUserStore();
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const location = useLocation();
   const shouldLoadWallet = usePriorityLoading(1);
-
+  const navigate = useNavigate();
   const headerBackgroundColor = location.pathname === "/" ? "#AAE0F2" : "#fff";
 
   const toggleWallet = () => {
     setIsWalletOpen((prev) => !prev);
   };
 
+  const handleLogout = () => {
+    setLogout();
+    navigate("/");
+  };
   return (
     <header>
       <div
@@ -48,12 +52,17 @@ export default function Header() {
         <div className="flex flex-row items-center">
           {!isMobile && isLogin && (
             <>
-            <div className="mr-3 font-bold text-[22px] cursor-pointer font-stardust xl:block hidden">
-              {userInfo?.nickname}님 로그인 중
-            </div>
-            <div className="mr-3 text-[24px] cursor-pointer"><RiLogoutBoxLine/></div>
+              <div className="mr-3 font-bold text-[22px] cursor-pointer font-stardust xl:block hidden">
+                {userInfo?.nickname}님 로그인 중
+              </div>
+              <div
+                onClick={handleLogout}
+                className="mr-3 text-[24px] cursor-pointer"
+              >
+                <RiLogoutBoxLine />
+              </div>
             </>
-          )} 
+          )}
           {!isLogin ? (
             <div className="flex flex-row space-x-6 items-center font-bold">
               <Link to="/login">

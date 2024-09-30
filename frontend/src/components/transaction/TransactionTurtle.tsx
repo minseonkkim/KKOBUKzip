@@ -10,7 +10,7 @@ export default function TransactionTurtle({
   const navigate = useNavigate();
 
   const goToDetail = () => {
-    navigate("/transaction-detail");
+    navigate("/transaction-detail/" + item.transactionId);
   };
 
   return (
@@ -36,14 +36,14 @@ export default function TransactionTurtle({
         </div>
         <div className="px-3 py-2">
           <div className="w-full overflow-hidden text-[20px] mb-4 text-gray-900 whitespace-nowrap text-ellipsis">
-            {item.content}
+            {item.title}
           </div>
 
-          <div className="flex justify-between items-center">
-            <div className="text-[15px] xl:text-[17px] whitespace-nowrap text-[#9A9A9A]">
+          <div className="flex flex-wrap justify-between items-center">
+            <div className="text-[15px] xl:text-[17px] whitespace-normal text-[#9A9A9A]">
               {item.scientificName}
             </div>
-            <div className="text-[15px] text-gray-700 flex space-x-1.5">
+            <div className="text-[15px] text-gray-700 flex flex-wrap space-x-1.5">
               {item.transactionTag.map((tag, index) => (
                 <span
                   key={index}

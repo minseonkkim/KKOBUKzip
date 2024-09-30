@@ -3,31 +3,59 @@ import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import TmpTurtleImg2 from "../../assets/tmp_turtle_2.jpg";
 import tmpProfileImg from "../../assets/tmp_profile.gif";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useChatStore from "../../store/useChatStore";
 import { useEscrowStore } from "../../store/useEscrowStore";
+import { getTransactionDetailItemData } from "../../apis/tradeApi";
+import { TransactionItemDetailType } from "../../types/transaction";
+import formatDate from "../../utils/formatDate";
 
 function TransactionDetailPage() {
+  const [transactionData, setTransactionData] =
+    useState<null | TransactionItemDetailType>(null);
   const { createTransaction } = useEscrowStore();
   const { openChatDetail } = useChatStore();
   const navigate = useNavigate();
-  const userNickname = "ASdf";
+  const params = useParams();
   const goBack = () => {
     navigate(-1); // 이전 페이지로 이동
   };
 
-  const images = [TmpTurtleImg2, TmpTurtleImg];
+  useEffect(() => {
+    const getTransactionDetailData = async () => {
+      const id = params.id;
+      if (id) {
+        const result = await getTransactionDetailItemData(id);
+        if (result.success) {
+          setTransactionData(result.data.data.turtle);
+        }
+      } else {
+        navigate(-1);
+      }
+    };
+
+    getTransactionDetailData();
+  }, []);
+
+  // const images = [TmpTurtleImg2, TmpTurtleImg];
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    if (transactionData)
+      setCurrentIndex(
+        (prevIndex) =>
+          (prevIndex + 1) % transactionData?.transactionImage.length
+      );
   };
 
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
+    if (transactionData)
+      setCurrentIndex((prevIndex) =>
+        prevIndex === 0
+          ? transactionData.transactionImage.length - 1
+          : prevIndex - 1
+      );
   };
 
   const handleDeposit = async () => {
@@ -52,7 +80,7 @@ function TransactionDetailPage() {
           <div className="flex flex-col w-full md:w-[48%] rounded-[20px] relative">
             <div className="relative w-full flex-grow md:flex-1 h-[240px] md:h-auto rounded-[20px] overflow-hidden">
               <img
-                src={images[currentIndex]}
+                src={transactionData?.transactionImage[currentIndex]}
                 className="w-full h-[380px] object-cover rounded-[20px]"
                 alt="Turtle"
                 draggable="false"
@@ -70,34 +98,46 @@ function TransactionDetailPage() {
                 &gt;
               </button>
               <div className="absolute bottom-3 right-3 bg-black/60 text-white px-4 py-2 rounded-[20px]">
-                {currentIndex + 1} / {images.length}
+                {currentIndex + 1} / {transactionData?.transactionImage.length}
               </div>
             </div>
             <div className="text-[23px] mt-[13px]">
-              거북이 팔아용 거북이 팔아용 거북이 팔아용 거북이 팔아용
+              {transactionData?.title}
             </div>
             <div className="flex flex-row justify-between lg:justify-start xl:justify-between items-center mt-[10px] mb-[10px]">
               <div className="text-[#9A9A9A] text-[18px]">
-                페닐슐라쿠터 | 24년 8월 10일생 | 8kg
+                {transactionData?.scientificName} |
+                {formatDate(transactionData?.createDate ?? "")} |
+                {transactionData?.weight}kg
+                {/* 페닐슐라쿠터 | 24년 8월 10일생 | 8kg */}
               </div>
               <div className="flex flex-row space-x-2">
-                <span className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] bg-[#D5F0DD] text-[#065F46]">
-                  #암컷
-                </span>
-                <span className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] bg-[#D5F0DD] text-[#065F46]">
-                  #베이비
-                </span>
+                {transactionData?.transactionTag.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="whitespace-nowrap px-2 py-1 rounded-full text-[16px] bg-[#D5F0DD] text-[#065F46]"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+                {/* <span className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] bg-[#D5F0DD] text-[#065F46]">
+                    #암컷
+                  </span>
+                  <span className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] bg-[#D5F0DD] text-[#065F46]">
+                    #베이비
+                  </span> */}
               </div>
             </div>
             <div className="text-[17px] leading-7 border-[2px] rounded-[10px] p-2 line-clamp">
-              이 붉은귀거북은 활발하고 건강한 상태로, 밝고 선명한 붉은색 귀
+              {transactionData?.content}
+              {/* 이 붉은귀거북은 활발하고 건강한 상태로, 밝고 선명한 붉은색 귀
               무늬가 특징입니다. 현재까지 특별한 질병 없이 건강하게 자라왔으며,
               균형 잡힌 사료와 신선한 채소로 영양 관리가 잘 되어 있습니다. 특히
               수영을 좋아하며, 물속에서의 활동이 활발해 관찰하는 재미가 큽니다.
               이 거북이는 비교적 온순한 성격을 가지고 있어 손을 자주 타지는
               않지만, 스트레스를 주지 않는 선에서 손길을 허용하는 편입니다.
               호기심이 많아 주변 환경에 대한 관심을 보이는 등, 관상용으로도
-              매력적인 개체입니다.
+              매력적인 개체입니다. */}
             </div>
             <div className="mt-[20px] mb-[3px] text-[#737373] font-bold">
               판매자 정보

@@ -2,7 +2,10 @@ import axios, { AxiosResponse } from "axios";
 import { AuctionItemDataType } from "../types/auction";
 import authAxios from "./http-commons/authAxios";
 import guestAxios from "./http-commons/guestAxios";
-import { TransactionItemDataType } from "../types/transaction";
+import {
+  TransactionItemDataType,
+  TransactionItemDetailType,
+} from "../types/transaction";
 import { AuctionResponseDummuy } from "../fixtures/auctionDummy";
 
 interface AuctionResponseData<T> {
@@ -188,4 +191,15 @@ export const getTransactionData = async ({
     guestAxios.get(`/main/transaction/?${query}`)
   );
   return response;
+};
+
+interface TransactionItemDetailData {
+  status: number;
+  message: string;
+  data: { turtle: TransactionItemDetailType };
+}
+export const getTransactionDetailItemData = (transactionId: string) => {
+  return apiRequest<TransactionItemDetailData>(() =>
+    guestAxios.get(`/main/transaction/${transactionId}`)
+  );
 };
