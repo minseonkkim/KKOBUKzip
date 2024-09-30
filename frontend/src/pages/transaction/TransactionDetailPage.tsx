@@ -53,7 +53,7 @@ function TransactionDetailPage() {
             <div className="relative w-full flex-grow md:flex-1 h-[240px] md:h-auto rounded-[20px] overflow-hidden">
               <img
                 src={images[currentIndex]}
-                className="w-full h-full object-cover rounded-[20px]"
+                className="w-full h-[380px] object-cover rounded-[20px]"
                 alt="Turtle"
                 draggable="false"
               />
