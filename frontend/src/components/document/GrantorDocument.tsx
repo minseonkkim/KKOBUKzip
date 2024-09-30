@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import {
@@ -9,6 +10,7 @@ import { createGrantDocumentRequest } from "../../apis/documentApis";
 
 // 양도 서류 컴포넌트
 function GrantorDocument() {
+  const location = useLocation();
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
 

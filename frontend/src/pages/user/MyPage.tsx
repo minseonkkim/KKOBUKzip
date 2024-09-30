@@ -21,11 +21,14 @@ import CustomProfile12 from "../../../public/custom_profile/profile12.gif";
 import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
 import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 
+import { EscrowDummy } from "../../fixtures/escrowDummy";
 
 function MyPage() {
   const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [profileImage, setProfileImage] = useState(CustomProfile1);
+
+  const { transactionId, sellerId, turtleId, sellerAddress, price } = EscrowDummy.data.data.transactions[0];
 
   const profileImages = [
     CustomProfile1,
@@ -122,9 +125,9 @@ function MyPage() {
           {selectedMenu === 0 && (
             // 거래 내역이 있을 경우
             <div className="flex flex-col space-y-3">
-              <TransactionHistory />
-              <TransactionHistory />
-              <TransactionHistory />
+              <TransactionHistory isAuction={false} turtleId={turtleId} transactionId={transactionId} sellerId={sellerId} sellerAddress={sellerAddress} amount={price} />
+              <TransactionHistory isAuction={false} turtleId={turtleId} transactionId={transactionId} sellerId={sellerId} sellerAddress={sellerAddress} amount={price} />
+              <TransactionHistory isAuction={false} turtleId={turtleId} transactionId={transactionId} sellerId={sellerId} sellerAddress={sellerAddress} amount={price} />
             </div>
 
             // 거래내역이 없을 경우

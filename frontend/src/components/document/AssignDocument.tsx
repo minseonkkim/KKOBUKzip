@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import {
@@ -10,6 +11,7 @@ import { createAssignDocumentRequest } from "../../apis/documentApis";
 
 // 양수 서류 컴포넌트
 function AssignDocument() {
+  const location = useLocation();
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
 
