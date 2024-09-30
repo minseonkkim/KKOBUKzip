@@ -114,6 +114,48 @@ function MainPage() {
           )}
         </div>
       </div>
+
+      {/* 소개 섹션 */}
+      <section className="bg-gray-100 py-20">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-4xl font-bold mb-6">꼬북ZIP 서비스 소개</h2>
+          <p className="text-xl mb-6 leading-8">
+            블록체인 기술을 이용한 <span className="font-bold">거북이 경매, 거래 및 서류 관리</span> 서비스에 오신 것을
+            환영합니다. 꼬북ZIP은 사용자들에게 신뢰할 수 있는 거래 환경을 제공하며, 모든 거래와 소유권 정보는
+            투명하고 안전하게 블록체인에 기록됩니다.
+          </p>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h3 className="text-2xl font-semibold mb-4">거북이 경매</h3>
+              <p className="text-gray-600">
+                희귀한 거북이를 경매를 통해 구매하세요. 실시간 입찰 시스템을 통해 누구나 참여할 수 있으며, 모든 과정이
+                블록체인에 기록됩니다.
+              </p>
+            </div>
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h3 className="text-2xl font-semibold mb-4">거북이 거래</h3>
+              <p className="text-gray-600">
+                원하는 거북이를 직접 구매하고 판매할 수 있습니다. 거래의 신뢰성을 보장하기 위해, 모든 거래 정보는
+                안전하게 블록체인에 저장됩니다.
+              </p>
+            </div>
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h3 className="text-2xl font-semibold mb-4">서류 관리</h3>
+              <p className="text-gray-600">
+                거북이의 소유권, 건강 기록 및 기타 서류를 디지털화하여 관리하세요. 블록체인 기술을 통해 중요한 정보가
+                안전하게 보호됩니다.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/learn-more"
+            className="inline-block mt-8 bg-blue-500 text-white py-2 px-6 rounded-full shadow-md hover:bg-blue-600 transition duration-300"
+          >
+            더 알아보기 →
+          </Link>
+        </div>
+      </section>
+
       <style>{`
         .turtle-animation {
           animation: moveTurtle 3s forwards ease-in-out;
@@ -125,55 +167,10 @@ function MainPage() {
             right: 18.5%;
             transform: scale(0.97) rotate(0deg);
           }
-          10% {
-            bottom: 6.5%;
-            right: 21%;
-            transform: scale(0.94) rotate(5deg);
-          }
-          20% {
-            bottom: 6.5%;
-            right: 21%;
-            transform: scale(0.94) rotate(-5deg);
-          }
-          30% {
-            bottom: 8%;
-            right: 27%;
-            transform: scale(0.9) rotate(3deg);
-          }
-          40% {
-            bottom: 8%;
-            right: 27%;
-            transform: scale(0.9) rotate(-3deg);
-          }
-          50% {
-            bottom: 10%;
-            right: 33%;
-            transform: scale(0.85) rotate(2deg);
-          }
-          60% {
-            bottom: 10%;
-            right: 33%;
-            transform: scale(0.85) rotate(-2deg);
-          }
-          70% {
-            bottom: 11.7%;
-            right: 37%;
-            transform: scale(0.78) rotate(1deg);
-          }
-          80% {
-            bottom: 11.7%;
-            right: 37%;
-            transform: scale(0.78) rotate(-1deg);
-          }
-          90% {
-            bottom: 12.3%;
-            right: 38%;
-            transform: scale(0.7) rotate(0deg);
-          }
           100% {
             bottom: 13%;
             right: 39.3%;
-            transform: scale(0.67) translate(0%, 0%) rotate(0deg);
+            transform: scale(0.67) rotate(0deg);
           }
         }
 
@@ -184,9 +181,6 @@ function MainPage() {
         @keyframes blink {
           0% {
             opacity: 1;
-          }
-          50% {
-            opacity: 0;
           }
           100% {
             opacity: 1;

@@ -7,6 +7,7 @@ import MyPageImg from "../../assets/mypage.webp";
 import { Link, useLocation } from "react-router-dom";
 import Modal from "./Modal";
 import { useUserStore } from "../../store/useUserStore";
+import { RiLogoutBoxLine } from "@react-icons/all-files/ri/RiLogoutBoxLine";
 
 // Wallet 컴포넌트를 lazy로 import
 const Wallet = lazy(() => import("./Wallet"));
@@ -46,10 +47,13 @@ export default function Header() {
 
         <div className="flex flex-row items-center">
           {!isMobile && isLogin && (
+            <>
             <div className="mr-3 font-bold text-[22px] cursor-pointer font-stardust xl:block hidden">
               {userInfo?.nickname}님 로그인 중
             </div>
-          )}
+            <div className="mr-3 text-[24px] cursor-pointer"><RiLogoutBoxLine/></div>
+            </>
+          )} 
           {!isLogin ? (
             <div className="flex flex-row space-x-6 items-center font-bold">
               <Link to="/login">
