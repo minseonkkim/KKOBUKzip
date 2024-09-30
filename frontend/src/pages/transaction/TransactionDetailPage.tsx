@@ -3,7 +3,7 @@ import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import TmpTurtleImg2 from "../../assets/tmp_turtle_2.jpg";
 import tmpProfileImg from "../../assets/tmp_profile.gif";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useChatStore from "../../store/useChatStore";
 import { useEscrowStore } from "../../store/useEscrowStore";
@@ -12,10 +12,21 @@ function TransactionDetailPage() {
   const { createTransaction } = useEscrowStore();
   const { openChatDetail } = useChatStore();
   const navigate = useNavigate();
-  const userNickname = "ASdf";
+  const params = useParams();
   const goBack = () => {
     navigate(-1); // 이전 페이지로 이동
   };
+
+  useEffect(() => {
+    const getTransactionDetailData = async () => {
+      const id = params.id;
+      if (id) {
+        console.log(id);
+      }
+    };
+
+    getTransactionDetailData;
+  }, []);
 
   const images = [TmpTurtleImg2, TmpTurtleImg];
   const [currentIndex, setCurrentIndex] = useState(0);

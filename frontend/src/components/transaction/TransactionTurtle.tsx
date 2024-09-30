@@ -10,7 +10,7 @@ export default function TransactionTurtle({
   const navigate = useNavigate();
 
   const goToDetail = () => {
-    navigate("/transaction-detail");
+    navigate("/transaction-detail/" + item.transactionId);
   };
 
   return (
