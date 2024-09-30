@@ -51,25 +51,17 @@ export default function Header() {
             </div>
           )}
           {!isLogin ? (
-            <div className="flex">
-              <Link to="/login" className="mr-3">
-                <div
-                  className={`${
-                    isMobile ? "rounded-full px-1.5" : "rounded-[10px] px-2"
-                  } py-1.5 bg-[#F6CA19] hover:bg-[#DFB509] shadow-[3px_3px_0px_#C49B07] flex flex-row items-center gap-1 cursor-pointer font-dnf-bitbit active:scale-95`}
-                >
-                  <span className="whitespace-nowrap text-white text-[17px] lg:text-[20px] tracking-widest">
+            <div className="flex flex-row space-x-6 items-center font-bold">
+              <Link to="/login">
+                <div className="cursor-pointer font-stardust">
+                  <span className="whitespace-nowrap text-[20px] lg:text-[23px] tracking-widest">
                     로그인
                   </span>
                 </div>
               </Link>
               <Link to="/join">
-                <div
-                  className={`${
-                    isMobile ? "rounded-full px-1.5" : "rounded-[10px] px-2"
-                  } py-1.5 bg-[#B9A6E6] hover:bg-[#9B8BC1] shadow-[3px_3px_0px_#8568CB] flex flex-row items-center gap-1 cursor-pointer font-dnf-bitbit active:scale-95`}
-                >
-                  <span className="whitespace-nowrap text-white text-[17px] lg:text-[20px] tracking-widest">
+                <div className="cursor-pointer font-stardust">
+                  <span className="whitespace-nowrap text-[20px] lg:text-[23px] tracking-widest">
                     회원가입
                   </span>
                 </div>
