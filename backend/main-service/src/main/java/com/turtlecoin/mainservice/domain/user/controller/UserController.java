@@ -112,6 +112,13 @@ public class UserController {
         );
     }
 
+    @GetMapping("/{userId}/nickname")
+    public String getUserNicknameById(@PathVariable Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
+        System.out.println("userNickname: " + user.getNickname());
+        return user.getNickname();
+    }
+
     @GetMapping("/{userId}/turtle")
     public ResponseEntity<List<TurtleResponseDTO>> getTurtlesByUserId(@PathVariable Long userId) {
         // 유저 없을 때 에러 던져주기

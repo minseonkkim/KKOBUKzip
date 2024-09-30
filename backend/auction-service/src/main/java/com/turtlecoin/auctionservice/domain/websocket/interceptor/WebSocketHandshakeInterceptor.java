@@ -24,9 +24,12 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         // 예를 들어, 유저의 ID를 쿼리 파라미터에서 가져온다고 가정
         String userId = request.getURI().getQuery().split("=")[1];  // 실제로는 더 안전한 방법 필요
-
+        System.out.println("userID: "+userId);
         // FeignClient를 사용해 메인 서비스에서 nickname 가져오기
         UserResponseDTO user = mainClient.getUserById(Long.parseLong(userId));
+        String nickname = user.getNickname();
+        System.out.println("user :"+user);
+        System.out.println("nickname :"+nickname);
 
         if (user != null) {
             attributes.put("nickname", user.getNickname());  // 세션에 nickname 저장
