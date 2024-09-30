@@ -45,7 +45,11 @@ public class TransactionController {
 
     // 전체 거래 조회
     @GetMapping("/")
-    public ResponseEntity<?> entireTransactions(@RequestParam("gender") Gender gender, String size, String price, int progress, int page){
+    public ResponseEntity<?> entireTransactions(@RequestParam(value="gender", required = false) Gender gender,
+                                                @RequestParam(value="size", required = false) String size,
+                                                @RequestParam(value="price", required = false) String price,
+                                                @RequestParam(value="progress", required = false) Integer progress,
+                                                @RequestParam(value="page", defaultValue = "0") int page){
         return transactionService.getEntireTransaction(gender, size, price, progress, page);
     }
 

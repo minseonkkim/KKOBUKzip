@@ -104,28 +104,39 @@ public class TransactionService {
     }
 
     // 전체 거래 조회
-    public ResponseEntity<?> getEntireTransaction(Gender gender, String size, String price, int progress, int page) {
+    public ResponseEntity<?> getEntireTransaction(Gender gender, String size, String price, Integer progress, int page) {
         try{
             Pageable pageable = PageRequest.of(page, 20);
-            String[] sizeRange = size.split("-");
-            String[] priceRange = price.split("-");
-            Page<Transaction> transactionPage =transactionRepository.findFilteredTransactions(
-                    gender,
-                    Double.parseDouble(sizeRange[0]),
-                    Double.parseDouble(sizeRange[1]),
-                    Double.parseDouble(priceRange[0]),
-                    Double.parseDouble(priceRange[1]),
-                    getProgressList(progress),
-                    pageable
+
+            Double sizeMin = null, sizeMax = null, priceMin = null, priceMax = null;
+
+            if (size != null && !size.isEmpty()) {
+                String[] sizeRange = size.split("-");
+                sizeMin = Double.parseDouble(sizeRange[0]);
+                sizeMax = Double.parseDouble(sizeRange[1]);
+            }
+
+
+            if (price != null && !price.isEmpty()) {
+                String[] priceRange = price.split("-");
+                priceMin = Double.parseDouble(priceRange[0]);
+                priceMax = Double.parseDouble(priceRange[1]);
+            }
+
+            List<TransactionProgress> progressList = (progress != null)? getProgressList(progress) : null;
+
+            Page<Transaction> transactionPage = transactionRepository.findFilteredTransactions(
+                    gender, sizeMin, sizeMax, priceMin, priceMax, progressList, pageable
             );
             Map<String,Object> data = new HashMap<>();
             List<DetailTransactionResponseDto> transactionDtos = transactionPage.getContent().stream()
                     .map(Transaction::toResponseDTO)  // Transaction에서 DTO로 변환하는 메서드 호출
                     .collect(Collectors.toList());
 
-            data.put("cnt", transactionPage.getTotalPages());
+            data.put("cnt",transactionDtos.size());
             data.put("current_page", page);
             data.put("transactions", transactionDtos);
+            data.put("total_pages", transactionPage.getTotalPages());
             return new ResponseEntity<>(ResponseVO.success("요청한 조회가 성공적으로 진행되었습니다.","data",data),HttpStatus.OK);
 
         }catch (NumberFormatException e) {
