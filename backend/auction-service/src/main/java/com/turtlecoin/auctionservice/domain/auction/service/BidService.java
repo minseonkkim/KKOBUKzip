@@ -113,14 +113,14 @@ public class BidService {
             bidData.put("nextBid", newBidAmount.toString());
 
             redisTemplate.opsForHash().putAll(redisKey, bidData);  // 최신 입찰 정보로 덮어쓰기
-
-            UserResponseDTO user = userService.getUserNicknameById(userId);
-            String nickname = user.getNickname();
+            System.out.println("userService에서 닉네임 가져오기");
+            String userNickname = userService.getUserNicknameById(userId);
+            log.info("userNickname: {}", userNickname);
 
             // 클라이언트에게 최신 입찰 정보 및 nextBid 정보 전송
             BidMessage bidRecord = BidMessage.builder()
                     .userId(userId)
-                    .nickname(nickname)
+                    .nickname(userNickname)
                     .auctionId(auctionId)
                     .bidAmount(bidAmount)
                     .nextBid(newBidAmount)
@@ -211,6 +211,7 @@ public class BidService {
         if (endTimeObj instanceof LocalDateTime) {
             return (LocalDateTime) endTimeObj;
         }
-        return null;
+        Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매 시간을 찾을 수 없습니다."));
+        return auction.getEndTime();
     }
 }

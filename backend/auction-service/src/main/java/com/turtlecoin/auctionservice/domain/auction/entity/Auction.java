@@ -56,6 +56,9 @@ public class Auction extends BaseEntity {
     @Builder.Default
     private List<AuctionTag> auctionTags = new ArrayList<>();
 
+    @Column(name="seller_address")
+    private String sellerAddress;
+
     public void updateEndTime() {
         this.endTime = LocalDateTime.now().plusSeconds(30);
     }
