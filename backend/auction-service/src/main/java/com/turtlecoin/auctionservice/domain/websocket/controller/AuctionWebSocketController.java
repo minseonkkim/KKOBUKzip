@@ -5,6 +5,7 @@ import com.turtlecoin.auctionservice.domain.auction.service.BidService;
 import com.turtlecoin.auctionservice.domain.websocket.dto.BidMessage;
 import com.turtlecoin.auctionservice.feign.MainClient;
 import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
+import com.turtlecoin.auctionservice.global.exception.AuctionAlreadyFinishedException;
 import com.turtlecoin.auctionservice.global.exception.AuctionNotFoundException;
 import com.turtlecoin.auctionservice.global.exception.SameUserBidException;
 import com.turtlecoin.auctionservice.global.exception.WrongBidAmountException;
@@ -42,6 +43,10 @@ public class AuctionWebSocketController {
                     ResponseVO.failure("404", "해당 경매를 찾을 수 없습니다."));
         } catch (SameUserBidException e) {
             log.error("동일 사용자의 재입찰 시도: auctionId = {}, userId = {}", auctionId, userId, e);
+            messagingTemplate.convertAndSend("/sub/auction/" + auctionId,
+                    ResponseVO.failure("400", e.getMessage()));
+        } catch (AuctionAlreadyFinishedException e) {
+            log.error("이미 종료된 경매: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount, e);
             messagingTemplate.convertAndSend("/sub/auction/" + auctionId,
                     ResponseVO.failure("400", e.getMessage()));
         } catch (WrongBidAmountException e) {

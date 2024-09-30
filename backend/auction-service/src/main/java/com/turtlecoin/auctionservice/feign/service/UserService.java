@@ -20,6 +20,7 @@ public class UserService {
         if (userNickname == null) {
             userNickname = mainClient.getUserNicknameById(userId);
             redisTemplate.opsForValue().set(cacheKey, userNickname, 5, TimeUnit.MINUTES); // TTL 10분 설정
+            System.out.println("Main-service에서 가져오기");
         }
         return userNickname;
     }

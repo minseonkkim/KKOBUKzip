@@ -7,6 +7,7 @@ import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.auction.service.AuctionService;
+import com.turtlecoin.auctionservice.domain.auction.service.BidService;
 import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
 import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
@@ -35,6 +36,7 @@ public class AuctionController {
 
     private final ImageUploadService imageUploadService;
     private final AuctionService auctionService;
+    private final BidService bidService;
     private final AuctionRepository auctionRepository;
 
     // 테스트
@@ -83,7 +85,7 @@ public class AuctionController {
             @RequestParam(value = "minPrice", required = false) Double minPrice,
             @RequestParam(value = "maxPrice", required = false) Double maxPrice,
             @RequestParam(value = "progress", required = false) AuctionProgress progress,
-            @RequestParam(value = "page", defaultValue = "1") int page
+            @RequestParam(value = "page", defaultValue = "0") int page
     ) {
         List<AuctionResponseDTO> auctionDTOs = auctionService.getFilteredAuctions(gender, minSize, maxSize, minPrice, maxPrice, progress, page)
                 .stream()
@@ -109,6 +111,11 @@ public class AuctionController {
             log.error("기타 에러 발생: {}", e.getMessage(), e);
             return new ResponseEntity<>(ResponseVO.failure("400", "에러가 발생했습니다."), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/{auctionId}/test")
+    public void test(@PathVariable Long auctionId) {
+        bidService.startAuction(auctionId);
     }
 }
 
