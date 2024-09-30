@@ -159,7 +159,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
 
         <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
           {initialLoad &&
-            Array.from({ length: 6 }).map((_, index) => (
+            Array.from({ length: items.length }).map((_, index) => (
               <div key={`skeleton-${index}`} className="col-span-1">
                 {skeletonComponent}
               </div>

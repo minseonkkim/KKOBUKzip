@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import useDeviceStore from "../../store/useDeviceStore";
 import Header from "../../components/common/Header";
-import BackgroundImg from "../../assets/Side_View_Scene.webp";
+import BackgroundImg from "../../assets/Side_View_Scene.gif";
 import TurtleMoving from "../../assets/turtle_moving.webp";
 import TurtleStop from "../../assets/turtle_stop.webp";
 import { useEffect, useState } from "react";
