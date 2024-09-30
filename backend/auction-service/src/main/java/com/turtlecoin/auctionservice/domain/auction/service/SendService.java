@@ -18,6 +18,7 @@ public class SendService {
     @Value("${spring.rabbitmq.routingKey}")
     private String auctionResultRoutingKey;
 
+
     public void sendAuctionResult (Object auctionResult) {
         rabbitTemplate.convertAndSend(auctionResultExchange, auctionResultRoutingKey, auctionResult);
     }

@@ -60,6 +60,7 @@ public class RabbitMQConfig {
         return rabbitTemplate;
     }
 
+    
     // 6. ConnectionFactory 설정
     @Bean
     public ConnectionFactory connectionFactory() {
