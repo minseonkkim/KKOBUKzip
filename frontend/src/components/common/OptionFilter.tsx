@@ -128,8 +128,8 @@ function OptionFilter({
               <input
                 type="radio"
                 name="gender"
-                value="female"
-                checked={filters.gender === "female"}
+                value="FEMALE"
+                checked={filters.gender === "FEMALE"}
                 onChange={(e) => updateFilter("gender", e.target.value)}
               />
               <span className="checkbox-mark"></span>
@@ -139,8 +139,8 @@ function OptionFilter({
               <input
                 type="radio"
                 name="gender"
-                value="male"
-                checked={filters.gender === "male"}
+                value="MALE"
+                checked={filters.gender === "MALE"}
                 onChange={(e) => updateFilter("gender", e.target.value)}
               />
               <span className="checkbox-mark"></span>
