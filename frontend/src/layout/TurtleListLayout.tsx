@@ -27,7 +27,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [itemLoading, setItemLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
-  const [pages, setPages] = useState(1); // next page
+  const [pages, setPages] = useState(0); // next page, 0부터~
   const [maxPage, setMaxPage] = useState(-1);
 
   const [ref, inView] = useInView({ threshold: 1 });
@@ -41,7 +41,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
         if (response.success) {
           setMaxPage(response.data.total_pages);
         }
-        setPages(2);
+        setPages(1);
       } finally {
         setItemLoading(false);
         setInitialLoad(false);

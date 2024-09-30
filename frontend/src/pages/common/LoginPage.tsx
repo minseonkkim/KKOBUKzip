@@ -7,7 +7,7 @@ import kakao_logo from "../../assets/login/kakao_logo.webp";
 import Header from "../../components/common/Header";
 import StopTurtleImg from "../../assets/turtle_home_stop.png";
 import { FaRegEye } from "@react-icons/all-files/fa/FaRegEye";
-import { FaRegEyeSlash } from "@react-icons/all-files/fa/FaRegEyeSlash"
+import { FaRegEyeSlash } from "@react-icons/all-files/fa/FaRegEyeSlash";
 import { loginRequest } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
 
@@ -26,7 +26,6 @@ function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    alert("로그인 핸들");
     const { success, data, error } = await loginRequest(email, password);
     if (success) {
       setLogin(data?.data!);
@@ -45,19 +44,10 @@ function LoginPage() {
         <title>로그인</title>
       </Helmet>
       <Header />
-      <main
-        className="px-4 lg:px-[250px] flex justify-center items-center mt-[60px] h-[calc(100vh-60px)]"
-
-      >
+      <main className="px-4 lg:px-[250px] flex justify-center items-center mt-[60px] h-[calc(100vh-60px)]">
         {/* 로그인 컴포넌트 */}
-        <section
-          className="relative w-full bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex h-[640px] md:h-[600px] flex-col md:flex-row"
-
-        >
-          <div
-          
-            className="w-full md:w-1/2 h-[190px] md:h-full"
-          >
+        <section className="relative w-full bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex h-[640px] md:h-[600px] flex-col md:flex-row">
+          <div className="w-full md:w-1/2 h-[190px] md:h-full">
             <img
               src={StopTurtleImg}
               className="w-full rounded-tl-[20px] rounded-tr-[20px] md:rounded-tr-none rounded-bl-none md:rounded-bl-[20px] h-full object-cover"
@@ -65,9 +55,7 @@ function LoginPage() {
             />
           </div>
 
-          <div
-            className="h-full rounded-r-[20px] w-full md:w-1/2 m-0 md:m-auto flex justify-center items-center"
-          >
+          <div className="h-full rounded-r-[20px] w-full md:w-1/2 m-0 md:m-auto flex justify-center items-center">
             <div className="w-2/3">
               <h2 className="text-[35px] md:text-[38px] text-center mb-5 md:mb-8 font-dnf-bitbit">
                 로그인
