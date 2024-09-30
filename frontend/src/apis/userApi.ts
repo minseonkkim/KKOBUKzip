@@ -25,10 +25,9 @@ const apiRequest = async <T>(
     return { success: true, data: response.data };
   } catch (error) {
     let errorMessage = "알 수 없는 오류가 발생했습니다.";
-
     if (axios.isAxiosError(error)) {
       // AxiosError 타입 확인 및 처리
-      errorMessage = error.response?.data?.msg || error.message;
+      errorMessage = error.response?.data?.message || error.message;
     } else if (error instanceof Error) {
       // 일반 JavaScript Error 처리
       errorMessage = error.message;

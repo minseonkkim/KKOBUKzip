@@ -173,13 +173,15 @@ export const getTransactionData = async ({
   priceEnd?: number;
   progress?: number;
 }) => {
-  const pageQuery = page ? `page=${page}` : "page=1";
-  const genderQuery = gender ? `&gender=${gender}` : "";
+  const pageQuery = page ? `page=${page}` : "page=0";
+  const genderQuery = gender ? `&gender=${gender}` : "&gender=null";
   const sizeQuery =
-    sizeStart && sizeEnd ? `&size=${sizeStart}between${sizeEnd}` : "";
+    sizeStart && sizeEnd ? `&size=${sizeStart}between${sizeEnd}` : "&size=null";
   const priceQuery =
-    priceStart && priceEnd ? `&price=${priceStart}between${priceEnd}` : "";
-  const progressQuery = progress ? `&progress=${progress}` : "";
+    priceStart && priceEnd
+      ? `&price=${priceStart}between${priceEnd}`
+      : "&price=null";
+  const progressQuery = progress ? `&progress=${progress}` : "&progress=null";
 
   const query =
     pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;

@@ -32,8 +32,10 @@ function TransactionDetailPage() {
 
   const handleDeposit = async () => {
     // await createTransaction(isAuction, transactionId, sellerAddress, amount);
-    alert("결제가 완료되었습니다. 마이페이지로 이동하여 서류 작성을 진행해 주세요!")
-  }
+    alert(
+      "결제가 완료되었습니다. 마이페이지로 이동하여 서류 작성을 진행해 주세요!"
+    );
+  };
 
   return (
     <>
@@ -71,20 +73,18 @@ function TransactionDetailPage() {
                 {currentIndex + 1} / {images.length}
               </div>
             </div>
-            <div className="text-[23px] mt-[13px]">거북이 팔아용 거북이 팔아용 거북이 팔아용 거북이 팔아용</div>
+            <div className="text-[23px] mt-[13px]">
+              거북이 팔아용 거북이 팔아용 거북이 팔아용 거북이 팔아용
+            </div>
             <div className="flex flex-row justify-between lg:justify-start xl:justify-between items-center mt-[10px] mb-[10px]">
               <div className="text-[#9A9A9A] text-[18px]">
                 페닐슐라쿠터 | 24년 8월 10일생 | 8kg
               </div>
               <div className="flex flex-row space-x-2">
-                <span
-                  className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] bg-[#D5F0DD] text-[#065F46]"
-                >
+                <span className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] bg-[#D5F0DD] text-[#065F46]">
                   #암컷
                 </span>
-                <span
-                  className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] bg-[#D5F0DD] text-[#065F46]"
-                >
+                <span className="whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[16px] bg-[#D5F0DD] text-[#065F46]">
                   #베이비
                 </span>
               </div>
@@ -122,10 +122,12 @@ function TransactionDetailPage() {
           </div>
 
           <div className="my-5 mb-10 md:my-0 md:mb-0 w-full md:w-[48%] h-[130px] md:h-[675px] bg-[#EAF5DD] rounded-[20px] flex flex-col justify-start items-center">
-            <div className="w-full px-[20px] md:px-[40px] w-full h-full flex justify-center items-center mt-3 md:mt-0">
+            <div className="w-full px-[20px] md:px-[40px] h-full flex justify-center items-center mt-3 md:mt-0">
               <div className="w-full flex flex-row md:flex-col justify-between items-center mb-4">
                 <div className="whitespace-nowrap flex flex-row md:flex-col xl:flex-row items-center">
-                  <div className="font-bold text-[20px] md:text-[27px]">판매가&nbsp;&nbsp;</div>
+                  <div className="font-bold text-[20px] md:text-[27px]">
+                    판매가&nbsp;&nbsp;
+                  </div>
                   <div className="font-bold text-[31px] md:text-[39px] text-[#4B721F] font-stardust">
                     {Math.floor(8000000).toLocaleString()}원
                   </div>
