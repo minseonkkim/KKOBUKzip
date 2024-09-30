@@ -23,6 +23,7 @@ public class AuctionResponseDTO {
     private Double winningBid;
     private Long sellerId;
     private Long buyerId;
+    private String sellerAddress;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String content;
@@ -48,6 +49,7 @@ public class AuctionResponseDTO {
                 .startTime(auction.getStartTime())
                 .endTime(LocalDateTime.now())
                 .content(auction.getContent())
+                .sellerAddress(auction.getSellerAddress())
                 .progress(auction.getAuctionProgress().toString())
                 .tags(auction.getAuctionTags().stream()
                         .map(AuctionTagDTO::from)
