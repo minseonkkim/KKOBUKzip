@@ -36,7 +36,7 @@ export default function TransactionTurtle({
         </div>
         <div className="px-3 py-2">
           <div className="w-full overflow-hidden text-[20px] mb-4 text-gray-900 whitespace-nowrap text-ellipsis">
-            {item.content}
+            {item.title}
           </div>
 
           <div className="flex flex-wrap justify-between items-center">
