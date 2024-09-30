@@ -61,7 +61,7 @@ public class TransactionService {
 
         try{
             Turtle turtle = turtleRepository.getReferenceById(dto.getTurtle_id());
-            if(transactionRepository.findByTurtle(turtle).getProgress().equals("SAIL")){
+            if(transactionRepository.findByTurtle(turtle).getSellerAddress().equals(dto.getSellerAddress())){
                 throw new DuplicatedEnrollTransaction("이미 거래가 등록된 거북이 입니다.");
             }
 
@@ -115,7 +115,6 @@ public class TransactionService {
                 sizeMin = Double.parseDouble(sizeRange[0]);
                 sizeMax = Double.parseDouble(sizeRange[1]);
             }
-
 
             if (price != null && !price.isEmpty()) {
                 String[] priceRange = price.split("-");
