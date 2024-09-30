@@ -99,7 +99,7 @@ export const getAuctionDatas = async ({
   progress?: number;
 }) => {
   // query setting
-  const pageQuery = page ? `page=${page}` : "page=1";
+  const pageQuery = page ? `page=${page}` : "page=0";
   const genderQuery = gender ? `&gender=${gender}` : "";
   const sizeQuery =
     sizeStart && sizeEnd ? `&size=${sizeStart}between${sizeEnd}` : "";
@@ -112,7 +112,7 @@ export const getAuctionDatas = async ({
 
   // request
   const response = await apiRequest<AuctionListData>(() =>
-    guestAxios.get(`/auction?${query}`)
+    guestAxios.get(`/auction/?${query}`)
   );
   return response;
 };
@@ -174,20 +174,18 @@ export const getTransactionData = async ({
   progress?: number;
 }) => {
   const pageQuery = page ? `page=${page}` : "page=0";
-  const genderQuery = gender ? `&gender=${gender}` : "&gender=null";
+  const genderQuery = gender ? `&gender=${gender}` : "";
   const sizeQuery =
-    sizeStart && sizeEnd ? `&size=${sizeStart}between${sizeEnd}` : "&size=null";
+    sizeStart && sizeEnd ? `&size=${sizeStart}between${sizeEnd}` : "";
   const priceQuery =
-    priceStart && priceEnd
-      ? `&price=${priceStart}between${priceEnd}`
-      : "&price=null";
-  const progressQuery = progress ? `&progress=${progress}` : "&progress=null";
+    priceStart && priceEnd ? `&price=${priceStart}between${priceEnd}` : "";
+  const progressQuery = progress ? `&progress=${progress}` : "";
 
   const query =
     pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
 
-  const response = await apiRequest<TransactionListData>(() =>
-    guestAxios.get(`/transaction?${query}`)
+  const response = await apiRequest<{ data: TransactionListData }>(() =>
+    guestAxios.get(`/main/transaction/?${query}`)
   );
   return response;
 };

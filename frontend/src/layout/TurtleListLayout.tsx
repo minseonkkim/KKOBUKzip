@@ -9,19 +9,20 @@ import { useEffect, useState } from "react";
 import OptionFilter from "../components/common/OptionFilter";
 import { useInView } from "react-intersection-observer";
 import useTradeFilter from "../hooks/useTradeFilter";
+import AuctionTurtleSkeleton from "../components/auction/skeleton/AuctionTurtleSkeleton";
 
 interface TurtleListLayoutProps {
   title: string;
   items: JSX.Element[];
   fetchData: (page: number, filters: object) => Promise<any>;
-  skeletonComponent?: JSX.Element;
+  // skeletonComponent?: JSX.Element;
 }
 
 const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   title,
   items,
   fetchData,
-  skeletonComponent,
+  // skeletonComponent,
 }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -51,12 +52,12 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   }, [fetchData]);
 
   const loadMore = async () => {
-    if (itemLoading || pages > maxPage) return;
+    if (itemLoading || pages >= maxPage) return;
     setItemLoading(true);
     try {
       const response = await fetchData(pages, filters);
       if (response.success) {
-        setMaxPage(response.data.total_pages ?? -1);
+        setMaxPage(response.data.total_pages - 1 ?? -1);
         setPages((prev) => prev + 1);
       }
     } finally {
@@ -158,15 +159,22 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
         </div>
 
         <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
-          {initialLoad &&
-            Array.from({ length: items.length }).map((_, index) => (
-              <div key={`skeleton-${index}`} className="col-span-1">
-                {skeletonComponent}
-              </div>
-            ))}
-
+          {/* {skeletonComponent} */}
           {!initialLoad && items}
-
+          {initialLoad ||
+            (itemLoading && (
+              <>
+                <div className="hidden md:block col-span-1">
+                  <AuctionTurtleSkeleton />
+                </div>
+                <div className="hidden xl:block col-span-1">
+                  <AuctionTurtleSkeleton />
+                </div>
+                <div className="block col-span-1">
+                  <AuctionTurtleSkeleton />
+                </div>
+              </>
+            ))}
           <div ref={ref} className="w-full h-[1px] col-span-full" />
         </div>
       </main>
