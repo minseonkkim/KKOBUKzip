@@ -18,13 +18,12 @@ const TransactionListPage = () => {
   const fetchData = useCallback(async (page: number, filters: object) => {
     const result = await getTransactionData({ page, ...filters });
     if (result.success) {
-      console.log(result.data.data.data);
       const transactionItems = result.data.data.data.transactions.map(
         (item: TransactionItemDataType) => (
           <TransactionTurtle key={item.transactionId} item={item} />
         )
       );
-      setTransactionItems(transactionItems);
+      setTransactionItems((prev) => [...prev, ...transactionItems]);
       return result;
     }
   }, []);
