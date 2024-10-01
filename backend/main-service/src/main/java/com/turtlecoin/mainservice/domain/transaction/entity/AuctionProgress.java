@@ -1,4 +1,4 @@
-package com.turtlecoin.auctionservice.domain.auction.entity;
+package com.turtlecoin.mainservice.domain.transaction.entity;
 
 public enum AuctionProgress {
     // 경매 전, 경매 중, 유찰, 낙찰

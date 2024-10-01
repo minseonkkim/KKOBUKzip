@@ -3,6 +3,7 @@ package com.turtlecoin.auctionservice.domain.auction.entity;
 import com.turtlecoin.auctionservice.domain.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,6 +41,9 @@ public class Auction extends BaseEntity {
     private String content;
 
     @Column(nullable = false)
+    private int weight;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AuctionProgress auctionProgress;
 
@@ -65,5 +69,14 @@ public class Auction extends BaseEntity {
 
     public void updateStatus(AuctionProgress auctionProgress) {
         this.auctionProgress = auctionProgress;
+    }
+
+    public void updateAfterAuction(Long buyerId, Double winningBid) {
+        this.buyerId = buyerId;
+        this.winningBid = winningBid;
+    }
+
+    public String getFirstImageUrl() {
+        return auctionPhotos.isEmpty() ? null : auctionPhotos.get(0).getImageUrl();
     }
 }
