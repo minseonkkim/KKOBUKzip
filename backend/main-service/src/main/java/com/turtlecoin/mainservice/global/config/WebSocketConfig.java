@@ -12,12 +12,18 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/topic"); // 클라이언트의 sub주소
-		config.setApplicationDestinationPrefixes("/main"); // /room 밑의 주소를 구독하는 클라이언트들이 메세지를 수신 받는다
+		config.enableSimpleBroker("/sub"); //메세지 받을 때 경로
+		config.setApplicationDestinationPrefixes("/pub"); //메세지 보낼 때 경로
 	}
-
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/main/ws").withSockJS();
+		registry.addEndpoint("/ws/main") //우리의 endpoint
+			.setAllowedOrigins("*");
+		//System.out.println("registry: "+registry);
+		//                .addInterceptors(handshakeInterceptor); // 핸드셰이크 인터셉터 추가
+	}
+	@Override
+	public void configureClientInboundChannel(org.springframework.messaging.simp.config.ChannelRegistration registration) {
+		//        registration.interceptors(jwtChannelInterceptor); // STOMP 메시지 인터셉터 추가
 	}
 }
