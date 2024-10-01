@@ -49,101 +49,112 @@ public class BidService {
     // 입찰 가격 갱신
     @Transactional
     public void processBidWithRedis(Long auctionId, Long userId, Double bidAmount) {
-        startAuction(auctionId);
-        Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다."));
-        String redisKey = AUCTION_BID_KEY + auctionId;
+        // 1. 경매 시작 및 상태 확인
+        startAuctionIfNotStarted(auctionId);
 
-        // Redis 해시에서 현재 입찰 정보 가져오기
-        Map<Object, Object> currentBidData = redisTemplate.opsForHash().entries(redisKey);
+        // 2. 현재 경매와 입찰 정보를 확인하고 유효성을 검증
+        Auction auction = getAuction(auctionId);
+        Long currentUserId = getCurrentBidUserId(auctionId, auction);
+        Double currentBid = getCurrentBidAmount(auctionId, auction);
 
-        Long currentUserId = null;
-        Double currentBid = auction.getMinBid(); // 기본값은 경매 최소 입찰가
+        // 3. 입찰 검증 로직
+        validateBid(auctionId, userId, bidAmount, currentUserId, currentBid);
 
-        if (!currentBidData.isEmpty()) {
-            // Redis에 입찰 정보가 있는 경우 처리
-            Object bidAmountObj = currentBidData.get("bidAmount");
+        // 4. 입찰 정보 갱신
+        Double newBidAmount = updateBidInfo(auctionId, userId, bidAmount);
 
-            if (bidAmountObj instanceof String) {
-                currentBid = Double.parseDouble((String) bidAmountObj);
-                System.out.println("currentBid 스트링");
-            } else if (bidAmountObj instanceof Double) {
-                currentBid = (Double) bidAmountObj;
-                System.out.println("currentBid 더블");
-            }
+        // 5. 클라이언트에게 최신 입찰 정보 전송
+        notifyClientWithBidInfo(auctionId, userId, bidAmount, newBidAmount);
+    }
 
-            currentUserId = Long.parseLong(currentBidData.get("userId").toString());
-            log.info("currentUserId: {}, currentBid: {}", currentUserId, currentBid);
-        } else {
-            // Redis에 데이터가 없는 경우, 최초 입찰 처리
-            log.info("최초 입찰: auctionID = {}, minBid = {}", auctionId, currentBid);
+    private Auction getAuction(Long auctionId) {
+        return auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다."));
+    }
+
+    private void startAuctionIfNotStarted(Long auctionId) {
+        Auction auction = getAuction(auctionId);
+        if (auction.getAuctionProgress() == AuctionProgress.BEFORE_AUCTION) {
+            startAuction(auctionId);
         }
+    }
 
-        // 경매 종료 시간 확인
+    private Long getCurrentBidUserId(Long auctionId, Auction auction) {
+        String redisKey = AUCTION_BID_KEY + auctionId;
+        Map<Object, Object> currentBidData = redisTemplate.opsForHash().entries(redisKey);
+        if (!currentBidData.isEmpty()) {
+            return Long.parseLong(currentBidData.get("userId").toString());
+        }
+        return null;  // 입찰자가 없으면 null 반환
+    }
+
+    private Double getCurrentBidAmount(Long auctionId, Auction auction) {
+        String redisKey = AUCTION_BID_KEY + auctionId;
+        Map<Object, Object> currentBidData = redisTemplate.opsForHash().entries(redisKey);
+        Double currentBid = auction.getMinBid(); // 기본값은 경매 최소 입찰가
+        if (!currentBidData.isEmpty()) {
+            return parseBidAmount(currentBidData.get("bidAmount"));
+        }
+        return currentBid;
+    }
+
+    private Double parseBidAmount(Object bidAmountObj) {
+        if (bidAmountObj instanceof String) {
+            return Double.parseDouble((String) bidAmountObj);
+        } else if (bidAmountObj instanceof Double) {
+            return (Double) bidAmountObj;
+        }
+        throw new IllegalArgumentException("Invalid bid amount type");
+    }
+
+    private void validateBid(Long auctionId, Long userId, Double bidAmount, Long currentUserId, Double currentBid) {
         LocalDateTime auctionEndTime = getAuctionEndTime(auctionId);
-        log.info("경매 종료 시간: {}", auctionEndTime);
-
         if (LocalDateTime.now().isAfter(auctionEndTime)) {
             notifyClient(auctionId, null, true, "입찰시간이 종료됐습니다");
-            log.info("입찰 실패: auctionID{}, userId{}, bidAmount{}", auctionId, userId, bidAmount);
-            return;
+            throw new AuctionAlreadyFinishedException("입찰 시간이 종료되었습니다.");
         }
 
-        // 입찰가 계산
+        if (currentUserId != null && currentUserId.equals(userId)) {
+            throw new SameUserBidException("자신의 입찰에 재입찰할 수 없습니다: userId = " + userId);
+        }
+
+        if (bidAmount <= currentBid) {
+            throw new WrongBidAmountException("현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다: currentBid = " +
+                    currentBid + ", bidAmount = " + bidAmount);
+        }
+    }
+
+    private Double updateBidInfo(Long auctionId, Long userId, Double bidAmount) {
         Double bidIncrement = calculateBidIncrement(bidAmount);
         Double newBidAmount = bidAmount + bidIncrement;
-        log.info("입찰가 증가: {} -> {}", bidAmount, newBidAmount);
+
+        String redisKey = AUCTION_BID_KEY + auctionId;
+        Map<String, Object> bidData = new HashMap<>();
+        bidData.put("userId", userId.toString());
+        bidData.put("bidAmount", bidAmount.toString());
+        bidData.put("nextBid", newBidAmount.toString());
+
+        redisTemplate.opsForHash().putAll(redisKey, bidData);
+        resetAuctionEndTime(auctionId);
+
+        return newBidAmount;
+    }
+
+    private void notifyClientWithBidInfo(Long auctionId, Long userId, Double bidAmount, Double newBidAmount) {
+        String userNickname = userService.getUserNicknameById(userId);
+        log.info("userNickname: {}", userNickname);
+
         Double remainingTime = getAuctionRemainingTime(auctionId);
-        System.out.println("Remaining Time : "+remainingTime);
+        BidMessage bidRecord = BidMessage.builder()
+                .userId(userId)
+                .nickname(userNickname)
+                .auctionId(auctionId)
+                .bidAmount(bidAmount)
+                .nextBid(newBidAmount)
+                .remainingTime(remainingTime)
+                .build();
 
-        try {
-            if (remainingTime == null) {
-                throw new AuctionAlreadyFinishedException("경매가 이미 종료됐습니다");
-            }
-
-            // 동일 사용자가 재입찰 시 예외 처리
-            if (currentUserId != null && currentUserId.equals(userId)) {
-                throw new SameUserBidException("자신의 입찰에 재입찰할 수 없습니다: userId = " + userId);
-            }
-
-            // 현재 입찰가보다 낮은 금액으로 입찰할 경우 예외 처리
-            if (bidAmount <= currentBid) {
-                throw new WrongBidAmountException("현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다: " +
-                        "currentBid = " + currentBid + ", bidAmount = " + bidAmount);
-            }
-
-            // 최신 입찰 정보를 Redis 해시맵에 저장 (최신 값만 유지)
-            Map<String, Object> bidData = new HashMap<>();
-            bidData.put("userId", userId.toString());
-            bidData.put("bidAmount", bidAmount.toString());
-            bidData.put("nextBid", newBidAmount.toString());
-
-            redisTemplate.opsForHash().putAll(redisKey, bidData);  // 최신 입찰 정보로 덮어쓰기
-            System.out.println("userService에서 닉네임 가져오기");
-            String userNickname = userService.getUserNicknameById(userId);
-            log.info("userNickname: {}", userNickname);
-
-            // 클라이언트에게 최신 입찰 정보 및 nextBid 정보 전송
-            BidMessage bidRecord = BidMessage.builder()
-                    .userId(userId)
-                    .nickname(userNickname)
-                    .auctionId(auctionId)
-                    .bidAmount(bidAmount)
-                    .nextBid(newBidAmount)
-                    .remainingTime(remainingTime)
-                    .build();
-
-            notifyClient(auctionId, bidRecord, false, null);
-            resetAuctionEndTime(auctionId);
-            log.info("경매 종료 시간 TTL 재설정 완료");
-
-            log.info("입찰 처리 완료: auctionID = {}, userId = {}, bidAmount = {}, nextBid = {}", auctionId, userId, bidAmount, newBidAmount);
-        } catch (SameUserBidException | WrongBidAmountException e) {
-            notifyClient(auctionId, null, true, e.getMessage());
-            log.error("입찰 처리 실패: auctionID = {}, userId = {}, error: {}", auctionId, userId, e.getMessage());
-        } catch (Exception e) {
-            notifyClient(auctionId, null, true, "입찰 처리 중 예상치 못한 오류가 발생했습니다.");
-            log.error("입찰 처리 실패: auctionID = {}, userId = {}, error: {}", auctionId, userId, e.getMessage());
-        }
+        notifyClient(auctionId, bidRecord, false, null);
     }
 
 //    private void updateAuctionEndTime(Long auctionId, LocalDateTime localDateTime) {

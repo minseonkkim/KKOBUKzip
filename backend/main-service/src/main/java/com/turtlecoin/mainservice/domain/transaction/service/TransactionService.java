@@ -60,7 +60,7 @@ public class TransactionService {
 
 
         try{
-            Turtle turtle = turtleRepository.getReferenceById(dto.getTurtle_id());
+            Turtle turtle = turtleRepository.getReferenceById(dto.getTurtleId());
             if(transactionRepository.findByTurtle(turtle).getSellerAddress().equals(dto.getSellerAddress())){
                 throw new DuplicatedEnrollTransaction("이미 거래가 등록된 거북이 입니다.");
             }
