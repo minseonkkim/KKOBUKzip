@@ -9,8 +9,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -19,6 +22,8 @@ public class AuctionExpirationListener implements MessageListener {
     private final AuctionRepository auctionRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private static final String AUCTION_END_KEY_PREFIX = "auction_end_";
+    private static final String AUCTION_BID_KEY_PREFIX = "auction_bid_";
+    private final RedisTemplate redisTemplate;
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
@@ -40,9 +45,20 @@ public class AuctionExpirationListener implements MessageListener {
     public void endAuction(Long auctionId) {
         Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다"));
 
-        auction.updateStatus(AuctionProgress.SUCCESSFUL_BID);
-        auctionRepository.save(auction);
+        String redisBidKey = AUCTION_BID_KEY_PREFIX + auctionId;
+        Map<Object, Object> bidData = redisTemplate.opsForHash().entries(redisBidKey);
 
+        if (bidData.isEmpty()) {
+            log.info("해당 경매에 입찰 기록이 없습니다: auctionId = {}", auctionId);
+            return;
+        }
+
+        // 마지막 입찰가와 입찰자 ID 가져오기
+        Double winningBid = Double.parseDouble(bidData.get("bidAmount").toString());
+        Long winningUserId = Long.parseLong(bidData.get("userId").toString());
+
+        auction.updateStatus(AuctionProgress.SUCCESSFUL_BID);
+        auction.updateAfterAuction(winningUserId, winningBid);
         messagingTemplate.convertAndSend("/sub/auction/" + auctionId,
                 ResponseVO.success("auctionStatus", "경매가 종료되었습니다."));
 

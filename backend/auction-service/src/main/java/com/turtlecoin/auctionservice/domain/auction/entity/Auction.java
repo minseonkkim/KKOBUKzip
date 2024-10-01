@@ -66,4 +66,9 @@ public class Auction extends BaseEntity {
     public void updateStatus(AuctionProgress auctionProgress) {
         this.auctionProgress = auctionProgress;
     }
+
+    public void updateAfterAuction(Long buyerId, Double winningBid) {
+        this.buyerId = buyerId;
+        this.winningBid = winningBid;
+    }
 }
