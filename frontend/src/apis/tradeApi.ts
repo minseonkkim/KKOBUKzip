@@ -198,6 +198,7 @@ interface TransactionItemDetailData {
   message: string;
   data: { turtle: TransactionItemDetailType };
 }
+// 거래 단일항목 상세조회
 export const getTransactionDetailItemData = (transactionId: string) => {
   return apiRequest<TransactionItemDetailData>(() =>
     guestAxios.get(`/main/transaction/${transactionId}`)

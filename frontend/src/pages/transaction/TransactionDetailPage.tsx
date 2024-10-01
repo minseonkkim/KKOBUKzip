@@ -10,6 +10,7 @@ import { useEscrowStore } from "../../store/useEscrowStore";
 import { getTransactionDetailItemData } from "../../apis/tradeApi";
 import { TransactionItemDetailType } from "../../types/transaction";
 import formatDate from "../../utils/formatDate";
+import { useUserStore } from "../../store/useUserStore";
 
 function TransactionDetailPage() {
   const [transactionData, setTransactionData] =
@@ -18,6 +19,8 @@ function TransactionDetailPage() {
   const { openChatDetail } = useChatStore();
   const navigate = useNavigate();
   const params = useParams();
+  const { isLogin, userInfo } = useUserStore();
+
   const goBack = () => {
     navigate(-1); // 이전 페이지로 이동
   };
@@ -63,6 +66,14 @@ function TransactionDetailPage() {
     alert(
       "결제가 완료되었습니다. 마이페이지로 이동하여 서류 작성을 진행해 주세요!"
     );
+  };
+
+  const openChat = () => {
+    if (isLogin && userInfo && transactionData) {
+      openChatDetail(userInfo?.userId, transactionData?.sellerName);
+    } else {
+      alert("로그인해주세요!");
+    }
   };
 
   return (
@@ -150,10 +161,12 @@ function TransactionDetailPage() {
                   draggable="false"
                   alt="profile image"
                 />
-                <span className="text-[20px]">꼬북맘</span>
+                <span className="text-[20px]">
+                  {transactionData?.sellerName ?? "loading..."}
+                </span>
               </div>
               <div
-                onClick={() => openChatDetail(1, "꼬북맘")}
+                onClick={openChat}
                 className="cursor-pointer bg-[#7CBBF9] h-fit flex justify-center items-center rounded-[10px] font-bold px-3 py-2 text-white"
               >
                 채팅하기
