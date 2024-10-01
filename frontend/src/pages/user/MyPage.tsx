@@ -1,11 +1,11 @@
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 // import TmpProfileImg from "../../assets/tmp_profile.gif";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MyTurtle from "../../components/user/MyTurtle";
 import TransactionHistory from "../../components/user/TransactionHistory";
 // import NoImage from "../../assets/no_image.webp";
-import { FaRandom } from '@react-icons/all-files/fa/FaRandom';
+import { FaRandom } from "@react-icons/all-files/fa/FaRandom";
 import CustomProfile1 from "../../../public/custom_profile/profile1.gif";
 import CustomProfile2 from "../../../public/custom_profile/profile2.gif";
 import CustomProfile3 from "../../../public/custom_profile/profile3.gif";
@@ -22,13 +22,22 @@ import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
 import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 
 import { EscrowDummy } from "../../fixtures/escrowDummy";
+import { getMyTransaction } from "../../apis/userApi";
 
 function MyPage() {
   const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [profileImage, setProfileImage] = useState(CustomProfile1);
 
-  const { transactionId, sellerId, turtleId, sellerAddress, price } = EscrowDummy.data.data.transactions[0];
+  const { transactionId, sellerId, turtleId, sellerAddress, price } =
+    EscrowDummy.data.data.transactions[0];
+
+  useEffect(() => {
+    const init = async () => {
+      (await getMyTransaction()).data?.data.transaction;
+    };
+    init();
+  }, []);
 
   const profileImages = [
     CustomProfile1,
@@ -125,9 +134,30 @@ function MyPage() {
           {selectedMenu === 0 && (
             // 거래 내역이 있을 경우
             <div className="flex flex-col space-y-3">
-              <TransactionHistory isAuction={false} turtleId={turtleId} transactionId={transactionId} sellerId={sellerId} sellerAddress={sellerAddress} amount={price} />
-              <TransactionHistory isAuction={false} turtleId={turtleId} transactionId={transactionId} sellerId={sellerId} sellerAddress={sellerAddress} amount={price} />
-              <TransactionHistory isAuction={false} turtleId={turtleId} transactionId={transactionId} sellerId={sellerId} sellerAddress={sellerAddress} amount={price} />
+              <TransactionHistory
+                isAuction={false}
+                turtleId={turtleId}
+                transactionId={transactionId}
+                sellerId={sellerId}
+                sellerAddress={sellerAddress}
+                amount={price}
+              />
+              <TransactionHistory
+                isAuction={false}
+                turtleId={turtleId}
+                transactionId={transactionId}
+                sellerId={sellerId}
+                sellerAddress={sellerAddress}
+                amount={price}
+              />
+              <TransactionHistory
+                isAuction={false}
+                turtleId={turtleId}
+                transactionId={transactionId}
+                sellerId={sellerId}
+                sellerAddress={sellerAddress}
+                amount={price}
+              />
             </div>
 
             // 거래내역이 없을 경우
