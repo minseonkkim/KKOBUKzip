@@ -8,6 +8,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Modal from "./Modal";
 import { useUserStore } from "../../store/useUserStore";
 import { RiLogoutBoxLine } from "@react-icons/all-files/ri/RiLogoutBoxLine";
+import { logoutRequest } from "../../apis/userApi";
 
 // Wallet 컴포넌트를 lazy로 import
 const Wallet = lazy(() => import("./Wallet"));
@@ -26,6 +27,7 @@ export default function Header() {
   };
 
   const handleLogout = () => {
+    logoutRequest();
     setLogout();
     navigate("/");
   };

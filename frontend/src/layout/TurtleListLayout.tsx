@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import OptionFilter from "../components/common/OptionFilter";
 import { useInView } from "react-intersection-observer";
 import useTradeFilter from "../hooks/useTradeFilter";
-import AuctionTurtleSkeleton from "../components/auction/skeleton/AuctionTurtleSkeleton";
+import AuctionTurtleSkeleton from "../components/skeleton/auction/AuctionTurtleSkeleton";
 
 interface TurtleListLayoutProps {
   title: string;

@@ -67,7 +67,7 @@ export default function AuctionRegisterPage() {
 
     console.log(data);
 
-    // await addAuctionItem(formData);
+    await addAuctionItem(formData);
     alert("서브밋 핸들");
   };
   return (
@@ -78,10 +78,10 @@ export default function AuctionRegisterPage() {
 
       <Header />
 
-      <div className="px-4 lg:px-[250px] mt-[85px]">
-        <div className="text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-0 lg:pt-[32px] pb-[13px]">
+      <main className="px-4 lg:px-[250px] mt-[85px]">
+        <h1 className="text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-0 lg:pt-[32px] pb-[13px]">
           경매 등록하기
-        </div>
+        </h1>
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">
           <img
             src={TmpTurtleImg}
@@ -90,7 +90,9 @@ export default function AuctionRegisterPage() {
             className="w-[150px] md:w-[170px] h-full object-cover rounded-[10px] mr-4 md:mr-8"
           />
           <div className="flex flex-col">
-            <div className="text-[24px] md:text-[26px] font-bold mb-2">꼬부기</div>
+            <div className="text-[24px] md:text-[26px] font-bold mb-2">
+              꼬부기
+            </div>
             <div className="text-gray-600 text-[18px] md:text-[21px]">
               수컷 | 18년 3월 2일생
             </div>
@@ -122,19 +124,19 @@ export default function AuctionRegisterPage() {
               />
             </div> */}
             <div className="flex flex-row items-center">
-            <label className="w-[108px] md:w-[120px]">시작 가격</label>
-            <input
-              className="mr-1 w-[250px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
-              type="text"
-              name="min_bid"
-              value={minBid}
-              onInput={handleInputChange}
-              required
-            />
-            원
+              <label className="w-[108px] md:w-[120px]">시작 가격</label>
+              <input
+                className="mr-1 w-[250px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
+                type="text"
+                name="min_bid"
+                value={minBid}
+                onInput={handleInputChange}
+                required
+              />
+              TURT
+            </div>
           </div>
-          </div>
-          
+
           <div className="flex flex-row items-center">
             <label className="w-[108px] md:w-[120px]">체중</label>
             <input
@@ -259,7 +261,7 @@ export default function AuctionRegisterPage() {
             </button>
           </div>
         </form>
-      </div>
+      </main>
     </>
   );
 }

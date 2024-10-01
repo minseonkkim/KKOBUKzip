@@ -48,7 +48,10 @@ const loginRequest = async (
 };
 
 // 로그아웃
-const logout = async (): Promise<{ success: boolean; error?: string }> => {
+const logoutRequest = async (): Promise<{
+  success: boolean;
+  error?: string;
+}> => {
   return apiRequest(() => authAxios.post("/main/user/logout"));
 };
 
@@ -169,7 +172,7 @@ interface CreateEmailRequestResponseData {
 export {
   registerRequest,
   loginRequest,
-  logout,
+  logoutRequest,
   checkToken,
   checkEmailRequest,
   createEmailRequest,
