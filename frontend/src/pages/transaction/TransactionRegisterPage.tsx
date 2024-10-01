@@ -4,6 +4,7 @@ import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
 import { ChangeEvent, useState } from "react";
+import { registerRequest } from "../../apis/userApi";
 
 export default function TransactionRegisterPage() {
   const [images, setImages] = useState<File[]>([]);
@@ -43,6 +44,12 @@ export default function TransactionRegisterPage() {
     e.target.value = formatNumberWithCommas(e.target.value);
   };
 
+  const submitHandle = (e: React.FormEvent<HTMLFormElement>) => {
+    alert("submit");
+    e.preventDefault();
+    const formData = new FormData();
+    registerRequest(formData);
+  };
   return (
     <>
       <Helmet>
@@ -69,7 +76,10 @@ export default function TransactionRegisterPage() {
             </div>
           </div>
         </div>
-        <form className="text-[19px] md:text-[21px] flex flex-col gap-4">
+        <form
+          onSubmit={submitHandle}
+          className="text-[19px] md:text-[21px] flex flex-col gap-4"
+        >
           <div className="flex flex-row items-center">
             <label className="w-[108px] md:w-[120px]">판매가</label>
             <input
@@ -196,7 +206,10 @@ export default function TransactionRegisterPage() {
             </div>
           </div>
           <div className="flex justify-center mb-[20px]">
-            <button className="text-white text-[20px] font-bold bg-black w-fit px-4 py-2 rounded-[10px]">
+            <button
+              type="submit"
+              className="text-white text-[20px] font-bold bg-black w-fit px-4 py-2 rounded-[10px]"
+            >
               등록하기
             </button>
           </div>
