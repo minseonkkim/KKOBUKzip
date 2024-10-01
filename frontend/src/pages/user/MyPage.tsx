@@ -23,12 +23,13 @@ import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 
 import { EscrowDummy } from "../../fixtures/escrowDummy";
 import { getMyTransaction } from "../../apis/userApi";
+import { useUserStore } from "../../store/useUserStore";
 
 function MyPage() {
   const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [profileImage, setProfileImage] = useState(CustomProfile1);
-
+  const { userInfo } = useUserStore();
   const { transactionId, sellerId, turtleId, sellerAddress, price } =
     EscrowDummy.data.data.transactions[0];
 
@@ -83,16 +84,16 @@ function MyPage() {
         <title>마이페이지</title>
       </Helmet>
       <Header />
-      <div className="flex flex-col h-[100vh] overflow-hidden px-4 lg:px-[250px] pt-[85px]">
+      <main className="flex flex-col h-[100vh] overflow-hidden px-4 lg:px-[250px] pt-[85px]">
         <div className="flex flex-row justify-between items-center mt-0 lg:mt-[30px] px-[30px] py-[20px] bg-gradient-to-r from-[#e7f6d1] via-[#d5e5bd] to-[#e7f6d1] rounded-[20px]">
           <div className="w-1/2">
             <div className="font-dnf-bitbit text-[#4B721F] text-[24px] md:text-[27px] mt-1 mb-3 md:mb-5">
               내 정보
             </div>
             <div className="lg:text-[22px] text-[17px]">
-              <div>닉네임: 꼬북맘</div>
-              <div>주소: 바다</div>
-              <div>연락처: 000-0000-0000</div>
+              <div>닉네임: {userInfo?.nickname}</div>
+              <div>주소: {userInfo?.address}</div>
+              <div>연락처: {userInfo?.phoneNumber}</div>
             </div>
           </div>
           <div
@@ -100,7 +101,7 @@ function MyPage() {
             onClick={openCustomModal}
           >
             <img
-              src={profileImage}
+              src={userInfo?.profileImage}
               className="rounded-full object-cover w-[132px] h-[132px] lg:w-[162px] lg:h-[162px] transition-all duration-300 group-hover:brightness-50"
               draggable="false"
               alt="profile image"
@@ -178,7 +179,7 @@ function MyPage() {
             </div>
           )}
         </div>
-      </div>
+      </main>
 
       {isCustomModalOpen && (
         <div
