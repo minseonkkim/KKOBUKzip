@@ -6,7 +6,7 @@ import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.auction.service.AuctionService;
 import com.turtlecoin.auctionservice.domain.auction.service.BidService;
-import com.turtlecoin.auctionservice.domain.auction.service.SendService;
+import com.turtlecoin.auctionservice.domain.auction.service.SchedulingService;
 import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.global.exception.*;
@@ -21,7 +21,12 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 @Slf4j
 @RestController
@@ -33,7 +38,7 @@ public class AuctionController {
     private final AuctionService auctionService;
     private final BidService bidService;
     private final AuctionRepository auctionRepository;
-    private final SendService sendService;
+    private final SchedulingService schedulingService;
 
     // 테스트
     @GetMapping("/test")

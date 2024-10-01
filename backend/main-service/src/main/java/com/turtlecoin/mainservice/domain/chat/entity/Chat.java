@@ -20,7 +20,7 @@ public class Chat {
 	public ObjectId id;
 	public Long smallUser;
 	public Long bigUser;
-	public LocalDateTime recentTime;
+	public String recentTime;
 	public List<ChatMessage> messages;
 }
 

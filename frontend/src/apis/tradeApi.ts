@@ -67,11 +67,11 @@ interface AuctionListData {
 /**
  * 주어진 필터를 기반으로 경매 데이터 목록을 가져옵니다.
  *
- * @param gender - 경매 항목의 성별. 'w'는 암컷, 'm'은 수컷입니다.
- * @param sizeStart - 항목의 크기 범위를 'AbetweenB' 형식으로 지정합니다 (예: '2between5').
- * @param sizeEnd - 항목의 크기 범위를 'AbetweenB' 형식으로 지정합니다 (예: '2between5').
- * @param priceStar - 항목의 가격 범위를 'AbetweenB' 형식으로 지정합니다 (예: '100between500').
- * @param priceEnd - 항목의 가격 범위를 'AbetweenB' 형식으로 지정합니다 (예: '100between500').
+ * @param gender - 경매 항목의 성별.
+ * @param minWeight - 항목의 크기 범위를 'AbetweenB' 형식으로 지정합니다 (예: '2between5').
+ * @param maxWeight - 항목의 크기 범위를 'AbetweenB' 형식으로 지정합니다 (예: '2between5').
+ * @param minPrice - 항목의 가격 범위를 'AbetweenB' 형식으로 지정합니다 (예: '100between500').
+ * @param maxPrice - 항목의 가격 범위를 'AbetweenB' 형식으로 지정합니다 (예: '100between500').
  * @param progress - 경매 진행 상태입니다. 선택지는 다음과 같습니다:
  *   1: 경매 시작 전,
  *   2: 경매 진행 중,
@@ -87,35 +87,42 @@ interface AuctionListData {
 export const getAuctionDatas = async ({
   page,
   gender,
-  sizeStart,
-  sizeEnd,
-  priceEnd,
-  priceStart,
+  minWeight,
+  maxWeight,
+  maxPrice,
+  minPrice,
   progress,
 }: {
   page?: number;
   gender?: string;
-  sizeStart?: number;
-  sizeEnd?: number;
-  priceStart?: number;
-  priceEnd?: number;
+  minWeight?: string;
+  maxWeight?: string;
+  minPrice?: string;
+  maxPrice?: string;
   progress?: number;
 }) => {
   // query setting
   const pageQuery = page ? `page=${page}` : "page=0";
   const genderQuery = gender ? `&gender=${gender}` : "";
   const sizeQuery =
-    sizeStart && sizeEnd ? `&size=${sizeStart}between${sizeEnd}` : "";
+    minWeight || maxWeight
+      ? `&size=${minWeight ? minWeight : "0"}between${
+          maxWeight ? maxWeight : "999999999999"
+        }`
+      : "";
   const priceQuery =
-    priceStart && priceEnd ? `&price=${priceStart}between${priceEnd}` : "";
+    minPrice || maxPrice
+      ? `&price=${minPrice ? minPrice : "0"}between${
+          maxPrice ? maxPrice : "999999999999"
+        }`
+      : "";
   const progressQuery = progress ? `&progress=${progress}` : "";
 
   const query =
     pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
-
   // request
   const response = await apiRequest<AuctionListData>(() =>
-    guestAxios.get(`/auction/?${query}`)
+    guestAxios.get(`/auction?${query}`)
   );
   return response;
 };
@@ -162,26 +169,34 @@ export interface TransactionListData {
 export const getTransactionData = async ({
   page,
   gender,
-  sizeStart,
-  sizeEnd,
-  priceEnd,
-  priceStart,
+  minWeight,
+  maxWeight,
+  maxPrice,
+  minPrice,
   progress,
 }: {
   page?: number;
   gender?: string;
-  sizeStart?: number;
-  sizeEnd?: number;
-  priceStart?: number;
-  priceEnd?: number;
+  minWeight?: string;
+  maxWeight?: string;
+  minPrice?: string;
+  maxPrice?: string;
   progress?: number;
 }) => {
   const pageQuery = page ? `page=${page}` : "page=0";
   const genderQuery = gender ? `&gender=${gender}` : "";
   const sizeQuery =
-    sizeStart && sizeEnd ? `&size=${sizeStart}between${sizeEnd}` : "";
+    minWeight || maxWeight
+      ? `&size=${minWeight ? minWeight : "0"}between${
+          maxWeight ? maxWeight : "999999999999"
+        }`
+      : "";
   const priceQuery =
-    priceStart && priceEnd ? `&price=${priceStart}between${priceEnd}` : "";
+    minPrice || maxPrice
+      ? `&price=${minPrice ? minPrice : "0"}between${
+          maxPrice ? maxPrice : "999999999999"
+        }`
+      : "";
   const progressQuery = progress ? `&progress=${progress}` : "";
 
   const query =
@@ -198,8 +213,23 @@ interface TransactionItemDetailData {
   message: string;
   data: { turtle: TransactionItemDetailType };
 }
+// 거래 단일항목 상세조회
 export const getTransactionDetailItemData = (transactionId: string) => {
   return apiRequest<TransactionItemDetailData>(() =>
     guestAxios.get(`/main/transaction/${transactionId}`)
   );
+};
+
+// 거래 등록
+export const addTransactionItem = async (transactionData: FormData) => {
+  const response = await apiRequest<{ status: number; message: string }>(() =>
+    authAxios.post("/main/transaction", transactionData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      timeout: 10000,
+    })
+  );
+  return response;
 };

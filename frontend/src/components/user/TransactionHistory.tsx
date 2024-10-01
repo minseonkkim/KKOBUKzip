@@ -40,8 +40,12 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
 
     const handleDeposit = async () => {
         if (account && props.transactionId !== undefined && props.sellerAddress && props.amount !== undefined) {
-            await createTransaction(props.isAuction!, props.transactionId, props.sellerAddress, props.amount);
-            alert("거래 대금 송금이 완료되었습니다. 서류 작성을 진행해 주세요.")
+            const isFinish = await createTransaction(props.isAuction!, props.transactionId, props.sellerAddress, props.amount);
+            if (isFinish) {
+                alert("거래 대금 송금이 완료되었습니다. 서류 작성을 진행해 주세요.")
+            } else {
+                alert("거래 대금 송금해 실패했습니다. 다시 시도해 주세요.")
+            }
             console.log("트랜잭션 생성과 토큰 전송이 완료되었습니다.")
         } else {
             console.error("Missing required props for createTransaction");
@@ -52,17 +56,22 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
         // 서류 페이지로 넘어가는 로직
         // 여기에 구매자(양수인), 판매자(양도인) 여부에 따라 네비게이트하는 로직 구체화
         if (userInfo?.userId === props.sellerId) {
-            navigate("/form-doc/grant", { state: { turtleId: props.turtleId, transactionId: props.transactionId }})
+            navigate("/doc-form/grant", { state: { turtleId: props.turtleId, transactionId: props.transactionId }})
             console.log("Navigate to seller paperwork page");
         } else {
-            navigate("/form-doc/assign", { state: { turtleId: props.turtleId, transactionId: props.transactionId }})
+            navigate("/doc-form/assign", { state: { turtleId: props.turtleId, transactionId: props.transactionId }})
             console.log("Navigate to buyer paperwork page");
         }
     };
 
     const finalizeTransaction = async () => {
         if (props.transactionId !== undefined) {
-            await releaseFunds(props.isAuction!, props.transactionId);
+            const isFinish = await releaseFunds(props.isAuction!, props.transactionId);
+            if (isFinish) {
+                alert("구매가 확정되어 거래가 완료되었습니다.")
+            } else {
+                alert("구매 확정에 실패했습니다. 다시 시도해 주세요.")
+            }
         } else {
             console.error("TransactionId is undefined");
         }

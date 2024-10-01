@@ -18,6 +18,8 @@ import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
 import com.turtlecoin.auctionservice.global.exception.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 @Slf4j
 @Service
@@ -42,6 +45,8 @@ public class AuctionService {
     private final MainClient mainClient;
     private final JPAQueryFactory queryFactory;
     private final RedissonLockFacade redissonLockFacade;
+    private final SchedulingService schedulingService;
+    private final BidService bidService;
 
     // 경매 등록
     @Transactional
@@ -53,6 +58,10 @@ public class AuctionService {
 
         // 경매 저장
         Auction auction = auctionRepository.save(registerAuctionDTO.toEntity());
+
+        // 동적 스케줄링 수행
+        Consumer<Long> startAuction = bidService::startAuction;
+        schedulingService.scheduleTask(auction.getId(), startAuction, auction.getStartTime());
 
         // 이미지 업로드 처리
         List<AuctionPhoto> uploadedPhotos = new ArrayList<>();
@@ -215,5 +224,19 @@ public class AuctionService {
         }
 
         // redis에 담긴 마지막 입찰자와 종료 시간 변경
+    }
+
+    // 서버 재시작시 스케줄링 다시 등록하기
+    @EventListener(ApplicationReadyEvent.class)
+    @Transactional
+    public void scheduleReload(){
+        List<Auction> acutions = auctionRepository.findByAuctionProgress(AuctionProgress.BEFORE_AUCTION);
+
+        for(Auction auction : acutions){
+            if(auction.getStartTime().isAfter(LocalDateTime.now())){
+                Consumer<Long> startAuction = bidService::startAuction;
+                schedulingService.scheduleTask(auction.getId(), startAuction, auction.getStartTime());
+            }
+        }
     }
 }

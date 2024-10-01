@@ -5,10 +5,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AuctionItemDataType } from "../../types/auction";
 import { getAuctionDetailItemData } from "../../apis/tradeApi";
 import AuctionItemInfo from "../../components/auction/AuctionItemInfo";
-import AuctionItemInfoSkeleton from "../../components/auction/skeleton/AuctionItemInfoSkeleton";
 import BeforeAuction from "../../components/auction/BeforeAuction";
 import DuringAuction from "../../components/auction/DuringAuction";
 import AfterAuction from "../../components/auction/AfterAuction";
+import AuctionItemInfoSkeleton from "../../components/skeleton/auction/AuctionItemInfoSkeleton";
 
 // flow
 // 1. 경매 시작 전 -> SSE 연결, get으로 가져옴

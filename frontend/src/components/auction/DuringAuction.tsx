@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import MovingTurtle from "../../assets/moving_turtle.webp";
 import { useSpring, animated } from "@react-spring/web";
 import { CompatClient, Stomp } from "@stomp/stompjs";
+import { useUserStore } from "../../store/useUserStore";
 
 interface StompFrame {
   command: string;
@@ -29,7 +30,7 @@ interface BidRecordData {
   bidRecord: MessageType;
 }
 
-const auctionId = 95;
+// const auctionId = 3;
 function DuringAuction({
   channelId,
   minBid,
@@ -38,9 +39,13 @@ function DuringAuction({
   minBid: number;
 }) {
   const auctionStompClient = useRef<CompatClient | null>(null);
+
+  const auctionId = Number(channelId);
   const [loading, setLoading] = useState(true);
   // const [isBidStarted, setIsBidStarted] = useState(false);
   const [nextBid, setNextBid] = useState(minBid);
+  const { userInfo } = useUserStore();
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
@@ -113,7 +118,7 @@ function DuringAuction({
   const sendBidRequest = () => {
     const data = {
       auctionId,
-      userId: 4, // store에서 가져올 것
+      userId: userInfo?.userId, // store에서 가져올 것
       bidAmount: bidPrice, // 현재입찰가
     };
 
@@ -125,7 +130,8 @@ function DuringAuction({
         },
         JSON.stringify(data)
       );
-    console.log("메세지 수신 테스트");
+    console.log("메세지BidRequest 테스트", data);
+    // 이곳에서 디바운싱 적용할 것
   };
 
   const [bidPrice, setBidPrice] = useState(minBid); // 입찰가
@@ -238,7 +244,12 @@ function DuringAuction({
             className="absolute -top-8"
             style={turtlePositionSpring}
           >
-            <img src={MovingTurtle} className="w-[57px]" draggable="false" alt="turtle image"/>
+            <img
+              src={MovingTurtle}
+              className="w-[57px]"
+              draggable="false"
+              alt="turtle image"
+            />
           </animated.div>
         </div>
         <div className="w-full mb-3">

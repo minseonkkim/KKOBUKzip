@@ -97,6 +97,13 @@ public class UserService {
                 .build();
     }
 
+    public String getProfileImageByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        return user.getProfileImage();
+    }
+
     public List<TurtleResponseDTO> getTurtlesByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
