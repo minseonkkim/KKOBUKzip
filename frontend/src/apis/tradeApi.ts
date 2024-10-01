@@ -115,7 +115,7 @@ export const getAuctionDatas = async ({
 
   // request
   const response = await apiRequest<AuctionListData>(() =>
-    guestAxios.get(`/auction/?${query}`)
+    guestAxios.get(`/auction?${query}`)
   );
   return response;
 };
