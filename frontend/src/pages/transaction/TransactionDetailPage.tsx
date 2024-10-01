@@ -169,7 +169,7 @@ function TransactionDetailPage() {
                     판매가&nbsp;&nbsp;
                   </div>
                   <div className="font-bold text-[31px] md:text-[39px] text-[#4B721F] font-stardust">
-                    {Math.floor(8000000).toLocaleString()}원
+                    {Math.floor(8000000).toLocaleString()} TURT
                   </div>
                 </div>
                 <button
