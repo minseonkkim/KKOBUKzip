@@ -185,12 +185,23 @@ function TransactionDetailPage() {
                     {Math.floor(8000000).toLocaleString()} TURT
                   </div>
                 </div>
-                <button
-                  className="whitespace-nowrap mt-0 md:mt-5 cursor-pointer bg-[#4B721F] text-white py-2 px-4 md:py-3 md:px-7 rounded-[10px] active:scale-90 text-[23px] md:text-[30px] font-dnf-bitbit"
-                  onClick={handleDeposit}
-                >
-                  구매하기
-                </button>
+
+                {transactionData?.progress === "COMPLETED" && (
+                  <button
+                    className="whitespace-nowrap mt-0 md:mt-5 cursor-not-allowed bg-gray-600 text-white py-2 px-4 md:py-3 md:px-7 rounded-[10px] active:scale-90 text-[23px] md:text-[30px] font-dnf-bitbit"
+                    // onClick={handleDeposit}
+                  >
+                    판매완료
+                  </button>
+                )}
+                {transactionData?.progress === "SAIL" && (
+                  <button
+                    className="whitespace-nowrap mt-0 md:mt-5 cursor-pointer bg-[#4B721F] text-white py-2 px-4 md:py-3 md:px-7 rounded-[10px] active:scale-90 text-[23px] md:text-[30px] font-dnf-bitbit"
+                    onClick={handleDeposit}
+                  >
+                    구매하기
+                  </button>
+                )}
               </div>
             </div>
           </div>
