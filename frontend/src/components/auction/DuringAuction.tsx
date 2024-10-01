@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import MovingTurtle from "../../assets/moving_turtle.gif";
+import MovingTurtle from "../../assets/moving_turtle.webp";
 import { useSpring, animated } from "@react-spring/web";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 
@@ -8,11 +8,39 @@ interface StompFrame {
   headers: Record<string, string>;
   body?: string;
 }
-const auctionId = 1;
-function DuringAuction({ channelId }: { channelId: string }) {
+
+interface MessageType {
+  auctionId: string;
+  userId: string;
+  bidAmount: string;
+  nextBid: string;
+  nickname: string;
+}
+
+interface WsResponseType {
+  status: string;
+  data: {
+    data: BidRecordData;
+  };
+  message: string;
+}
+
+interface BidRecordData {
+  bidRecord: MessageType;
+}
+
+const auctionId = 3;
+function DuringAuction({
+  channelId,
+  minBid,
+}: {
+  channelId: string;
+  minBid: number;
+}) {
   const auctionStompClient = useRef<CompatClient | null>(null);
   const [loading, setLoading] = useState(true);
-
+  // const [isBidStarted, setIsBidStarted] = useState(false);
+  const [nextBid, setNextBid] = useState(minBid);
   useEffect(() => {
     const init = async () => {
       setLoading(true);
@@ -25,15 +53,45 @@ function DuringAuction({ channelId }: { channelId: string }) {
       // 메세지 수신
       auctionStompClient.current.connect(
         {
-          //  Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoidGVzdEB0ZXN0LmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MjczMjc1ODQsImV4cCI6MTcyNzMyODE4NH0.CZ0rgjiGXJmXbdkeUa-AZCCMgKLImW2Cwt5euIuUuNM`
+          //  Authorization:
         },
         (frame: StompFrame) => {
           console.log("Connected: " + frame);
           auctionStompClient.current!.subscribe(
-            `/pub/auction/${auctionId}/bid`,
+            `/sub/auction/${auctionId}`,
             (message) => {
-              const newMessage = JSON.parse(message.body);
-              console.log(newMessage);
+              console.log("Received message:", message.body);
+              const newMessage: WsResponseType = JSON.parse(message.body);
+              // 다음 가격 수신
+              const newNextBid = Number(newMessage.data.data.bidRecord.nextBid);
+              setBidPrice(newNextBid);
+              setNextBid(newNextBid);
+              setBidHistory((prev) => {
+                const newHistory = [
+                  {
+                    bidder: newMessage.data.data.bidRecord.nickname,
+                    price: Number(newMessage.data.data.bidRecord.bidAmount),
+                  },
+                  ...prev,
+                ];
+                return newHistory.slice(0, 8);
+              });
+              // 여기까지 기존 거래 반영
+              // 하단은 UI효과
+              setTimeLeft(30);
+              setProgress(100); // 입찰 시 progress 값 초기화
+              setShowEmoji(true);
+              emojiApi.start({
+                from: { opacity: 0, transform: "translateY(50px)" },
+                to: { opacity: 1, transform: "translateY(0px)" },
+                onRest: () => {
+                  emojiApi.start({
+                    opacity: 0,
+                    transform: "translateY(-50px)",
+                  });
+                },
+              });
+              console.log("새로운 Message :", newMessage);
             },
             { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
           );
@@ -52,22 +110,29 @@ function DuringAuction({ channelId }: { channelId: string }) {
     };
   }, [channelId]);
 
-  const sendWSRequest = () => {
+  const sendBidRequest = () => {
+    const data = {
+      auctionId,
+      userId: 1, // store에서 가져올 것
+      bidAmount: bidPrice, // 현재입찰가
+    };
+
     if (auctionStompClient.current && auctionStompClient.current.connected)
       auctionStompClient.current.send(
-        `/sub/auction/${auctionId}`,
+        `/pub/auction/${auctionId}/bid`,
         {
           //  Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`
         },
-        JSON.stringify("메세지 송신 테스트" + new Date())
+        JSON.stringify(data)
       );
+    console.log("메세지 수신 테스트");
   };
 
-  // ------------------여기까지 작성했음--------------
-
-  const [bidPrice, setBidPrice] = useState(3000000); // 입찰가
-  const [bidHistory, setBidHistory] = useState([
-    { bidder: "민굥", price: 3400000 },
+  const [bidPrice, setBidPrice] = useState(minBid); // 입찰가
+  const [bidHistory, setBidHistory] = useState<
+    { bidder: string; price: number }[]
+  >([
+    // { bidder: "민굥", price: 3400000 },
   ]);
 
   const [springProps, api] = useSpring(() => ({
@@ -125,32 +190,33 @@ function DuringAuction({ channelId }: { channelId: string }) {
     // 프로그레스 값을 실시간으로 업데이트하여 자연스러운 진행 표시
     setProgress((100 * timeLeft) / 30);
   }, [timeLeft]);
+  // ------------------여기까지 작성했음--------------
 
-  const handleBid = () => {
-    if (!auctionEnded) {
-      const newPrice = bidPrice + 100000;
-      setBidPrice(newPrice);
-      setTimeLeft(30);
-      setProgress(100); // 입찰 시 progress 값 초기화
+  // const handleBid = () => {
+  //   if (!auctionEnded) {
+  //     const newPrice = bidPrice + 100000;
+  //     setBidPrice(newPrice);
+  //     setTimeLeft(30);
+  //     setProgress(100); // 입찰 시 progress 값 초기화
 
-      setBidHistory((prevHistory) => {
-        const newHistory = [
-          { bidder: "꼬북맘", price: newPrice },
-          ...prevHistory,
-        ];
-        return newHistory.slice(0, 8);
-      });
+  //     setBidHistory((prevHistory) => {
+  //       const newHistory = [
+  //         { bidder: "꼬북맘", price: newPrice },
+  //         ...prevHistory,
+  //       ];
+  //       return newHistory.slice(0, 8);
+  //     });
 
-      setShowEmoji(true);
-      emojiApi.start({
-        from: { opacity: 0, transform: "translateY(50px)" },
-        to: { opacity: 1, transform: "translateY(0px)" },
-        onRest: () => {
-          emojiApi.start({ opacity: 0, transform: "translateY(-50px)" });
-        },
-      });
-    }
-  };
+  //     setShowEmoji(true);
+  //     emojiApi.start({
+  //       from: { opacity: 0, transform: "translateY(50px)" },
+  //       to: { opacity: 1, transform: "translateY(0px)" },
+  //       onRest: () => {
+  //         emojiApi.start({ opacity: 0, transform: "translateY(-50px)" });
+  //       },
+  //     });
+  //   }
+  // };
 
   useEffect(() => {
     api.start({ price: bidPrice });
@@ -172,7 +238,7 @@ function DuringAuction({ channelId }: { channelId: string }) {
             className="absolute -top-8"
             style={turtlePositionSpring}
           >
-            <img src={MovingTurtle} className="w-[57px]" draggable="false" />
+            <img src={MovingTurtle} className="w-[57px]" draggable="false" alt="turtle image"/>
           </animated.div>
         </div>
         <div className="w-full mb-3">
@@ -184,7 +250,8 @@ function DuringAuction({ channelId }: { channelId: string }) {
           <div className="flex flex-col justify-center items-center mb-4">
             <div className="flex flex-row items-center">
               <div className="font-bold text-[27px]">
-                현재 입찰가&nbsp;&nbsp;
+                {minBid === bidPrice ? "최소 입찰가" : "현재 입찰가"}
+                &nbsp;&nbsp;
               </div>
               <animated.div className="font-bold text-[39px] text-[#4B721F] font-stardust">
                 {springProps.price.to(
@@ -193,22 +260,16 @@ function DuringAuction({ channelId }: { channelId: string }) {
               </animated.div>
             </div>
             <button
-              onClick={handleBid}
+              onClick={() => {
+                // handleBid();
+                sendBidRequest();
+              }}
               className="mt-5 cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] active:scale-90 text-[30px] font-dnf-bitbit"
               disabled={auctionEnded}
             >
               {auctionEnded ? "낙찰 완료" : "👋🏻 입찰하기"}
             </button>
-            {/* 테스트 버튼 */}
-            <>
-              <button
-                className="mt-5 cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] active:scale-90 text-[30px] font-dnf-bitbit"
-                onClick={sendWSRequest}
-              >
-                웹소켓메세지보내기버튼
-              </button>
-            </>
-            {/* 테스트 버튼 끝 */}
+
             <div className="flex flex-col w-full text-[23px] mt-[80px]">
               {bidHistory.map((bid, index) => (
                 <div

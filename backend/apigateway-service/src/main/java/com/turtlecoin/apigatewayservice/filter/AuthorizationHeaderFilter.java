@@ -4,24 +4,25 @@ import com.turtlecoin.apigatewayservice.util.JWTUtil;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 @Component
 public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<AuthorizationHeaderFilter.Config> {
     private final JWTUtil jwtUtil;
     public AuthorizationHeaderFilter(JWTUtil jwtUtil) {
         super(Config.class);  // Config 클래스를 상위 클래스에 전달
-        System.out.println("검증 시작1");
         this.jwtUtil = jwtUtil;
     }
     public static class Config {
     }
     @Override
     public GatewayFilter apply(AuthorizationHeaderFilter.Config config) {
-        System.out.println("검증 시작2");
         return (exchange,chain)->{
             // 1. 요청 헤더에서 Authorization 헤더를 가져옴
             String authorizationHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
@@ -48,7 +49,6 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
             String role = jwtUtil.getRoleFromToken(token);
 
 
-            // 6. 필터 체인에 요청을 넘김
             return chain.filter(exchange);
         };
     }
@@ -56,6 +56,13 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
 
     private Mono<Void> onError(ServerWebExchange exchange, String err, HttpStatus httpStatus) {
         exchange.getResponse().setStatusCode(httpStatus);
-        return exchange.getResponse().setComplete();
+        exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
+        // JSON 응답 바디 생성
+        String jsonResponse = String.format("{\"status\": %d, \"message\": \"%s\"}", httpStatus.value(), err);
+
+        // 응답 바디에 JSON 쓰기
+        byte[] bytes = jsonResponse.getBytes(StandardCharsets.UTF_8);
+        return exchange.getResponse().writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
     }
 }

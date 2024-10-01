@@ -25,10 +25,9 @@ const apiRequest = async <T>(
     return { success: true, data: response.data };
   } catch (error) {
     let errorMessage = "알 수 없는 오류가 발생했습니다.";
-
     if (axios.isAxiosError(error)) {
       // AxiosError 타입 확인 및 처리
-      errorMessage = error.response?.data?.msg || error.message;
+      errorMessage = error.response?.data?.message || error.message;
     } else if (error instanceof Error) {
       // 일반 JavaScript Error 처리
       errorMessage = error.message;
@@ -55,14 +54,18 @@ const logout = async (): Promise<{ success: boolean; error?: string }> => {
 
 // 회원가입
 const registerRequest = async (
-  data: JoinDataType
+  data: FormData
 ): Promise<{
   success: boolean;
   data?: RegisterResponseData;
   error?: string;
 }> => {
   return apiRequest(() =>
-    guestAxios.post<RegisterResponseData>("/main/user/signup", { data })
+    guestAxios.post<RegisterResponseData>("/main/user/join", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
   );
 };
 
@@ -117,11 +120,12 @@ interface LoginResponseData {
     accessToken: string;
     refreshToken: string;
     role: string; // 유저는 user 관리자는 admin
-    id: number;
+    userId: number;
     email: string;
-    addres: string;
-    CP: string;
+    address: string;
+    phoneNumber: string;
     nickname: string;
+    profileImage: string;
   };
 }
 

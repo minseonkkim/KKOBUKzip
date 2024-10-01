@@ -1,33 +1,34 @@
 // TurtleListLayout.tsx
 import { Helmet } from "react-helmet-async";
 import Header from "../components/common/Header";
-import { GrPowerReset } from "react-icons/gr";
-import { FaCheck } from "react-icons/fa6";
-import { IoIosSearch } from "react-icons/io";
-import { IoFilterOutline } from "react-icons/io5";
+import { GrPowerReset } from "@react-icons/all-files/gr/GrPowerReset";
+import { FaCheck } from "@react-icons/all-files/fa/FaCheck";
+import { IoIosSearch } from "@react-icons/all-files/io/IoIosSearch";
+import { IoFilterOutline } from "@react-icons/all-files/io5/IoFilterOutline";
 import { useEffect, useState } from "react";
 import OptionFilter from "../components/common/OptionFilter";
 import { useInView } from "react-intersection-observer";
 import useTradeFilter from "../hooks/useTradeFilter";
+import AuctionTurtleSkeleton from "../components/auction/skeleton/AuctionTurtleSkeleton";
 
 interface TurtleListLayoutProps {
   title: string;
   items: JSX.Element[];
   fetchData: (page: number, filters: object) => Promise<any>;
-  skeletonComponent?: JSX.Element;
+  // skeletonComponent?: JSX.Element;
 }
 
 const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   title,
   items,
   fetchData,
-  skeletonComponent,
+  // skeletonComponent,
 }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [itemLoading, setItemLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
-  const [pages, setPages] = useState(1); // next page
+  const [pages, setPages] = useState(0); // next page, 0부터~
   const [maxPage, setMaxPage] = useState(-1);
 
   const [ref, inView] = useInView({ threshold: 1 });
@@ -39,24 +40,25 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
       try {
         const response = await fetchData(pages, filters);
         if (response.success) {
-          setMaxPage(response.data.total_pages);
+          setMaxPage(response.data.data.data.total_pages);
         }
-        setPages((prev) => prev + 1);
+        setPages(1);
       } finally {
         setItemLoading(false);
         setInitialLoad(false);
       }
     };
     getData();
-  }, [fetchData, filters]);
+  }, [fetchData]);
 
   const loadMore = async () => {
-    if (itemLoading || pages > maxPage) return;
+    if (itemLoading || pages >= maxPage) return;
+    console.log(pages >= maxPage);
     setItemLoading(true);
     try {
       const response = await fetchData(pages, filters);
       if (response.success) {
-        setMaxPage(response.data.total_pages ?? -1);
+        setMaxPage(response.data.data.data.total_pages - 1);
         setPages((prev) => prev + 1);
       }
     } finally {
@@ -76,6 +78,11 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
     setIsFilterOpen(!isFilterOpen);
   };
 
+  const searchHandle = async () => {
+    setPages(0);
+    await fetchData(0, filters);
+    // console.log(filters);
+  };
   return (
     <>
       <Helmet>
@@ -83,7 +90,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
       </Helmet>
 
       <Header />
-      <div className="h-screen flex flex-col pt-[85px] px-4 lg:px-[250px]">
+      <main className="h-screen flex flex-col pt-[85px] px-4 lg:px-[250px]">
         <div className="flex flex-col md:flex-row items-center justify-between pt-0 lg:pt-[32px] pb-[5px] lg:pb-[13px]">
           <div className="whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 mb-2 md:mb-0">
             {title}
@@ -150,7 +157,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
         >
           {isFilterOpen && (
             <OptionFilter
-              filterApplyHandle={() => console.log(filters)}
+              filterApplyHandle={searchHandle}
               filters={filters}
               updateFilter={updateFilter}
             />
@@ -158,18 +165,25 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
         </div>
 
         <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
-          {initialLoad &&
-            Array.from({ length: 6 }).map((_, index) => (
-              <div key={`skeleton-${index}`} className="col-span-1">
-                {skeletonComponent}
-              </div>
-            ))}
-
+          {/* {skeletonComponent} */}
           {!initialLoad && items}
-
+          {initialLoad ||
+            (itemLoading && (
+              <>
+                <div className="hidden md:block col-span-1">
+                  <AuctionTurtleSkeleton />
+                </div>
+                <div className="hidden xl:block col-span-1">
+                  <AuctionTurtleSkeleton />
+                </div>
+                <div className="block col-span-1">
+                  <AuctionTurtleSkeleton />
+                </div>
+              </>
+            ))}
           <div ref={ref} className="w-full h-[1px] col-span-full" />
         </div>
-      </div>
+      </main>
     </>
   );
 };

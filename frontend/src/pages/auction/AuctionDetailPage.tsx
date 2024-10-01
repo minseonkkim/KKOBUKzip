@@ -136,7 +136,10 @@ function AuctionDetailPage() {
             />
           )}
           {auctionStatus === "DURING_AUCTION" && (
-            <DuringAuction channelId={String(auctionItemData?.id)} />
+            <DuringAuction
+              minBid={auctionItemData?.minBid!}
+              channelId={String(auctionItemData?.id)}
+            />
           )}
           {(auctionStatus === "NO_BID" ||
             auctionStatus === "SUCCESSFUL_BID") && <AfterAuction />}

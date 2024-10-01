@@ -2,6 +2,7 @@ package com.turtlecoin.mainservice.domain.transaction.entity;
 
 import com.turtlecoin.mainservice.domain.transaction.dto.DetailTransactionResponseDto;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
+import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
@@ -46,12 +47,12 @@ public class Transaction extends BaseEntity {
     @Column(name="seller_address")
     private String sellerAddress;
 
-    @OneToMany(mappedBy = "transaction")
+    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     @Column(name = "transaction_photos")
     @Builder.Default
     private List<TransactionPhoto> transactionPhotos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "transaction")
+    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     @Builder.Default
     private List<TransactionTag> tags = new ArrayList<>();
 
@@ -66,7 +67,9 @@ public class Transaction extends BaseEntity {
         this.progress = TransactionProgress.COMPLETED;
     }
 
+    @Transactional
     public DetailTransactionResponseDto toResponseDTO() {
+
         return DetailTransactionResponseDto.builder()
                 .transactionId(this.id)
                 .sellerId(this.turtle.getUser().getId()) // Seller ID

@@ -22,30 +22,31 @@ export default function AuctionTurtle({
             src={TmpTurtle}
             className="w-full h-[200px] object-cover transition-transform duration-300 hover:scale-110"
             draggable="false"
-            alt="거북이 이미지"
+            alt="turtle image"
           />
         </div>
         <div className="absolute top-4 right-4">
           <AuctionStatusTag progress={"경매중"} />
         </div>
-        <div className="px-3 py-1">
-          <div className="flex justify-between items-center my-2">
-            <h3 className="text-[16px] xl:text-[17px] font-semibold whitespace-nowrap">
-              페닐슐라쿠터
-            </h3>
+        <div className="px-3 py-2">
+          <div className="w-full overflow-hidden text-[20px] mb-4 text-gray-900 whitespace-nowrap text-ellipsis">거북이 팔아용 거북이 팔아용 거북이 팔아용 거북이 팔아용</div>
+
+          <div className="flex justify-between items-center">
+            <div className="text-[15px] xl:text-[17px] whitespace-nowrap text-[#9A9A9A]">페닐슐라쿠터</div>
             <div className="text-[15px] text-gray-700 flex space-x-1.5">
-              <span className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full">
-                #태그
-              </span>
+              {/* {auction_tag.map((tag, index) => ( */}
+                <span
+                  // key={index}
+                  className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full"
+                >
+                  #베이비
+                </span>
+              {/* ))} */}
             </div>
           </div>
-          {/* 가격, 시간 라이브러리 쓰기 */}
-          <div className="flex flex-col">
-            <div className="whitespace-nowrap font-extrabold text-3xl text-[#4B721F] mt-1 font-stardust">
-              3,000,000원↑
-            </div>
+          <div className="whitespace-nowrap font-extrabold text-[28px] text-[#4B721F] font-stardust">
+            {(3000000).toLocaleString("ko-KR") + "원 ↑"}
           </div>
-          <div className="text-[18px] text-[#BA0606]">10초 뒤 가격 상승</div>
         </div>
       </div>
     </div>

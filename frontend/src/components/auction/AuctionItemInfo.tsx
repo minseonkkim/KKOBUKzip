@@ -23,7 +23,7 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
           <div className="relative w-full flex-grow md:flex-1 h-[240px] md:h-auto rounded-[20px] overflow-hidden">
             <img
               src={itemData.images[currentIndex]}
-              className="w-full h-full object-cover rounded-[20px]"
+              className="w-full h-[380px] object-cover rounded-[20px]"
               alt="Turtle"
               draggable="false"
             />
@@ -76,6 +76,7 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
               // 데이터에 판매자 프사가 없음...
               className="rounded-full w-[43px] h-[43px] mr-3"
               draggable="false"
+              alt="profile image"
             />
             <span className="text-[20px]">꼬북맘</span>
           </div>

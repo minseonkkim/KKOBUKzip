@@ -2,7 +2,10 @@ import axios, { AxiosResponse } from "axios";
 import { AuctionItemDataType } from "../types/auction";
 import authAxios from "./http-commons/authAxios";
 import guestAxios from "./http-commons/guestAxios";
-import { TransactionItemDataType } from "../types/transaction";
+import {
+  TransactionItemDataType,
+  TransactionItemDetailType,
+} from "../types/transaction";
 import { AuctionResponseDummuy } from "../fixtures/auctionDummy";
 
 interface AuctionResponseData<T> {
@@ -99,7 +102,7 @@ export const getAuctionDatas = async ({
   progress?: number;
 }) => {
   // query setting
-  const pageQuery = page ? `page=${page}` : "page=1";
+  const pageQuery = page ? `page=${page}` : "page=0";
   const genderQuery = gender ? `&gender=${gender}` : "";
   const sizeQuery =
     sizeStart && sizeEnd ? `&size=${sizeStart}between${sizeEnd}` : "";
@@ -112,7 +115,7 @@ export const getAuctionDatas = async ({
 
   // request
   const response = await apiRequest<AuctionListData>(() =>
-    guestAxios.get(`/auction?${query}`)
+    guestAxios.get(`/auction/?${query}`)
   );
   return response;
 };
@@ -173,7 +176,7 @@ export const getTransactionData = async ({
   priceEnd?: number;
   progress?: number;
 }) => {
-  const pageQuery = page ? `page=${page}` : "page=1";
+  const pageQuery = page ? `page=${page}` : "page=0";
   const genderQuery = gender ? `&gender=${gender}` : "";
   const sizeQuery =
     sizeStart && sizeEnd ? `&size=${sizeStart}between${sizeEnd}` : "";
@@ -184,8 +187,19 @@ export const getTransactionData = async ({
   const query =
     pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
 
-  const response = await apiRequest<TransactionListData>(() =>
-    guestAxios.get(`/transaction?${query}`)
+  const response = await apiRequest<{ data: TransactionListData }>(() =>
+    guestAxios.get(`/main/transaction/?${query}`)
   );
   return response;
+};
+
+interface TransactionItemDetailData {
+  status: number;
+  message: string;
+  data: { turtle: TransactionItemDetailType };
+}
+export const getTransactionDetailItemData = (transactionId: string) => {
+  return apiRequest<TransactionItemDetailData>(() =>
+    guestAxios.get(`/main/transaction/${transactionId}`)
+  );
 };

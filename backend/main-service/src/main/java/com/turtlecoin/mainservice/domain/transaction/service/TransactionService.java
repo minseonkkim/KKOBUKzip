@@ -8,10 +8,12 @@ import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
 import com.turtlecoin.mainservice.domain.transaction.entity.TransactionPhoto;
 import com.turtlecoin.mainservice.domain.transaction.entity.TransactionProgress;
 import com.turtlecoin.mainservice.domain.transaction.entity.TransactionTag;
+import com.turtlecoin.mainservice.domain.transaction.exception.DuplicatedEnrollTransaction;
 import com.turtlecoin.mainservice.domain.transaction.repository.TransactionRepository;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
+import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.DataAccessException;
@@ -47,30 +49,47 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
 
+    public List<DetailTransactionResponseDto> findAllTransactions(User user) {
+        return transactionRepository.findAllByUser(user).stream().map(Transaction::toResponseDTO).collect(Collectors.toList());
+    }
+
     // 거래 등록하는 서비스
     @Transactional
     public ResponseEntity<?> enrollTransaction(TransactionRequestDto dto, List<MultipartFile> photos) {
         TransactionDto transaction = new TransactionDto();
-        Turtle turtle = turtleRepository.getReferenceById(dto.getTurtle_id());
 
-        transaction.setTitle(dto.getTitle());
-        transaction.setContent(dto.getContent());
-        transaction.setPrice(dto.getPrice());
-        transaction.setWeight(dto.getWeight());
-        transaction.setTurtle(turtle);
-        transaction.setTransactionPhotos(new ArrayList<>());
-        transaction.setTransactionTags(new ArrayList<>());
-        Transaction savedTransaction = transaction.toEntity();
+
         try{
-            if (!dto.getTransactionTags().isEmpty()) {
-                List<String> imageUrls = imageUploadService.uploadMultiple(photos, "transaction");
-                savedTransaction.getTransactionPhotos().addAll(stringToDto(imageUrls, savedTransaction));
-                savedTransaction.getTags().addAll(stringToTransactionTag(dto.getTransactionTags(), savedTransaction));
+            Turtle turtle = turtleRepository.getReferenceById(dto.getTurtle_id());
+            if(transactionRepository.findByTurtle(turtle).getSellerAddress().equals(dto.getSellerAddress())){
+                throw new DuplicatedEnrollTransaction("이미 거래가 등록된 거북이 입니다.");
             }
 
+            transaction.setTitle(dto.getTitle());
+            transaction.setContent(dto.getContent());
+            transaction.setPrice(dto.getPrice());
+            transaction.setWeight(dto.getWeight());
+            transaction.setTurtle(turtle);
+            transaction.setTransactionPhotos(new ArrayList<>());
+            transaction.setTransactionTags(new ArrayList<>());
+
+            Transaction savedTransaction = transaction.toEntity();
+
+            List<String> imageUrls = imageUploadService.uploadMultiple(photos, "transaction");
+            if(!imageUrls.isEmpty()) {
+                savedTransaction.getTransactionPhotos().addAll(stringToDto(imageUrls, savedTransaction));
+            }
+
+            if (!dto.getTransactionTags().isEmpty()) {
+                savedTransaction.getTags().addAll(stringToTransactionTag(dto.getTransactionTags(), savedTransaction));
+            }
             // 저장된 거래 정보를 데이터베이스에 저장
             transactionRepository.save(savedTransaction);
-        }catch (IOException e) {
+
+        }catch(DuplicatedEnrollTransaction e){
+            e.printStackTrace();
+            return new ResponseEntity<>(ResponseVO.failure("400",e.getMessage()), HttpStatus.CONFLICT);
+        } catch (IOException e) {
             e.printStackTrace();
             return new ResponseEntity<>(ResponseVO.failure("400", "거래 등록 과정 중에 이미지 업로드 오류가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (DataAccessException e) {
@@ -81,33 +100,43 @@ public class TransactionService {
             return new ResponseEntity<>(ResponseVO.failure("500", "거래 등록 과정 중에 예기치 않은 오류가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<>(ResponseVO.success("거래글이 성공적으로 작성되었습니다."), HttpStatus.OK);
+        return new ResponseEntity<>(ResponseVO.success("거래글이 성공적으로 등록되었습니다."), HttpStatus.OK);
     }
 
     // 전체 거래 조회
-    public ResponseEntity<?> getEntireTransaction(Gender gender, String size, String price, int progress, int page) {
+    public ResponseEntity<?> getEntireTransaction(Gender gender, String size, String price, Integer progress, int page) {
         try{
             Pageable pageable = PageRequest.of(page, 20);
-            String[] sizeRange = size.split("-");
-            String[] priceRange = price.split("-");
-            Page<Transaction> transactionPage =transactionRepository.findFilteredTransactions(
-                    gender,
-                    Double.parseDouble(sizeRange[0]),
-                    Double.parseDouble(sizeRange[1]),
-                    Double.parseDouble(priceRange[0]),
-                    Double.parseDouble(priceRange[1]),
-                    getProgressList(progress),
-                    pageable
+
+            Double sizeMin = null, sizeMax = null, priceMin = null, priceMax = null;
+
+            if (size != null && !size.isEmpty()) {
+                String[] sizeRange = size.split("-");
+                sizeMin = Double.parseDouble(sizeRange[0]);
+                sizeMax = Double.parseDouble(sizeRange[1]);
+            }
+
+            if (price != null && !price.isEmpty()) {
+                String[] priceRange = price.split("-");
+                priceMin = Double.parseDouble(priceRange[0]);
+                priceMax = Double.parseDouble(priceRange[1]);
+            }
+
+            List<TransactionProgress> progressList = (progress != null)? getProgressList(progress) : null;
+
+            Page<Transaction> transactionPage = transactionRepository.findFilteredTransactions(
+                    gender, sizeMin, sizeMax, priceMin, priceMax, progressList, pageable
             );
             Map<String,Object> data = new HashMap<>();
             List<DetailTransactionResponseDto> transactionDtos = transactionPage.getContent().stream()
                     .map(Transaction::toResponseDTO)  // Transaction에서 DTO로 변환하는 메서드 호출
                     .collect(Collectors.toList());
 
-            data.put("cnt", transactionPage.getTotalPages());
+            data.put("cnt",transactionDtos.size());
             data.put("current_page", page);
             data.put("transactions", transactionDtos);
-            return new ResponseEntity<>(ResponseVO.success("거래 목록 조회 성공","data",data),HttpStatus.OK);
+            data.put("total_pages", transactionPage.getTotalPages());
+            return new ResponseEntity<>(ResponseVO.success("요청한 조회가 성공적으로 진행되었습니다.","data",data),HttpStatus.OK);
 
         }catch (NumberFormatException e) {
             // 숫자 형식이 잘못된 경우 예외 처리
@@ -123,6 +152,8 @@ public class TransactionService {
             return new ResponseEntity<>(ResponseVO.failure("500", "서버 에러가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
     // string을 TransactionPhoto로 변환하는 로직
     public List<TransactionPhoto> stringToDto(List<String> imageUrls, Transaction transaction) {

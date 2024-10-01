@@ -6,6 +6,9 @@ import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
 import com.turtlecoin.mainservice.domain.transaction.repository.TransactionRepository;
 import com.turtlecoin.mainservice.domain.transaction.service.TransactionService;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
+import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
+import com.turtlecoin.mainservice.domain.user.entity.User;
+import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,10 +28,14 @@ import java.util.Map;
 public class TransactionController {
     private final TransactionService transactionService;
     private final TransactionRepository transactionRepository;
+    private final UserRepository userRepository;
+    private final TurtleRepository turtleRepository;
 
-    public TransactionController(TransactionService transactionService, TransactionRepository transactionRepository) {
+    public TransactionController(TransactionService transactionService, TransactionRepository transactionRepository, UserRepository userRepository, TurtleRepository turtleRepository) {
         this.transactionService = transactionService;
         this.transactionRepository = transactionRepository;
+        this.userRepository = userRepository;
+        this.turtleRepository = turtleRepository;
     }
 
     @GetMapping("/test")
@@ -38,7 +45,11 @@ public class TransactionController {
 
     // 전체 거래 조회
     @GetMapping("/")
-    public ResponseEntity<?> entireTransactions(@RequestParam("gender") Gender gender, String size, String price, int progress, int page){
+    public ResponseEntity<?> entireTransactions(@RequestParam(value="gender", required = false) Gender gender,
+                                                @RequestParam(value="size", required = false) String size,
+                                                @RequestParam(value="price", required = false) String price,
+                                                @RequestParam(value="progress", required = false) Integer progress,
+                                                @RequestParam(value="page", defaultValue = "0") int page){
         return transactionService.getEntireTransaction(gender, size, price, progress, page);
     }
 
@@ -63,6 +74,7 @@ public class TransactionController {
             Transaction transaction = transactionRepository.findById(transactionId)
                     .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 거래 ID입니다."));
             transaction.changeStatusToReviewDocument();
+            transactionRepository.save(transaction);
             return new ResponseEntity<>(ResponseVO.success("거래 상태가 정상적으로 업데이트되었습니다."), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             // 거래 ID가 유효하지 않을 때 처리
@@ -79,6 +91,7 @@ public class TransactionController {
             Transaction transaction = transactionRepository.findById(transactionId)
                     .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 거래 ID입니다."));
             transaction.changeStatusToCompleteDocument();
+            transactionRepository.save(transaction);
             return new ResponseEntity<>(ResponseVO.success("거래 상태가 정상적으로 업데이트되었습니다."), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             // 거래 ID가 유효하지 않을 때 처리

@@ -1,8 +1,8 @@
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg"
-import { IoClose } from "react-icons/io5";
-import { IoMdAddCircle } from "react-icons/io";
+import { IoClose } from "@react-icons/all-files/io5/IoClose";
+import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
 import { ChangeEvent, useState } from "react";
 
 export default function TransactionRegisterPage(){
@@ -51,7 +51,7 @@ export default function TransactionRegisterPage(){
       <div className="px-4 lg:px-[250px] mt-[85px]">
         <div className="text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-0 lg:pt-[32px] pb-[13px]">판매 등록하기</div>
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">
-          <img src={TmpTurtleImg} draggable="false" className="w-[150px] md:w-[170px] h-full object-cover rounded-[10px] mr-4 md:mr-8" />
+          <img src={TmpTurtleImg} draggable="false" className="w-[150px] md:w-[170px] h-full object-cover rounded-[10px] mr-4 md:mr-8" alt="turtle image"/>
           <div className="flex flex-col">
             <div className="text-[24px] md:text-[26px] font-bold mb-2">꼬부기</div>
             <div className="text-gray-600 text-[18px] md:text-[21px]">수컷 | 18년 3월 2일생</div>

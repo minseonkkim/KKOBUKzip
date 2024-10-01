@@ -1,13 +1,18 @@
 package com.turtlecoin.auctionservice.domain.websocket.config;
 
 
+import com.turtlecoin.auctionservice.domain.websocket.interceptor.WebSocketHandshakeInterceptor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
 @EnableWebSocketMessageBroker
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final WebSocketHandshakeInterceptor handshakeInterceptor;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -18,6 +23,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws/auction") //우리의 endpoint
                 .setAllowedOrigins("*");
+//                        .addInterceptors(handshakeInterceptor);
         System.out.println("registry: "+registry);
 //                .addInterceptors(handshakeInterceptor); // 핸드셰이크 인터셉터 추가
     }

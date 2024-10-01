@@ -1,10 +1,15 @@
 // useTradeFilter.tsx
 import { useState } from "react";
-type FilterType = "gender" | "minWeight" | "maxWeight" | "minPrice" | "maxPrice";
+type FilterType =
+  | "gender"
+  | "minWeight"
+  | "maxWeight"
+  | "minPrice"
+  | "maxPrice";
 
 const useTradeFilter = () => {
   const [filters, setFilters] = useState({
-    gender: "all",
+    gender: "",
     minWeight: "",
     maxWeight: "",
     minPrice: "",
@@ -20,7 +25,7 @@ const useTradeFilter = () => {
 
   const filterResetHandle = () => {
     setFilters({
-      gender: "all",
+      gender: "",
       minWeight: "",
       maxWeight: "",
       minPrice: "",

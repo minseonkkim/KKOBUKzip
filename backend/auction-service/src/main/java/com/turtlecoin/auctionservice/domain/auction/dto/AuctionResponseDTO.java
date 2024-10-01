@@ -3,6 +3,7 @@ package com.turtlecoin.auctionservice.domain.auction.dto;
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
 import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
+import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ public class AuctionResponseDTO {
     private Double winningBid;
     private Long sellerId;
     private Long buyerId;
+    private String sellerAddress;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String content;
@@ -32,8 +34,9 @@ public class AuctionResponseDTO {
     private List<String> images;
 
     private TurtleResponseDTO turtleInfo;
+    private UserResponseDTO userInfo;
 
-    public static AuctionResponseDTO from(Auction auction, TurtleResponseDTO turtleInfo) {
+    public static AuctionResponseDTO from(Auction auction, TurtleResponseDTO turtleInfo, UserResponseDTO userInfo) {
         return AuctionResponseDTO.builder()
                 .id(auction.getId())
                 .turtleId(auction.getTurtleId())
@@ -44,8 +47,9 @@ public class AuctionResponseDTO {
                 .buyerId(auction.getBuyerId())
                 .sellerId(auction.getUserId())
                 .startTime(auction.getStartTime())
-                .endTime(auction.getEndTime())
+                .endTime(LocalDateTime.now())
                 .content(auction.getContent())
+                .sellerAddress(auction.getSellerAddress())
                 .progress(auction.getAuctionProgress().toString())
                 .tags(auction.getAuctionTags().stream()
                         .map(AuctionTagDTO::from)
@@ -54,6 +58,7 @@ public class AuctionResponseDTO {
                         .map(AuctionPhoto::getImageAddress)
                         .toList())
                 .turtleInfo(turtleInfo) // Turtle 정보 추가
+                .userInfo(userInfo)
                 .build();
     }
 }

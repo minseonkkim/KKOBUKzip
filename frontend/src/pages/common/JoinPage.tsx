@@ -11,6 +11,7 @@ import {
 } from "../../apis/userApi";
 import Header from "../../components/common/Header";
 import StopTurtleImg from "../../assets/turtle_home_stop.png";
+import { useNavigate } from "react-router-dom";
 
 // 1. 인증하기를 누르고 인증이 된다-> 그냥 다음으로 보냄(step 3) 넘어가먼 못돌아옴
 // 2. 인증 직전까지는 -> 이전으로 가서 정보 수정 ok
@@ -22,8 +23,8 @@ interface ErrorStateType {
   emailConfirm: string;
   name: string;
   nickname: string;
-  birthday: string;
-  phoneNumber: string;
+  birth: string;
+  phonenumber: string;
   address: string;
   detailedAddress: string;
 }
@@ -72,11 +73,13 @@ function JoinPage() {
     emailConfirm: "",
     name: "",
     nickname: "",
-    birthday: "",
-    phoneNumber: "",
+    birth: "",
+    phonenumber: "",
     address: "",
     detailedAddress: "",
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (postcodeData?.jibunAddress) {
@@ -193,8 +196,8 @@ function JoinPage() {
       emailConfirm: "",
       name: "",
       nickname: "",
-      birthday: "",
-      phoneNumber: "",
+      birth: "",
+      phonenumber: "",
       address: "",
       detailedAddress: "",
     };
@@ -238,14 +241,14 @@ function JoinPage() {
       emailConfirm: "",
       name: "",
       nickname: "",
-      birthday: "",
-      phoneNumber: "",
+      birth: "",
+      phonenumber: "",
       address: "",
       detailedAddress: "",
     };
 
     if (!validateBirthday(birth.y, birth.m, birth.d)) {
-      newErrStat.birthday = "올바른 생년월일을 입력해주세요.";
+      newErrStat.birth = "올바른 생년월일을 입력해주세요.";
       isValid = false;
     }
 
@@ -256,7 +259,7 @@ function JoinPage() {
         phoneNumber.third
       )
     ) {
-      newErrStat.phoneNumber = "올바른 전화번호를 입력해주세요.";
+      newErrStat.phonenumber = "올바른 전화번호를 입력해주세요.";
       isValid = false;
     }
 
@@ -275,7 +278,7 @@ function JoinPage() {
         (val) => val == null || isNaN(Number(val))
       )
     ) {
-      newErrStat.birthday = "올바른 생년월일을 입력해주세요.";
+      newErrStat.birth = "올바른 생년월일을 입력해주세요.";
       isValid = false;
     }
 
@@ -285,24 +288,48 @@ function JoinPage() {
         (val) => val == null || val.trim().length === 0 || val.trim().length > 4
       )
     ) {
-      newErrStat.phoneNumber = "올바른 전화번호를 입력해주세요.";
+      newErrStat.phonenumber = "올바른 전화번호를 입력해주세요.";
       isValid = false;
     }
 
     setErrStat(newErrStat);
     if (isValid) {
-      const rst = await registerRequest({
-        ...data,
-        birthday: birth.y! + "-" + birth.m! + "-" + birth.d!,
-        address: data.address + " / " + detailedAddress,
-        phoneNumber:
-          phoneNumber.first +
-          "-" +
-          phoneNumber.second +
-          "-" +
-          phoneNumber.third,
+      const formData = new FormData();
+
+      // 랜덤 인덱스 생성 (1부터 14까지)
+      const randomIndex = Math.floor(Math.random() * 14) + 1;
+      const selectedImagePath = `custom_profile/profile${randomIndex}.gif`; // public 폴더는 경로에서 제외
+
+      // 이미지 파일 fetch
+      const response = await fetch(selectedImagePath);
+      const blobImage = await response.blob();
+      const file = new File([blobImage], `profile${randomIndex}.gif`, {
+        type: "image/gif",
       });
-      console.log(rst);
+
+      // FormData에 파일 추가
+      formData.append("profileImage", file);
+
+      const jsonData = {
+        ...data,
+        birth: `${birth.y}-${birth.m}-${birth.d}`,
+        address: `${data.address} / ${detailedAddress}`,
+        phonenumber: `${phoneNumber.first}-${phoneNumber.second}-${phoneNumber.third}`,
+      };
+      // formData.append("data", JSON.stringify(jsonData));
+
+      const blob = new Blob([JSON.stringify(jsonData)], {
+        type: "application/json",
+      });
+      formData.append("data", blob);
+      console.log(jsonData);
+      const rst = await registerRequest(formData);
+      if (rst.success) {
+        alert("회원가입 완료!");
+        navigate("/login");
+      } else {
+        console.log(rst.error);
+      }
     }
   };
 
@@ -317,9 +344,8 @@ function JoinPage() {
     } else {
       setErrStat((prev) => ({ ...prev, email: "" }));
 
-      // 여기에서 이메일 인증 요청
+      setEmailCheckLoading(true);
       try {
-        setEmailCheckLoading(true);
         const response = await createEmailRequest(data.email);
         if (response.success) {
           setEmailCheck(true);
@@ -356,13 +382,13 @@ function JoinPage() {
       </Helmet>
       <Header />
       <main>
-        <div className="absolute top-16 md:top-0 left-0 right-0 md:px-[250px] flex justify-center items-center h-full">
-          <div className="relative w-full bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 grid md:grid-cols-2">
+        <div className="px-4 lg:px-[250px] flex justify-center items-center mt-[60px] h-[calc(100vh-60px)]">
+          <div className="relative w-full bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex h-[640px] md:h-[600px] flex-col md:flex-row">
             {step === 1 && (
-              <section className="p-2.5 my-10 order-2 md:order-1">
+              <section className="p-2.5 my-3 w-full md:w-1/2">
                 <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
                   <div className="w-4/5">
-                    <h2 className="text-[38px] text-center mb-6 font-dnf-bitbit">
+                    <h2 className="text-[35px] md:text-[38px] text-center mb-5 md:mb-8 font-dnf-bitbit">
                       회원가입
                     </h2>
                     <form
@@ -480,7 +506,7 @@ function JoinPage() {
             )}
 
             {step === 2 && (
-              <section className="p-2.5 my-10 order-2 md:order-1">
+              <section className="p-2.5 my-3 w-full md:w-1/2">
                 <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
                   <div className="w-4/5">
                     <h2 className="text-[38px] text-center mb-6 font-dnf-bitbit">
@@ -506,17 +532,23 @@ function JoinPage() {
                             />
                             <button
                               type="button"
-                              disabled={emailCheck}
+                              disabled={emailCheckLoading || emailCheck}
                               className={`border col-span-3 text-sm ${
-                                !emailCheck ? "bg-blue-300" : "bg-indigo-200"
+                                emailCheck || emailCheckLoading
+                                  ? "bg-indigo-200"
+                                  : "bg-blue-300"
                               } rounded rainbow-text`}
-                              onClick={!emailCheck ? confirmEmail : () => {}}
+                              onClick={
+                                emailCheckLoading || emailCheck
+                                  ? () => {}
+                                  : confirmEmail
+                              }
                             >
-                              {!emailCheck
-                                ? "인증하기"
-                                : emailCheckLoading
+                              {emailCheckLoading
                                 ? "발송중.."
-                                : "발송완료"}
+                                : emailCheck
+                                ? "발송완료"
+                                : "인증하기"}
                             </button>
                           </div>
                         </div>
@@ -575,7 +607,7 @@ function JoinPage() {
             )}
 
             {step === 3 && (
-              <section className="p-2.5 my-10 order-2 md:order-1">
+              <section className="p-2.5 my-3 w-full md:w-1/2">
                 <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
                   <div className="w-4/5">
                     <h2 className="text-[38px] text-center mb-6 font-dnf-bitbit">
@@ -633,9 +665,7 @@ function JoinPage() {
                             </div>
                           </div>
                         </div>
-                        {errStat.birthday && (
-                          <ErrorMessage msg={errStat.birthday} />
-                        )}
+                        {errStat.birth && <ErrorMessage msg={errStat.birth} />}
                       </div>
                       {/* 국적 */}
                       <div>
@@ -732,8 +762,8 @@ function JoinPage() {
                             </div>
                           </div>
                         </div>
-                        {errStat.phoneNumber && (
-                          <ErrorMessage msg={errStat.phoneNumber} />
+                        {errStat.phonenumber && (
+                          <ErrorMessage msg={errStat.phonenumber} />
                         )}
                       </div>
                       {/* 주소 */}
@@ -783,16 +813,16 @@ function JoinPage() {
                       </div>
 
                       <div className="flex justify-between">
-                        <button
+                        {/* <button
                           type="button"
                           onClick={() => setStep(1)}
                           className="w-[48%] bg-gray-300 text-[22px] text-black py-3 rounded hover:bg-gray-400"
                         >
                           이전
-                        </button>
+                        </button> */}
                         <button
                           type="submit"
-                          className="w-[48%] bg-[#4B721F] text-[22px] text-white py-3 rounded hover:bg-[#3E5A1E]"
+                          className="w-full bg-[#4B721F] text-[22px] text-white py-3 rounded hover:bg-[#3E5A1E]"
                         >
                           회원가입하기
                         </button>
@@ -803,14 +833,11 @@ function JoinPage() {
               </section>
             )}
 
-            <div className="rounded-r-[20px] order-1 md:order-2">
+            <div className="w-full md:w-1/2 h-[190px] md:h-full">
               <img
                 src={StopTurtleImg}
-                className={
-                  isMobile
-                    ? "rounded-t-[20px] w-full h-[300px] object-none"
-                    : "rounded-r-[20px] h-full object-cover"
-                }
+                className="w-full rounded-tr-none md:rounded-tr-[20px] rounded-bl-[20px] md:rounded-bl-none rounded-br-[20px] md:rounded-br-none md:rounded-br-[20px] h-full object-cover"
+                draggable="false"
               />
             </div>
           </div>

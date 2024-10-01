@@ -29,4 +29,7 @@ public interface MainClient {
     @GetMapping("/main/user/{userId}")
     UserResponseDTO getUserById(@PathVariable("userId") Long userId);
 
+    @GetMapping("/main/user/{userId}/nickname")
+    String getUserNicknameById(@PathVariable("userId") Long userId);
+
 }

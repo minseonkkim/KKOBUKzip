@@ -1,9 +1,11 @@
 package com.turtlecoin.mainservice.domain.user.service;
 
 import com.turtlecoin.mainservice.domain.user.dto.EmailDto;
+import com.turtlecoin.mainservice.domain.user.exception.EmailNotFoundException;
+import com.turtlecoin.mainservice.domain.user.exception.VerificationNotFoundException;
+import com.turtlecoin.mainservice.domain.user.exception.WrongVerificationCodeException;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import io.lettuce.core.RedisConnectionException;
-import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,14 +35,18 @@ public class EmailService {
     // 이메일 인증코드 발송하기
     public ResponseVO<?> sendCodeToEmail(String email) {
         String title = "꼬북집 KKOBUKZIP 이메일 인증번호";
-        String code = this.createCode();
-
         try {
+            String code = this.createCode();
+            if(email.equals("")){
+                throw new EmailNotFoundException();
+            }
             // 이메일 전송
             sendEmail(email, title, "인증번호 : " + code);
 
             // Redis에 인증 코드 저장
             redisTemplate.opsForValue().set(AuthCode + email, code, 180, TimeUnit.SECONDS);
+        } catch(EmailNotFoundException e){
+            return ResponseVO.failure("400", e.getMessage());
         } catch (RedisConnectionException e) {
             log.error("Redis 연결 오류: {}", e.getMessage(), e);
             return ResponseVO.failure("500", "이메일 발송 중 오류가 발생하였습니다. (Redis 연결 오류)");
@@ -54,11 +60,22 @@ public class EmailService {
 
     // 이메일 인증코드 검증하기
     public ResponseVO<?> verifyCode(EmailDto emailDto){
-        ValueOperations<String, String> valueOps = redisTemplate.opsForValue();
-        String storedCode = valueOps.get(AuthCode+emailDto.getEmail());
-        Map<String, Object> responseBody = new HashMap<>();
-        if(storedCode==null||!storedCode.equals(emailDto.getVerification())){
-            return ResponseVO.failure("401","인증번호가 일치하지 않습니다.");
+        try{
+            ValueOperations<String, String> valueOps = redisTemplate.opsForValue();
+            String storedCode = valueOps.get(AuthCode+emailDto.getEmail());
+            if(storedCode==null){
+                throw new VerificationNotFoundException("올바른 요청이 아닙니다. (Redis에 이메일에 대한 인증코드가 저장되지 않음)");
+            }
+            Map<String, Object> responseBody = new HashMap<>();
+            if(storedCode.equals(emailDto.getVerification())){
+                throw new WrongVerificationCodeException("이메일 인증번호가 일치하지 않습니다.");
+            }
+        }catch(VerificationNotFoundException e){
+            return ResponseVO.failure("400", e.getMessage());
+        }catch(RedisConnectionException e){
+            return ResponseVO.failure("500", "인증 요청 과정에서 서버 에러가 발생하였습니다.");
+        }catch (WrongVerificationCodeException e){
+            return ResponseVO.failure("400", e.getMessage());
         }
         return ResponseVO.success("이메일 인증이 완료되었습니다.");
     }
@@ -69,12 +86,8 @@ public class EmailService {
         message.setTo(email);
         message.setSubject(title);
         message.setText(text);
-        try{
-            emailSender.send(message);
-        }catch (Exception e){
-            log.error(e.getMessage());
-            throw new RuntimeException(e);
-        }
+
+        emailSender.send(message);
 
     }
 

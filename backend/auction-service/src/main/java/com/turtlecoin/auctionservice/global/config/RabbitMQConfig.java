@@ -1,56 +1,74 @@
 package com.turtlecoin.auctionservice.global.config;
 
-import com.rabbitmq.client.ConnectionFactory;
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
 
-    public static final String TURTLE_REQUEST_QUEUE = "turtleRequestQueue";
-    public static final String TURTLE_RESPONSE_QUEUE = "turtleResponseQueue";
-    public static final String EXCHANGE = "turtleExchange";
-    public static final String ROUTING_KEY = "turtle.routingKey";
+    @Value("${spring.rabbitmq.host}")
+    private String host;
 
+    @Value("${spring.rabbitmq.username}")
+    private String username;
+
+    @Value("${spring.rabbitmq.password}")
+    private String password;
+
+    @Value("${spring.rabbitmq.port}")
+    private int port;
+
+    // 1. Direct Exchange 설정
     @Bean
-    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
+    DirectExchange auctionResultExchange() {
+        return new DirectExchange("auction.result.exchange");
+    }
+
+    // 2. Queue 설정
+    @Bean
+    Queue auctionResultQueue() {
+        return new Queue("auction.result.queue", true);  // durable true로 설정
+    }
+
+    // 3. Exchange와 Queue 바인딩 (Routing Key 사용)
+    @Bean
+    Binding auctionResultBinding(DirectExchange auctionResultExchange, Queue auctionResultQueue) {
+        return BindingBuilder.bind(auctionResultQueue).to(auctionResultExchange).with("auction.result.key");
+    }
+
+    // 4. 메시지 전송/수신을 위한 JSON 메시지 컨버터 설정
+    @Bean
+    public MessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
     }
 
+    // 5. RabbitTemplate 설정
     @Bean
-    public Queue requestQueue() {
-        return new Queue(TURTLE_REQUEST_QUEUE);
+    public RabbitTemplate rabbitTemplate(org.springframework.amqp.rabbit.connection.ConnectionFactory connectionFactory) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(messageConverter());
+        return rabbitTemplate;
     }
 
+    
+    // 6. ConnectionFactory 설정
     @Bean
-    public Queue responseQueue() {
-        return new Queue(TURTLE_RESPONSE_QUEUE);
+    public ConnectionFactory connectionFactory() {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.setHost(host);
+        connectionFactory.setPort(port);
+        connectionFactory.setUsername(username);
+        connectionFactory.setPassword(password);
+        return connectionFactory;
     }
-
-    @Bean
-    public DirectExchange exchange() {
-        return new DirectExchange(EXCHANGE);
-    }
-
-    @Bean
-    public Binding requestBinding(Queue requestQueue, DirectExchange exchange) {
-        return BindingBuilder.bind(requestQueue).to(exchange).with(ROUTING_KEY);
-    }
-
-    @Bean
-    public Binding responseBinding(Queue responseQueue, DirectExchange exchange) {
-        return BindingBuilder.bind(responseQueue).to(exchange).with(ROUTING_KEY);
-    }
-
-//    @Bean
-//    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-//        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-//        rabbitTemplate.setMessageConverter(messageConverter());
-//        return rabbitTemplate;
-//    }
 }
-

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import useDeviceStore from "../../store/useDeviceStore";
-import { IoClose } from "react-icons/io5";
+import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import ReactDOM from "react-dom";
 
 interface ModalProps {
@@ -11,6 +11,7 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   const isMobile = useDeviceStore((state) => state.isMobile);
+  
   const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null);
   const [isClosing, setIsClosing] = useState(false);
 
@@ -58,11 +59,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 z-1000 pointer-events-none">
-      <div className={`${
+    <div className="inset-0 z-1000 pointer-events-none flex flex-end">
+      <div style={{
+          left: isMobile ? "0" : "calc(100% - 500px)",
+        }}
+        className={`${
         isMobile
           ? "absolute top-[68px] w-full pointer-events-auto transition"
-          : "absolute top-[90px] right-[100px] pointer-events-auto"
+          : "absolute top-[68px] lg:top-[90px] pointer-events-auto"
       } ${animationClass}`}>
         <div className="relative border-2 border-yellow-500 bg-yellow-400 rounded-[10px] shadow-md">
           <button 

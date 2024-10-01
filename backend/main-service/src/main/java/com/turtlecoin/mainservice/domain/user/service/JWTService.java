@@ -37,6 +37,9 @@ public class JWTService {
         this.sseService = sseService;
     }
 
+    public Optional<User> getUserByToken(String token) {
+        return userRepository.findById(jwtUtil.getIdFromToken(token.split(" ")[1]));
+    }
     public ResponseEntity<?> loginService(LoginUserDto loginUserDto) {
         Optional<User> user = Optional.ofNullable(userRepository.findByemail(loginUserDto.getEmail()));
         if (user.isEmpty() || !bCryptPasswordEncoder.matches(loginUserDto.getPassword(),user.get().getPassword())) {
@@ -46,10 +49,11 @@ public class JWTService {
             // 인증 성공 시 JWT 토큰 생성 및 Redis 저장
             String email = user.get().getEmail(); // "username"을 "email"로 변경;
             String role = user.get().getRole().toString();
+            Long id = user.get().getId();
 
             // Access token과 Refresh token 생성
-            String access = jwtUtil.createToken("access", email, role, 600000L);
-            String refresh = jwtUtil.createToken("refresh", email, role, 86400000L);
+            String access = jwtUtil.createToken("access", email, role,id, 6000000L);
+            String refresh = jwtUtil.createToken("refresh", email, role, id,86400000L);
 
             // Redis에 refresh token 저장 (email, 토큰, 만료시간을 함께 저장)
             redisTemplate.opsForValue().set(email, refresh, 86400000L, TimeUnit.SECONDS);
@@ -60,6 +64,10 @@ public class JWTService {
             data.put("role", role);
             data.put("nickname", user.get().getNickname());
             data.put("email", user.get().getEmail());
+            data.put("address",user.get().getAddress());
+            data.put("phoneNumber",user.get().getPhonenumber());
+            data.put("profileImage",user.get().getProfileImage());
+            data.put("userId",user.get().getId());
 
             // SSE 연결 실행
             sseService.subscribe(user.get().getId());
@@ -117,9 +125,10 @@ public class JWTService {
 
         String username = jwtUtil.getUsernameFromToken(refreshToken);
         String role = jwtUtil.getRoleFromToken(refreshToken);
+        Long id = jwtUtil.getIdFromToken(refreshToken);
 
         //make new JWT
-        String newAccess = jwtUtil.createToken("access",username,role,600000L);
+        String newAccess = jwtUtil.createToken("access",username,role,id,600000L);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("status",200);
         responseBody.put("message","요청이 정상적으로 처리되었습니다.");

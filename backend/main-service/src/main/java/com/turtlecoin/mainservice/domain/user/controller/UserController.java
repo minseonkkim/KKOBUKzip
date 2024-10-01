@@ -1,24 +1,35 @@
 package com.turtlecoin.mainservice.domain.user.controller;
 
+import com.turtlecoin.mainservice.domain.transaction.dto.DetailTransactionResponseDto;
+import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
+import com.turtlecoin.mainservice.domain.transaction.repository.TransactionRepository;
+import com.turtlecoin.mainservice.domain.transaction.service.TransactionService;
 import com.turtlecoin.mainservice.domain.turtle.dto.TurtleResponseDTO;
+import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
 import com.turtlecoin.mainservice.domain.user.dto.EmailDto;
 import com.turtlecoin.mainservice.domain.user.dto.LoginUserDto;
 import com.turtlecoin.mainservice.domain.user.dto.UserRequestDto;
 import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
+import com.turtlecoin.mainservice.domain.user.entity.User;
+import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.domain.user.service.EmailService;
 import com.turtlecoin.mainservice.domain.user.service.JWTService;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
+import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
+import com.turtlecoin.mainservice.global.exception.UserNotFoundException;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequestMapping("/main/user")
 @Controller
@@ -29,17 +40,22 @@ public class UserController {
     private final EmailService emailService;
     private final UserService userService;;
     private final JWTService jwtService;
+    private final TransactionService transactionService;
+    private final UserRepository userRepository;
 
-    public UserController(EmailService emailService, UserService userService, JWTService jwtService ) {
+
+    public UserController(EmailService emailService, UserService userService, JWTService jwtService, TransactionService transactionService, UserRepository userRepository) {
         this.emailService = emailService;
         this.userService = userService;
         this.jwtService = jwtService;
+        this.transactionService = transactionService;
+        this.userRepository = userRepository;
     }
 
-    @PostMapping("/join")
+    @PostMapping(value="/join",consumes={MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<ResponseVO<?>> joinProcess(
             @RequestPart("data") UserRequestDto userDto,
-            @RequestPart(value = "image", required = false) MultipartFile image) {
+            @RequestPart(value = "profileImage", required = false) MultipartFile image) {
         return userService.saveUser(userDto,image);
     }
 
@@ -86,7 +102,21 @@ public class UserController {
     @GetMapping("/{userId}")
     // 유저 없을 때 에러 던져주기
     public UserResponseDTO getUserById(@PathVariable Long userId) {
-        return userService.getByUserId(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
+
+        return new UserResponseDTO(
+                user.getId(),
+                user.getNickname(),
+                user.getName(),
+                user.getEmail()
+        );
+    }
+
+    @GetMapping("/{userId}/nickname")
+    public String getUserNicknameById(@PathVariable Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
+        System.out.println("userNickname: " + user.getNickname());
+        return user.getNickname();
     }
 
     @GetMapping("/{userId}/turtle")
@@ -101,6 +131,17 @@ public class UserController {
         }
 
         return ResponseEntity.ok(turtles);
+    }
+
+
+    // !~!~userId 토큰에서 가져오는거 여기 참고하기~!~!
+    @GetMapping("/transaction")
+    public ResponseEntity<?> myTransaction(@RequestHeader("Authorization") String token){
+        Optional<User> user = jwtService.getUserByToken(token); // token 기준으로 User 객체 가져오기!
+        if(user.isEmpty()){
+            return new ResponseEntity<>(ResponseVO.failure("400","유효한 token이 아닙니다."),HttpStatus.UNAUTHORIZED);
+        }
+        return new ResponseEntity<>(ResponseVO.success("요청이 정상적으로 처리되었습니다.","transaction",transactionService.findAllTransactions(user.get()) ),HttpStatus.OK);
     }
 
 }

@@ -1,4 +1,4 @@
-import { IoClose } from "react-icons/io5";
+import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import TmpProfileImg from "../../assets/tmp_profile.gif";
 import { ChatData } from "../../types/chatting";
 import { useEffect, useRef, useState } from "react";
@@ -215,7 +215,7 @@ export default function ChatDetail({
   return (
     <>
       <div className="text-black bg-gray-100 rounded-[10px] flex flex-col justify-between w-full">
-        <div>
+        <div className="overflow-y-auto">
           <div className="text-[#43493A] p-[10px] flex flex-row justify-between items-center text-[29px] font-dnf-bitbit absolute bg-gray-100 w-full">
             <span className="cursor-pointer" onClick={closeChatDetail}>
               &lt;&nbsp;{chattingTitle}
