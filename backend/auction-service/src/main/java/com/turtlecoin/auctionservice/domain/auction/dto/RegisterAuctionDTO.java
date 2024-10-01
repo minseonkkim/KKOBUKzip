@@ -18,8 +18,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+// DTO 수정해야함.
 public class RegisterAuctionDTO {
-    private Long id;
     private Long turtleId;
     private Long userId;
     private LocalDateTime startTime;
@@ -33,7 +33,6 @@ public class RegisterAuctionDTO {
 
     public Auction toEntity() {
         return Auction.builder()
-                .id(id)
                 .turtleId(turtleId)
                 .userId(userId)
                 .startTime(startTime)
@@ -41,6 +40,7 @@ public class RegisterAuctionDTO {
                 .content(content)
                 .title(title)
                 .nowBid(minBid)
+                .weight(weight)
                 .sellerAddress(sellerAddress)
                 .auctionTags(auctionTags != null ? auctionTags : new ArrayList<>())  // tags가 null일 경우 빈 리스트로 초기화
                 .auctionProgress(AuctionProgress.BEFORE_AUCTION)

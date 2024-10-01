@@ -29,7 +29,7 @@ interface BidRecordData {
   bidRecord: MessageType;
 }
 
-const auctionId = 3;
+const auctionId = 95;
 function DuringAuction({
   channelId,
   minBid,
@@ -113,7 +113,7 @@ function DuringAuction({
   const sendBidRequest = () => {
     const data = {
       auctionId,
-      userId: 1, // store에서 가져올 것
+      userId: 4, // store에서 가져올 것
       bidAmount: bidPrice, // 현재입찰가
     };
 

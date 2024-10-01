@@ -1,6 +1,6 @@
-package com.turtlecoin.auctionservice.domain.auction.dto;
+package com.turtlecoin.mainservice.domain.transaction.dto;
 
-import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
+import com.turtlecoin.mainservice.domain.transaction.entity.AuctionProgress;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -14,6 +14,7 @@ public class AuctionResultDTO {
     private String content;
     private Double winningBid;
     private int weight;
+    private AuctionProgress auctionProgress;
     private Long turtleId;
     private Long auctionId;
     private String sellerAddress;

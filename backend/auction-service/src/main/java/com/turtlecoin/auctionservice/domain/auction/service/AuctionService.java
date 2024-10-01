@@ -22,6 +22,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -60,7 +61,7 @@ public class AuctionService {
                 uploadedPhotos = uploadImages(images, auction);  // 이미지 업로드
                 auction.getAuctionPhotos().addAll(uploadedPhotos);  // 업로드된 이미지 경매와 연결
             }
-        } catch (Exception e) {
+        }  catch (Exception e) {
             // 예외 발생 시 업로드된 이미지 삭제
             // 예외 발생 추가
             deleteUploadedImages(uploadedPhotos);
@@ -172,8 +173,8 @@ public class AuctionService {
         return queryFactory.selectFrom(auction)
                 .where(whereClause.and(auction.turtleId.in(
                         filteredTurtles.stream().map(TurtleResponseDTO::getId).toList())))
-                .offset((page-1L) * 10)
-                .limit(10)
+                .offset(page * 20L)
+                .limit(20)
                 .fetch();
     }
 
