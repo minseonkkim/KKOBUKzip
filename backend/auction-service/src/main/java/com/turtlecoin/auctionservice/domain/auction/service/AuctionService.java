@@ -46,6 +46,7 @@ public class AuctionService {
     private final RedissonLockFacade redissonLockFacade;
     private final SchedulingService schedulingService;
     private final BidService bidService;
+    private final SseService sseService;
 
     // 경매 등록
     @Transactional
@@ -103,7 +104,7 @@ public class AuctionService {
     }
 
     private void validateTurtleNotAlreadyRegistered(Long turtleId) {
-        if (auctionRepository.existsByTurtleId(turtleId)) {
+        if (auctionRepository.countInProgressAuctionByTurtleId(AuctionProgress.BEFORE_AUCTION, AuctionProgress.DURING_AUCTION, turtleId) > 0) {
             throw new TurtleAlreadyRegisteredException("이미 등록된 거북이는 등록할 수 없습니다.");
         }
     }
