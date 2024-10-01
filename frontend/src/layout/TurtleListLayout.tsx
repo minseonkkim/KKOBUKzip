@@ -15,16 +15,18 @@ interface TurtleListLayoutProps {
   title: string;
   items: JSX.Element[];
   fetchData: (page: number, filters: object) => Promise<any>;
-  // skeletonComponent?: JSX.Element;
+  isProgressItemChecked: boolean;
+  setIsProgressItemChecked: () => void;
 }
 
 const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   title,
   items,
   fetchData,
-  // skeletonComponent,
+  isProgressItemChecked,
+  setIsProgressItemChecked,
 }) => {
-  const [isChecked, setIsChecked] = useState(false);
+  // const [isChecked, setIsChecked] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [itemLoading, setItemLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
@@ -70,10 +72,6 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
     if (inView) loadMore();
   }, [inView]);
 
-  const handleCheckboxChange = () => {
-    setIsChecked(!isChecked);
-  };
-
   const toggleFilterDiv = () => {
     setIsFilterOpen(!isFilterOpen);
   };
@@ -104,20 +102,17 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
                 type="checkbox"
                 className="hidden"
                 readOnly
-                checked={isChecked}
+                onClick={() => setIsProgressItemChecked()}
+                checked={isProgressItemChecked}
               />
               <div
                 className={`w-5 h-5 md:w-6 md:h-6 border-2 border-gray-500 rounded-[5px] p-1 mr-2 cursor-pointer flex justify-center items-center ${
-                  isChecked ? "bg-[#FFD9D9]" : "bg-[#fff]"
+                  isProgressItemChecked ? "bg-[#FFD9D9]" : "bg-[#fff]"
                 }`}
-                onClick={handleCheckboxChange}
               >
-                {isChecked && <FaCheck />}
+                {isProgressItemChecked && <FaCheck />}
               </div>
-              <span
-                onClick={handleCheckboxChange}
-                className="cursor-pointer whitespace-nowrap text-[20px] md:text-[18px] xl:text-[21px]"
-              >
+              <span className="cursor-pointer whitespace-nowrap text-[20px] md:text-[18px] xl:text-[21px]">
                 {title.includes("판매") ? "거래가능한" : "경매중인"} 거북이만
                 보기
               </span>
