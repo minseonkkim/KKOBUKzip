@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useOutletContext } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import {
@@ -8,9 +8,16 @@ import {
 } from "../../types/document";
 import { createGrantDocumentRequest } from "../../apis/documentApis";
 
+interface ApplicantInfoContext {
+  applicantName: string,
+  applicantPhoneNumber: string,
+  applicantAddress: string,
+}
+
 // 양도 서류 컴포넌트
 function GrantorDocument() {
   const location = useLocation();
+  const { applicantName, applicantPhoneNumber, applicantAddress } = useOutletContext<ApplicantInfoContext>();
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
 
@@ -29,7 +36,13 @@ function GrantorDocument() {
       }));
     }
   }, [postcodeData?.jibunAddress]);
+
   const loadUserData = () => {
+    setGrantor({
+      name: applicantName,
+      phoneNumber: applicantPhoneNumber,
+      address: applicantAddress,
+    })
     console.log("loadUserData");
   };
 
@@ -101,9 +114,10 @@ function GrantorDocument() {
             <div className="flex items-center">
               <span className="w-1/3 font-medium">성명(상호)</span>
               <input
-                onChange={(evt) => changeHandle("name", evt)}
                 type="text"
                 placeholder="성명(상호)"
+                value={grantor.name}
+                onChange={(evt) => changeHandle("name", evt)}
                 className="w-2/3 px-3 py-2 border rounded"
               />
             </div>
@@ -111,8 +125,9 @@ function GrantorDocument() {
             <div className="flex items-center">
               <span className="w-1/3 font-medium">전화번호</span>
               <input
-                type="number"
+                type="text"
                 placeholder="전화번호"
+                value={grantor.phoneNumber}
                 onChange={(evt) => changeHandle("phoneNumber", evt)}
                 className="w-2/3 px-3 py-2 border rounded [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />

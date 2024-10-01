@@ -92,7 +92,7 @@ function DocumentFormPage() {
         {/* search keyword : dummy */}
         <MyDocumentDataForm info={applicant} />
 
-        <Outlet />
+        <Outlet context={{ applicantName: applicant.name , applicantPhoneNumber: applicant.phonenumber , applicantAddress: applicant.address }} />
       </div>
     </>
   );
