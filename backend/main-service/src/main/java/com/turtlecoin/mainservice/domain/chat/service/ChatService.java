@@ -10,18 +10,17 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.turtlecoin.mainservice.domain.chat.dto.ChatRequestDto;
 import com.turtlecoin.mainservice.domain.chat.dto.ChatResponseDto;
 import com.turtlecoin.mainservice.domain.chat.dto.ChatTextResponseDto;
 import com.turtlecoin.mainservice.domain.chat.dto.ChatTurtleResponseDto;
 import com.turtlecoin.mainservice.domain.chat.entity.Chat;
-import com.turtlecoin.mainservice.domain.chat.entity.ChatMessage;
 import com.turtlecoin.mainservice.domain.chat.entity.ChatTextMessage;
 import com.turtlecoin.mainservice.domain.chat.entity.ChatTurtleMessage;
 import com.turtlecoin.mainservice.domain.chat.repository.ChatRepository;
 import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
 import com.turtlecoin.mainservice.domain.transaction.service.TransactionService;
 import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
+import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.global.exception.TransactionNotFoundException;
 
@@ -33,6 +32,7 @@ public class ChatService {
 	private final ChatRepository chatRepository;
 	private final UserService userService;
 	private final TransactionService transactionService;
+	private final UserRepository userRepository;
 
 	public ObjectId createChat(Long smallUserId, Long bigUserId) throws Exception{
 		// 호출 해보면서 없는 아이디인지 확인
@@ -56,14 +56,16 @@ public class ChatService {
 		return chatOptional.isPresent();
 	}
 
-	public void addChatTextMessage(Long smallUserId, Long bigUserId, Long sender, String message) throws Exception{
+	public ChatTextMessage addChatTextMessage(Long smallUserId, Long bigUserId, Long sender, String message) throws Exception{
 		ChatTextMessage chatTextMessage = ChatTextMessage.builder()
 			.id(new ObjectId())
 			.sender(sender)
 			.text(message)
-			.registerTime(LocalDateTime.now())
+			.registTime(LocalDateTime.now().toString())
 			.build();
 		chatRepository.insertBySmallUserAndBigUser(smallUserId, bigUserId, chatTextMessage);
+
+		return chatTextMessage;
 	}
 
 	public void addChatTurtleMessage(Long smallUserId, Long bigUserId, String title, Double price, String image) throws Exception{
@@ -85,7 +87,16 @@ public class ChatService {
 		return chatRepository.getChatByPage(left, right, pageable.getPageNumber(), pageable.getPageSize())
 			.stream().map((chatMessage) ->{
 				if(chatMessage instanceof ChatTextMessage) {
-					return new ChatTextResponseDto((ChatTextMessage) chatMessage);
+					UserResponseDTO userResponseDTO = userService.getByUserId(((ChatTextMessage)chatMessage).getSender());
+					String image = userService.getProfileImageByUserId(((ChatTextMessage)chatMessage).getSender());
+
+					return ChatTextResponseDto.builder()
+						.userId(((ChatTextMessage)chatMessage).getSender())
+						.message(((ChatTextMessage)chatMessage).getText())
+						.registTime(((ChatTextMessage)chatMessage).getRegistTime())
+						.userProfile(image)
+						.nickname(userResponseDTO == null ? null : userResponseDTO.getNickname())
+						.build();
 				}
 				else{
 					return new ChatTurtleResponseDto((ChatTurtleMessage) chatMessage);
@@ -94,6 +105,7 @@ public class ChatService {
 			.collect(Collectors.toList());
 	}
 
+	// 거래에서 넘어오는 경우
 	public List<ChatResponseDto> getChatListFromTransaction(Long userId, Long transactionId, Pageable pageable) throws Exception {
 		Transaction transaction = transactionService.findTransactionById(transactionId);
 		if(transaction == null){
@@ -114,7 +126,16 @@ public class ChatService {
 		return chatRepository.getChatByPage(left, right, pageable.getPageNumber(), pageable.getPageSize())
 			.stream().map((chatMessage) ->{
 				if(chatMessage instanceof ChatTextMessage) {
-					return new ChatTextResponseDto((ChatTextMessage) chatMessage);
+					UserResponseDTO userResponseDTO = userService.getByUserId(((ChatTextMessage)chatMessage).getSender());
+					String image = userService.getProfileImageByUserId(((ChatTextMessage)chatMessage).getSender());
+
+					return ChatTextResponseDto.builder()
+						.userId(((ChatTextMessage)chatMessage).getSender())
+						.message(((ChatTextMessage)chatMessage).getText())
+						.registTime(((ChatTextMessage)chatMessage).getRegistTime())
+						.userProfile(image)
+						.nickname(userResponseDTO == null ? null : userResponseDTO.getNickname())
+						.build();
 				}
 				else{
 					return new ChatTurtleResponseDto((ChatTurtleMessage) chatMessage);
