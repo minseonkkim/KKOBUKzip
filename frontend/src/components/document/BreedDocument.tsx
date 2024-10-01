@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { BreedDocumentDataType, BreedFetchData } from "../../types/document";
 import DocImgUpload from "./DocImgUpload";
 import { createBreedDocumentRequest } from "../../apis/documentApis";
+import { breedDoc } from "../../utils/driverObject";
 
 // 특이사항
 // 신청인 정보 동적으로 할당할 것(아마 store에서)
@@ -84,11 +85,17 @@ function BreedDocument() {
     const result = await createBreedDocumentRequest(formData);
   };
 
+  const handleGuide = () => {
+    breedDoc.drive();
+  }
+
   return (
     <>
       <Helmet>
         <title>인공증식서류작성</title>
       </Helmet>
+
+      <button onClick={handleGuide} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">가이드 시작</button>
 
       {/* 허가 정보 */}
       <form onSubmit={sendBreedDocRequest}>
@@ -272,32 +279,38 @@ function BreedDocument() {
               </div>
             </div>
 
-            <p
-              aria-labelledby="증식시설 명세서"
-              className="block font-semibold pt-4 "
-            >
-              인공증식 시설의 명세서
-            </p>
-            <DocImgUpload id="setShelterImg" setImage={setShelterImg} />
+            <div>
+              <p
+                aria-labelledby="증식시설 명세서"
+                className="block font-semibold pt-4 "
+              >
+                인공증식 시설의 명세서
+              </p>
+              <DocImgUpload id="setShelterImg" setImage={setShelterImg} />
+            </div>
 
-            <p
-              aria-labelledby="인공증식 명세서"
-              className="block font-semibold pt-4 "
-            >
-              인공증식의 방법{" "}
-            </p>
-            <DocImgUpload
-              id="setMultiplicationImg"
-              setImage={setMultiplicationImg}
-            />
+            <div>
+              <p
+                aria-labelledby="인공증식 명세서"
+                className="block font-semibold pt-4 "
+              >
+                인공증식의 방법{" "}
+              </p>
+              <DocImgUpload
+                id="setMultiplicationImg"
+                setImage={setMultiplicationImg}
+              />
+            </div>
 
-            <p
-              aria-labelledby="보호시설 명세서"
-              className="block font-semibold pt-4 "
-            >
-              보호시설 명세서{" "}
-            </p>
-            <DocImgUpload id="setLocationImg" setImage={setLocationImg} />
+            <div>
+              <p
+                aria-labelledby="보호시설 명세서"
+                className="block font-semibold pt-4 "
+              >
+                보호시설 명세서{" "}
+              </p>
+              <DocImgUpload id="setLocationImg" setImage={setLocationImg} />  
+            </div>
 
             {/* <div>
             <label className="block font-semibold mb-1">인공증식의 방법</label>
