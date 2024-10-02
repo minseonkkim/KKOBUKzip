@@ -44,7 +44,7 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
 
     const handleDeposit = async () => {
         if (account && props.transactionId !== undefined && props.sellerAddress && props.amount !== undefined) {
-            const isFinish = await createTransaction(props.isAuction!, props.transactionId, props.sellerAddress, props.amount, String(props.turtleId), String(props.buyerId), String(props.sellerId));
+            const isFinish = await createTransaction(props.transactionId, props.sellerAddress, props.amount, String(props.turtleId), String(props.buyerId), String(props.sellerId));
             if (isFinish) {
                 alert("거래 대금 송금이 완료되었습니다. 서류 작성을 진행해 주세요.")
             } else {
@@ -69,7 +69,7 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
 
     const finalizeTransaction = async () => {
         if (props.transactionId !== undefined) {
-            const isFinish = await releaseFunds(props.isAuction!, props.transactionId);
+            const isFinish = await releaseFunds(props.transactionId);
             if (isFinish) {
                 alert("구매가 확정되어 거래가 완료되었습니다.")
             } else {

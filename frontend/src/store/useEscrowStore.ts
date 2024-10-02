@@ -13,19 +13,19 @@ interface TransactionDetails {
 interface EscrowState {
   transactionDetails: TransactionDetails | null;
   error: string | null;
-  createTransaction: (isAuction: boolean, transactionId: number, seller: string, amount: number, turtleId: string, buyerId: string, sellerId: string ) => Promise<boolean | undefined>;
-  releaseFunds: (isAuction: boolean, transactionId: number) => Promise<boolean | undefined>;
-  refund: (isAuction: boolean, transactionId: number) => Promise<void>;
-  getTransactionDetails: (isAuction: boolean, transactionId: number) => Promise<void>;
+  createTransaction: (transactionId: number, seller: string, amount: number, turtleId: string, buyerId: string, sellerId: string ) => Promise<boolean | undefined>;
+  releaseFunds: (transactionId: number) => Promise<boolean | undefined>;
+  refund: (transactionId: number) => Promise<void>;
+  getTransactionDetails: (transactionId: number) => Promise<void>;
   setArbiter: (newArbiter: string) => Promise<void>;
-  updateLockPeriod: (isAuction: boolean, transactionId: number, newLockPeriod: number) => Promise<void>;
+  updateLockPeriod: (transactionId: number, newLockPeriod: number) => Promise<void>;
 }
 
 export const useEscrowStore = create<EscrowState>((set) => ({
   transactionDetails: null,
   error: null,
 
-  createTransaction: async (isAuction: boolean, transactionId: number, seller: string, amount: number, turtleId: string, buyerId: string, sellerId: string) => {
+  createTransaction: async (transactionId: number, seller: string, amount: number, turtleId: string, buyerId: string, sellerId: string) => {
     const { account } = useWeb3Store.getState();
     const escrowContract = useWeb3Store.getState().getEscrowContract();
     if (!escrowContract || !account) {
@@ -34,7 +34,7 @@ export const useEscrowStore = create<EscrowState>((set) => ({
     }
 
     try {
-      await escrowContract.methods.createTransaction(isAuction, transactionId, seller, amount, turtleId, buyerId, sellerId).send({ from: account });
+      await escrowContract.methods.createTransaction(transactionId, seller, amount, turtleId, buyerId, sellerId).send({ from: account });
       set({ error: null });
       return true;
     } catch {
@@ -43,7 +43,7 @@ export const useEscrowStore = create<EscrowState>((set) => ({
     }
   },
 
-  releaseFunds: async (isAuction: boolean, transactionId: number) => {
+  releaseFunds: async (transactionId: number) => {
     const { account } = useWeb3Store.getState();
     const escrowContract = useWeb3Store.getState().getEscrowContract();
     if (!escrowContract || !account) {
@@ -52,7 +52,7 @@ export const useEscrowStore = create<EscrowState>((set) => ({
     }
 
     try {
-      await escrowContract.methods.releaseFunds(isAuction, transactionId).send({ from: account });
+      await escrowContract.methods.releaseFunds(transactionId).send({ from: account });
       set({ error: null });
       return true;
     } catch {
@@ -61,7 +61,7 @@ export const useEscrowStore = create<EscrowState>((set) => ({
     }
   },
 
-  refund: async (isAuction: boolean, transactionId: number) => {
+  refund: async (transactionId: number) => {
     const { account } = useWeb3Store.getState();
     const escrowContract = useWeb3Store.getState().getEscrowContract();
     if (!escrowContract || !account) {
@@ -70,14 +70,14 @@ export const useEscrowStore = create<EscrowState>((set) => ({
     }
 
     try {
-      await escrowContract.methods.refund(isAuction, transactionId).send({ from: account });
+      await escrowContract.methods.refund(transactionId).send({ from: account });
       set({ error: null });
     } catch {
       set({ error: "Failed to refund" });
     }
   },
 
-  getTransactionDetails: async (isAuction: boolean, transactionId: number) => {
+  getTransactionDetails: async (transactionId: number) => {
     const escrowContract = useWeb3Store.getState().getEscrowContract();
     if (!escrowContract) {
       set({ error: "Escrow contract not initialized" });
@@ -85,7 +85,7 @@ export const useEscrowStore = create<EscrowState>((set) => ({
     }
 
     try {
-      const details: TransactionDetails = await escrowContract.methods.getTransactionDetails(isAuction, transactionId).call();
+      const details: TransactionDetails = await escrowContract.methods.getTransactionDetails(transactionId).call();
       set({ transactionDetails: details, error: null });
     } catch {
       set({ error: "Failed to get transaction details" });
@@ -108,7 +108,7 @@ export const useEscrowStore = create<EscrowState>((set) => ({
     }
   },
 
-  updateLockPeriod: async (isAuction: boolean, transactionId: number, newLockPeriod: number) => {
+  updateLockPeriod: async (transactionId: number, newLockPeriod: number) => {
     const { account } = useWeb3Store.getState();
     const escrowContract = useWeb3Store.getState().getEscrowContract();
     if (!escrowContract || !account) {
@@ -117,7 +117,7 @@ export const useEscrowStore = create<EscrowState>((set) => ({
     }
 
     try {
-      await escrowContract.methods.updateLockPeriod(isAuction, transactionId, newLockPeriod).send({ from: account });
+      await escrowContract.methods.updateLockPeriod(transactionId, newLockPeriod).send({ from: account });
       set({ error: null });
     } catch {
       set({ error: "Failed to update lock period"});
