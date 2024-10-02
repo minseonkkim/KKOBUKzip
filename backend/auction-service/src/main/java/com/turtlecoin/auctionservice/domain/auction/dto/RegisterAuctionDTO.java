@@ -15,7 +15,7 @@ import java.util.List;
 
 @Slf4j
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 // DTO 수정해야함.

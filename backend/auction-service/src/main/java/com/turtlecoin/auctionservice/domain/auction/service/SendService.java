@@ -68,11 +68,12 @@ public class SendService {
         Double winningBid = Double.parseDouble(bidData.get("bidAmount").toString());
         Long winningUserId = Long.parseLong(bidData.get("userId").toString());
 
+        AuctionResultDTO auctionResultDTO = createAuctionResultDTO(auction, winningBid, winningUserId);
+        response = ResponseVO.success("경매가 종료됐습니다.");
+
         auction.updateStatus(AuctionProgress.SUCCESSFUL_BID);
         auction.updateAfterAuction(winningUserId, winningBid);
 
-        AuctionResultDTO auctionResultDTO = createAuctionResultDTO(auction, winningBid, winningUserId);
-        response = ResponseVO.success("경매가 종료됐습니다.");
         messagingTemplate.convertAndSend("/sub/auction/" + auctionId, response);
         // rabbitmq로 보내기
         sendMessage(auctionResultDTO);
