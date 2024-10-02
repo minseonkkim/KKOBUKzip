@@ -238,8 +238,8 @@ public class AuctionService {
             data.put("auctions", auctions);
             data.put("total_pages", totalPages);
 
-            return new ResponseEntity<>(ResponseVO.success("경매가 성공적으로 등록됐습니다.", "data", data), HttpStatus.OK);
-        }catch (NumberFormatException e) {
+            return new ResponseEntity<>(ResponseVO.success("경매가 성공적으로 조회 되었습니다.", "data", data), HttpStatus.OK);
+        } catch (NumberFormatException e) {
             // 숫자 형식이 잘못된 경우 예외 처리
             return new ResponseEntity<>(ResponseVO.failure("400", "잘못된 형식의 입력값이 있습니다."), HttpStatus.BAD_REQUEST);
 

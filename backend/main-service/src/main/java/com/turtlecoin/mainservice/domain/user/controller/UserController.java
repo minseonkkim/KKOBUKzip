@@ -2,10 +2,7 @@ package com.turtlecoin.mainservice.domain.user.controller;
 
 import com.turtlecoin.mainservice.domain.transaction.service.TransactionService;
 import com.turtlecoin.mainservice.domain.turtle.dto.TurtleResponseDTO;
-import com.turtlecoin.mainservice.domain.user.dto.EmailDto;
-import com.turtlecoin.mainservice.domain.user.dto.LoginUserDto;
-import com.turtlecoin.mainservice.domain.user.dto.UserRequestDto;
-import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
+import com.turtlecoin.mainservice.domain.user.dto.*;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.domain.user.service.EmailService;
@@ -114,19 +111,12 @@ public class UserController {
     }
 
     @GetMapping("/turtle")
-    public ResponseEntity<List<TurtleResponseDTO>> getTurtlesByUserId(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> getTurtlesByUserId(@RequestHeader("Authorization") String token) {
         // 유저 없을 때 에러 던져주기
         User user = jwtService.getUserByToken(token).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
         // 사용자가 소유한 거북이 정보를 조회하는 로직
-        List<TurtleResponseDTO> turtles = userService.getTurtlesByUserId(user.getId());
-        log.info("거북이 정보: {}", turtles);
-        if (turtles.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-
-        return ResponseEntity.ok(turtles);
+        return userService.getTurtlesByUserId(user.getId());
     }
-
 
     // !~!~userId 토큰에서 가져오는거 여기 참고하기~!~!
     @GetMapping("/transaction")
