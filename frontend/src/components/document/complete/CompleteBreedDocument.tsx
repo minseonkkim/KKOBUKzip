@@ -39,33 +39,30 @@ function CompleteBreedDocument({ data }: { data: AdminBreedDocumentDataType }) {
             <label className="w-1/4 font-medium">모 개체</label>
             <span className="w-3/4 px-3 py-2">
               {data.detail.motherAquisition} <br />
-              여기엔 무슨 정보가 나타나야 하는 것인가
             </span>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-medium">부 개체</label>
             <span className="w-3/4 px-3 py-2">
               {data.detail.fatherAquisition} <br />
-              여기엔 무슨 ~~ 2222
             </span>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-medium">인공증식시설</label>
             <span className="w-3/4 px-3 py-2">
               {data.detail.locationSpecification}
-              하단에 이미지
             </span>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-medium">인공증식방법</label>
             <span className="w-3/4 px-3 py-2">
-              {data.detail.multiplicationMethod}이미지위치
+              {data.detail.multiplicationMethod}
             </span>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-medium">보호시설</label>
             <span className="w-3/4 px-3 py-2">
-              {data.detail.shelterSpecification}이미지위치
+              {data.detail.shelterSpecification}
             </span>
           </div>
         </div>
