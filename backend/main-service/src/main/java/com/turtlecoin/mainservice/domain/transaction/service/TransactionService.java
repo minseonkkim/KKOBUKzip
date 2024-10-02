@@ -9,6 +9,7 @@ import com.turtlecoin.mainservice.domain.transaction.entity.TransactionPhoto;
 import com.turtlecoin.mainservice.domain.transaction.entity.TransactionProgress;
 import com.turtlecoin.mainservice.domain.transaction.entity.TransactionTag;
 import com.turtlecoin.mainservice.domain.transaction.exception.DuplicatedEnrollTransaction;
+import com.turtlecoin.mainservice.domain.transaction.exception.TransactionNotFoundException;
 import com.turtlecoin.mainservice.domain.transaction.repository.TransactionRepository;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
@@ -26,10 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -153,7 +151,22 @@ public class TransactionService {
         }
     }
 
+    // 상세 거래 조회
+    public ResponseEntity<?> getTransactionByID(Long id){
 
+        try{
+            Optional<Transaction> transaction = transactionRepository.findOneById(id);
+            if(transaction.isEmpty()){
+                throw new TransactionNotFoundException("해당 거래가 존재하지 않습니다.");
+            }
+            DetailTransactionResponseDto data = transaction.get().toResponseDTO();
+            return new ResponseEntity<>(ResponseVO.success("거래가 정상적으로 조회되었습니다.","turtle",data), HttpStatus.OK);
+        }catch(TransactionNotFoundException e){
+            return new ResponseEntity<>(ResponseVO.failure("400",e.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch(Exception e){
+            return new ResponseEntity<>(ResponseVO.failure("500","거래 조회 과정 중에 서버 에러가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     // string을 TransactionPhoto로 변환하는 로직
     public List<TransactionPhoto> stringToDto(List<String> imageUrls, Transaction transaction) {

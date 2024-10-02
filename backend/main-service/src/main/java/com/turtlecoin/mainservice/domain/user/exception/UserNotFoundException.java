@@ -1,4 +1,4 @@
-package com.turtlecoin.mainservice.global.exception;
+package com.turtlecoin.mainservice.domain.user.exception;
 
 public class UserNotFoundException extends RuntimeException {
 	public UserNotFoundException(){

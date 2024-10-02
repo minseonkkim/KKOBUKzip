@@ -1,11 +1,7 @@
 package com.turtlecoin.mainservice.domain.user.controller;
 
-import com.turtlecoin.mainservice.domain.transaction.dto.DetailTransactionResponseDto;
-import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
-import com.turtlecoin.mainservice.domain.transaction.repository.TransactionRepository;
 import com.turtlecoin.mainservice.domain.transaction.service.TransactionService;
 import com.turtlecoin.mainservice.domain.turtle.dto.TurtleResponseDTO;
-import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
 import com.turtlecoin.mainservice.domain.user.dto.EmailDto;
 import com.turtlecoin.mainservice.domain.user.dto.LoginUserDto;
 import com.turtlecoin.mainservice.domain.user.dto.UserRequestDto;
@@ -15,8 +11,7 @@ import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.domain.user.service.EmailService;
 import com.turtlecoin.mainservice.domain.user.service.JWTService;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
-import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
-import com.turtlecoin.mainservice.global.exception.UserNotFoundException;
+import com.turtlecoin.mainservice.domain.user.exception.UserNotFoundException;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -29,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequestMapping("/main/user")
 @Controller
