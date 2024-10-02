@@ -93,32 +93,32 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/")
     // 유저 없을 때 에러 던져주기
-    public UserResponseDTO getUserById(@PathVariable Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
-
+    public UserResponseDTO getUserById(@RequestHeader("Authorizaion") String token) {
+        User user = jwtService.getUserByToken(token).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
         return new UserResponseDTO(
                 user.getId(),
                 user.getNickname(),
                 user.getName(),
-                user.getEmail()
+                user.getEmail(),
+                user.getProfileImage()
         );
     }
 
-    @GetMapping("/{userId}/nickname")
-    public String getUserNicknameById(@PathVariable Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
+    @GetMapping("/nickname")
+    public String getUserNicknameById(@RequestHeader("Authorizaion") String token) {
+        User user = jwtService.getUserByToken(token).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
         System.out.println("userNickname: " + user.getNickname());
         return user.getNickname();
     }
 
-    @GetMapping("/{userId}/turtle")
-    public ResponseEntity<List<TurtleResponseDTO>> getTurtlesByUserId(@PathVariable Long userId) {
+    @GetMapping("/turtle")
+    public ResponseEntity<List<TurtleResponseDTO>> getTurtlesByUserId((@RequestHeader("Authorizaion") String token) {
         // 유저 없을 때 에러 던져주기
-
+        User user = jwtService.getUserByToken(token).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
         // 사용자가 소유한 거북이 정보를 조회하는 로직
-        List<TurtleResponseDTO> turtles = userService.getTurtlesByUserId(userId);
+        List<TurtleResponseDTO> turtles = userService.getTurtlesByUserId(user.getId());
         log.info("거북이 정보: {}", turtles);
         if (turtles.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
