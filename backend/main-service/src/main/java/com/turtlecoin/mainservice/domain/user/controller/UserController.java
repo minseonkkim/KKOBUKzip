@@ -114,7 +114,7 @@ public class UserController {
     }
 
     @GetMapping("/turtle")
-    public ResponseEntity<List<TurtleResponseDTO>> getTurtlesByUserId((@RequestHeader("Authorizaion") String token) {
+    public ResponseEntity<List<TurtleResponseDTO>> getTurtlesByUserId(@RequestHeader("Authorizaion") String token) {
         // 유저 없을 때 에러 던져주기
         User user = jwtService.getUserByToken(token).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
         // 사용자가 소유한 거북이 정보를 조회하는 로직
