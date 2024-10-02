@@ -13,14 +13,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.turtlecoin.mainservice.domain.chat.dto.ChatResponseDto;
-import com.turtlecoin.mainservice.domain.chat.entity.ChatMessage;
 import com.turtlecoin.mainservice.domain.chat.service.ChatService;
 import com.turtlecoin.mainservice.domain.transaction.service.TransactionService;
 import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
-import com.turtlecoin.mainservice.global.exception.TransactionNotFoundException;
+import com.turtlecoin.mainservice.domain.transaction.exception.TransactionNotFoundException;
 import com.turtlecoin.mainservice.global.response.ResponseSingle;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 

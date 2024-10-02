@@ -15,6 +15,8 @@ public class DetailTransactionResponseDto {
     private String scientificName;
     private Double price;
     private String createDate;
+    private String title;
+    private String sellerImageUrl;
     private int weight;
     private String content;
     private List<String> transactionTag;  // 태그 목록

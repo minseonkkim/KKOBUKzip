@@ -49,7 +49,7 @@ public class UserService {
 
         try {
             // 이미지 업로드
-            imageUrl = imageUploadService.upload(image, uuid + "Profile");
+            imageUrl = imageUploadService.upload(image, "user");
         } catch (IOException e) {
             e.printStackTrace();
             // 이미지 업로드 실패 시 에러 메시지 반환

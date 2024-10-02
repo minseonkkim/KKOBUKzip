@@ -2,12 +2,10 @@ package com.turtlecoin.mainservice.domain.transaction.entity;
 
 import com.turtlecoin.mainservice.domain.transaction.dto.DetailTransactionResponseDto;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
-import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
-import org.web3j.abi.datatypes.Bool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,6 +94,8 @@ public class Transaction extends BaseEntity {
                         .map(TransactionPhoto::getImageAddress)
                         .collect(Collectors.toList())) // 이미지 경로 리스트
                 .progress(this.progress.name()) // Enum 값 (거래 진행 상황)
+                .sellerImageUrl(this.turtle.getUser().getProfileImage())
+                .title(this.title)
                 .build();
     }
 }
