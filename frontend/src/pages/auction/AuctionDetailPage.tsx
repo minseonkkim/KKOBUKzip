@@ -83,7 +83,7 @@ function AuctionDetailPage() {
         <title>경매중인 거북이</title>
       </Helmet>
       <Header />
-      <main className="px-4 lg:px-[250px] mt-[85px]">
+      <main className="px-4 lg:px-[250px] mt-[78px]">
         {/* 테스트 드라이버 */}
         <div className="grid grid-cols-4">
           <button
@@ -113,7 +113,7 @@ function AuctionDetailPage() {
         </div>
         {/* 테스트 드라이버 끝 */}
 
-        <div className="whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit pt-0 lg:pt-[32px] pb-[13px]">
+        <div className="whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit pt-0 lg:pt-[18px] pb-[13px]">
           <span className="cursor-pointer" onClick={goBack}>
             &lt;&nbsp;경매중인 거북이
           </span>
