@@ -78,9 +78,7 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ResponseVO.failure("500", e.getMessage()));
         } catch (Exception e) {
-            // 사용자 저장 중 에러 발생 시 처리
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ResponseVO.failure("400", "사용자 저장 중 에러가 발생하였습니다."));
+            return new ResponseEntity<>(ResponseVO.failure("500", "예상치 못한 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         // 성공 메시지 반환
