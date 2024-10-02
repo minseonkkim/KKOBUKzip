@@ -1,5 +1,6 @@
 package com.turtlecoin.mainservice.domain.user.controller;
 
+import com.turtlecoin.mainservice.domain.s3.service.ImageUploadService;
 import com.turtlecoin.mainservice.domain.transaction.service.TransactionService;
 import com.turtlecoin.mainservice.domain.turtle.dto.TurtleResponseDTO;
 import com.turtlecoin.mainservice.domain.user.dto.EmailDto;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 @RequestMapping("/main/user")
@@ -36,14 +38,16 @@ public class UserController {
     private final JWTService jwtService;
     private final TransactionService transactionService;
     private final UserRepository userRepository;
+    private final ImageUploadService imageUploadService;
 
 
-    public UserController(EmailService emailService, UserService userService, JWTService jwtService, TransactionService transactionService, UserRepository userRepository) {
+    public UserController(EmailService emailService, UserService userService, JWTService jwtService, TransactionService transactionService, UserRepository userRepository, ImageUploadService imageUploadService) {
         this.emailService = emailService;
         this.userService = userService;
         this.jwtService = jwtService;
         this.transactionService = transactionService;
         this.userRepository = userRepository;
+        this.imageUploadService = imageUploadService;
     }
 
     @PostMapping(value="/join",consumes={MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -75,9 +79,10 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseVO);
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseVO.failure("400", "올바른 요청이 아닙니다."));
+            return new ResponseEntity<>(ResponseVO.failure("500", "예상치 못한 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @PostMapping("/email")
     public ResponseEntity<?> verifyEmail(@RequestBody EmailDto emailDto) {
@@ -89,7 +94,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseVO);
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseVO.failure("400", "인증 과정에서 오류가 발생하였습니다."));
+            return new ResponseEntity<>(ResponseVO.failure("500", "예상치 못한 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -133,9 +138,35 @@ public class UserController {
     public ResponseEntity<?> myTransaction(@RequestHeader("Authorization") String token){
         Optional<User> user = jwtService.getUserByToken(token); // token 기준으로 User 객체 가져오기!
         if(user.isEmpty()){
-            return new ResponseEntity<>(ResponseVO.failure("400","유효한 token이 아닙니다."),HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(ResponseVO.failure("404","유효한 token이 아닙니다."),HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(ResponseVO.success("요청이 정상적으로 처리되었습니다.","transaction",transactionService.findAllTransactions(user.get()) ),HttpStatus.OK);
     }
 
+    @PatchMapping(value="/image",consumes={MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> modifyMyProfileImage(
+            @RequestHeader("Authorization") String token,
+            @RequestPart("profileImage") MultipartFile image) {
+        try{
+            Optional<User> user = jwtService.getUserByToken(token);
+            if(user.isEmpty()){
+                throw new UserNotFoundException("유효한 토근이 아닙니다.");
+            }
+            imageUploadService.deleteS3(user.get().getProfileImage());
+            String url = imageUploadService.upload(image,"user");
+            user.get().modifyProfileImage(url);
+            userRepository.save(user.get());
+            return new ResponseEntity<>(ResponseVO.success("200","이미지가 성공적으로 수정 되었습니다."),HttpStatus.OK);
+        }catch(UserNotFoundException e){
+            return new ResponseEntity<>(ResponseVO.failure("404",e.getMessage()),HttpStatus.UNAUTHORIZED);
+
+        }catch (IOException e) {
+            // 이미지 업로드 중 IO 예외 발생 시
+            return new ResponseEntity<>(ResponseVO.failure("500", "이미지 업로드 중 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+
+        } catch (Exception e) {
+            // 기타 예외 발생 시
+            return new ResponseEntity<>(ResponseVO.failure("500", "예상치 못한 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
