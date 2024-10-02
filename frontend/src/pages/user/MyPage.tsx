@@ -163,7 +163,6 @@ function MyPage() {
             // 거래 내역이 있을 경우
             <div className="flex flex-col space-y-3">
               <TransactionHistory
-                isAuction={false}
                 turtleId={turtleId}
                 transactionId={transactionId}
                 sellerId={sellerId}
@@ -173,7 +172,6 @@ function MyPage() {
                 amount={price}
               />
               <TransactionHistory
-                isAuction={false}
                 turtleId={turtleId}
                 transactionId={transactionId}
                 sellerId={sellerId}
@@ -183,7 +181,6 @@ function MyPage() {
                 amount={price}
               />
               <TransactionHistory
-                isAuction={false}
                 turtleId={turtleId}
                 transactionId={transactionId}
                 sellerId={sellerId}

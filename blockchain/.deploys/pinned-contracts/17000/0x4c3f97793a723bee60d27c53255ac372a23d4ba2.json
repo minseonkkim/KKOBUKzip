@@ -1,14 +1,9 @@
 {
   "name": "TurtleEscrow",
-  "address": "0xf2ce2297bacc355aa5e84232428bfd7464cf627e",
+  "address": "0x4c3f97793a723bee60d27c53255ac372a23d4ba2",
   "abi": [
     {
       "inputs": [
-        {
-          "internalType": "bool",
-          "name": "_isAuction",
-          "type": "bool"
-        },
         {
           "internalType": "uint256",
           "name": "_transactionId",
@@ -43,10 +38,43 @@
       "name": "createTransaction",
       "outputs": [
         {
-          "internalType": "bool",
+          "internalType": "uint256",
           "name": "",
-          "type": "bool"
-        },
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_transactionId",
+          "type": "uint256"
+        }
+      ],
+      "name": "refund",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_transactionId",
+          "type": "uint256"
+        }
+      ],
+      "name": "releaseFunds",
+      "outputs": [
         {
           "internalType": "uint256",
           "name": "",
@@ -85,64 +113,6 @@
       ],
       "name": "OwnershipTransferred",
       "type": "event"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bool",
-          "name": "_isAuction",
-          "type": "bool"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_transactionId",
-          "type": "uint256"
-        }
-      ],
-      "name": "refund",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bool",
-          "name": "_isAuction",
-          "type": "bool"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_transactionId",
-          "type": "uint256"
-        }
-      ],
-      "name": "releaseFunds",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
     },
     {
       "inputs": [],
@@ -193,11 +163,6 @@
     {
       "inputs": [
         {
-          "internalType": "bool",
-          "name": "_isAuction",
-          "type": "bool"
-        },
-        {
           "internalType": "uint256",
           "name": "_transactionId",
           "type": "uint256"
@@ -210,11 +175,6 @@
       ],
       "name": "updateLockPeriod",
       "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        },
         {
           "internalType": "uint256",
           "name": "",
@@ -239,70 +199,6 @@
     },
     {
       "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "auctionTransactions",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "turtleId",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "buyerId",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "sellerId",
-          "type": "string"
-        },
-        {
-          "internalType": "address",
-          "name": "buyer",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "seller",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
-        },
-        {
-          "internalType": "enum TurtleEscrow.State",
-          "name": "state",
-          "type": "uint8"
-        },
-        {
-          "internalType": "uint256",
-          "name": "createdAt",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "lockPeriod",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bool",
-          "name": "_isAuction",
-          "type": "bool"
-        },
         {
           "internalType": "uint256",
           "name": "_transactionId",
@@ -359,6 +255,32 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "token",
+      "outputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -366,7 +288,7 @@
           "type": "uint256"
         }
       ],
-      "name": "normalTransactions",
+      "name": "transactions",
       "outputs": [
         {
           "internalType": "string",
@@ -419,32 +341,6 @@
     },
     {
       "inputs": [],
-      "name": "owner",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "token",
-      "outputs": [
-        {
-          "internalType": "contract IERC20",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "turtleDocumentation",
       "outputs": [
         {
@@ -458,5 +354,5 @@
     }
   ],
   "filePath": " - connect to localhost - /contracts/TurtleEscrow.sol",
-  "pinnedAt": 1727834820846
+  "pinnedAt": 1727855460506
 }
