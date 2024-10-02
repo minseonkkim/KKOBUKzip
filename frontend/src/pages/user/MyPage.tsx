@@ -1,11 +1,11 @@
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 // import TmpProfileImg from "../../assets/tmp_profile.gif";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MyTurtle from "../../components/user/MyTurtle";
 import TransactionHistory from "../../components/user/TransactionHistory";
 // import NoImage from "../../assets/no_image.webp";
-import { FaRandom } from '@react-icons/all-files/fa/FaRandom';
+import { FaRandom } from "@react-icons/all-files/fa/FaRandom";
 import CustomProfile1 from "../../../public/custom_profile/profile1.gif";
 import CustomProfile2 from "../../../public/custom_profile/profile2.gif";
 import CustomProfile3 from "../../../public/custom_profile/profile3.gif";
@@ -21,11 +21,24 @@ import CustomProfile12 from "../../../public/custom_profile/profile12.gif";
 import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
 import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 
+import { EscrowDummy } from "../../fixtures/escrowDummy";
+import { getMyTransaction } from "../../apis/userApi";
+import { useUserStore } from "../../store/useUserStore";
 
 function MyPage() {
   const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [profileImage, setProfileImage] = useState(CustomProfile1);
+  const { userInfo } = useUserStore();
+  const { transactionId, sellerId, turtleId, sellerAddress, price } =
+    EscrowDummy.data.data.transactions[0];
+
+  useEffect(() => {
+    const init = async () => {
+      (await getMyTransaction()).data?.data.transaction;
+    };
+    init();
+  }, []);
 
   const profileImages = [
     CustomProfile1,
@@ -71,16 +84,16 @@ function MyPage() {
         <title>마이페이지</title>
       </Helmet>
       <Header />
-      <div className="flex flex-col h-[100vh] overflow-hidden px-4 lg:px-[250px] pt-[85px]">
+      <main className="flex flex-col h-[100vh] overflow-hidden px-4 lg:px-[250px] pt-[85px]">
         <div className="flex flex-row justify-between items-center mt-0 lg:mt-[30px] px-[30px] py-[20px] bg-gradient-to-r from-[#e7f6d1] via-[#d5e5bd] to-[#e7f6d1] rounded-[20px]">
           <div className="w-1/2">
             <div className="font-dnf-bitbit text-[#4B721F] text-[24px] md:text-[27px] mt-1 mb-3 md:mb-5">
               내 정보
             </div>
             <div className="lg:text-[22px] text-[17px]">
-              <div>닉네임: 꼬북맘</div>
-              <div>주소: 바다</div>
-              <div>연락처: 000-0000-0000</div>
+              <div>닉네임: {userInfo?.nickname}</div>
+              <div>주소: {userInfo?.address}</div>
+              <div>연락처: {userInfo?.phoneNumber}</div>
             </div>
           </div>
           <div
@@ -88,7 +101,7 @@ function MyPage() {
             onClick={openCustomModal}
           >
             <img
-              src={profileImage}
+              src={userInfo?.profileImage}
               className="rounded-full object-cover w-[132px] h-[132px] lg:w-[162px] lg:h-[162px] transition-all duration-300 group-hover:brightness-50"
               draggable="false"
               alt="profile image"
@@ -122,9 +135,30 @@ function MyPage() {
           {selectedMenu === 0 && (
             // 거래 내역이 있을 경우
             <div className="flex flex-col space-y-3">
-              <TransactionHistory />
-              <TransactionHistory />
-              <TransactionHistory />
+              <TransactionHistory
+                isAuction={false}
+                turtleId={turtleId}
+                transactionId={transactionId}
+                sellerId={sellerId}
+                sellerAddress={sellerAddress}
+                amount={price}
+              />
+              <TransactionHistory
+                isAuction={false}
+                turtleId={turtleId}
+                transactionId={transactionId}
+                sellerId={sellerId}
+                sellerAddress={sellerAddress}
+                amount={price}
+              />
+              <TransactionHistory
+                isAuction={false}
+                turtleId={turtleId}
+                transactionId={transactionId}
+                sellerId={sellerId}
+                sellerAddress={sellerAddress}
+                amount={price}
+              />
             </div>
 
             // 거래내역이 없을 경우
@@ -145,7 +179,7 @@ function MyPage() {
             </div>
           )}
         </div>
-      </div>
+      </main>
 
       {isCustomModalOpen && (
         <div

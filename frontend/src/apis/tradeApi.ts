@@ -2,7 +2,10 @@ import axios, { AxiosResponse } from "axios";
 import { AuctionItemDataType } from "../types/auction";
 import authAxios from "./http-commons/authAxios";
 import guestAxios from "./http-commons/guestAxios";
-import { TransactionItemDataType } from "../types/transaction";
+import {
+  TransactionItemDataType,
+  TransactionItemDetailType,
+} from "../types/transaction";
 import { AuctionResponseDummuy } from "../fixtures/auctionDummy";
 
 interface AuctionResponseData<T> {
@@ -64,11 +67,11 @@ interface AuctionListData {
 /**
  * 주어진 필터를 기반으로 경매 데이터 목록을 가져옵니다.
  *
- * @param gender - 경매 항목의 성별. 'w'는 암컷, 'm'은 수컷입니다.
- * @param sizeStart - 항목의 크기 범위를 'AbetweenB' 형식으로 지정합니다 (예: '2between5').
- * @param sizeEnd - 항목의 크기 범위를 'AbetweenB' 형식으로 지정합니다 (예: '2between5').
- * @param priceStar - 항목의 가격 범위를 'AbetweenB' 형식으로 지정합니다 (예: '100between500').
- * @param priceEnd - 항목의 가격 범위를 'AbetweenB' 형식으로 지정합니다 (예: '100between500').
+ * @param gender - 경매 항목의 성별.
+ * @param minWeight - 항목의 크기 범위를 'AbetweenB' 형식으로 지정합니다 (예: '2between5').
+ * @param maxWeight - 항목의 크기 범위를 'AbetweenB' 형식으로 지정합니다 (예: '2between5').
+ * @param minPrice - 항목의 가격 범위를 'AbetweenB' 형식으로 지정합니다 (예: '100between500').
+ * @param maxPrice - 항목의 가격 범위를 'AbetweenB' 형식으로 지정합니다 (예: '100between500').
  * @param progress - 경매 진행 상태입니다. 선택지는 다음과 같습니다:
  *   1: 경매 시작 전,
  *   2: 경매 진행 중,
@@ -84,32 +87,39 @@ interface AuctionListData {
 export const getAuctionDatas = async ({
   page,
   gender,
-  sizeStart,
-  sizeEnd,
-  priceEnd,
-  priceStart,
+  minWeight,
+  maxWeight,
+  maxPrice,
+  minPrice,
   progress,
 }: {
   page?: number;
   gender?: string;
-  sizeStart?: number;
-  sizeEnd?: number;
-  priceStart?: number;
-  priceEnd?: number;
+  minWeight?: string;
+  maxWeight?: string;
+  minPrice?: string;
+  maxPrice?: string;
   progress?: number;
 }) => {
   // query setting
-  const pageQuery = page ? `page=${page}` : "page=1";
+  const pageQuery = page ? `page=${page}` : "page=0";
   const genderQuery = gender ? `&gender=${gender}` : "";
   const sizeQuery =
-    sizeStart && sizeEnd ? `&size=${sizeStart}between${sizeEnd}` : "";
+    minWeight || maxWeight
+      ? `&size=${minWeight ? minWeight : "0"}between${
+          maxWeight ? maxWeight : "999999999999"
+        }`
+      : "";
   const priceQuery =
-    priceStart && priceEnd ? `&price=${priceStart}between${priceEnd}` : "";
+    minPrice || maxPrice
+      ? `&price=${minPrice ? minPrice : "0"}between${
+          maxPrice ? maxPrice : "999999999999"
+        }`
+      : "";
   const progressQuery = progress ? `&progress=${progress}` : "";
 
   const query =
     pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
-
   // request
   const response = await apiRequest<AuctionListData>(() =>
     guestAxios.get(`/auction?${query}`)
@@ -159,35 +169,67 @@ export interface TransactionListData {
 export const getTransactionData = async ({
   page,
   gender,
-  sizeStart,
-  sizeEnd,
-  priceEnd,
-  priceStart,
+  minWeight,
+  maxWeight,
+  maxPrice,
+  minPrice,
   progress,
 }: {
   page?: number;
   gender?: string;
-  sizeStart?: number;
-  sizeEnd?: number;
-  priceStart?: number;
-  priceEnd?: number;
+  minWeight?: string;
+  maxWeight?: string;
+  minPrice?: string;
+  maxPrice?: string;
   progress?: number;
 }) => {
   const pageQuery = page ? `page=${page}` : "page=0";
-  const genderQuery = gender ? `&gender=${gender}` : "&gender=null";
+  const genderQuery = gender ? `&gender=${gender}` : "";
   const sizeQuery =
-    sizeStart && sizeEnd ? `&size=${sizeStart}between${sizeEnd}` : "&size=null";
+    minWeight || maxWeight
+      ? `&size=${minWeight ? minWeight : "0"}between${
+          maxWeight ? maxWeight : "999999999999"
+        }`
+      : "";
   const priceQuery =
-    priceStart && priceEnd
-      ? `&price=${priceStart}between${priceEnd}`
-      : "&price=null";
-  const progressQuery = progress ? `&progress=${progress}` : "&progress=null";
+    minPrice || maxPrice
+      ? `&price=${minPrice ? minPrice : "0"}between${
+          maxPrice ? maxPrice : "999999999999"
+        }`
+      : "";
+  const progressQuery = progress ? `&progress=${progress}` : "";
 
   const query =
     pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
 
-  const response = await apiRequest<TransactionListData>(() =>
-    guestAxios.get(`/transaction?${query}`)
+  const response = await apiRequest<{ data: TransactionListData }>(() =>
+    guestAxios.get(`/main/transaction/?${query}`)
+  );
+  return response;
+};
+
+interface TransactionItemDetailData {
+  status: number;
+  message: string;
+  data: { turtle: TransactionItemDetailType };
+}
+// 거래 단일항목 상세조회
+export const getTransactionDetailItemData = (transactionId: string) => {
+  return apiRequest<TransactionItemDetailData>(() =>
+    guestAxios.get(`/main/transaction/${transactionId}`)
+  );
+};
+
+// 거래 등록
+export const addTransactionItem = async (transactionData: FormData) => {
+  const response = await apiRequest<{ status: number; message: string }>(() =>
+    authAxios.post("/main/transaction", transactionData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      timeout: 10000,
+    })
   );
   return response;
 };

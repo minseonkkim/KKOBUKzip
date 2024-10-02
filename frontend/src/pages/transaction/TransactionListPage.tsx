@@ -1,83 +1,47 @@
-// TransactionListPage.tsx
 import TurtleListLayout from "../../layout/TurtleListLayout";
 import TransactionTurtle from "../../components/transaction/TransactionTurtle";
-import TmpTurtle1 from "../../assets/tmp_turtle.jpg";
-import TmpTurtle2 from "../../assets/tmp_turtle_2.jpg";
-import TmpTurtle3 from "../../assets/tmp_turtle_3.jpg";
-import TmpTurtle4 from "../../assets/tmp_turtle_4.jpg";
-import TmpTurtle5 from "../../assets/tmp_turtle_5.jpg";
-import TmpTurtle6 from "../../assets/tmp_turtle_6.jpg";
 import { getTransactionData } from "../../apis/tradeApi";
+import { useCallback, useState } from "react";
+import { TransactionItemDataType } from "../../types/transaction";
 
 const TransactionListPage = () => {
-  const TmpTurtleImages = [
-    TmpTurtle1,
-    TmpTurtle2,
-    TmpTurtle3,
-    TmpTurtle4,
-    TmpTurtle5,
-    TmpTurtle6,
-  ];
-  const fetchData = (page: number, filters: object) => {
-    return getTransactionData({ page, ...filters });
-  };
+  const [TransactionItems, setTransactionItems] = useState<JSX.Element[]>([]);
+  const [ProgressTransactionItems, setProgressTransactionItems] = useState<
+    JSX.Element[]
+  >([]);
+  const [isProgressItem, setIsProgressItem] = useState(false);
 
-  const transactionItems = [
-    <TransactionTurtle
-      key={0}
-      scientific_name="지오프리 사이드 넥 터틀"
-      price={300000000}
-      transaction_tag={["암컷", "성체"]}
-      transaction_image={TmpTurtleImages[0]}
-      progress="거래가능"
-    />,
-    <TransactionTurtle
-      key={1}
-      scientific_name="레이저 백 거북"
-      price={94000000}
-      transaction_tag={["수컷", "베이비"]}
-      transaction_image={TmpTurtleImages[1]}
-      progress="거래가능"
-    />,
-    <TransactionTurtle
-      key={2}
-      scientific_name="아프리카 사이드 넥"
-      price={110000000}
-      transaction_tag={["암컷", "베이비"]}
-      transaction_image={TmpTurtleImages[2]}
-      progress="거래가능"
-    />,
-    <TransactionTurtle
-      key={3}
-      scientific_name="미시시피 지도 거북이"
-      price={700000000}
-      transaction_tag={["암컷", "아성체"]}
-      transaction_image={TmpTurtleImages[3]}
-      progress="거래가능"
-    />,
-    <TransactionTurtle
-      key={4}
-      scientific_name="지오프리 사이드 넥 터틀"
-      price={67200000}
-      transaction_tag={["암컷", "성체"]}
-      transaction_image={TmpTurtleImages[4]}
-      progress="거래가능"
-    />,
-    <TransactionTurtle
-      key={5}
-      scientific_name="암보니아 상자 거북"
-      price={43000000}
-      transaction_tag={["수컷", "성체"]}
-      transaction_image={TmpTurtleImages[5]}
-      progress="거래완료"
-    />,
-  ];
+  const fetchData = useCallback(async (page: number, filters: object) => {
+    const result = await getTransactionData({ page, ...filters });
+    if (result.success) {
+      const progressItems: JSX.Element[] = [];
+      const transactionItems = result.data.data.data.transactions.map(
+        (item: TransactionItemDataType) => {
+          if (item.progress === "SAIL")
+            progressItems.push(
+              <TransactionTurtle key={item.transactionId} item={item} />
+            );
+
+          return <TransactionTurtle key={item.transactionId} item={item} />;
+        }
+      );
+      setTransactionItems((prev) => [...prev, ...transactionItems]);
+      setProgressTransactionItems((prev) => [...prev, ...progressItems]);
+      return result;
+    }
+  }, []);
+
+  const progressFilter = () => {
+    setIsProgressItem(!isProgressItem);
+  };
 
   return (
     <TurtleListLayout
       title="판매중인 거북이"
-      items={transactionItems}
+      items={isProgressItem ? ProgressTransactionItems : TransactionItems}
       fetchData={fetchData}
+      isProgressItemChecked={isProgressItem}
+      setIsProgressItemChecked={progressFilter}
     />
   );
 };

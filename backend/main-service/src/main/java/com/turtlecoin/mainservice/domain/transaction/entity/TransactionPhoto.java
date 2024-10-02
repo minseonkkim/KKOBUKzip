@@ -26,6 +26,10 @@ public class TransactionPhoto extends BaseEntity {
         this.transaction = transaction;
     }
 
+    public TransactionPhoto(String imageAddress) {
+        this.imageAddress = imageAddress;
+    }
+
     @Override
     public String toString() {
         return "TransactionPhoto{" +

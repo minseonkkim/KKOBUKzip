@@ -18,16 +18,20 @@ import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
 import com.turtlecoin.auctionservice.global.exception.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 @Slf4j
 @Service
@@ -41,6 +45,8 @@ public class AuctionService {
     private final MainClient mainClient;
     private final JPAQueryFactory queryFactory;
     private final RedissonLockFacade redissonLockFacade;
+    private final SchedulingService schedulingService;
+    private final BidService bidService;
 
     // 경매 등록
     @Transactional
@@ -53,6 +59,10 @@ public class AuctionService {
         // 경매 저장
         Auction auction = auctionRepository.save(registerAuctionDTO.toEntity());
 
+        // 동적 스케줄링 수행
+        Consumer<Long> startAuction = bidService::startAuction;
+        schedulingService.scheduleTask(auction.getId(), startAuction, auction.getStartTime());
+
         // 이미지 업로드 처리
         List<AuctionPhoto> uploadedPhotos = new ArrayList<>();
         try {
@@ -60,7 +70,7 @@ public class AuctionService {
                 uploadedPhotos = uploadImages(images, auction);  // 이미지 업로드
                 auction.getAuctionPhotos().addAll(uploadedPhotos);  // 업로드된 이미지 경매와 연결
             }
-        } catch (Exception e) {
+        }  catch (Exception e) {
             // 예외 발생 시 업로드된 이미지 삭제
             // 예외 발생 추가
             deleteUploadedImages(uploadedPhotos);
@@ -172,8 +182,8 @@ public class AuctionService {
         return queryFactory.selectFrom(auction)
                 .where(whereClause.and(auction.turtleId.in(
                         filteredTurtles.stream().map(TurtleResponseDTO::getId).toList())))
-                .offset((page-1L) * 10)
-                .limit(10)
+                .offset(page * 20L)
+                .limit(20)
                 .fetch();
     }
 
@@ -214,5 +224,19 @@ public class AuctionService {
         }
 
         // redis에 담긴 마지막 입찰자와 종료 시간 변경
+    }
+
+    // 서버 재시작시 스케줄링 다시 등록하기
+    @EventListener(ApplicationReadyEvent.class)
+    @Transactional
+    public void scheduleReload(){
+        List<Auction> acutions = auctionRepository.findByAuctionProgress(AuctionProgress.BEFORE_AUCTION);
+
+        for(Auction auction : acutions){
+            if(auction.getStartTime().isAfter(LocalDateTime.now())){
+                Consumer<Long> startAuction = bidService::startAuction;
+                schedulingService.scheduleTask(auction.getId(), startAuction, auction.getStartTime());
+            }
+        }
     }
 }

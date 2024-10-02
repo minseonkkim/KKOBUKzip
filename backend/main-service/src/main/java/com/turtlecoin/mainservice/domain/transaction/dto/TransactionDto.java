@@ -17,7 +17,8 @@ public class TransactionDto extends BaseEntity {
     private String content;
     private String sellerAddress;
     private double price;
-    private double weight;
+    // Double int로 변경
+    private int weight;
     private Turtle turtle;
     private TransactionProgress progress;
     private List<TransactionTag> transactionTags;

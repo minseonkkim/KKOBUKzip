@@ -69,7 +69,7 @@ dependencies {
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
 //	//rabbit mq
-//	implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp'
+	implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'
 
 	//feign client

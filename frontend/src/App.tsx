@@ -104,7 +104,7 @@ function App() {
 
             {/* Transaction Domain - 거래 */}
             <Route
-              path="/transaction-detail"
+              path="/transaction-detail/:id"
               element={<TransactionDetailPage />}
             />
             <Route path="/transaction-list" element={<TransactionListPage />} />

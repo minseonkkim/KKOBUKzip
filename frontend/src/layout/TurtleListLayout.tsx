@@ -9,21 +9,24 @@ import { useEffect, useState } from "react";
 import OptionFilter from "../components/common/OptionFilter";
 import { useInView } from "react-intersection-observer";
 import useTradeFilter from "../hooks/useTradeFilter";
+import AuctionTurtleSkeleton from "../components/skeleton/auction/AuctionTurtleSkeleton";
 
 interface TurtleListLayoutProps {
   title: string;
   items: JSX.Element[];
   fetchData: (page: number, filters: object) => Promise<any>;
-  skeletonComponent?: JSX.Element;
+  isProgressItemChecked: boolean;
+  setIsProgressItemChecked: () => void;
 }
 
 const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   title,
   items,
   fetchData,
-  skeletonComponent,
+  isProgressItemChecked,
+  setIsProgressItemChecked,
 }) => {
-  const [isChecked, setIsChecked] = useState(false);
+  // const [isChecked, setIsChecked] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [itemLoading, setItemLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
@@ -39,7 +42,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
       try {
         const response = await fetchData(pages, filters);
         if (response.success) {
-          setMaxPage(response.data.total_pages);
+          setMaxPage(response.data.data.data.total_pages);
         }
         setPages(1);
       } finally {
@@ -51,12 +54,13 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   }, [fetchData]);
 
   const loadMore = async () => {
-    if (itemLoading || pages > maxPage) return;
+    if (itemLoading || pages >= maxPage) return;
+    console.log(pages >= maxPage);
     setItemLoading(true);
     try {
       const response = await fetchData(pages, filters);
       if (response.success) {
-        setMaxPage(response.data.total_pages ?? -1);
+        setMaxPage(response.data.data.data.total_pages - 1);
         setPages((prev) => prev + 1);
       }
     } finally {
@@ -67,10 +71,6 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   useEffect(() => {
     if (inView) loadMore();
   }, [inView]);
-
-  const handleCheckboxChange = () => {
-    setIsChecked(!isChecked);
-  };
 
   const toggleFilterDiv = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -102,20 +102,17 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
                 type="checkbox"
                 className="hidden"
                 readOnly
-                checked={isChecked}
+                onClick={() => setIsProgressItemChecked()}
+                checked={isProgressItemChecked}
               />
               <div
                 className={`w-5 h-5 md:w-6 md:h-6 border-2 border-gray-500 rounded-[5px] p-1 mr-2 cursor-pointer flex justify-center items-center ${
-                  isChecked ? "bg-[#FFD9D9]" : "bg-[#fff]"
+                  isProgressItemChecked ? "bg-[#FFD9D9]" : "bg-[#fff]"
                 }`}
-                onClick={handleCheckboxChange}
               >
-                {isChecked && <FaCheck />}
+                {isProgressItemChecked && <FaCheck />}
               </div>
-              <span
-                onClick={handleCheckboxChange}
-                className="cursor-pointer whitespace-nowrap text-[20px] md:text-[18px] xl:text-[21px]"
-              >
+              <span className="cursor-pointer whitespace-nowrap text-[20px] md:text-[18px] xl:text-[21px]">
                 {title.includes("판매") ? "거래가능한" : "경매중인"} 거북이만
                 보기
               </span>
@@ -163,15 +160,22 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
         </div>
 
         <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
-          {initialLoad &&
-            Array.from({ length: items.length }).map((_, index) => (
-              <div key={`skeleton-${index}`} className="col-span-1">
-                {skeletonComponent}
-              </div>
-            ))}
-
+          {/* {skeletonComponent} */}
           {!initialLoad && items}
-
+          {initialLoad ||
+            (itemLoading && (
+              <>
+                <div className="hidden md:block col-span-1">
+                  <AuctionTurtleSkeleton />
+                </div>
+                <div className="hidden xl:block col-span-1">
+                  <AuctionTurtleSkeleton />
+                </div>
+                <div className="block col-span-1">
+                  <AuctionTurtleSkeleton />
+                </div>
+              </>
+            ))}
           <div ref={ref} className="w-full h-[1px] col-span-full" />
         </div>
       </main>

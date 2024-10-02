@@ -26,6 +26,7 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
         String userId = request.getURI().getQuery().split("=")[1];  // 실제로는 더 안전한 방법 필요
         System.out.println("userID: "+userId);
         // FeignClient를 사용해 메인 서비스에서 nickname 가져오기
+        // redis에서 가져올때랑, 아닐때랑 구분해서 시간 설정해줘야함,,
         UserResponseDTO user = mainClient.getUserById(Long.parseLong(userId));
         String nickname = user.getNickname();
         System.out.println("user :"+user);

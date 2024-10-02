@@ -29,18 +29,22 @@ export default function AuctionTurtle({
           <AuctionStatusTag progress={"경매중"} />
         </div>
         <div className="px-3 py-2">
-          <div className="w-full overflow-hidden text-[20px] mb-4 text-gray-900 whitespace-nowrap text-ellipsis">거북이 팔아용 거북이 팔아용 거북이 팔아용 거북이 팔아용</div>
+          <div className="w-full overflow-hidden text-[20px] mb-4 text-gray-900 whitespace-nowrap text-ellipsis">
+            거북이 팔아용 거북이 팔아용 거북이 팔아용 거북이 팔아용
+          </div>
 
           <div className="flex justify-between items-center">
-            <div className="text-[15px] xl:text-[17px] whitespace-nowrap text-[#9A9A9A]">페닐슐라쿠터</div>
+            <div className="text-[15px] xl:text-[17px] whitespace-nowrap text-[#9A9A9A]">
+              페닐슐라쿠터
+            </div>
             <div className="text-[15px] text-gray-700 flex space-x-1.5">
               {/* {auction_tag.map((tag, index) => ( */}
-                <span
-                  // key={index}
-                  className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full"
-                >
-                  #베이비
-                </span>
+              <span
+                // key={index}
+                className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full"
+              >
+                #베이비
+              </span>
               {/* ))} */}
             </div>
           </div>

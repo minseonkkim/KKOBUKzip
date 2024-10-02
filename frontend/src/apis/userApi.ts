@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import guestAxios from "./http-commons/guestAxios";
 import { JoinDataType } from "../types/join";
 import authAxios from "./http-commons/authAxios";
+import { TransactionItemDataType } from "../types/transaction";
 
 /*
 성공 형식
@@ -48,7 +49,10 @@ const loginRequest = async (
 };
 
 // 로그아웃
-const logout = async (): Promise<{ success: boolean; error?: string }> => {
+const logoutRequest = async (): Promise<{
+  success: boolean;
+  error?: string;
+}> => {
   return apiRequest(() => authAxios.post("/main/user/logout"));
 };
 
@@ -131,25 +135,25 @@ interface LoginResponseData {
 
 interface RegisterResponseData {
   // 회원가입 성공 시 반환되는 데이터 타입을 정의합니다.
-  // 예시로 작성한 것이므로 실제 API 문서에 따라 수정해주세요.
-  userId: string;
+  status: number;
+  message: string;
 }
 
 interface TokenResponseData {
   // accessToken 유효성 확인 시 반환되는 데이터 타입을 정의합니다.
-  // 예시로 작성한 것이므로 실제 API 문서에 따라 수정해주세요.
-  isValid: boolean;
+  status: number;
+  message: string;
 }
 
 interface EmailCheckResponseData {
   // 이메일 인증 확인 시 반환되는 데이터 타입을 정의합니다.
-  // 예시로 작성한 것이므로 실제 API 문서에 따라 수정해주세요.
-  emailVerified: boolean;
+  staus: number;
+  message: string;
 }
 
 interface CreateEmailRequestResponseData {
   // 인증 이메일 발송 시 반환되는 데이터 타입을 정의합니다.
-  // 예시로 작성한 것이므로 실제 API 문서에 따라 수정해주세요.
+  staus: number;
   message: string;
 }
 
@@ -162,15 +166,27 @@ interface CreateEmailRequestResponseData {
 
 // 내 거북이 상세 조회
 
+interface getMyTransactionRequestResponseData {
+  // 인증 이메일 발송 시 반환되는 데이터 타입을 정의합니다.
+  staus: number;
+  data: { transaction: TransactionItemDataType[] };
+  message: string;
+}
 // 내 거래 내역 조회
+const getMyTransaction = async () => {
+  return apiRequest<getMyTransactionRequestResponseData>(() =>
+    authAxios.get("/main/user/transaction")
+  );
+};
 
 // 내 거래 내역 상세 조회
 
 export {
   registerRequest,
   loginRequest,
-  logout,
+  logoutRequest,
   checkToken,
   checkEmailRequest,
   createEmailRequest,
+  getMyTransaction,
 };

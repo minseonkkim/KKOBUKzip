@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocation, useOutletContext } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import {
@@ -8,8 +9,16 @@ import {
 } from "../../types/document";
 import { createAssignDocumentRequest } from "../../apis/documentApis";
 
+interface ApplicantInfoContext {
+  applicantName: string,
+  applicantPhoneNumber: string,
+  applicantAddress: string,
+}
+
 // 양수 서류 컴포넌트
 function AssignDocument() {
+  const location = useLocation();
+  const { applicantName, applicantPhoneNumber, applicantAddress } = useOutletContext<ApplicantInfoContext>();
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
 
@@ -40,6 +49,11 @@ function AssignDocument() {
 
   // 유저데이터 로드하는 함수
   const loadUserData = () => {
+    setAssignee({
+      name: applicantName,
+      phoneNumber: applicantPhoneNumber,
+      address: applicantAddress,
+    })
     console.log("loadUserData");
   };
 
@@ -112,6 +126,7 @@ function AssignDocument() {
               <span className="w-1/3 font-medium">성명(상호)</span>
               <input
                 type="text"
+                value={assignee.name}
                 onChange={(evt) => changeAssigneeHandle("name", evt)}
                 placeholder="성명(상호)"
                 className="w-2/3 px-3 py-2 border rounded"
@@ -121,7 +136,8 @@ function AssignDocument() {
             <div className="flex items-center">
               <span className="w-1/3 font-medium">전화번호</span>
               <input
-                type="number"
+                type="text"
+                value={assignee.phoneNumber}
                 placeholder="전화번호"
                 onChange={(evt) => changeAssigneeHandle("phoneNumber", evt)}
                 className="w-2/3 px-3 py-2 border rounded [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -130,7 +146,6 @@ function AssignDocument() {
           </div>
           <div className="flex items-center">
             <label className="w-[31%] md:w-1/5 font-medium">주소</label>
-
             <button
               ref={addressBtnRef}
               className="hidden md:inline w-1/12 md:w-1/12 hover:bg-gray-100 border py-2 ml-1.5 rounded"

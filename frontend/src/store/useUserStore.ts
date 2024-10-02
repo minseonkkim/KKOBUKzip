@@ -29,7 +29,10 @@ export const useUserStore = create<UserStore>()(
           },
           isLogin: true,
         }),
-      setLogout: () => set({ userInfo: null, isLogin: false }),
+      setLogout: () => {
+        set({ userInfo: null, isLogin: false });
+        localStorage.clear();
+      },
       setIsLogin: (isLogin: boolean) => {
         return set({ isLogin });
       },
