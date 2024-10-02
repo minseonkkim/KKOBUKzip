@@ -85,30 +85,12 @@ public class AuctionController {
             @RequestParam(value = "progress", required = false) AuctionProgress progress,
             @RequestParam(value = "page", defaultValue = "0") int page
     ) {
-        List<AuctionFilterResponseDTO> auctionDTOs = auctionService.getFilteredAuctions(gender, minSize, maxSize, minPrice, maxPrice, progress, page)
-                .stream()
-                .map(auctionService::convertToDTO)
-                .toList();
-
-        return new ResponseEntity<>(ResponseVO.success("경매 목록 조회에 성공했습니다.", "auctions", auctionDTOs), HttpStatus.OK);
+        return auctionService.getFilteredAuctions(gender, minSize, maxSize, minPrice, maxPrice, progress, page);
     }
 
     @GetMapping("/{auctionId}")
     public ResponseEntity<?> getAuctionById(@PathVariable Long auctionId) {
-        log.info("경매 ID : {}", auctionId);
-
-        try {
-            AuctionResponseDTO responseDTO = auctionService.getAuctionById(auctionId);
-            return new ResponseEntity<>(ResponseVO.success("경매 조회에 성공했습니다", "auction", responseDTO), HttpStatus.OK);
-
-        } catch (AuctionNotFoundException e) {
-            log.error("경매를 찾을 수 없습니다: {}", auctionId, e);
-            return new ResponseEntity<>(ResponseVO.failure("404", "경매를 찾을 수 없습니다."), HttpStatus.NOT_FOUND);
-
-        } catch (Exception e) {
-            log.error("기타 에러 발생: {}", e.getMessage(), e);
-            return new ResponseEntity<>(ResponseVO.failure("400", "에러가 발생했습니다."), HttpStatus.BAD_REQUEST);
-        }
+        return auctionService.getAuctionById(auctionId);
     }
 
     @GetMapping("/{auctionId}/test")
