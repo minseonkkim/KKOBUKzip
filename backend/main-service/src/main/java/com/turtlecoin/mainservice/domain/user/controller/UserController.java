@@ -56,7 +56,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginUserDto loginUserDto) {
-        return jwtService.loginService(loginUserDto);
+        return userService.loginUser(loginUserDto);
     }
 
     @PostMapping("/logout")
@@ -140,13 +140,22 @@ public class UserController {
         try{
             Optional<User> user = jwtService.getUserByToken(token);
             if(user.isEmpty()){
-                throw new UserNotFoundException("유효한 토근이 아닙니다.");
+                throw new UserNotFoundException("유효한 토큰이 아닙니다.");
             }
-            imageUploadService.deleteS3(user.get().getProfileImage());
+            if(user.get().getProfileImage() != null){
+                try{
+                    imageUploadService.deleteS3(user.get().getProfileImage());
+                }catch (Exception e){
+                    user.get().modifyProfileImage("");
+                    userRepository.save(user.get());
+                    throw new Exception("이미지 삭제 실패");
+                }
+            }
+            
             String url = imageUploadService.upload(image,"user");
             user.get().modifyProfileImage(url);
             userRepository.save(user.get());
-            return new ResponseEntity<>(ResponseVO.success("200","이미지가 성공적으로 수정 되었습니다."),HttpStatus.OK);
+            return new ResponseEntity<>(ResponseVO.success("이미지가 성공적으로 수정 되었습니다.","url",url),HttpStatus.OK);
         }catch(UserNotFoundException e){
             return new ResponseEntity<>(ResponseVO.failure("404",e.getMessage()),HttpStatus.UNAUTHORIZED);
 
@@ -156,7 +165,7 @@ public class UserController {
 
         } catch (Exception e) {
             // 기타 예외 발생 시
-            return new ResponseEntity<>(ResponseVO.failure("500", "예상치 못한 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ResponseVO.failure("500", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
