@@ -146,7 +146,7 @@ function TransactionDetailPage() {
                 <div className="bg-[#F2F2F2] h-[60px] rounded-[10px] flex flex-row justify-between items-center px-2 py-1">
                   <div className="flex flex-row items-center">
                     <img
-                      src={tmpProfileImg}
+                      src={transactionData.sellerImageUrl}
                       className="rounded-full w-[43px] h-[43px] mr-3"
                       draggable="false"
                       alt="profile image"
