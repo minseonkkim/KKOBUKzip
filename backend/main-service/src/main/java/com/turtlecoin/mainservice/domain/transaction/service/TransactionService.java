@@ -163,6 +163,8 @@ public class TransactionService {
             return new ResponseEntity<>(ResponseVO.success("거래가 정상적으로 조회되었습니다.","turtle",data), HttpStatus.OK);
         }catch(TransactionNotFoundException e){
             return new ResponseEntity<>(ResponseVO.failure("400",e.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch(Exception e){
+            return new ResponseEntity<>(ResponseVO.failure("500","거래 조회 과정 중에 서버 에러가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
