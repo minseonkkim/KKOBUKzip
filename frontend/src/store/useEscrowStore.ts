@@ -13,7 +13,7 @@ interface TransactionDetails {
 interface EscrowState {
   transactionDetails: TransactionDetails | null;
   error: string | null;
-  createTransaction: (isAuction: boolean, transactionId: number, seller: string, amount: number) => Promise<boolean | undefined>;
+  createTransaction: (isAuction: boolean, transactionId: number, seller: string, amount: number, turtleId: string, buyerId: string, sellerId: string ) => Promise<boolean | undefined>;
   releaseFunds: (isAuction: boolean, transactionId: number) => Promise<boolean | undefined>;
   refund: (isAuction: boolean, transactionId: number) => Promise<void>;
   getTransactionDetails: (isAuction: boolean, transactionId: number) => Promise<void>;
@@ -25,7 +25,7 @@ export const useEscrowStore = create<EscrowState>((set) => ({
   transactionDetails: null,
   error: null,
 
-  createTransaction: async (isAuction: boolean, transactionId: number, seller: string, amount: number) => {
+  createTransaction: async (isAuction: boolean, transactionId: number, seller: string, amount: number, turtleId: string, buyerId: string, sellerId: string) => {
     const { account } = useWeb3Store.getState();
     const escrowContract = useWeb3Store.getState().getEscrowContract();
     if (!escrowContract || !account) {
@@ -34,7 +34,7 @@ export const useEscrowStore = create<EscrowState>((set) => ({
     }
 
     try {
-      await escrowContract.methods.createTransaction(isAuction, transactionId, seller, amount).send({ from: account });
+      await escrowContract.methods.createTransaction(isAuction, transactionId, seller, amount, turtleId, buyerId, sellerId).send({ from: account });
       set({ error: null });
       return true;
     } catch {

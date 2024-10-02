@@ -9,7 +9,7 @@ import TurtleEscrowAbi from '../abi/TurtleEscrow.json';
 const TURTLE_TOKEN_ADDRESS = "0xe01a5F9cb53755236d1E754eb4d42286E1b62166";
 const TURTLE_TOKEN_ABI: AbiItem[] = TurtleTokenAbi.abi as AbiItem[];
 
-const TURTLE_ESCROW_ADDRESS = "0x8A2453A5c1846Aa73143aFf35C054c4cE41BeB91";
+const TURTLE_ESCROW_ADDRESS = "0xF2CE2297Bacc355aa5e84232428BFd7464CF627E";
 const TURTLE_ESCROW_ABI: AbiItem[] = TurtleEscrowAbi.abi as AbiItem[];
 
 
