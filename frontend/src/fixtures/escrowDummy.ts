@@ -15,7 +15,7 @@ export const EscrowDummy = {
           createDate: "2023-05-01T12:00:00",
           weight: 10.0,
           content: "이 거래는 아주 특별한 거북이에 관한 것입니다.",
-          transactionTag: [],
+          transactionTag: ["거래", "직거래"],
           transactionImage: [],
           progress: "SAIL"
         }

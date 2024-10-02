@@ -6,20 +6,23 @@ import { IoCheckmark } from "@react-icons/all-files/io5/IoCheckmark";
 import { useEscrowStore } from "../../store/useEscrowStore";
 import { useWeb3Store } from "../../store/useWeb3Store";
 import { useUserStore } from "../../store/useUserStore";
+import useChatStore from "../../store/useChatStore";
 
 interface TransactionHistoryProps {
     isAuction: boolean;
     turtleId: number;
     transactionId: number;
     sellerId: number;
+    sellerName: string;
     sellerAddress: string;
+    transactionTag: string[];
     amount: number;
 }
 
 export default function TransactionHistory(props: TransactionHistoryProps | Partial<TransactionHistoryProps>){
     const navigate = useNavigate();
-    const { userInfo } = useUserStore();
-
+    const { isLogin, userInfo } = useUserStore();
+    const { openChatDetail } = useChatStore();
     const { createTransaction, releaseFunds } = useEscrowStore();
     const { account } = useWeb3Store();
     // const [transactionState, setTransactionState] = useState<number | null>(null);
@@ -77,24 +80,58 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
         }
     };
 
+    const openChat = () => {
+    if (isLogin && userInfo) {
+      if(props.sellerName){
+        openChatDetail(userInfo.userId, props.sellerName);
+      } else{
+        alert("존재하지 않는 유저입니다");
+      }
+      
+    } else {
+      alert("로그인해주세요!");
+    }
+  };
+
     return <>
-        <div className="w-full border-[2px] rounded-[20px] p-[15px] bg-[#f8f8f8] flex flex-col md:flex-row lg:flex-col xl:flex-row">
+        {props.isAuction? 
+        // 경매
+        <div>
+
+        </div> 
+        // 판매
+        : <div className="w-full border-[2px] rounded-[20px] p-[15px] bg-[#f8f8f8] flex flex-col md:flex-row lg:flex-col xl:flex-row">
             <div className="flex flex-row">
-                <img src={TmpTurtleImg} className="w-[200px] h-[150px] rounded-[10px] object-cover" draggable="false" alt="turtle image"/>
-                <div className="flex flex-col justify-between w-[420px] ml-[20px]">
+                <img src={TmpTurtleImg} className="w-[130px] lg:w-[200px] h-[130px] lg:h-[150px] rounded-[10px] object-cover" draggable="false" alt="turtle image"/>
+                <div className="flex flex-col justify-between w-[460px] ml-[20px]">
                     <div>
-                        <div>분양자 정보</div>
-                        <div>태그</div>
-                        <div>가격</div>
+                        {/* <div>{props.sellerName}</div> */}
+                        
+                        <div className="mb-1 whitespace-nowrap font-extrabold text-[25px] text-[#4B721F] font-stardust">
+                            {props.amount?.toLocaleString("ko-KR")}TURT
+                        </div>
+                        <div className="text-[15px] text-gray-700 flex flex-wrap space-x-1.5">
+                            {props.transactionTag?.map((tag, index) => (
+                                <span
+                                key={index}
+                                className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full"
+                                >
+                                #{tag}
+                                </span>
+                            ))}
+                            </div>
                     </div>
-                    {/* 아래 버튼은 거래 진행 상황에 따라 on/off하기! */}
-                    <div className="text-[19px] font-bold">
-                        {/* 경매 거래인 경우에만 활성화 해당(입금 대기 상태일 때) */}
-                        <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={handleDeposit}>입금하기</button>
-                        {/* 예약 단계에 활성화 */}
-                        <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={startPaperwork}>서류 작성</button>
-                        {/* 서류 검토 */}
-                        <button className="w-24 h-10 bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]" onClick={finalizeTransaction}>구매 확정</button>
+                    <div className="flex flex-row space-x-3">
+                        {/* 아래 버튼은 거래 진행 상황에 따라 on/off하기! */}
+                        <div className="text-[18px] font-bold">
+                            {/* 경매 거래인 경우에만 활성화 해당(입금 대기 상태일 때) */}
+                            <button className="whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0]" onClick={handleDeposit}>입금하기</button>
+                            {/* 예약 단계에 활성화 */}
+                            <button className="whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0] hidden" onClick={startPaperwork}>서류 작성</button>
+                            {/* 서류 검토 */}
+                            <button className="whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0] hidden" onClick={finalizeTransaction}>구매 확정</button>
+                        </div>
+                        <button onClick={openChat} className="whitespace-nowrap text-[18px] font-bold w-auto px-3 h-10 bg-[#D7E7F7] rounded-[10px] hover:bg-[#C9DBED]">채팅하기</button>
                     </div>
                 </div>
             </div>
@@ -151,6 +188,7 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
                 <div className="w-[20px] h-[20px] left-[298px] top-[59px] absolute bg-[#aeaeae] rounded-full border border-black" />
                 </div>
             </div>
-        </div>
+        </div>}
+        
     </>
 }

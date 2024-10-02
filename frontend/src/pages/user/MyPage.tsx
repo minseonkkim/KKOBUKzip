@@ -30,7 +30,7 @@ function MyPage() {
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [profileImage, setProfileImage] = useState(CustomProfile1);
   const { userInfo } = useUserStore();
-  const { transactionId, sellerId, turtleId, sellerAddress, price } =
+  const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } =
     EscrowDummy.data.data.transactions[0];
 
   useEffect(() => {
@@ -85,24 +85,24 @@ function MyPage() {
       </Helmet>
       <Header />
       <main className="flex flex-col h-[100vh] overflow-hidden px-4 lg:px-[250px] pt-[85px]">
-        <div className="flex flex-row justify-between items-center mt-0 lg:mt-[30px] px-[30px] py-[20px] bg-gradient-to-r from-[#e7f6d1] via-[#d5e5bd] to-[#e7f6d1] rounded-[20px]">
+        <div className="flex flex-row justify-between items-center mt-0 lg:mt-[30px] px-[23px] py-[15px] bg-gradient-to-r from-[#e7f6d1] via-[#d5e5bd] to-[#e7f6d1] rounded-[20px]">
           <div className="w-1/2">
-            <div className="font-dnf-bitbit text-[#4B721F] text-[24px] md:text-[27px] mt-1 mb-3 md:mb-5">
+            <div className="font-dnf-bitbit text-[#4B721F] text-[24px] md:text-[27px] mt-1 mb-2 md:mb-5">
               내 정보
             </div>
-            <div className="lg:text-[22px] text-[17px]">
+            <div className="lg:text-[20px] text-[17px] space-y-1">
               <div>닉네임: {userInfo?.nickname}</div>
               <div>주소: {userInfo?.address}</div>
               <div>연락처: {userInfo?.phoneNumber}</div>
             </div>
           </div>
           <div
-            className="relative rounded-full w-[140px] h-[140px] lg:w-[170px] lg:h-[170px] overflow-hidden bg-[#4B721F] flex justify-center items-center group"
+            className="relative rounded-full w-[140px] h-[140px] lg:w-[160px] lg:h-[160px] overflow-hidden bg-[#4B721F] flex justify-center items-center group"
             onClick={openCustomModal}
           >
             <img
               src={userInfo?.profileImage}
-              className="rounded-full object-cover w-[132px] h-[132px] lg:w-[162px] lg:h-[162px] transition-all duration-300 group-hover:brightness-50"
+              className="rounded-full object-cover w-[132px] h-[132px] lg:w-[145px] lg:h-[145px] transition-all duration-300 group-hover:brightness-50"
               draggable="false"
               alt="profile image"
             />
@@ -130,7 +130,7 @@ function MyPage() {
             나의 거북이
           </div>
         </div>
-        <div className="overflow-y-auto flex-1 mb-5">
+        <div className="overflow-y-auto flex-1 mb-4">
           {/* 거래내역 */}
           {selectedMenu === 0 && (
             // 거래 내역이 있을 경우
@@ -140,6 +140,8 @@ function MyPage() {
                 turtleId={turtleId}
                 transactionId={transactionId}
                 sellerId={sellerId}
+                transactionTag={transactionTag}
+                sellerName={sellerName}
                 sellerAddress={sellerAddress}
                 amount={price}
               />
@@ -148,6 +150,8 @@ function MyPage() {
                 turtleId={turtleId}
                 transactionId={transactionId}
                 sellerId={sellerId}
+                transactionTag={transactionTag}
+                sellerName={sellerName}
                 sellerAddress={sellerAddress}
                 amount={price}
               />
@@ -156,6 +160,8 @@ function MyPage() {
                 turtleId={turtleId}
                 transactionId={transactionId}
                 sellerId={sellerId}
+                transactionTag={transactionTag}
+                sellerName={sellerName}
                 sellerAddress={sellerAddress}
                 amount={price}
               />
