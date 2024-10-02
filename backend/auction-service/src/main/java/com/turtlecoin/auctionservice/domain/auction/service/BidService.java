@@ -35,6 +35,7 @@ public class BidService {
     private static final String AUCTION_BID_KEY = "auction_bid_";
     private final UserService userService;
     private static final String AUCTION_END_KEY_PREFIX = "auction_end_";
+    private final SseService sseService;
 
     // 경매 시작 로직... 그런데 어떻게 경매가 시작된줄 알 수 있을까?
     @Transactional
@@ -43,6 +44,10 @@ public class BidService {
 
         setAuctionEndTime(auctionId, LocalDateTime.now().plusSeconds(30));
         auction.updateStatus(AuctionProgress.DURING_AUCTION);
+        
+        // sse로 경매 시작을 알림
+        sseService.notify(auction.getId(), "경매 시작");
+        
         System.out.println("경매 상태 변경 및 경매 종료시간 설정");
     }
 
