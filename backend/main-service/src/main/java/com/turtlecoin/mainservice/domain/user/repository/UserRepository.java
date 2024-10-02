@@ -19,4 +19,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findUserByNameAndPhoneNumber(@Param("name") String name, @Param("phonenumber") String phonenumber);
 
     User findById(Optional<Turtle> byId);
+
 }
