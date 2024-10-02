@@ -182,7 +182,7 @@ public class AuctionService {
     }
 
     // 경매 필터링 후 조회
-    public ResponseEntity<?> getFilteredAuctions(Gender gender, Double minSize, Double maxSize, Double minPrice, Double maxPrice, AuctionProgress progress, int page) {
+    public List<Auction> getFilteredAuctions(Gender gender, Double minSize, Double maxSize, Double minPrice, Double maxPrice, AuctionProgress progress, int page) {
         QAuction auction = QAuction.auction;
 
         BooleanBuilder whereClause = new BooleanBuilder();
