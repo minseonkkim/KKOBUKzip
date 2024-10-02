@@ -22,25 +22,11 @@ import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
 import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 
 import { EscrowDummy } from "../../fixtures/escrowDummy";
-import { getMyTransaction } from "../../apis/userApi";
+import { getMyTransaction, patchProfileImage } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
 
 function MyPage() {
-  const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
-  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
-  const [profileImage, setProfileImage] = useState(CustomProfile1);
-  const { userInfo } = useUserStore();
-  const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } =
-    EscrowDummy.data.data.transactions[0];
-
-  useEffect(() => {
-    const init = async () => {
-      (await getMyTransaction()).data?.data.transaction;
-    };
-    init();
-  }, []);
-
-  const profileImages = [
+    const profileImages = [
     CustomProfile1,
     CustomProfile2,
     CustomProfile3,
@@ -56,6 +42,19 @@ function MyPage() {
     CustomProfile13,
     CustomProfile14,
   ];
+  const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const { userInfo } = useUserStore();
+  const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
+  const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } =
+    EscrowDummy.data.data.transactions[0];
+
+  useEffect(() => {
+    const init = async () => {
+      (await getMyTransaction()).data?.data.transaction;
+    };
+    init();
+  }, []);
 
   const openCustomModal = () => {
     setIsCustomModalOpen(true);
@@ -77,6 +76,28 @@ function MyPage() {
     const randomNumber = Math.floor(Math.random() * profileImages.length);
     setProfileImage(profileImages[randomNumber]);
   };
+
+  const changeProfileImage = async () => {
+    if (!profileImage) {
+    console.error('Profile image is not defined');
+      return; 
+    }
+
+     // 프로필 이미지를 Blob으로 변환
+    const response = await fetch(profileImage);
+    const blob = await response.blob();
+    
+    // File 객체 생성
+    const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+
+    // 서버에 POST 요청 전송
+    try {
+      const data = await patchProfileImage(file);
+      console.log('Upload successful:', file);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  }
 
   return (
     <>
@@ -210,7 +231,7 @@ function MyPage() {
                 </div>
               </div>
 
-              <button className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white">
+              <button className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white" onClick={changeProfileImage}>
                 수정하기
               </button>
             </div>

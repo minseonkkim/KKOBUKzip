@@ -181,6 +181,28 @@ const getMyTransaction = async () => {
 
 // 내 거래 내역 상세 조회
 
+
+
+
+// 프로필사진 수정
+export const patchProfileImage = async (profileImg: File) => {
+  const formData = new FormData();
+  formData.append("profileImage", profileImg);
+
+  const response = await apiRequest<{ status: number; message: string }>(() =>
+    authAxios.patch("/main/user/image", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      timeout: 10000,
+    })
+  );
+  return response;
+};
+
+
+
 export {
   registerRequest,
   loginRequest,
