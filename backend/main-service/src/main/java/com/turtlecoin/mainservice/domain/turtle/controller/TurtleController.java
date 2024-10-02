@@ -5,6 +5,7 @@ import com.turtlecoin.mainservice.domain.turtle.dto.TurtleResponseDTO;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.service.TurtleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class TurtleController {
     }
 
     @GetMapping("/{turtleId}")
-    public TurtleResponseDTO getTurtleById (@PathVariable("turtleId") Long turtleId) {
+    public ResponseEntity<?> getTurtleById (@PathVariable("turtleId") Long turtleId) {
         return turtleService.getTurtleById(turtleId);
     }
 
