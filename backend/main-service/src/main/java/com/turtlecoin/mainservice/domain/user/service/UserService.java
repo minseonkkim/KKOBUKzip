@@ -1,15 +1,20 @@
 package com.turtlecoin.mainservice.domain.user.service;
 
+import com.turtlecoin.mainservice.domain.chat.service.SseService;
 import com.turtlecoin.mainservice.domain.s3.service.ImageUploadService;
 import com.turtlecoin.mainservice.domain.turtle.dto.TurtleResponseDTO;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
+import com.turtlecoin.mainservice.domain.user.dto.LoginUserDto;
 import com.turtlecoin.mainservice.domain.user.dto.UserRequestDto;
 import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
 import com.turtlecoin.mainservice.domain.user.dto.UserTurtleResponseDTO;
 import com.turtlecoin.mainservice.domain.user.entity.Role;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.domain.user.exception.DuplicatedUserEmail;
+import com.turtlecoin.mainservice.domain.user.exception.IssueTokenException;
+import com.turtlecoin.mainservice.domain.user.exception.UserNotFoundException;
 import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
+import com.turtlecoin.mainservice.global.exception.RedisSaveException;
 import com.turtlecoin.mainservice.global.exception.S3SaveException;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import io.jsonwebtoken.Jwts;
@@ -34,7 +39,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ImageUploadService imageUploadService;
+    private final JWTService jwtService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final SseService sseService;
 
 
     @Transactional
@@ -71,6 +78,7 @@ public class UserService {
                     uuid
             );
             userRepository.save(user);
+
         }catch(DuplicatedUserEmail e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ResponseVO.failure("401", e.getMessage()));
@@ -83,6 +91,29 @@ public class UserService {
 
         // 성공 메시지 반환
         return ResponseEntity.ok(ResponseVO.success("요청이 정상적으로 수행되었습니다."));
+    }
+
+    //로그인 하는 메소드
+    public ResponseEntity<?> loginUser(LoginUserDto dto) {
+        try{
+            Optional<User> user = Optional.ofNullable(userRepository.findByemail(dto.getEmail()));
+            if(user.isEmpty()|| !bCryptPasswordEncoder.matches(dto.getPassword(),user.get().getPassword())){
+                throw new UserNotFoundException("아이디 혹은 비밀번호가 일치하지 않습니다.");
+            }
+            Map<String,Object> data = jwtService.issueToken(user);
+            sseService.subscribe(user.get().getId());
+            ResponseVO responseVO = ResponseVO.success("200","data",data);
+            return ResponseEntity.ok(responseVO);
+
+        }catch(UserNotFoundException e){
+            return new ResponseEntity<>(ResponseVO.failure("401", e.getMessage()), HttpStatus.UNAUTHORIZED);
+        }catch(RedisSaveException e){
+            return new ResponseEntity<>(ResponseVO.failure("500", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch(IssueTokenException e){
+            return new ResponseEntity<>(ResponseVO.failure("500", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch(Exception e){
+            return new ResponseEntity<>(ResponseVO.failure("500", "로그인 과정에서 예상치 못한 에러가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     public UserResponseDTO getByUserId(Long userId) {
