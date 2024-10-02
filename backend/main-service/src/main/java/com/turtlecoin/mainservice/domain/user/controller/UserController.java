@@ -95,7 +95,7 @@ public class UserController {
 
     @GetMapping("/")
     // 유저 없을 때 에러 던져주기
-    public UserResponseDTO getUserById(@RequestHeader("Authorizaion") String token) {
+    public UserResponseDTO getUserById(@RequestHeader("Authorization") String token) {
         User user = jwtService.getUserByToken(token).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
         return new UserResponseDTO(
                 user.getId(),
@@ -107,14 +107,14 @@ public class UserController {
     }
 
     @GetMapping("/nickname")
-    public String getUserNicknameById(@RequestHeader("Authorizaion") String token) {
+    public String getUserNicknameById(@RequestHeader("Authorization") String token) {
         User user = jwtService.getUserByToken(token).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
         System.out.println("userNickname: " + user.getNickname());
         return user.getNickname();
     }
 
     @GetMapping("/turtle")
-    public ResponseEntity<List<TurtleResponseDTO>> getTurtlesByUserId(@RequestHeader("Authorizaion") String token) {
+    public ResponseEntity<List<TurtleResponseDTO>> getTurtlesByUserId(@RequestHeader("Authorization") String token) {
         // 유저 없을 때 에러 던져주기
         User user = jwtService.getUserByToken(token).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
         // 사용자가 소유한 거북이 정보를 조회하는 로직
