@@ -1,6 +1,8 @@
 package com.turtlecoin.auctionservice.domain.auction.service;
 
 import com.turtlecoin.auctionservice.domain.auction.repository.EmitterRepository;
+import com.turtlecoin.auctionservice.domain.global.internal.EmitterMapper;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -25,17 +27,16 @@ public class SseService {
 
     private void sendToClient(Long id, Object data) {
         // id 에 연결된 모든 SSE에게 메세지 전송
-        List<SseEmitter> emitters = emitterRepository.get(id);
-        for(SseEmitter emitter : emitters) {
-            System.out.println("보내고 있는데..");
-
+        List<EmitterMapper> mappers = emitterRepository.get(id);
+        for(EmitterMapper mapper : mappers) {
+            SseEmitter emitter = mapper.getEmitter();
             if (emitter != null) {
                 try {
-                    emitter.send(SseEmitter.event().id(String.valueOf(id)).name("sse").data(data));
+                    emitter.send(SseEmitter.event().id(String.valueOf(id)).name("sse").data(data.toString()));
                 }
                 catch (Exception e) {
                     new Thread(() -> {
-                        emitterRepository.deleteById(id);
+                        emitterRepository.deleteByIdAndUUID(id, mapper.getUuid());
                         emitter.completeWithError(e);
                     }).start();
                 }
@@ -45,12 +46,12 @@ public class SseService {
 
     private SseEmitter createEmitter(Long id) {
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
-        emitterRepository.save(id, emitter);
+        String uuid =  emitterRepository.save(id, emitter);
 
         // SSE 종료
-        emitter.onCompletion(() -> emitterRepository.deleteById(id));
-        emitter.onTimeout(() -> emitterRepository.deleteById(id));
-        emitter.onError((e) -> emitterRepository.deleteById(id));
+        emitter.onCompletion(() -> emitterRepository.deleteByIdAndUUID(id, uuid));
+        emitter.onTimeout(() -> emitterRepository.deleteByIdAndUUID(id, uuid));
+        emitter.onError((e) -> emitterRepository.deleteByIdAndUUID(id, uuid));
 
         return emitter;
     }
