@@ -78,26 +78,33 @@ function MyPage() {
   };
 
   const changeProfileImage = async () => {
-    if (!profileImage) {
+  if (!profileImage) {
     console.error('Profile image is not defined');
-      return; 
-    }
-
-     // 프로필 이미지를 Blob으로 변환
-    const response = await fetch(profileImage);
-    const blob = await response.blob();
-    
-    // File 객체 생성
-    const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
-
-    // 서버에 POST 요청 전송
-    try {
-      const data = await patchProfileImage(file);
-      console.log('Upload successful:', file);
-    } catch (error) {
-      console.error('Error uploading image:', error);
-    }
+    return; 
   }
+
+  // 프로필 이미지를 Blob으로 변환
+  const response = await fetch(profileImage);
+  const blob = await response.blob();
+  
+  // File 객체 생성
+  const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+
+  // 서버에 POST 요청 전송
+  try {
+    const data = await patchProfileImage(file);
+    console.log('Upload successful:', file);
+    
+    // 모달 닫기
+    closeCustomModal();
+    
+    // 프로필 이미지 업데이트
+    setProfileImage(URL.createObjectURL(blob));
+    
+  } catch (error) {
+    console.error('Error uploading image:', error);
+  }
+}
 
   return (
     <>
