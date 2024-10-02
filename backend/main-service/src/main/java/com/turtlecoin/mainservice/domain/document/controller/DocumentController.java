@@ -1,12 +1,9 @@
 package com.turtlecoin.mainservice.domain.document.controller;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import javax.print.Doc;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -44,7 +41,7 @@ import com.turtlecoin.mainservice.global.exception.DocumentProgressException;
 import com.turtlecoin.mainservice.global.exception.NotTransferDocumentException;
 import com.turtlecoin.mainservice.global.exception.TurtleDeadException;
 import com.turtlecoin.mainservice.global.exception.TurtleNotFoundException;
-import com.turtlecoin.mainservice.global.exception.UserNotFoundException;
+import com.turtlecoin.mainservice.domain.user.exception.UserNotFoundException;
 import com.turtlecoin.mainservice.global.response.ResponseSingle;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 

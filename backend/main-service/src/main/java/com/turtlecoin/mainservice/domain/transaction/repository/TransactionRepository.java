@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
 import org.springframework.stereotype.Repository;
@@ -39,7 +40,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             @Param("progressList") List<TransactionProgress> progressList,
             Pageable pageable
     );
-    Transaction findOneById(Long id);
+    Optional<Transaction> findOneById(Long id);
     @Query("SELECT t FROM Transaction t WHERE t.turtle.user = :user")
     List<Transaction> findAllByUser(User user);
 
