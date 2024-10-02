@@ -83,23 +83,22 @@ function MyPage() {
     return; 
   }
 
-  // 프로필 이미지를 Blob으로 변환
   const response = await fetch(profileImage);
   const blob = await response.blob();
-  
-  // File 객체 생성
-  const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+  const imageName = profileImage.split('/').pop() || 'default.gif';
+
+  // blob의 MIME 타입을 명시적으로 image/gif로 변환
+  const gifBlob = blob.slice(0, blob.size, 'image/gif');
+  const file = new File([gifBlob], imageName, { type: 'image/gif' });
 
   // 서버에 POST 요청 전송
   try {
     const data = await patchProfileImage(file);
-    console.log('Upload successful:', file);
+    console.log('Upload successful:', file, data);
     
     // 모달 닫기
     closeCustomModal();
-    
-    // 프로필 이미지 업데이트
-    setProfileImage(URL.createObjectURL(blob));
+    console.log("프로필사진", userInfo?.profileImage);
     
   } catch (error) {
     console.error('Error uploading image:', error);
@@ -118,7 +117,7 @@ function MyPage() {
             <div className="font-dnf-bitbit text-[#4B721F] text-[24px] md:text-[27px] mt-1 mb-2 md:mb-5">
               내 정보
             </div>
-            <div className="lg:text-[20px] text-[17px] space-y-1">
+            <div className="lg:text-[19px] text-[17px] space-y-1">
               <div>닉네임: {userInfo?.nickname}</div>
               <div>주소: {userInfo?.address}</div>
               <div>연락처: {userInfo?.phoneNumber}</div>
