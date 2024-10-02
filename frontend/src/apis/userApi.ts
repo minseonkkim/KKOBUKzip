@@ -53,7 +53,17 @@ const logoutRequest = async (): Promise<{
   success: boolean;
   error?: string;
 }> => {
-  return apiRequest(() => authAxios.post("/main/user/logout"));
+  return apiRequest(() =>
+    authAxios.post(
+      "/main/user/logout",
+      {},
+      {
+        headers: {
+          "Refresh-Token": localStorage.getItem("refreshToken") || "",
+        },
+      }
+    )
+  );
 };
 
 // 회원가입
