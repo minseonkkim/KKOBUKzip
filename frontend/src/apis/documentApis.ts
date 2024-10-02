@@ -14,6 +14,7 @@ interface ApiResponse<T> {
   success: boolean;
   data?: T | null;
   message: string;
+  error?: number;
 }
 
 /**
@@ -51,6 +52,7 @@ export const apiHelper = async <T>(
     return {
       success: false,
       message: errorMessage,
+      error: errorCode,
     };
   }
 };

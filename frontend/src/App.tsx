@@ -20,6 +20,7 @@ import TransactionListPage from "./pages/transaction/TransactionListPage";
 import AuctionDetailPage from "./pages/auction/AuctionDetailPage";
 import AuctionListPage from "./pages/auction/AuctionListPage";
 import ChatList from "./components/chatting/ChatList";
+import { useUserStore } from "./store/useUserStore";
 
 const MyPage = React.lazy(() => import("./pages/user/MyPage"));
 
@@ -59,6 +60,8 @@ function App() {
     preloadImage.loading = "eager";
     preloadImage.decode().catch(() => {});
   }, []);
+  const role = useUserStore((state) => state.userInfo?.role);
+  const isLogin = useUserStore((state) => state.isLogin);
 
   return (
     <HelmetProvider>
@@ -129,7 +132,7 @@ function App() {
             {/* Not Found */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
-          <ChatList />
+          {isLogin && role === "ROLE_USER" && <ChatList />}
         </Suspense>
       </BrowserRouter>
     </HelmetProvider>
