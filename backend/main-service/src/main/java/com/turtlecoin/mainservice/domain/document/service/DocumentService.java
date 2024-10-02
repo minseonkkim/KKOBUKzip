@@ -273,6 +273,10 @@ public class DocumentService {
 			else if(document.getDocType() == DocType.TRANSFER){
 				
 				// 소유권 변경하기
+				Turtle turtle = turtleService.findTurtleByUUID(document.getTurtleUUID());
+
+				TurtleDocumentation.Transfer transfer = contractService.searchTurtleTransferDocument(document.getTurtleUUID(), document.getDocumentHash());
+				turtle.turtleTransfer(userService.getUserByUUID(transfer.assigneeId));
 				
 				contractService.approveTransfer(document.getTurtleUUID(), document.getDocumentHash());
 			}

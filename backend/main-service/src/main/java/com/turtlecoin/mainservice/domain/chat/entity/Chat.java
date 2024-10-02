@@ -18,9 +18,9 @@ import lombok.Getter;
 public class Chat {
 	@Id
 	public ObjectId id;
-	public Long smallUser;
-	public Long bigUser;
-	public String recentTime;
+	public List<Long> participants;
+	public ChatTextMessage recentMessage;
 	public List<ChatMessage> messages;
+	public List<Integer> unreadCount;
 }
 

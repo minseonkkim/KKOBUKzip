@@ -43,6 +43,7 @@ public class MessageController {
 			image = userService.getProfileImageByUserId(userId);
 			// DB에 데이터 저장하기
 			chatTextMessage = chatService.addChatTextMessage(smallUserId, bigUserId, userId, message);
+
 		} catch (Exception e) {
 			// 에러 발생 시 에러 메시지를 클라이언트로 전송
 			messagingTemplate.convertAndSend("/sub/main/" + chattingId,

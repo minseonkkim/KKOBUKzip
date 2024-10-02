@@ -67,6 +67,10 @@ public class Turtle extends BaseEntity {
     public void turtleDie(){
         this.dead = true;
     }
+
+    public void turtleTransfer(User user){
+        this.user = user;
+    }
 }
 
 
