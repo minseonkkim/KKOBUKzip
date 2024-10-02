@@ -1,4 +1,4 @@
-package com.turtlecoin.mainservice.global.exception;
+package com.turtlecoin.mainservice.domain.transaction.exception;
 
 public class TransactionNotFoundException extends RuntimeException {
 	public TransactionNotFoundException(){

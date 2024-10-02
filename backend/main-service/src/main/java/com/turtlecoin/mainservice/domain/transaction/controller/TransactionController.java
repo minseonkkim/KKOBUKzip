@@ -28,14 +28,9 @@ import java.util.Map;
 public class TransactionController {
     private final TransactionService transactionService;
     private final TransactionRepository transactionRepository;
-    private final UserRepository userRepository;
-    private final TurtleRepository turtleRepository;
-
-    public TransactionController(TransactionService transactionService, TransactionRepository transactionRepository, UserRepository userRepository, TurtleRepository turtleRepository) {
+    public TransactionController(TransactionService transactionService, TransactionRepository transactionRepository) {
         this.transactionService = transactionService;
         this.transactionRepository = transactionRepository;
-        this.userRepository = userRepository;
-        this.turtleRepository = turtleRepository;
     }
 
     @GetMapping("/test")
@@ -56,9 +51,8 @@ public class TransactionController {
     // 상세 거래 조회
     @GetMapping("/{transactionId}")
     public ResponseEntity<?> getTransactionById(@PathVariable("transactionId") Long transactionId) {
-        Transaction transaction = transactionRepository.findOneById(transactionId);
-        DetailTransactionResponseDto data = transaction.toResponseDTO();
-        return new ResponseEntity<>(ResponseVO.success("거래가 정상적으로 조회되었습니다.","turtle",data), HttpStatus.OK);
+        return transactionService.getTransactionByID(transactionId);
+
     }
     // 거래 등록
     @PostMapping(value="/", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})

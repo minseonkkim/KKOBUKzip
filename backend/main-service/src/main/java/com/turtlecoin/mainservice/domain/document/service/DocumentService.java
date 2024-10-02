@@ -32,7 +32,7 @@ import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.global.exception.DocumentNotFoundException;
 import com.turtlecoin.mainservice.global.exception.DocumentProgressException;
 import com.turtlecoin.mainservice.global.exception.TurtleNotFoundException;
-import com.turtlecoin.mainservice.global.exception.UserNotFoundException;
+import com.turtlecoin.mainservice.domain.user.exception.UserNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 

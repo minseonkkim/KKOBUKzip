@@ -2,7 +2,6 @@ package com.turtlecoin.mainservice.domain.transaction.entity;
 
 import com.turtlecoin.mainservice.domain.transaction.dto.DetailTransactionResponseDto;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
-import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
@@ -31,7 +30,7 @@ public class Transaction extends BaseEntity {
     private Double price;
 
     @Column(nullable = false)
-    private Double weight;
+    private int weight;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -44,8 +43,16 @@ public class Transaction extends BaseEntity {
     @Column(name = "document_hash")
     private String documentHash;
 
+    // 나중에 user에 넣을 수 있으면 넣기...
     @Column(name="seller_address")
     private String sellerAddress;
+
+    @Column(name = "auction_flag")
+    private Boolean auctionFlag;
+
+    // 구매자 아이디 추가(조회를 위해서)
+    @Column(name = "buyer_id")
+    private Long buyerId;
 
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     @Column(name = "transaction_photos")
@@ -87,6 +94,8 @@ public class Transaction extends BaseEntity {
                         .map(TransactionPhoto::getImageAddress)
                         .collect(Collectors.toList())) // 이미지 경로 리스트
                 .progress(this.progress.name()) // Enum 값 (거래 진행 상황)
+                .sellerImageUrl(this.turtle.getUser().getProfileImage())
+                .title(this.title)
                 .build();
     }
 }

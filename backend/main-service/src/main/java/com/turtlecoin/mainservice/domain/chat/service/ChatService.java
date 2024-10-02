@@ -22,7 +22,7 @@ import com.turtlecoin.mainservice.domain.transaction.service.TransactionService;
 import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
 import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
-import com.turtlecoin.mainservice.global.exception.TransactionNotFoundException;
+import com.turtlecoin.mainservice.domain.transaction.exception.TransactionNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 

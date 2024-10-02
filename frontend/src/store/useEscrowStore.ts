@@ -13,8 +13,8 @@ interface TransactionDetails {
 interface EscrowState {
   transactionDetails: TransactionDetails | null;
   error: string | null;
-  createTransaction: (isAuction: boolean, transactionId: number, seller: string, amount: number) => Promise<void>;
-  releaseFunds: (isAuction: boolean, transactionId: number) => Promise<void>;
+  createTransaction: (isAuction: boolean, transactionId: number, seller: string, amount: number) => Promise<boolean | undefined>;
+  releaseFunds: (isAuction: boolean, transactionId: number) => Promise<boolean | undefined>;
   refund: (isAuction: boolean, transactionId: number) => Promise<void>;
   getTransactionDetails: (isAuction: boolean, transactionId: number) => Promise<void>;
   setArbiter: (newArbiter: string) => Promise<void>;
@@ -36,8 +36,10 @@ export const useEscrowStore = create<EscrowState>((set) => ({
     try {
       await escrowContract.methods.createTransaction(isAuction, transactionId, seller, amount).send({ from: account });
       set({ error: null });
+      return true;
     } catch {
       set({ error: "Failed to create transaction" });
+      return false;
     }
   },
 
@@ -52,8 +54,10 @@ export const useEscrowStore = create<EscrowState>((set) => ({
     try {
       await escrowContract.methods.releaseFunds(isAuction, transactionId).send({ from: account });
       set({ error: null });
+      return true;
     } catch {
       set({ error: "Failed to release funds" });
+      return false;
     }
   },
 
