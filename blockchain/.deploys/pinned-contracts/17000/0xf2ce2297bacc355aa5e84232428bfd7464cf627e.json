@@ -1,6 +1,6 @@
 {
   "name": "TurtleEscrow",
-  "address": "0x8a2453a5c1846aa73143aff35c054c4ce41beb91",
+  "address": "0xf2ce2297bacc355aa5e84232428bfd7464cf627e",
   "abi": [
     {
       "inputs": [
@@ -23,6 +23,21 @@
           "internalType": "uint256",
           "name": "_amount",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_turtleId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_buyerId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_sellerId",
+          "type": "string"
         }
       ],
       "name": "createTransaction",
@@ -153,6 +168,19 @@
       "inputs": [
         {
           "internalType": "address",
+          "name": "_turtleDocumentationAddress",
+          "type": "address"
+        }
+      ],
+      "name": "setTurtleDocumentationAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
           "name": "newOwner",
           "type": "address"
         }
@@ -219,6 +247,21 @@
       ],
       "name": "auctionTransactions",
       "outputs": [
+        {
+          "internalType": "string",
+          "name": "turtleId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "buyerId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "sellerId",
+          "type": "string"
+        },
         {
           "internalType": "address",
           "name": "buyer",
@@ -326,6 +369,21 @@
       "name": "normalTransactions",
       "outputs": [
         {
+          "internalType": "string",
+          "name": "turtleId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "buyerId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "sellerId",
+          "type": "string"
+        },
+        {
           "internalType": "address",
           "name": "buyer",
           "type": "address"
@@ -384,8 +442,21 @@
       ],
       "stateMutability": "view",
       "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "turtleDocumentation",
+      "outputs": [
+        {
+          "internalType": "contract ITurtleDocumentation",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
   ],
   "filePath": " - connect to localhost - /contracts/TurtleEscrow.sol",
-  "pinnedAt": 1727334757373
+  "pinnedAt": 1727834820846
 }

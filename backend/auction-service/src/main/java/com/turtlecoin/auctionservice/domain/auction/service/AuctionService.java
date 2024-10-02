@@ -2,6 +2,7 @@ package com.turtlecoin.auctionservice.domain.auction.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.turtlecoin.auctionservice.domain.auction.dto.AuctionFilterResponseDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
@@ -16,12 +17,16 @@ import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.feign.MainClient;
 import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
 import com.turtlecoin.auctionservice.global.exception.*;
+import com.turtlecoin.auctionservice.global.response.ResponseVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.AmqpConnectException;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartException;
@@ -51,34 +56,62 @@ public class AuctionService {
 
     // 경매 등록
     @Transactional
-    public Auction registerAuction(RegisterAuctionDTO registerAuctionDTO, List<MultipartFile> images) throws IOException {
-        log.info("경매 등록 시작 - 사용자 ID: {}, 거북이 ID: {}", registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
-
-        validateUserOwnsTurtle(registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
-        validateTurtleNotAlreadyRegistered(registerAuctionDTO.getTurtleId());
-
-        // 경매 저장
-        Auction auction = auctionRepository.save(registerAuctionDTO.toEntity());
-
-        // 동적 스케줄링 수행
-        Consumer<Long> startAuction = bidService::startAuction;
-        schedulingService.scheduleTask(auction.getId(), startAuction, auction.getStartTime());
-
-        // 이미지 업로드 처리
+    public ResponseEntity<?> registerAuction(RegisterAuctionDTO registerAuctionDTO, List<MultipartFile> images) {
         List<AuctionPhoto> uploadedPhotos = new ArrayList<>();
         try {
+            log.info("경매 등록 시작 - 사용자 ID: {}, 거북이 ID: {}", registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
+
+            // 필수 입력 값 누락 시 에러 던져주기
+            if (registerAuctionDTO.getTurtleId() == null || registerAuctionDTO.getSellerAddress() == null || registerAuctionDTO.getTitle() == null || registerAuctionDTO.getMinBid() == null) {
+                throw new IllegalArgumentException("필수 필드가 누락됐습니다.");
+            }
+
+            validateUserOwnsTurtle(registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
+            validateTurtleNotAlreadyRegistered(registerAuctionDTO.getTurtleId());
+
+            // 경매 저장
+            Auction auction = auctionRepository.save(registerAuctionDTO.toEntity());
+
+            // 동적 스케줄링 수행
+            Consumer<Long> startAuction = bidService::startAuction;
+            schedulingService.scheduleTask(auction.getId(), startAuction, auction.getStartTime());
+
+            // 이미지 업로드 처리
             if (images != null && !images.isEmpty()) {
                 uploadedPhotos = uploadImages(images, auction);  // 이미지 업로드
                 auction.getAuctionPhotos().addAll(uploadedPhotos);  // 업로드된 이미지 경매와 연결
             }
-        }  catch (Exception e) {
-            // 예외 발생 시 업로드된 이미지 삭제
-            // 예외 발생 추가
-            deleteUploadedImages(uploadedPhotos);
-            throw new IOException("이미지 업로드 중 오류가 발생했습니다.", e);
-        }
 
-        return auction;
+            return new ResponseEntity<>(ResponseVO.success("경매가 성공적으로 등록됐습니다."), HttpStatus.OK);
+
+
+        } catch (TurtleAlreadyRegisteredException e) {
+            return new ResponseEntity<>(ResponseVO.failure("409", "이미 등록된 개체입니다."), HttpStatus.CONFLICT);
+
+        } catch (IOException e) {
+            log.info("IOException 발생");
+            return new ResponseEntity<>(ResponseVO.failure("400", "경매 등록에 실패했습니다. " + e.getMessage()), HttpStatus.BAD_REQUEST);
+
+        } catch (NumberFormatException e) {
+            // 숫자 형식이 잘못된 경우 예외 처리
+            deleteUploadedImages(uploadedPhotos);
+            return new ResponseEntity<>(ResponseVO.failure("400", "잘못된 형식의 입력값이 있습니다."), HttpStatus.BAD_REQUEST);
+
+        } catch (IllegalArgumentException e) {
+            // 기타 잘못된 인자 처리
+            deleteUploadedImages(uploadedPhotos);
+            return new ResponseEntity<>(ResponseVO.failure("400", "필수 필드가 누락되었습니다."), HttpStatus.BAD_REQUEST);
+        } catch (MultipartException e) {
+            // Multipart 관련 예외 처리
+            log.error("MultipartException 발생: {}", e.getMessage());
+            deleteUploadedImages(uploadedPhotos);
+            return new ResponseEntity<>(ResponseVO.failure("400", "잘못된 요청입니다. multipart/form-data 형식으로 요청해주세요."), HttpStatus.BAD_REQUEST);
+
+        } catch (Exception e) {
+            log.info("기타 오류 발생");
+            deleteUploadedImages(uploadedPhotos);
+            return new ResponseEntity<>(ResponseVO.failure("500", "서버 내부 오류가 발생했습니다. " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // 이미지 업로드 처리 메서드
@@ -142,50 +175,83 @@ public class AuctionService {
     }
 
     // 경매 ID로 경매 조회
-    public AuctionResponseDTO getAuctionById(Long auctionId) {
-        Auction auction = auctionRepository.findById(auctionId)
-                .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다: " + auctionId));
+    public ResponseEntity<?> getAuctionById(Long auctionId) {
+        try {
+            Auction auction = auctionRepository.findById(auctionId)
+                    .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다: " + auctionId));
 
-        log.info("경매 ID로 경매 조회");
+            TurtleResponseDTO turtle = mainClient.getTurtle(auctionId);
+            UserResponseDTO user = mainClient.getUserById(auction.getUserId());
 
-        TurtleResponseDTO turtle = mainClient.getTurtle(auctionId);
-        UserResponseDTO user = mainClient.getUserById(auction.getUserId());
+            AuctionResponseDTO data = AuctionResponseDTO.from(auction, turtle, user);
+            return new ResponseEntity<>(ResponseVO.success("경매가 정상적으로 조회되었습니다.", "auction", data), HttpStatus.OK);
+        } catch (AuctionNotFoundException e) {
+            return new ResponseEntity<>(ResponseVO.failure("400", e.getMessage()), HttpStatus.BAD_REQUEST);
 
-        // 경매 정보를 빌더 패턴을 사용해 DTO로 변환
-        return AuctionResponseDTO.from(auction, turtle, user);
+        } catch(Exception e){
+            return new ResponseEntity<>(ResponseVO.failure("500","경매 조회 과정 중에 서버 에러가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // 경매 필터링 후 조회
-    public List<Auction> getFilteredAuctions(Gender gender, Double minSize, Double maxSize, Double minPrice, Double maxPrice, AuctionProgress progress, int page) {
-        QAuction auction = QAuction.auction;
+    public ResponseEntity<?> getFilteredAuctions(Gender gender, Double minSize, Double maxSize, Double minPrice, Double maxPrice, AuctionProgress progress, int page) {
+        try {
+            QAuction auction = QAuction.auction;
 
-        BooleanBuilder whereClause = new BooleanBuilder();
+            BooleanBuilder whereClause = new BooleanBuilder();
 
-        // 가격 필터 (minPrice ~ maxPrice)
-        if (minPrice != null) {
-            if (maxPrice != null) {
-                whereClause.and(auction.minBid.between(minPrice, maxPrice));
-            } else {
-                whereClause.and(auction.minBid.goe(minPrice));
+            // 가격 필터 (minPrice ~ maxPrice)
+            if (minPrice != null) {
+                if (maxPrice != null) {
+                    whereClause.and(auction.minBid.between(minPrice, maxPrice));
+                } else {
+                    whereClause.and(auction.minBid.goe(minPrice));
+                }
+            } else if (maxPrice != null) {
+                whereClause.and(auction.minBid.loe(maxPrice));
             }
-        } else if (maxPrice != null) {
-            whereClause.and(auction.minBid.loe(maxPrice));
+
+            // 경매 진행 상태 필터
+            if (progress != null) {
+                whereClause.and(auction.auctionProgress.eq(progress));
+            }
+
+            // main-service에서 필터링 엔드포인트 열어둘 것
+            List<TurtleResponseDTO> filteredTurtles = mainClient.getFilteredTurtles(gender, minSize, maxSize);
+
+            long totalAuctions = queryFactory.selectFrom(auction)
+                    .where(whereClause.and(auction.turtleId.in(
+                            filteredTurtles.stream().map(TurtleResponseDTO::getId).toList())))
+                    .fetch()
+                    .size();
+
+            List<Auction> auctions = queryFactory.selectFrom(auction)
+                    .where(whereClause.and(auction.turtleId.in(
+                            filteredTurtles.stream().map(TurtleResponseDTO::getId).toList())))
+                    .offset(page * 20L)
+                    .limit(20)
+                    .fetch();
+
+            int totalPages = (int) Math.ceil((double) totalAuctions / 20);
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("auctions", auctions);
+            data.put("total_pages", totalPages);
+
+            return new ResponseEntity<>(ResponseVO.success("경매가 성공적으로 등록됐습니다.", "data", data), HttpStatus.OK);
+        }catch (NumberFormatException e) {
+            // 숫자 형식이 잘못된 경우 예외 처리
+            return new ResponseEntity<>(ResponseVO.failure("400", "잘못된 형식의 입력값이 있습니다."), HttpStatus.BAD_REQUEST);
+
+        } catch (IllegalArgumentException e) {
+            // 기타 잘못된 인자 처리
+            return new ResponseEntity<>(ResponseVO.failure("400", "잘못된 파라미터입니다."), HttpStatus.BAD_REQUEST);
+
+        } catch (Exception e) {
+            // 기타 예외 처리 (서버 오류)
+            e.printStackTrace();  // 로그 출력
+            return new ResponseEntity<>(ResponseVO.failure("500", "서버 에러가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        // 경매 진행 상태 필터
-        if (progress != null) {
-            whereClause.and(auction.auctionProgress.eq(progress));
-        }
-
-        // main-service에서 필터링 엔드포인트 열어둘 것
-        List<TurtleResponseDTO> filteredTurtles = mainClient.getFilteredTurtles(gender, minSize, maxSize);
-
-        return queryFactory.selectFrom(auction)
-                .where(whereClause.and(auction.turtleId.in(
-                        filteredTurtles.stream().map(TurtleResponseDTO::getId).toList())))
-                .offset(page * 20L)
-                .limit(20)
-                .fetch();
     }
 
 //    // 거북이 정보를 받아와서 경매정보를 DTO로 변환
@@ -209,22 +275,6 @@ public class AuctionService {
 
     public void processBid(Long auctionId, Long userId, Double newBidAmount) {
         redissonLockFacade.updateBidWithLock(auctionId, userId, newBidAmount);
-    }
-
-    public void endAuction(Long auctionId) {
-        // 상태 종료로 변경
-        Auction auction = auctionRepository.findById(auctionId)
-                .orElseThrow(() -> new AuctionNotFoundException("경매가 존재하지 않습니다."));
-
-        String redisKey = "auction:" + auctionId + ":status";
-        Map<Object, Object> currentBidData = redisTemplate.opsForHash().entries(redisKey);
-
-        if (currentBidData == null || currentBidData.isEmpty()) {
-            log.error("Redis에서 경매를 찾을 수 없습니다. 경매ID: {}", auctionId);
-            throw new AuctionNotFoundException("경매 정보를 찾을 수 없습니다.");
-        }
-
-        // redis에 담긴 마지막 입찰자와 종료 시간 변경
     }
 
     // 서버 재시작시 스케줄링 다시 등록하기

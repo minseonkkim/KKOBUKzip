@@ -56,7 +56,7 @@ export default function TransactionRegisterPage() {
         <title>판매 등록하기</title>
       </Helmet>
       <Header />
-      <div className="px-4 lg:px-[250px] mt-[85px]">
+      <div className="px-4 lg:px-[250px] mt-[72px]">
         <div className="text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-0 lg:pt-[32px] pb-[13px]">
           판매 등록하기
         </div>

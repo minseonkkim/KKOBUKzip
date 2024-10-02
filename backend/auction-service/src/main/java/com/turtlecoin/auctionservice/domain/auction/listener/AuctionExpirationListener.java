@@ -28,6 +28,7 @@ public class AuctionExpirationListener implements MessageListener {
     private static final String AUCTION_END_KEY_PREFIX = "auction_end_";
 //    private final AuctionService auctionService;
     private final SendService sendService;
+    private final AuctionRepository auctionRepository;
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
@@ -36,11 +37,13 @@ public class AuctionExpirationListener implements MessageListener {
 
         if (expiredKey.startsWith(AUCTION_END_KEY_PREFIX)) {
             Long auctionId = Long.parseLong(expiredKey.substring(AUCTION_END_KEY_PREFIX.length()));
+            Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다."));
             try {
                 sendService.endAuction(auctionId);
                 System.out.println("경매 종료!!");
             } catch (Exception e) {
-
+                // 에러 발생 시 경매 전으로 상태 갱신
+                auction.updateStatus(AuctionProgress.BEFORE_AUCTION);
                 log.error("경매 종료 처리 중 오류 발생: auctionId = {}, error = {}", auctionId, e.getMessage());
             }
         }

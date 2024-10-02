@@ -1,5 +1,6 @@
 package com.turtlecoin.auctionservice.domain.auction.controller;
 
+import com.turtlecoin.auctionservice.domain.auction.dto.AuctionFilterResponseDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
@@ -70,41 +71,8 @@ public class AuctionController {
     public ResponseEntity<?> registerAuction(
             @RequestPart("data") RegisterAuctionDTO registerAuctionDTO,
             @RequestPart(value = "images", required = false) List<MultipartFile> multipartFiles) {
-        try {
             // 경매 생성 및 이미지 처리
-            auctionService.registerAuction(registerAuctionDTO, multipartFiles);
-            log.info("경매 정보 저장 및 이미지 처리 완료");
-
-            return new ResponseEntity<>(ResponseVO.success("경매 등록에 성공했습니다."), HttpStatus.OK);
-
-        } catch (TurtleAlreadyRegisteredException e) {
-            return new ResponseEntity<>(ResponseVO.failure("409", "이미 등록된 개체입니다."), HttpStatus.CONFLICT);
-
-        } catch (AmqpConnectException e) {
-            log.error("RabbitMQ 연결 실패: {}", e.getMessage());
-            return new ResponseEntity<>(ResponseVO.success("RabbitMQ 오류 발생, 하지만 경매는 성공적으로 등록되었습니다.", "auction", null), HttpStatus.OK);
-
-        } catch (IOException e) {
-            log.info("IOException 발생");
-            return new ResponseEntity<>(ResponseVO.failure("400", "경매 등록에 실패했습니다. " + e.getMessage()), HttpStatus.BAD_REQUEST);
-
-        } catch (NumberFormatException e) {
-            // 숫자 형식이 잘못된 경우 예외 처리
-            return new ResponseEntity<>(ResponseVO.failure("400", "잘못된 형식의 입력값이 있습니다."), HttpStatus.BAD_REQUEST);
-
-        } catch (IllegalArgumentException e) {
-            // 기타 잘못된 인자 처리
-            return new ResponseEntity<>(ResponseVO.failure("400", "잘못된 파라미터입니다."), HttpStatus.BAD_REQUEST);
-
-        } catch (MultipartException e) {
-            // Multipart 관련 예외 처리
-            log.error("MultipartException 발생: {}", e.getMessage());
-            return new ResponseEntity<>(ResponseVO.failure("400", "잘못된 요청입니다. multipart/form-data 형식으로 요청해주세요."), HttpStatus.BAD_REQUEST);
-
-        } catch (Exception e) {
-            log.info("기타 오류 발생");
-            return new ResponseEntity<>(ResponseVO.failure("500", "서버 내부 오류가 발생했습니다. " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            return auctionService.registerAuction(registerAuctionDTO, multipartFiles);
     }
 
     @GetMapping
@@ -117,30 +85,12 @@ public class AuctionController {
             @RequestParam(value = "progress", required = false) AuctionProgress progress,
             @RequestParam(value = "page", defaultValue = "0") int page
     ) {
-        List<AuctionResponseDTO> auctionDTOs = auctionService.getFilteredAuctions(gender, minSize, maxSize, minPrice, maxPrice, progress, page)
-                .stream()
-                .map(auctionService::convertToDTO)
-                .toList();
-
-        return new ResponseEntity<>(ResponseVO.success("경매 목록 조회에 성공했습니다.", "auctions", auctionDTOs), HttpStatus.OK);
+        return auctionService.getFilteredAuctions(gender, minSize, maxSize, minPrice, maxPrice, progress, page);
     }
 
     @GetMapping("/{auctionId}")
     public ResponseEntity<?> getAuctionById(@PathVariable Long auctionId) {
-        log.info("경매 ID : {}", auctionId);
-
-        try {
-            AuctionResponseDTO responseDTO = auctionService.getAuctionById(auctionId);
-            return new ResponseEntity<>(ResponseVO.success("경매 조회에 성공했습니다", "auction", responseDTO), HttpStatus.OK);
-
-        } catch (AuctionNotFoundException e) {
-            log.error("경매를 찾을 수 없습니다: {}", auctionId, e);
-            return new ResponseEntity<>(ResponseVO.failure("404", "경매를 찾을 수 없습니다."), HttpStatus.NOT_FOUND);
-
-        } catch (Exception e) {
-            log.error("기타 에러 발생: {}", e.getMessage(), e);
-            return new ResponseEntity<>(ResponseVO.failure("400", "에러가 발생했습니다."), HttpStatus.BAD_REQUEST);
-        }
+        return auctionService.getAuctionById(auctionId);
     }
 
     @GetMapping("/{auctionId}/test")

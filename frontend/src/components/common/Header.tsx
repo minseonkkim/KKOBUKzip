@@ -34,14 +34,14 @@ export default function Header() {
   return (
     <header>
       <div
-        className="fixed top-0 left-0 w-full h-[65px] lg:h-[85px] px-4 lg:px-[250px] flex flex-row justify-between items-center shadow-md z-50"
+        className="fixed top-0 left-0 w-full h-[62px] lg:h-[75px] px-4 lg:px-[250px] flex flex-row justify-between items-center shadow-md z-50"
         style={{ backgroundColor: headerBackgroundColor }}
       >
         <Link to="/">
-          <div className="text-[32px] lg:text-[40px] font-dnf-bitbit flex flex-row items-center cursor-pointer">
+          <div className="text-[32px] lg:text-[38px] font-dnf-bitbit flex flex-row items-center cursor-pointer">
             <img
               src={LogoImg}
-              className="w-[60px] h-[60px] lg:h-[60px] mr-3 object-contain"
+              className="w-[50px] lg:w-[60px] h-[50px] lg:h-[60px] mr-3 object-contain"
               draggable="false"
               alt="Logo Image"
             />
