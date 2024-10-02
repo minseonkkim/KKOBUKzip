@@ -46,7 +46,7 @@ public class BidService {
         auction.updateStatus(AuctionProgress.DURING_AUCTION);
         
         // sse로 경매 시작을 알림
-        sseService.notify(auction.getId(), "경매 시작");
+        sseService.notify(auction.getId(), "Auction Started");
         
         System.out.println("경매 상태 변경 및 경매 종료시간 설정");
     }
