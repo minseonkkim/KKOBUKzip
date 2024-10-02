@@ -6,6 +6,7 @@ import { IoCheckmark } from "@react-icons/all-files/io5/IoCheckmark";
 import { useEscrowStore } from "../../store/useEscrowStore";
 import { useWeb3Store } from "../../store/useWeb3Store";
 import { useUserStore } from "../../store/useUserStore";
+import useChatStore from "../../store/useChatStore";
 
 interface TransactionHistoryProps {
     isAuction: boolean;
@@ -20,8 +21,8 @@ interface TransactionHistoryProps {
 
 export default function TransactionHistory(props: TransactionHistoryProps | Partial<TransactionHistoryProps>){
     const navigate = useNavigate();
-    const { userInfo } = useUserStore();
-
+    const { isLogin, userInfo } = useUserStore();
+    const { openChatDetail } = useChatStore();
     const { createTransaction, releaseFunds } = useEscrowStore();
     const { account } = useWeb3Store();
     // const [transactionState, setTransactionState] = useState<number | null>(null);
@@ -79,6 +80,19 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
         }
     };
 
+    const openChat = () => {
+    if (isLogin && userInfo) {
+      if(props.sellerName){
+        openChatDetail(userInfo.userId, props.sellerName);
+      } else{
+        alert("존재하지 않는 유저입니다");
+      }
+      
+    } else {
+      alert("로그인해주세요!");
+    }
+  };
+
     return <>
         {props.isAuction? 
         // 경매
@@ -117,7 +131,7 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
                             {/* 서류 검토 */}
                             <button className="whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0] hidden" onClick={finalizeTransaction}>구매 확정</button>
                         </div>
-                        <button className="whitespace-nowrap text-[18px] font-bold w-auto px-3 h-10 bg-[#D7E7F7] rounded-[10px] hover:bg-[#C9DBED]">채팅하기</button>
+                        <button onClick={openChat} className="whitespace-nowrap text-[18px] font-bold w-auto px-3 h-10 bg-[#D7E7F7] rounded-[10px] hover:bg-[#C9DBED]">채팅하기</button>
                     </div>
                 </div>
             </div>
