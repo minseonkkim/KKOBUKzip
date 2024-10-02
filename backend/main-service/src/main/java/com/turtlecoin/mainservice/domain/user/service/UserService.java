@@ -6,7 +6,9 @@ import com.turtlecoin.mainservice.domain.user.dto.UserRequestDto;
 import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
 import com.turtlecoin.mainservice.domain.user.entity.Role;
 import com.turtlecoin.mainservice.domain.user.entity.User;
+import com.turtlecoin.mainservice.domain.user.exception.DuplicatedUserEmail;
 import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
+import com.turtlecoin.mainservice.global.exception.S3SaveException;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import io.jsonwebtoken.Jwts;
 import jakarta.transaction.Transactional;
@@ -38,43 +40,42 @@ public class UserService {
     public ResponseEntity<ResponseVO<?>> saveUser(UserRequestDto dto, MultipartFile image) {
         dto.setPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
         // 이메일 중복 체크
-        if (userRepository.findByemail(dto.getEmail()) != null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ResponseVO.failure("401", "이미 가입된 이메일입니다."));
-        }
-
-        Role role = (dto.getRole() == null) ? Role.ROLE_USER : dto.getRole();
-        String uuid = UUID.randomUUID().toString();
-        String imageUrl = null;
-
         try {
-            // 이미지 업로드
-            imageUrl = imageUploadService.upload(image, "user");
-        } catch (IOException e) {
-            e.printStackTrace();
-            // 이미지 업로드 실패 시 에러 메시지 반환
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ResponseVO.failure("400", "프로필 이미지 등록 과정에서 에러가 발생했습니다."));
-        }
+            if (userRepository.findByemail(dto.getEmail()) != null) {
+                throw new DuplicatedUserEmail("이미 가입된 이메일입니다.");
+            }
 
-        // 사용자 객체 생성
-        User user = new User(
-                dto.getEmail(),
-                dto.getPassword(),
-                dto.getNickname(),
-                dto.getName(),
-                dto.getForeignFlag(),
-                dto.getBirth(),
-                dto.getPhonenumber(),
-                dto.getAddress(),
-                role,
-                imageUrl,
-                uuid
-        );
+            Role role = (dto.getRole() == null) ? Role.ROLE_USER : dto.getRole();
+            String uuid = UUID.randomUUID().toString();
+            String imageUrl = null;
 
-        // 사용자 저장
-        try {
+            try{
+                imageUrl = imageUploadService.upload(image, "user");
+            }catch (IOException e){
+                throw new S3SaveException("이미지 업로드 중 오류가 발생했습니다.");
+            }
+
+            // 사용자 객체 생성
+            User user = new User(
+                    dto.getEmail(),
+                    dto.getPassword(),
+                    dto.getNickname(),
+                    dto.getName(),
+                    dto.getForeignFlag(),
+                    dto.getBirth(),
+                    dto.getPhonenumber(),
+                    dto.getAddress(),
+                    role,
+                    imageUrl,
+                    uuid
+            );
             userRepository.save(user);
+        }catch(DuplicatedUserEmail e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ResponseVO.failure("401", e.getMessage()));
+        }catch(S3SaveException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseVO.failure("500", e.getMessage()));
         } catch (Exception e) {
             // 사용자 저장 중 에러 발생 시 처리
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

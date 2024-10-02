@@ -5,6 +5,7 @@ import com.turtlecoin.mainservice.domain.user.dto.LoginUserDto;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
+import com.turtlecoin.mainservice.global.exception.RedisSaveException;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,12 @@ public class JWTService {
             String refresh = jwtUtil.createToken("refresh", email, role, id,86400000L);
 
             // Redis에 refresh token 저장 (email, 토큰, 만료시간을 함께 저장)
-            redisTemplate.opsForValue().set(email, refresh, 86400000L, TimeUnit.SECONDS);
+            try{
+                redisTemplate.opsForValue().set(email, refresh, 86400000L, TimeUnit.SECONDS);
+            }catch(Exception e){
+                throw new RedisSaveException("token을 redis에 저장하는 과정에서 에러가 발생하였습니다.");
+            }
+
             ResponseVO responseVO = ResponseVO.success("로그인 성공");
             Map<String, Object> data = new HashMap<>();
             data.put("accessToken", access);
@@ -75,7 +81,10 @@ public class JWTService {
             responseVO.setData(data);
 
             return new ResponseEntity<>(responseVO, HttpStatus.OK);
-        }catch (Exception e){
+        }catch(RedisSaveException e){
+            return new ResponseEntity<>(ResponseVO.failure("500", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (Exception e){
             return new ResponseEntity<>(ResponseVO.failure("500","서버 에러 발생"),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
