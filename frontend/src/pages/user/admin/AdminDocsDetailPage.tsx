@@ -49,12 +49,16 @@ function AdminDocsDetailPage() {
         return false;
       }
       // 여기서 대충 data fetch해서, data의 docType에 따라 swtich and data set
-      const { success, data } = await getDetailDocumentData(
+      const { success, data, message, error } = await getDetailDocumentData(
         params?.turtleUUID,
         params?.documentHash
       );
-      if (!success || !data) return false;
-      // console.log(data);
+      if (!success || !data) {
+        // console.error(message, error);
+        return false;
+      }
+      setData(data);
+      console.log(data);
       // return;
       if (
         ["인공증식증명서", "양도양수확인서", "폐사질병신고서"].includes(
@@ -72,7 +76,7 @@ function AdminDocsDetailPage() {
 
       // 실패했을 시에 실패 알림 추가할 것
     };
-    // getData();
+    getData();
     // 네트워크 붙이고 dummy 정리할 것
     // search keyword : dummy
     if (
@@ -82,9 +86,6 @@ function AdminDocsDetailPage() {
     ) {
       setData(fetchedData[documentType]);
       setLayout(documentType);
-    } else {
-      setData(null);
-      setLayout(null);
     }
   }, []);
 

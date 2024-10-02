@@ -16,11 +16,13 @@ function AdminDocsListPage() {
   // search : dummy
   useEffect(() => {
     const getData = async () => {
-      const { success, data } = await getAllDocumentDataForAdmin();
-      if (success && data) {
-        setDocuments(data);
+      const { success, data, error } = await getAllDocumentDataForAdmin();
+      console.log(success && data, error);
+      if (success && data?.length! > 0) {
+        setDocuments(data!);
       } else {
         setDocuments(dummyData as AdminDocsListDataType[]);
+        alert(data?.length === 0 ? "데이터가 없습니다!" : error);
       }
     };
     getData();
@@ -34,6 +36,11 @@ function AdminDocsListPage() {
       <div className="max-w-screen-md mx-auto p-4 h-[100vh] flex flex-col">
         <h1 className="text-2xl font-bold mb-4">서류 신청 목록</h1>
         <div className="grid gap-4 grid-cols-1 overflow-y-auto">
+          {documents.length === 0 && (
+            <div className="text-center text-gray-500">
+              신청중인 문서가 없습니다.
+            </div>
+          )}
           {documents.map((doc, index) => (
             <div
               key={index}
