@@ -17,4 +17,6 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
     @Query("select a from Auction a where a.auctionProgress = :progress")
     List<Auction> findByAuctionProgress(@Param("progress") AuctionProgress progress);
 
+    @Query("select count(*) from Auction a where (a.auctionProgress = :progress1 or a.auctionProgress = :progress2) and a.turtleId = :turtleId")
+    Long countInProgressAuctionByTurtleId(@Param("progress1") AuctionProgress progress1, @Param("progress2") AuctionProgress progress2, @Param("turtleId") Long turtleId);
 }

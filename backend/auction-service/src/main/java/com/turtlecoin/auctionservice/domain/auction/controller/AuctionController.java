@@ -7,6 +7,7 @@ import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository
 import com.turtlecoin.auctionservice.domain.auction.service.AuctionService;
 import com.turtlecoin.auctionservice.domain.auction.service.BidService;
 import com.turtlecoin.auctionservice.domain.auction.service.SchedulingService;
+import com.turtlecoin.auctionservice.domain.auction.service.SseService;
 import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.global.exception.*;
@@ -15,10 +16,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpConnectException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -39,6 +42,7 @@ public class AuctionController {
     private final BidService bidService;
     private final AuctionRepository auctionRepository;
     private final SchedulingService schedulingService;
+    private final SseService sseService;
 
     // 테스트
     @GetMapping("/test")
@@ -47,6 +51,18 @@ public class AuctionController {
         System.out.println("test!");
 //        sendService.sendMessage();
         return ResponseEntity.status(HttpStatus.OK).body("OK");
+    }
+
+    // SSE 연결
+    @GetMapping(value = "/sse/subscribe/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter subscribe(@PathVariable Long id) {
+        return sseService.subscribe(id);
+    }
+
+    // SSE 보내기 테스트
+    @PostMapping(value = "/sse/{id}")
+    public void sendSSE(@PathVariable Long id, @RequestBody String message) {
+        sseService.notify(id, message);
     }
 
     // 경매 등록
