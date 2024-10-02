@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { BreedDocumentDataType, BreedFetchData } from "../../types/document";
 import DocImgUpload from "./DocImgUpload";
 import { createBreedDocumentRequest } from "../../apis/documentApis";
-import { breedDoc } from "../../utils/driverObject";
+import { breedDoc } from "../../utils/breedDriverObject";
 
 // 특이사항
 // 신청인 정보 동적으로 할당할 것(아마 store에서)
