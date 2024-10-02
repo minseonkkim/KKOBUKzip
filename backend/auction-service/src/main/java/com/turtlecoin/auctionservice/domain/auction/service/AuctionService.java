@@ -60,6 +60,11 @@ public class AuctionService {
         try {
         log.info("경매 등록 시작 - 사용자 ID: {}, 거북이 ID: {}", registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
 
+            // 필수 입력 값 누락 시 에러 던져주기
+            if (registerAuctionDTO.getTurtleId() == null || registerAuctionDTO.getSellerAddress() == null || registerAuctionDTO.getTitle() == null || registerAuctionDTO.getMinBid() == null) {
+                throw new IllegalArgumentException("필수 필드가 누락됐습니다.");
+            }
+
         validateUserOwnsTurtle(registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
         validateTurtleNotAlreadyRegistered(registerAuctionDTO.getTurtleId());
 
@@ -91,8 +96,7 @@ public class AuctionService {
         } catch (IllegalArgumentException e) {
             // 기타 잘못된 인자 처리
             deleteUploadedImages(uploadedPhotos);
-            return new ResponseEntity<>(ResponseVO.failure("400", "잘못된 파라미터입니다."), HttpStatus.BAD_REQUEST);
-
+            return new ResponseEntity<>(ResponseVO.failure("400", "필수 필드가 누락되었습니다."), HttpStatus.BAD_REQUEST);
         } catch (MultipartException e) {
             // Multipart 관련 예외 처리
             log.error("MultipartException 발생: {}", e.getMessage());
