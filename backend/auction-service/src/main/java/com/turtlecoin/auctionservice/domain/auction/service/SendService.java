@@ -59,7 +59,7 @@ public class SendService {
             response = ResponseVO.success("경매가 유찰됐습니다.");
             messagingTemplate.convertAndSend("/sub/auction/" + auctionId, response);
             // rabbitmq로 보내기
-            sendMessage(auctionResultDTO);
+            // sendMessage(auctionResultDTO);
             log.info("해당 경매에 입찰 기록이 없습니다: auctionId = {}", auctionId);
             return;
         }

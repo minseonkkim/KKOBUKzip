@@ -61,8 +61,8 @@ public class AuctionController {
 
     // SSE 보내기 테스트
     @PostMapping(value = "/sse/{id}")
-    public void sendSSE(@PathVariable Long id, @RequestBody String message) {
-        sseService.notify(id, message);
+    public void sendSSE(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        sseService.notify(id, request.get("message"));
     }
 
     // 경매 등록

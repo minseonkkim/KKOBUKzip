@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class SseService {
 
     public SseEmitter subscribe(Long auctionId) {
         SseEmitter emitter = createEmitter(auctionId);
-        sendToClient(auctionId, "EventStream Created. [auctionId=" + auctionId + "]");
+        // sendToClient(auctionId, "EventStream Created. [auctionId=" + auctionId + "]");
         return emitter;
     }
 
@@ -30,16 +32,17 @@ public class SseService {
         List<EmitterMapper> mappers = emitterRepository.get(id);
         for(EmitterMapper mapper : mappers) {
             SseEmitter emitter = mapper.getEmitter();
+
             if (emitter != null) {
-                try {
-                    emitter.send(SseEmitter.event().id(String.valueOf(id)).name("sse").data(data.toString()));
-                }
-                catch (Exception e) {
-                    new Thread(() -> {
-                        emitterRepository.deleteByIdAndUUID(id, mapper.getUuid());
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        emitter.send(SseEmitter.event().id(String.valueOf(id)).name("sse").data(data));
+                    } catch (Exception e) {
+                        // 유효성을 검사하여 삭제 및 종료
                         emitter.completeWithError(e);
-                    }).start();
-                }
+                        emitterRepository.deleteByIdAndUUID(id, mapper.getUuid());
+                    }
+                });
             }
         }
     }
@@ -47,8 +50,7 @@ public class SseService {
     private SseEmitter createEmitter(Long id) {
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
         String uuid =  emitterRepository.save(id, emitter);
-
-        // SSE 종료
+        // // SSE 종료
         emitter.onCompletion(() -> emitterRepository.deleteByIdAndUUID(id, uuid));
         emitter.onTimeout(() -> emitterRepository.deleteByIdAndUUID(id, uuid));
         emitter.onError((e) -> emitterRepository.deleteByIdAndUUID(id, uuid));

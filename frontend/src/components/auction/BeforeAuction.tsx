@@ -13,8 +13,6 @@ function BeforeAuction({
     const SSE_URL = import.meta.env.VITE_SSE_AUCTION_URL;
     const eventSource = new EventSource(SSE_URL);
     // 여기에서 SSE 연결하기
-    console.log("연결된듯?");
-
     eventSource.onmessage = (event) => {
       console.log(event.data);
       changeAuctionStatus();

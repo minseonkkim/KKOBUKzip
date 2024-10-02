@@ -4,11 +4,14 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.turtlecoin.auctionservice.domain.global.internal.EmitterMapper;
 
@@ -22,7 +25,7 @@ public class EmitterRepository {
     public String save(Long id, SseEmitter emitter) {
         if(!emitters.containsKey(id)) {
             // 조회 성능상 링크드 리스트가 나을듯
-            emitters.put(id, new LinkedList<>());
+            emitters.put(id, new CopyOnWriteArrayList<>());
         }
         String uuid = UUID.randomUUID().toString();
         emitters.get(id).add(new EmitterMapper(uuid, emitter));
@@ -30,16 +33,13 @@ public class EmitterRepository {
     }
 
     public List<EmitterMapper> get(Long id) {
-        return emitters.get(id);
+        return emitters.getOrDefault(id, Collections.emptyList());
     }
 
     public void deleteByIdAndUUID(Long id, String uuid) {
         List<EmitterMapper> mappers = emitters.get(id);
-        for(EmitterMapper mapper : mappers) {
-            if(mapper.getUuid().equals(uuid)) {
-                mappers.remove(mapper);
-                return;
-            }
+        if (mappers != null) {
+            mappers.removeIf(mapper -> mapper.getUuid().equals(uuid));
         }
     }
 }

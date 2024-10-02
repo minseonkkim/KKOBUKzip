@@ -17,9 +17,9 @@ public class SchedulingTask<T> implements Runnable {
 
     @Override
     public void run() {
-        transactionTemplate.execute(status -> {
-            task.accept(target);
-            return null;
-        });
+        task.accept(target);
+        // transactionTemplate.execute(status -> {
+        //     return null;
+        // });
     }
 }

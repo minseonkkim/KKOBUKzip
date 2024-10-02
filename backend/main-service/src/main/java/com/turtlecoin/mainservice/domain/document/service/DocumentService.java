@@ -259,6 +259,7 @@ public class DocumentService {
 
 				contractService.approveBreeding(document.getTurtleUUID(), document.getDocumentHash());
 			}
+			// 만약 폐사질병서류라면 죽었음 처리해줘야함
 			else if(document.getDocType() == DocType.DEATH){
 				Turtle turtle = turtleService.findTurtleByUUID(document.getTurtleUUID());
 				if(turtle == null){
@@ -268,7 +269,11 @@ public class DocumentService {
 					turtle.turtleDie();
 				}
 			}
+			// 소유권 변경된 걸 변경해줘야 되는데 빠졌네!!
 			else if(document.getDocType() == DocType.TRANSFER){
+				
+				// 소유권 변경하기
+				
 				contractService.approveTransfer(document.getTurtleUUID(), document.getDocumentHash());
 			}
 		}
