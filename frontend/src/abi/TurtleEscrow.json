@@ -22,6 +22,21 @@
           "internalType": "uint256",
           "name": "_amount",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_turtleId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_buyerId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_sellerId",
+          "type": "string"
         }
       ],
       "name": "createTransaction",
@@ -152,6 +167,19 @@
       "inputs": [
         {
           "internalType": "address",
+          "name": "_turtleDocumentationAddress",
+          "type": "address"
+        }
+      ],
+      "name": "setTurtleDocumentationAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
           "name": "newOwner",
           "type": "address"
         }
@@ -218,6 +246,21 @@
       ],
       "name": "auctionTransactions",
       "outputs": [
+        {
+          "internalType": "string",
+          "name": "turtleId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "buyerId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "sellerId",
+          "type": "string"
+        },
         {
           "internalType": "address",
           "name": "buyer",
@@ -325,6 +368,21 @@
       "name": "normalTransactions",
       "outputs": [
         {
+          "internalType": "string",
+          "name": "turtleId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "buyerId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "sellerId",
+          "type": "string"
+        },
+        {
           "internalType": "address",
           "name": "buyer",
           "type": "address"
@@ -377,6 +435,19 @@
       "outputs": [
         {
           "internalType": "contract IERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "turtleDocumentation",
+      "outputs": [
+        {
+          "internalType": "contract ITurtleDocumentation",
           "name": "",
           "type": "address"
         }

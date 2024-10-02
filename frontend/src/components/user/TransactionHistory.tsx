@@ -12,6 +12,7 @@ interface TransactionHistoryProps {
     isAuction: boolean;
     turtleId: number;
     transactionId: number;
+    buyerId: number;
     sellerId: number;
     sellerName: string;
     sellerAddress: string;
@@ -43,13 +44,12 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
 
     const handleDeposit = async () => {
         if (account && props.transactionId !== undefined && props.sellerAddress && props.amount !== undefined) {
-            const isFinish = await createTransaction(props.isAuction!, props.transactionId, props.sellerAddress, props.amount);
+            const isFinish = await createTransaction(props.isAuction!, props.transactionId, props.sellerAddress, props.amount, String(props.turtleId), String(props.buyerId), String(props.sellerId));
             if (isFinish) {
                 alert("거래 대금 송금이 완료되었습니다. 서류 작성을 진행해 주세요.")
             } else {
                 alert("거래 대금 송금해 실패했습니다. 다시 시도해 주세요.")
             }
-            console.log("트랜잭션 생성과 토큰 전송이 완료되었습니다.")
         } else {
             console.error("Missing required props for createTransaction");
         }
