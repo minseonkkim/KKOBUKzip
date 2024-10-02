@@ -4,7 +4,7 @@ import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
 import lombok.*;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class AuctionPhotoDTO {
