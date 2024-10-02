@@ -100,6 +100,11 @@
 						"internalType": "uint256",
 						"name": "lockPeriod",
 						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "turtleId",
+						"type": "string"
 					}
 				],
 				"stateMutability": "view",
@@ -126,6 +131,11 @@
 						"internalType": "uint256",
 						"name": "_amount",
 						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
 					}
 				],
 				"name": "createTransaction",
@@ -232,6 +242,11 @@
 						"internalType": "uint256",
 						"name": "lockPeriod",
 						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "turtleId",
+						"type": "string"
 					}
 				],
 				"stateMutability": "view",
@@ -290,6 +305,16 @@
 						"internalType": "uint256",
 						"name": "_transactionId",
 						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "_sellerId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_buyerId",
+						"type": "string"
 					}
 				],
 				"name": "releaseFunds",
@@ -329,6 +354,19 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_turtleDocumentationAddress",
+						"type": "address"
+					}
+				],
+				"name": "setTurtleDocumentationAddress",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "token",
 				"outputs": [
@@ -352,6 +390,19 @@
 				"name": "transferOwnership",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "turtleDocumentation",
+				"outputs": [
+					{
+						"internalType": "contract ITurtleDocumentation",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -399,10 +450,11 @@
 						"_token": "사용할 ERC20 토큰 주소"
 					}
 				},
-				"createTransaction(bool,uint256,address,uint256)": {
+				"createTransaction(bool,uint256,address,uint256,string)": {
 					"details": "새로운 거래 생성",
 					"params": {
 						"_amount": "거래 금액",
+						"_isAuction": "경매 여부",
 						"_seller": "판매자 주소"
 					},
 					"returns": {
@@ -412,10 +464,11 @@
 				"getTransactionDetails(bool,uint256)": {
 					"details": "거래 세부 정보 조회",
 					"params": {
+						"_isAuction": "경매 여부",
 						"_transactionId": "거래 ID"
 					},
 					"returns": {
-						"_0": "구매자 주소, 판매자 주소, 거래 금액, 거래 상태, 거래 생성 시간, 잠금 기간"
+						"_0": "구매자 주소, 판매자 주소, 거래 금액, 거래 상태, 거래 생성 시간, 잠금 기간, 거북이 ID"
 					}
 				},
 				"owner()": {
@@ -424,13 +477,21 @@
 				"refund(bool,uint256)": {
 					"details": "환불 (구매자에게 반환)",
 					"params": {
+						"_isAuction": "경매 여부",
 						"_transactionId": "거래 ID"
+					},
+					"returns": {
+						"_0": "경매 여부, 거래 ID"
 					}
 				},
-				"releaseFunds(bool,uint256)": {
+				"releaseFunds(bool,uint256,string,string)": {
 					"details": "자금 해제 (판매자에게 전송)",
 					"params": {
+						"_isAuction": "경매 여부",
 						"_transactionId": "거래 ID"
+					},
+					"returns": {
+						"_0": "경매 여부, 거래 ID"
 					}
 				},
 				"renounceOwnership()": {
@@ -442,14 +503,24 @@
 						"_newArbiter": "새로운 중재자 주소"
 					}
 				},
+				"setTurtleDocumentationAddress(address)": {
+					"details": "TurtleDocumentation 컨트랙트 주소 설정",
+					"params": {
+						"_turtleDocumentationAddress": "TurtleDocumentation 컨트랙트 주소"
+					}
+				},
 				"transferOwnership(address)": {
 					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
 				},
 				"updateLockPeriod(bool,uint256,uint256)": {
 					"details": "잠금 기간 업데이트",
 					"params": {
+						"_isAuction": "경매 여부",
 						"_newLockPeriod": "새로운 잠금 기간",
 						"_transactionId": "거래 ID"
+					},
+					"returns": {
+						"_0": "경매 여부, 거래 ID"
 					}
 				}
 			},
@@ -459,13 +530,13 @@
 		"userdoc": {
 			"kind": "user",
 			"methods": {
-				"createTransaction(bool,uint256,address,uint256)": {
+				"createTransaction(bool,uint256,address,uint256,string)": {
 					"notice": "CEI 패턴 적용(Checks-Effects-Interactions) - Checks: 입력 값 검증 먼저 수행 - Effects: 거래 정보 상태에 저장 - Interactions: 토큰 전송"
 				},
 				"refund(bool,uint256)": {
 					"notice": "CEI 패턴 적용(Checks-Effects-Interactions) - Checks: 권한, 상태, 잠금 기간 확인 수행 - Effects: 거래 상태 업데이트 - Interactions: 토큰 전송"
 				},
-				"releaseFunds(bool,uint256)": {
+				"releaseFunds(bool,uint256,string,string)": {
 					"notice": "CEI 패턴 적용(Checks-Effects-Interactions) - Checks: 권한 및 상태 확인 수행 - Effects: 거래 상태 업데이트 - Interactions: 토큰 전송"
 				}
 			},
@@ -539,11 +610,11 @@
 			]
 		},
 		"contracts/TurtleEscrow.sol": {
-			"keccak256": "0xbbde29706a5f0a625e8d323c63eb4527d44551175cbee6217a942f6506028160",
+			"keccak256": "0xcf80317db77d326120b9b19a2c8b8e300b9af11e4b39e05b345eedec0c7c7bfa",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://ab3a9bfe64e76fdec6dbf611b32f7be08d72c5c06f92c366d821183cb4ade8f2",
-				"dweb:/ipfs/QmVGavMLLfMAcKFPprrE376ydYVejxjzTqWRgT6pBhoFJJ"
+				"bzz-raw://44c951b59f3292ec5e7297b0d7584fd366db8c4f94a4b9396617d849f4b720a7",
+				"dweb:/ipfs/QmeVsuZoZxbHikfmxY2G4m5o8P7ZBd8kq4haYrsvgufE13"
 			]
 		}
 	},

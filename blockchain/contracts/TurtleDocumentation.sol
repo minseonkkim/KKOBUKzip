@@ -64,6 +64,7 @@ contract TurtleDocumentation is Ownable {
         mapping(bytes32 => Death) deathDoc;
         bytes32 beforeDocumentHash;
         bytes32 currentDocumentHash;
+        bytes32 turtleHash;
         bool exists;
     }
 
@@ -108,41 +109,31 @@ contract TurtleDocumentation is Ownable {
         string memory _gender,
         string memory _locationSpecification,
         string memory _multiplicationMethod,
-        string memory _shelterSpecification
+        string memory _shelterSpecification,
+        bytes32 _turtleHash
     ) public returns (bytes32) {
         require(!turtles[_turtleId].exists, "Turtle already registered");
-        if (!turtles[_turtleId].exists) {
-            Turtle storage newTurtle = turtles[_turtleId];
-            newTurtle.multiplicationDoc[_documentHash].applicant = _applicant;
-            newTurtle.multiplicationDoc[_documentHash].count = _count;
-            newTurtle.multiplicationDoc[_documentHash].area = _area;
-            newTurtle.multiplicationDoc[_documentHash].purpose = _purpose;
-            newTurtle.multiplicationDoc[_documentHash].location = _location;
-            newTurtle.multiplicationDoc[_documentHash].fatherId = _fatherId;
-            newTurtle.multiplicationDoc[_documentHash].motherId = _motherId;
-            newTurtle.multiplicationDoc[_documentHash].birth = _birth;
-            newTurtle.multiplicationDoc[_documentHash].name = _name;
-            newTurtle.multiplicationDoc[_documentHash].weight = _weight;
-            newTurtle.multiplicationDoc[_documentHash].gender = _gender;
-            newTurtle.multiplicationDoc[_documentHash].locationSpecification = _locationSpecification;
-            newTurtle.multiplicationDoc[_documentHash].multiplicationMethod = _multiplicationMethod;
-            newTurtle.multiplicationDoc[_documentHash].shelterSpecification = _shelterSpecification;
-        } else {
-            turtles[_turtleId].multiplicationDoc[_documentHash].applicant = _applicant;
-            turtles[_turtleId].multiplicationDoc[_documentHash].count = _count;
-            turtles[_turtleId].multiplicationDoc[_documentHash].area = _area;
-            turtles[_turtleId].multiplicationDoc[_documentHash].purpose = _purpose;
-            turtles[_turtleId].multiplicationDoc[_documentHash].location = _location;
-            turtles[_turtleId].multiplicationDoc[_documentHash].fatherId = _fatherId;
-            turtles[_turtleId].multiplicationDoc[_documentHash].motherId = _motherId;
-            turtles[_turtleId].multiplicationDoc[_documentHash].birth = _birth;
-            turtles[_turtleId].multiplicationDoc[_documentHash].name = _name;
-            turtles[_turtleId].multiplicationDoc[_documentHash].weight = _weight;
-            turtles[_turtleId].multiplicationDoc[_documentHash].gender = _gender;
-            turtles[_turtleId].multiplicationDoc[_documentHash].locationSpecification = _locationSpecification;
-            turtles[_turtleId].multiplicationDoc[_documentHash].multiplicationMethod = _multiplicationMethod;
-            turtles[_turtleId].multiplicationDoc[_documentHash].shelterSpecification = _shelterSpecification;
-        }
+
+        Turtle storage newTurtle = turtles[_turtleId];
+        newTurtle.multiplicationDoc[_documentHash].applicant = _applicant;
+        newTurtle.multiplicationDoc[_documentHash].count = _count;
+        newTurtle.multiplicationDoc[_documentHash].area = _area;
+        newTurtle.multiplicationDoc[_documentHash].purpose = _purpose;
+        newTurtle.multiplicationDoc[_documentHash].location = _location;
+        newTurtle.multiplicationDoc[_documentHash].fatherId = _fatherId;
+        newTurtle.multiplicationDoc[_documentHash].motherId = _motherId;
+        newTurtle.multiplicationDoc[_documentHash].birth = _birth;
+        newTurtle.multiplicationDoc[_documentHash].name = _name;
+        newTurtle.multiplicationDoc[_documentHash].weight = _weight;
+        newTurtle.multiplicationDoc[_documentHash].gender = _gender;
+        newTurtle.multiplicationDoc[_documentHash].locationSpecification = _locationSpecification;
+        newTurtle.multiplicationDoc[_documentHash].multiplicationMethod = _multiplicationMethod;
+        newTurtle.multiplicationDoc[_documentHash].shelterSpecification = _shelterSpecification;
+        newTurtle.turtleHash = _turtleHash;
+        newTurtle.exists = true;
+
+        ownerToTurtleIds[_applicant].push(_turtleId);
+
         emit TurtleMultiplication(_turtleId, _applicant, _documentHash);
 
         return _documentHash;
@@ -280,5 +271,12 @@ contract TurtleDocumentation is Ownable {
     // 가장 최근 서류 조회(양도 및 양수 기록이 없는 경우에는 인공증식 서류 해시값 반환)
     function searchCurrentDocumentHash(string memory _turtleId) public view returns (bytes32) {
         return turtles[_turtleId].currentDocumentHash;
+    }
+
+    // 거북이 검증
+    function turtleValid(string memory _turtleId, bytes32 _hash) public view returns (bool) {
+        require(turtles[_turtleId].exists, "Turtle does not exist");
+
+        return turtles[_turtleId].turtleHash == _hash;
     }
 }
