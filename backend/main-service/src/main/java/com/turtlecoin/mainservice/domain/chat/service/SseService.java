@@ -1,5 +1,7 @@
 package com.turtlecoin.mainservice.domain.chat.service;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -26,13 +28,14 @@ public class SseService {
 	private void sendToClient(Long id, Object data) {
 		SseEmitter emitter = emitterRepository.get(id);
 		if (emitter != null) {
-			try {
-				emitter.send(SseEmitter.event().id(String.valueOf(id)).name("sse").data(data));
-			}
-			catch (Exception e) {
-				emitterRepository.deleteById(id);
-			 	emitter.completeWithError(e);
-			}
+			CompletableFuture.runAsync(() -> {
+				try {
+					emitter.send(SseEmitter.event().id(String.valueOf(id)).name("sse").data(data));
+				} catch (Exception e) {
+					emitter.completeWithError(e);
+					emitterRepository.deleteById(id);
+				}
+			});
 		}
 	}
 

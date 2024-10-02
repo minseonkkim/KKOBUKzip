@@ -2,6 +2,7 @@ package com.turtlecoin.mainservice.domain.chat.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.turtlecoin.mainservice.domain.chat.dto.ChatListDto;
 import com.turtlecoin.mainservice.domain.chat.dto.ChatResponseDto;
 import com.turtlecoin.mainservice.domain.chat.dto.ChatTextResponseDto;
 import com.turtlecoin.mainservice.domain.chat.dto.ChatTurtleResponseDto;
@@ -23,6 +25,7 @@ import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
 import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.domain.transaction.exception.TransactionNotFoundException;
+import com.turtlecoin.mainservice.global.exception.InvalidChattingException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,10 +43,10 @@ public class ChatService {
 		UserResponseDTO bigUser = userService.getByUserId(bigUserId);
 
 		Chat chat = Chat.builder()
-			.smallUser(smallUserId)
-			.bigUser(bigUserId)
-			.recentTime(null)
+			.participants(Arrays.asList(smallUserId, bigUserId))
+			.recentMessage(ChatTextMessage.builder().text(null).sender(null).registTime(null).build())
 			.messages(new ArrayList<>())
+			.unreadCount(Arrays.asList(0, 0))
 			.build();
 
 		chatRepository.save(chat);
@@ -51,10 +54,10 @@ public class ChatService {
 		return chat.getId();
 	}
 
-	public boolean isChatExists(Long smallUserId, Long bigUserId) {
-		Optional<Chat> chatOptional = chatRepository.findBySmallUserAndBigUser(smallUserId, bigUserId);
-		return chatOptional.isPresent();
-	}
+	// public boolean isChatExists(Long smallUserId, Long bigUserId) {
+	// 	Optional<Chat> chatOptional = chatRepository.findBySmallUserAndBigUser(smallUserId, bigUserId);
+	// 	return chatOptional.isPresent();
+	// }
 
 	public ChatTextMessage addChatTextMessage(Long smallUserId, Long bigUserId, Long sender, String message) throws Exception{
 		ChatTextMessage chatTextMessage = ChatTextMessage.builder()
@@ -64,6 +67,7 @@ public class ChatService {
 			.registTime(LocalDateTime.now().toString())
 			.build();
 		chatRepository.insertBySmallUserAndBigUser(smallUserId, bigUserId, chatTextMessage);
+		chatRepository.updateRecentChatting(smallUserId, bigUserId, chatTextMessage);
 
 		return chatTextMessage;
 	}
@@ -144,4 +148,34 @@ public class ChatService {
 			.collect(Collectors.toList());
 	}
 
+	public List<ChatListDto> listMyChats(Long userId, Pageable pageable) throws Exception {
+		List<Chat> chatList = chatRepository.findRecentChatsByUser(userId, pageable.getPageNumber(), pageable.getPageNumber());
+
+		return chatList.stream().map((chat) -> {
+			Long left; Long right;
+			Long otherUserId; Integer myUnreadCount; ChatTextMessage chatTextMessage;
+
+			try{
+				left = chat.participants.get(0); right = chat.participants.get(1);
+				otherUserId = left == userId ? right : left;
+				myUnreadCount = left == userId ? chat.unreadCount.get(0) : chat.unreadCount.get(1);
+				chatTextMessage = chat.getRecentMessage();
+			}
+			catch(Exception e){
+				throw new InvalidChattingException("저장된 채팅 데이터에 문제가 있습니다.");
+			}
+
+			UserResponseDTO userResponseDTO = userService.getByUserId(otherUserId);
+
+			return ChatListDto.builder()
+				.chattingId(chat.getId())
+				.otherUserId(otherUserId)
+				.otherUserNickname(userResponseDTO.getNickname())
+				.otherUserProfileImage(userResponseDTO.getProfileImage())
+				.lastMessage(chatTextMessage.getText())
+				.lastMessageTime(chatTextMessage.getRegistTime())
+				.unreadCount(myUnreadCount)
+				.build();
+		}).toList();
+	}
 }

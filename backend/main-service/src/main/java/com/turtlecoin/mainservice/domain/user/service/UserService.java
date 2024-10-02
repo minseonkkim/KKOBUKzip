@@ -95,6 +95,7 @@ public class UserService {
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .name(user.getName())
+                .profileImage(user.getProfileImage())
                 .build();
     }
 

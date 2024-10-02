@@ -10,5 +10,5 @@ import com.turtlecoin.mainservice.domain.chat.entity.Chat;
 
 @Repository
 public interface ChatRepository extends MongoRepository<Chat, ObjectId>, CustomChatRepository {
-	Optional<Chat> findBySmallUserAndBigUser(Long smallUser, Long bigUser);
+	// Optional<Chat> findBySmallUserAndBigUser(Long smallUser, Long bigUser);
 }
