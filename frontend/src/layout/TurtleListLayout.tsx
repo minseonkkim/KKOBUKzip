@@ -89,7 +89,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
 
       <Header />
       <main className="h-screen flex flex-col pt-[85px] px-4 lg:px-[250px]">
-        <div className="flex flex-col md:flex-row items-center justify-between pt-0 lg:pt-[32px] pb-[5px] lg:pb-[13px]">
+        <div className="flex flex-col md:flex-row items-center justify-between pt-0 lg:pt-[18px] pb-[5px] lg:pb-[13px]">
           <div className="whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 mb-2 md:mb-0">
             {title}
           </div>

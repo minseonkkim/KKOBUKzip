@@ -84,8 +84,8 @@ function MyPage() {
         <title>마이페이지</title>
       </Helmet>
       <Header />
-      <main className="flex flex-col h-[100vh] overflow-hidden px-4 lg:px-[250px] pt-[85px]">
-        <div className="flex flex-row justify-between items-center mt-0 lg:mt-[30px] px-[23px] py-[15px] bg-gradient-to-r from-[#e7f6d1] via-[#d5e5bd] to-[#e7f6d1] rounded-[20px]">
+      <main className="flex flex-col h-[100vh] overflow-hidden px-4 lg:px-[250px] pt-[78px]">
+        <div className="flex flex-row justify-between items-center mt-0 lg:mt-[30px] px-[23px] py-[18px] bg-gradient-to-r from-[#e7f6d1] via-[#d5e5bd] to-[#e7f6d1] rounded-[20px]">
           <div className="w-1/2">
             <div className="font-dnf-bitbit text-[#4B721F] text-[24px] md:text-[27px] mt-1 mb-2 md:mb-5">
               내 정보

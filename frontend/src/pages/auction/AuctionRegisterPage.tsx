@@ -78,7 +78,7 @@ export default function AuctionRegisterPage() {
 
       <Header />
 
-      <main className="px-4 lg:px-[250px] mt-[85px]">
+      <main className="px-4 lg:px-[250px] mt-[72px]">
         <h1 className="text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-0 lg:pt-[32px] pb-[13px]">
           경매 등록하기
         </h1>

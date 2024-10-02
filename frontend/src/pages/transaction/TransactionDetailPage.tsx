@@ -91,7 +91,7 @@ function TransactionDetailPage() {
       </Suspense>
 
       <div className="px-4 lg:px-[250px] mt-[85px]">
-        <div className="cursor-pointer whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit pt-0 lg:pt-[32px] pb-[13px]">
+        <div className="cursor-pointer whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit pt-0 lg:pt-[18px] pb-[13px]">
           <span onClick={goBack}>&lt;&nbsp;판매중인 거북이</span>
         </div>
         <div className="h-full md:h-[675px] flex flex-col md:flex-row justify-between mt-[10px]">
