@@ -4,13 +4,16 @@ import com.turtlecoin.auctionservice.feign.MainClient;
 import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -18,6 +21,9 @@ import java.util.Map;
 public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
 
     private final MainClient mainClient;
+    private final RedisTemplate redisTemplate;
+    private static final String AUCTION_END_KEY_PREFIX = "auction_end_";
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
@@ -45,5 +51,15 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
         // 핸드셰이크 이후 처리
+        // 경매 ID 추출
+        String auctionId = request.getURI().getQuery().split("=")[2];  // 실제로는 더 안전한 방법 필요
+
+        // Redis에서 경매 남은 시간 가져오기
+        Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX + auctionId, TimeUnit.MILLISECONDS);
+
+        if (remainingTime != null && remainingTime > 0) {
+            // 클라이언트에게 남은 시간 전송
+            messagingTemplate.convertAndSend("/topic/auction/" + auctionId, "남은 시간: " + remainingTime + " ms");
+        }
     }
 }
