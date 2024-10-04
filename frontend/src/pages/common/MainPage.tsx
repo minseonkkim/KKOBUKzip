@@ -61,11 +61,14 @@ function MainPage() {
         <div className="img-box-center">
           <img
             src={BackgroundImg}
+            srcSet={`${BackgroundImg} 768w, ${BackgroundImg} 1024w, ${BackgroundImg} 1280w`}
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="absolute inset-0 w-full h-[100vh] object-cover object-center"
             loading="lazy"
             alt="Background"
             draggable="false"
           />
+
         </div>
 
         {showTurtle && (
