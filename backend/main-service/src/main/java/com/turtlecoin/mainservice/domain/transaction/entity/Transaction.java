@@ -52,8 +52,11 @@ public class Transaction extends BaseEntity {
     private Boolean auctionFlag;
 
     // 구매자 아이디 추가(조회를 위해서)
-    @Column(name = "buyer_id")
+    @Column(name = "buyer_id", nullable = true)
     private Long buyerId;
+
+    @Column(name="buyer_uuid", nullable = true)
+    private String buyerUuid;
 
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     @Column(name = "transaction_photos")
@@ -66,7 +69,9 @@ public class Transaction extends BaseEntity {
 
 
     @Transactional
-    public void changeStatusToReviewDocument() {
+    public void changeStatusToReviewDocument(Long id, String uuid) {
+        this.buyerId = id;
+        this.buyerUuid = uuid;
         this.progress = TransactionProgress.REVIEW_DOCUMENT;
     }
 
@@ -80,6 +85,9 @@ public class Transaction extends BaseEntity {
 
         return DetailTransactionResponseDto.builder()
                 .transactionId(this.id)
+                .buyerId(this.getBuyerId())
+                .buyerUuid(this.getBuyerUuid())
+                .sellerUuid(this.turtle.getUser().getUuid())
                 .sellerId(this.turtle.getUser().getId()) // Seller ID
                 .sellerName(this.turtle.getUser().getName()) // Seller Name
                 .turtleId(this.turtle.getId()) // Turtle ID
@@ -98,8 +106,8 @@ public class Transaction extends BaseEntity {
                 .sellerImageUrl(this.turtle.getUser().getProfileImage())
                 .title(this.title)
                 .sellerAddress(this.turtle.getUser().getAddress())
-                .sellerAddress(this.turtle.getUser().getUuid())
                 .turtleUuid(this.turtle.getUuid())
+                .documentHash(this.documentHash)
                 .build();
     }
 }

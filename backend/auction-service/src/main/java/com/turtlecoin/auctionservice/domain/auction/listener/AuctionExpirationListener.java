@@ -26,12 +26,13 @@ import java.util.Map;
 public class AuctionExpirationListener implements MessageListener {
 
     private static final String AUCTION_END_KEY_PREFIX = "auction_end_";
-//    private final AuctionService auctionService;
+    private final SimpMessagingTemplate messagingTemplate;
     private final SendService sendService;
     private final AuctionRepository auctionRepository;
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
+        ResponseVO<Object> response;
         String expiredKey = new String(message.getBody());
         log.info("Expired key received: {}", expiredKey);
 
@@ -44,6 +45,10 @@ public class AuctionExpirationListener implements MessageListener {
             } catch (Exception e) {
                 // 에러 발생 시 경매 전으로 상태 갱신
                 auction.updateStatus(AuctionProgress.BEFORE_AUCTION);
+
+                response = ResponseVO.failure("50000", "예상치 못한 문제가 발생했습니다.");
+                messagingTemplate.convertAndSend("/sub/auction/" + auctionId, response);
+
                 log.error("경매 종료 처리 중 오류 발생: auctionId = {}, error = {}", auctionId, e.getMessage());
             }
         }
