@@ -1,17 +1,27 @@
+import { useParams } from "react-router-dom"
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import { addAuctionItem } from "../../apis/tradeApi";
 
+
 export default function AuctionRegisterPage() {
   const [images, setImages] = useState<File[]>([]);
+  const { turtleId } = useParams<{ turtleId: number }>(); 
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [minBid, setMinBid] = useState("");
   const [startTime, setStartTime] = useState("");
+  const [title, setTitle] = useState("");
+  type Turtle = {
+    imageUrl : String,
+    name: String,
+    gender: String,
+    date: Date
+  }
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length + images.length > 3) {
@@ -34,9 +44,13 @@ export default function AuctionRegisterPage() {
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(formatNumberWithCommas(e.target.value));
-    setMinBid(formatNumberWithCommas(e.target.value));
-    // setMinBid(e.target.value);
+    const { name, value } = e.target;
+  
+    if (name === "min_bid") {
+      setMinBid(formatNumberWithCommas(value));
+    } else if (name === "title") {
+      setTitle(value);
+    }
   };
 
   const handleGenderClick = (tag: string) => {
@@ -50,22 +64,28 @@ export default function AuctionRegisterPage() {
   const submitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = {
-      title: "params으로 넘겨받을 이름",
-      turtleId: "params으로 넘겨받은 아이디",
-      userId: "store에서 가져온 유저아이디",
+      title: title,
+      turtleId: turtleId,
+      userId: localStorage.getItem("accessToken"),
       content: e.currentTarget.content.value,
       minBid: minBid.replace(/,/g, ""),
       startTime: startTime,
-      tags: [selectedGender, selectedSize],
+      auctionTags: [selectedGender, selectedSize],
+      sellerAddress:"temporary seller address"
     };
 
     const formData = new FormData();
     images.forEach((image) => {
       formData.append("images", image);
     });
-    formData.append("data", JSON.stringify(data));
-
-    console.log(data);
+    formData.append(
+      'data',
+      new Blob([JSON.stringify(data)],{
+        type:'application/json'
+      })
+    )
+    
+    console.log(formData);
 
     await addAuctionItem(formData);
     alert("서브밋 핸들");
@@ -158,7 +178,7 @@ export default function AuctionRegisterPage() {
               className="md:w-[540px] lg:w-[400px] xl:w-[540px] w-[270px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
               type="text"
               name="title"
-              onInput={handleInputChange}
+              onChange={handleInputChange}
               required
             />
           </div>
