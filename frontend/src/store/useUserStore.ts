@@ -8,9 +8,8 @@ interface UserStore {
   setLogin: (userInfo: UserInfo) => void;
   setLogout: () => void;
   setIsLogin: (isLogin: boolean) => void;
-  setProfileImage: (newProfileImage: string) => void;  // 여기에 추가
+  setProfileImage: (newProfileImage: string) => void; // 여기에 추가
 }
-
 
 export const useUserStore = create<UserStore>()(
   persist(
@@ -18,10 +17,13 @@ export const useUserStore = create<UserStore>()(
       userInfo: null,
       isLogin: false,
 
-      setLogin: (userInfo: UserInfo) => {
-        return set({
+      setLogin: (userInfo: UserInfo) =>
+        set({
           userInfo: {
             userId: userInfo.userId,
+            uuid: userInfo.uuid,
+            name: userInfo.name,
+            birth: userInfo.birth,
             email: userInfo.email,
             address: userInfo.address,
             phoneNumber: userInfo.phoneNumber,
@@ -30,8 +32,7 @@ export const useUserStore = create<UserStore>()(
             role: userInfo.role,
           },
           isLogin: true,
-        });
-      },
+        }),
       setLogout: () => {
         set({ userInfo: null, isLogin: false });
         localStorage.clear();
@@ -44,12 +45,12 @@ export const useUserStore = create<UserStore>()(
           if (state.userInfo) {
             return {
               userInfo: {
-                ...state.userInfo,  // 기존 userInfo를 복사하고
-                profileImage: newProfileImage,  // profileImage만 업데이트
+                ...state.userInfo, // 기존 userInfo를 복사하고
+                profileImage: newProfileImage, // profileImage만 업데이트
               },
             };
           }
-          return {};  // userInfo가 null인 경우 아무것도 하지 않음
+          return {}; // userInfo가 null인 경우 아무것도 하지 않음
         });
       },
     }),
