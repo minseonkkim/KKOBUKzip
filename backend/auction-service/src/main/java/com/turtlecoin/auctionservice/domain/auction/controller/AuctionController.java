@@ -65,7 +65,7 @@ public class AuctionController {
     }
 
     // 경매 등록
-    @PostMapping
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> registerAuction(
             @RequestPart("data") RegisterAuctionDTO registerAuctionDTO,
             @RequestPart(value = "images", required = false) List<MultipartFile> multipartFiles) {
