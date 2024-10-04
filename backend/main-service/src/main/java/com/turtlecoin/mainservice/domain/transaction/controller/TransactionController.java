@@ -8,8 +8,10 @@ import com.turtlecoin.mainservice.domain.transaction.service.TransactionService;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
 import com.turtlecoin.mainservice.domain.user.entity.User;
+import com.turtlecoin.mainservice.domain.user.exception.UserNotFoundException;
 import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.domain.user.service.JWTService;
+import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import org.springframework.data.domain.Page;
@@ -24,17 +26,21 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/main/transaction")
 public class TransactionController {
     private final TransactionService transactionService;
-    private final JWTUtil jwtUtil;
     private final TransactionRepository transactionRepository;
-    public TransactionController(TransactionService transactionService, JWTUtil jwtUtil, TransactionRepository transactionRepository) {
+    private final JWTService jwtService;
+    private final TurtleRepository turtleRepository;
+
+    public TransactionController(TransactionService transactionService, JWTService jwtService, TransactionRepository transactionRepository, UserService userService, TurtleRepository turtleRepository) {
         this.transactionService = transactionService;
-        this.jwtUtil = jwtUtil;
         this.transactionRepository = transactionRepository;
+        this.jwtService = jwtService;
+        this.turtleRepository = turtleRepository;
     }
 
     @GetMapping("/test")
@@ -72,9 +78,17 @@ public class TransactionController {
         try{
             Transaction transaction = transactionRepository.findById(transactionId)
                     .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 거래 ID입니다."));
-            transaction.changeStatusToReviewDocument(jwtUtil.getIdFromToken(token), jwtUtil.getUuidFromToken(token));
+            token = token.split(" ")[1];
+            Long userId = jwtService.getIdFromToken(token);
+            String userUUID = jwtService.getUUIDFromToken(token);
+            if(userId==null||userUUID==null){
+                throw new UserNotFoundException("유효한 토큰이 아닙니다.");
+            }
+            transaction.changeStatusToReviewDocument(userId,userUUID);
             transactionRepository.save(transaction);
             return new ResponseEntity<>(ResponseVO.success("거래 상태가 정상적으로 업데이트되었습니다."), HttpStatus.OK);
+        } catch(UserNotFoundException e){
+            return new ResponseEntity<>(ResponseVO.failure("401",e.getMessage()), HttpStatus.UNAUTHORIZED);
         } catch (IllegalArgumentException e) {
             // 거래 ID가 유효하지 않을 때 처리
             return new ResponseEntity<>(ResponseVO.failure("400","거래 ID가 유효하지 않습니다."), HttpStatus.BAD_REQUEST);
@@ -85,10 +99,18 @@ public class TransactionController {
     }
 
     @PatchMapping("/end/{transactionId}")
-    public ResponseEntity<?> endTransaction(@PathVariable("transactionId") Long transactionId)  {
+    public ResponseEntity<?> endTransaction(
+            @RequestHeader("Authorization") String token,
+            @PathVariable("transactionId") Long transactionId)  {
         try{
             Transaction transaction = transactionRepository.findById(transactionId)
                     .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 거래 ID입니다."));
+            Optional<User> user = jwtService.getUserByToken(token);
+            if(user.isEmpty()||!user.get().getUuid().equals(transaction.getBuyerUuid())){
+                throw new UserNotFoundException("유효한 토큰 요청이 아닙니다.");
+            }
+            transaction.getTurtle().turtleTransfer(user.get());
+            turtleRepository.save(transaction.getTurtle());
             transaction.changeStatusToCompleteDocument();
             transactionRepository.save(transaction);
             return new ResponseEntity<>(ResponseVO.success("거래 상태가 정상적으로 업데이트되었습니다."), HttpStatus.OK);
