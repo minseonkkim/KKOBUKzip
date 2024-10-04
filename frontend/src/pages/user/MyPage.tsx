@@ -22,8 +22,7 @@ import { EscrowDummy } from "../../fixtures/escrowDummy";
 import { getMyTransaction, patchProfileImage } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
 function MyPage() {
-  
-    const profileImages = [
+  const profileImages = [
     CustomProfile1,
     CustomProfile2,
     CustomProfile3,

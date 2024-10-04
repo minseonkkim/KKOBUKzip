@@ -243,7 +243,7 @@ export default function TransactionRegisterPage() {
                 </span>
                 <span
                   className={`whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[17px] ${
-                    selectedGender === "#수컷"
+                    selectedGender === "#미분류"
                       ? "bg-[#D5F0DD] text-[#065F46]"
                       : "bg-gray-300 text-gray-600"
                   }`}
