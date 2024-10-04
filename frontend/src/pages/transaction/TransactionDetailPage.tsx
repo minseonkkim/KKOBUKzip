@@ -7,7 +7,7 @@ import { getTransactionDetailItemData } from "../../apis/tradeApi";
 import { TransactionItemDetailType } from "../../types/transaction";
 import formatDate from "../../utils/formatDate";
 import { useUserStore } from "../../store/useUserStore";
-import tmpProfileImg from "../../assets/tmp_profile.gif";
+// import tmpProfileImg from "../../assets/tmp_profile.gif";
 import { FaAngleLeft } from "@react-icons/all-files/fa/FaAngleLeft";
 import { FaAngleRight } from "@react-icons/all-files/fa/FaAngleRight";
 
@@ -68,10 +68,12 @@ function TransactionDetailPage() {
   };
 
   const handleDeposit = async () => {
-    // await createTransaction(isAuction, transactionId, sellerAddress, amount);
+    await createTransaction(transactionData!.transactionId, transactionData!.sellerAddress, ~~(transactionData!.price), transactionData!.turtleUuid, userInfo!.uuid, transactionData!.sellerUuid);
+    // 
     alert(
       "결제가 완료되었습니다. 마이페이지로 이동하여 서류 작성을 진행해 주세요!"
     );
+    navigate("/mypage");
   };
 
   const openChat = () => {

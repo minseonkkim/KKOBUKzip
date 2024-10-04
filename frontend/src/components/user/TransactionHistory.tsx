@@ -9,11 +9,12 @@ import { useUserStore } from "../../store/useUserStore";
 import useChatStore from "../../store/useChatStore";
 
 interface TransactionHistoryProps {
-    isAuction: boolean;
+    auctionFlag: boolean;
     turtleId: number;
+    turtleUuid: string;
     transactionId: number;
-    buyerId: number;
     sellerId: number;
+    sellerUuid: string;
     sellerName: string;
     sellerAddress: string;
     transactionTag: string[];
@@ -26,29 +27,14 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
     const { openChatDetail } = useChatStore();
     const { createTransaction, releaseFunds } = useEscrowStore();
     const { account } = useWeb3Store();
-    // const [transactionState, setTransactionState] = useState<number | null>(null);
-    
-    // useEffect(() => {
-    //     const fetchTransactionDetails = async () => {
-    //         if (props.transactionId) {
-    //             await getTransactionDetails(props.isAuction!, props.transactionId);
-    //             const details = useEscrowStore.getState().transactionDetails;
-    //             if (details) {
-    //                 setTransactionState(details.state);
-    //             }
-    //         }
-    //     };
-
-    //     fetchTransactionDetails();
-    // }, [props.isAuction, props.transactionId, getTransactionDetails]);
 
     const handleDeposit = async () => {
         if (account && props.transactionId !== undefined && props.sellerAddress && props.amount !== undefined) {
-            const isFinish = await createTransaction(props.transactionId, props.sellerAddress, props.amount, String(props.turtleId), String(props.buyerId), String(props.sellerId));
+            const isFinish = await createTransaction(props.transactionId, props.sellerAddress, ~~(props.amount), props.turtleUuid!, userInfo!.uuid, props.sellerUuid!);
             if (isFinish) {
                 alert("거래 대금 송금이 완료되었습니다. 서류 작성을 진행해 주세요.")
             } else {
-                alert("거래 대금 송금해 실패했습니다. 다시 시도해 주세요.")
+                alert("거래 대금 송금이 실패했습니다. 다시 시도해 주세요.")
             }
         } else {
             console.error("Missing required props for createTransaction");
@@ -56,8 +42,6 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
     };
 
     const startPaperwork = () => {
-        // 서류 페이지로 넘어가는 로직
-        // 여기에 구매자(양수인), 판매자(양도인) 여부에 따라 네비게이트하는 로직 구체화
         if (userInfo?.userId === props.sellerId) {
             navigate("/doc-form/grant", { state: { turtleId: props.turtleId, transactionId: props.transactionId }})
             console.log("Navigate to seller paperwork page");
@@ -94,13 +78,7 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
   };
 
     return <>
-        {props.isAuction? 
-        // 경매
-        <div>
-
-        </div> 
-        // 판매
-        : <div className="w-full border-[2px] rounded-[20px] p-[15px] bg-[#f8f8f8] flex flex-col md:flex-row lg:flex-col xl:flex-row">
+        <div className="w-full border-[2px] rounded-[20px] p-[15px] bg-[#f8f8f8] flex flex-col md:flex-row lg:flex-col xl:flex-row">
             <div className="flex flex-row">
                 <img src={TmpTurtleImg} className="w-[130px] lg:w-[200px] h-[130px] lg:h-[150px] rounded-[10px] object-cover" draggable="false" alt="turtle image"/>
                 <div className="flex flex-col justify-between w-[460px] ml-[20px]">
@@ -188,7 +166,7 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
                 <div className="w-[20px] h-[20px] left-[298px] top-[59px] absolute bg-[#aeaeae] rounded-full border border-black" />
                 </div>
             </div>
-        </div>}
+        </div>
         
     </>
 }
