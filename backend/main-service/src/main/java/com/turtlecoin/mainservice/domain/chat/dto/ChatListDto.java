@@ -11,7 +11,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class ChatListDto {
-	ObjectId chattingId;
+	String chattingId;
 	Long otherUserId;
 	String otherUserNickname;
 	String otherUserProfileImage;

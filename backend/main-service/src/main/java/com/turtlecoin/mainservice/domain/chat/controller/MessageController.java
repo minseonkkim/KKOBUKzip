@@ -25,7 +25,7 @@ public class MessageController {
 	private final UserService userService;
 
 	// (/pub/main/{chattingID})
-	@MessageMapping("/main/{chattingId}")// 해당 경매 참가자들에게만 메시지 전송
+	@MessageMapping("/main/{chattingId}")
 	public void sendMessage(@DestinationVariable String chattingId, ChatRequestDto chatRequestDto) {
 		Long userId = chatRequestDto.getUserId();
 		String message = chatRequestDto.getMessage();

@@ -9,8 +9,8 @@ RUN npm install
 COPY . .
 
 ENV VITE_BASE_URL=https://j11c107.p.ssafy.io/api
-ENV VITE_SSE_MAIN_URL=https://j11c107.p.ssafy.io
-ENV VITE_SSE_AUCTION_URL=https://j11c107.p.ssafy.io
+ENV VITE_SSE_MAIN_URL=https://j11c107.p.ssafy.io/main/notifications/sse/subscribe
+ENV VITE_SSE_AUCTION_URL=https://j11c107.p.ssafy.io/auction/sse/subscribe
 ENV VITE_SOCKET_MAIN_URL=wss://j11c107.p.ssafy.io/ws/main
 ENV VITE_SOCKET_AUCTION_URL=wss://j11c107.p.ssafy.io/ws/auction
 
