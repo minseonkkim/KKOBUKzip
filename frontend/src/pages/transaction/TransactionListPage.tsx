@@ -14,6 +14,7 @@ const TransactionListPage = () => {
   const fetchData = useCallback(
     async (page: number, filters: object, isSearch?: boolean) => {
       const result = await getTransactionData({ page, ...filters });
+
       if (result.success) {
         const progressItems: JSX.Element[] = [];
         const transactionItems = result.data.data.data.transactions.map(
