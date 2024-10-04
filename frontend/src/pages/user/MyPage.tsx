@@ -22,7 +22,11 @@ import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
 import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 
 // import { EscrowDummy } from "../../fixtures/escrowDummy";
-import { getMyTransaction, getMyTurtle, patchProfileImage } from "../../apis/userApi";
+import {
+  getMyTransaction,
+  getMyTurtle,
+  patchProfileImage,
+} from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
 import { TurtleDataType } from "../../types/turtle";
 function MyPage() {
@@ -45,21 +49,22 @@ function MyPage() {
   const [turtleData, setTurtleData] = useState<TurtleDataType[]>([]);
   const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
-  const [myTransactions, setMyTransactions] = useState<TransactionItemDataType[]>([]);
+  const [myTransactions, setMyTransactions] = useState<
+    TransactionItemDataType[]
+  >([]);
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
   // const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } = EscrowDummy.data.data.transactions[0];
 
   useEffect(() => {
     const init = async () => {
-      const response = (await getMyTransaction())
-      if(response.success) {
-        setMyTransactions(response.data!.data.transaction)
+      const response = await getMyTransaction();
+      if (response.success) {
+        setMyTransactions(response.data!.data.transaction);
       }
     };
     init();
 
-    
     const fetchTurtleData = async () => {
       try {
         const response = await getMyTurtle();
@@ -71,8 +76,6 @@ function MyPage() {
     };
 
     fetchTurtleData();
-
-
   }, []);
   const openCustomModal = () => {
     setIsCustomModalOpen(true);
@@ -92,33 +95,32 @@ function MyPage() {
     setProfileImage(profileImages[randomNumber]);
   };
   const changeProfileImage = async () => {
-  if (!profileImage) {
-    console.error('Profile image is not defined');
-    return; 
-  }
-  const response = await fetch(profileImage);
-  const blob = await response.blob();
-  const imageName = profileImage.split('/').pop() || 'default.gif';
-  // blob의 MIME 타입을 명시적으로 image/gif로 변환
-  const gifBlob = blob.slice(0, blob.size, 'image/gif');
-  const file = new File([gifBlob], imageName, { type: 'image/gif' });
-  try {
-    const result = await patchProfileImage(file);
-    const newProfileImageUrl = result.data?.data.url;
-    
-    if (newProfileImageUrl) {
-    useUserStore.getState().setProfileImage(newProfileImageUrl);
-    // 모달 닫기
-    closeCustomModal();
-    console.log("프로필사진 업데이트 완료:", newProfileImageUrl);
-  } else {
-    console.error('No valid profile image URL found in response:', result);
-  }
-    
-  } catch (error) {
-    console.error('Error uploading image:', error);
-  }
-}
+    if (!profileImage) {
+      console.error("Profile image is not defined");
+      return;
+    }
+    const response = await fetch(profileImage);
+    const blob = await response.blob();
+    const imageName = profileImage.split("/").pop() || "default.gif";
+    // blob의 MIME 타입을 명시적으로 image/gif로 변환
+    const gifBlob = blob.slice(0, blob.size, "image/gif");
+    const file = new File([gifBlob], imageName, { type: "image/gif" });
+    try {
+      const result = await patchProfileImage(file);
+      const newProfileImageUrl = result.data?.data.url;
+
+      if (newProfileImageUrl) {
+        useUserStore.getState().setProfileImage(newProfileImageUrl);
+        // 모달 닫기
+        closeCustomModal();
+        console.log("프로필사진 업데이트 완료:", newProfileImageUrl);
+      } else {
+        console.error("No valid profile image URL found in response:", result);
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
+  };
   return (
     <>
       <Helmet>
@@ -172,67 +174,52 @@ function MyPage() {
         </div>
         <div className="overflow-y-auto flex-1 mb-4">
           {/* 거래내역 */}
-          {selectedMenu === 0 && (
+          {selectedMenu === 0 &&
             // 거래 내역이 있을 경우
-            myTransactions.length !== 0 ? (
+            (myTransactions.length !== 0 ? (
               <div className="flex flex-col space-y-3">
-              {/* <TransactionHistory
-                turtleId={turtleId}
-                transactionId={transactionId}
-                sellerId={sellerId}
-                transactionTag={transactionTag}
-                sellerName={sellerName}
-                sellerAddress={sellerAddress}
-                amount={price}
-              />
-              <TransactionHistory
-                turtleId={turtleId}
-                transactionId={transactionId}
-                sellerId={sellerId}
-                transactionTag={transactionTag}
-                sellerName={sellerName}
-                sellerAddress={sellerAddress}
-                amount={price}
-              />
-              <TransactionHistory
-                turtleId={turtleId}
-                transactionId={transactionId}
-                sellerId={sellerId}
-                transactionTag={transactionTag}
-                sellerName={sellerName}
-                sellerAddress={sellerAddress}
-                amount={price}
-              /> */}
-              {myTransactions.map((item) => (
-                <TransactionHistory
-                  key={item.transactionId}
-                  auctionFlag={item.auctionFlag}
-                  turtleId={item.turtleId}
-                  turtleUuid={item.turtleUuid}
-                  transactionId={item.transactionId}
-                  sellerId={item.sellerId}
-                  sellerUuid={item.sellerUuid}
-                  sellerName={item.sellerName}
-                  sellerAddress={item.sellerAddress}
-                  transactionTag={item.transactionTag}
-                  amount={item.price}
-                />
+                {myTransactions.map((item) => (
+                  <TransactionHistory
+                    key={item.transactionId}
+                    auctionFlag={item.auctionFlag}
+                    turtleId={item.turtleId}
+                    turtleUuid={item.turtleUuid}
+                    transactionId={item.transactionId}
+                    sellerId={item.sellerId}
+                    sellerUuid={item.sellerUuid}
+                    sellerName={item.sellerName}
+                    sellerAddress={item.sellerAddress}
+                    transactionTag={item.transactionTag}
+                    amount={item.price}
+                  />
                 ))}
-            </div>
+              </div>
             ) : (
               // 거래내역이 없을 경우
               <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
-                <img src={NoImage} className="w-[200px] mb-7" draggable="false" />
-                <div className="text-[25px] font-bold text-center font-stardust">거래 내역이 없어요.</div>
+                <img
+                  src={NoImage}
+                  className="w-[200px] mb-7"
+                  draggable="false"
+                />
+                <div className="text-[25px] font-bold text-center font-stardust">
+                  거래 내역이 없어요.
+                </div>
               </div>
-            )
-          )}
+            ))}
           {/* 나의 거북이 */}
           {selectedMenu === 1 && (
             // 나의 거북이가 있을 경우
             <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
               {turtleData.map((turtle) => (
-                <MyTurtle key={turtle.id} name={turtle.name} scientificName={turtle.scientificName} gender={turtle.gender} weight={turtle.weight} birth={turtle.birth}/>
+                <MyTurtle
+                  key={turtle.id}
+                  name={turtle.name}
+                  scientificName={turtle.scientificName}
+                  gender={turtle.gender}
+                  weight={turtle.weight}
+                  birth={turtle.birth}
+                />
               ))}
             </div>
           )}
@@ -260,7 +247,10 @@ function MyPage() {
                   랜덤 뽑기
                 </div>
               </div>
-              <button className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white" onClick={changeProfileImage}>
+              <button
+                className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white"
+                onClick={changeProfileImage}
+              >
                 수정하기
               </button>
             </div>
