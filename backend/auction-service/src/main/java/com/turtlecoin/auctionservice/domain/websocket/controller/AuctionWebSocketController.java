@@ -41,23 +41,28 @@ public class AuctionWebSocketController {
                     ResponseVO.failure("409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요."));
         } catch (AuctionNotFoundException e) {
             log.error("경매를 찾을 수 없습니다: auctionId = {}, userId = {}", auctionId, userId, e);
-            messagingTemplate.convertAndSend("/sub/auction/" + auctionId,
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
                     ResponseVO.failure("404", "해당 경매를 찾을 수 없습니다."));
         } catch (SameUserBidException e) {
             log.error("동일 사용자의 재입찰 시도: auctionId = {}, userId = {}", auctionId, userId, e);
-            messagingTemplate.convertAndSend("/sub/auction/" + auctionId,
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
                     ResponseVO.failure("400", e.getMessage()));
         } catch (AuctionAlreadyFinishedException e) {
             log.error("이미 종료된 경매: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount, e);
-            messagingTemplate.convertAndSend("/sub/auction/" + auctionId,
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
                     ResponseVO.failure("400", e.getMessage()));
         } catch (WrongBidAmountException e) {
             log.error("잘못된 입찰 금액: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount, e);
-            messagingTemplate.convertAndSend("/sub/auction/" + auctionId,
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
                     ResponseVO.failure("400", e.getMessage()));
         } catch (Exception e) {
             log.error("입찰 처리 중 예상치 못한 오류 발생: auctionId = {}, userId = {}", auctionId, userId, e);
-            messagingTemplate.convertAndSend("/sub/auction/" + auctionId,
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
                     ResponseVO.failure("500", "입찰 처리 중 오류가 발생했습니다."));
         }
     }

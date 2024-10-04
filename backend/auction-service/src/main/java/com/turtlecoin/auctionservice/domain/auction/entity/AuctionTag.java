@@ -21,5 +21,9 @@ public class AuctionTag extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_id", nullable = false)
     private Auction auction;
+
+    public AuctionTag(String tag) {
+        this.tag = tag;
+    }
 }
 

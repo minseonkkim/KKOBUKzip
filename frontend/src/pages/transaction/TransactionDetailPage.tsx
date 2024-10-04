@@ -68,12 +68,15 @@ function TransactionDetailPage() {
   };
 
   const handleDeposit = async () => {
-    await createTransaction(transactionData!.transactionId, transactionData!.sellerAddress, ~~(transactionData!.price), transactionData!.turtleUuid, userInfo!.uuid, transactionData!.sellerUuid);
-    // 
-    alert(
-      "결제가 완료되었습니다. 마이페이지로 이동하여 서류 작성을 진행해 주세요!"
-    );
-    navigate("/mypage");
+    const result = await createTransaction(transactionData!.transactionId, transactionData!.sellerAddress, ~~(transactionData!.price), transactionData!.turtleUuid, userInfo!.uuid, transactionData!.sellerUuid);
+    
+    if (result) {
+      alert("거래 대금 송금이 완료되었습니다. 마이페이지로 이동하여 서류 작성을 진행해 주세요!");
+      navigate("/mypage");
+    } else {
+      alert("거래 대금 송금이 실패했습니다. 다시 시도해 주세요.")
+    }
+    
   };
 
   const openChat = () => {
@@ -128,11 +131,11 @@ function TransactionDetailPage() {
                     {formatDate(transactionData.createDate ?? "")} |{" "}
                     {transactionData.weight}kg
                   </div>
-                  <div className="flex flex-row space-x-2">
+                  <div className="flex flex-row space-x-1">
                     {transactionData.transactionTag.map((tag, index) => (
                       <span
                         key={index}
-                        className="whitespace-nowrap px-2 py-1 rounded-full text-[16px] bg-[#D5F0DD] text-[#065F46]"
+                        className="whitespace-nowrap px-2 py-1 rounded-full text-[15px] bg-[#D5F0DD] text-[#065F46]"
                       >
                         #{tag}
                       </span>
@@ -174,10 +177,10 @@ function TransactionDetailPage() {
                         판매가&nbsp;&nbsp;
                       </div>
                       <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
-                      <div className="text-[31px] md:text-[39px]">
-                        {Math.floor(8000000).toLocaleString()} 
-                      </div>
-                      <div className="text-[27px] md:text-[29px]">TURT</div>
+                        <div className="text-[31px] md:text-[39px]">
+                          {Math.floor(8000000).toLocaleString()} 
+                        </div>
+                        <div className="text-[27px] md:text-[29px]">TURT</div>
                       </div>
                     </div>
 

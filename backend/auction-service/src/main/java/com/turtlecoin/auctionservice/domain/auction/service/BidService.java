@@ -55,6 +55,7 @@ public class BidService {
     @Transactional
     public void processBidWithRedis(Long auctionId, Long userId, Double bidAmount) {
         // 1. 경매 시작 및 상태 확인
+        log.info("경매 시작 안했으면 강제로 시작, AuctionID : {}", auctionId);
         startAuctionIfNotStarted(auctionId);
 
         // 2. 현재 경매와 입찰 정보를 확인하고 유효성을 검증
@@ -62,14 +63,15 @@ public class BidService {
         Long currentUserId = getCurrentBidUserId(auctionId, auction);
         Double currentBid = getCurrentBidAmount(auctionId, auction);
 
-        // 3. 입찰 검증 로직
-        validateBid(auctionId, userId, bidAmount, currentUserId, currentBid);
+//        // 3. 입찰 검증 로직
+//        validateBid(auctionId, userId, bidAmount, currentUserId, currentBid);
 
         // 4. 입찰 정보 갱신
         Double newBidAmount = updateBidInfo(auctionId, userId, bidAmount);
-
+        log.info("입찰 정보 갱신 완료");
         // 5. 클라이언트에게 최신 입찰 정보 전송
         notifyClientWithBidInfo(auctionId, userId, bidAmount, newBidAmount);
+        log.info("클라이언트에게 입찰 정보 전송 완료");
     }
 
     private Auction getAuction(Long auctionId) {
@@ -80,8 +82,11 @@ public class BidService {
     private void startAuctionIfNotStarted(Long auctionId) {
         Auction auction = getAuction(auctionId);
         if (auction.getAuctionProgress() == AuctionProgress.BEFORE_AUCTION) {
+            log.info("경매 강제로 시작시키기");
             startAuction(auctionId);
+            return;
         }
+        log.info("경매 이미 진행중");
     }
 
     private Long getCurrentBidUserId(Long auctionId, Auction auction) {
@@ -130,6 +135,7 @@ public class BidService {
     }
 
     private Double updateBidInfo(Long auctionId, Long userId, Double bidAmount) {
+        log.info("입찰 갱신 로직 진입");
         Double bidIncrement = calculateBidIncrement(bidAmount);
         Double newBidAmount = bidAmount + bidIncrement;
 
@@ -141,25 +147,27 @@ public class BidService {
 
         redisTemplate.opsForHash().putAll(redisKey, bidData);
         resetAuctionEndTime(auctionId);
+        log.info("경매 마감 시간 갱신");
 
         return newBidAmount;
     }
 
     private void notifyClientWithBidInfo(Long auctionId, Long userId, Double bidAmount, Double newBidAmount) {
+        log.info("유저 닉네임 가져오기 시도");
         String userNickname = userService.getUserNicknameById(userId);
         log.info("userNickname: {}", userNickname);
 
-        Double remainingTime = getAuctionRemainingTime(auctionId);
+        log.info("잔여시간 가져오기");
         BidMessage bidRecord = BidMessage.builder()
                 .userId(userId)
                 .nickname(userNickname)
                 .auctionId(auctionId)
                 .bidAmount(bidAmount)
                 .nextBid(newBidAmount)
-                .remainingTime(remainingTime)
                 .build();
-
+        log.info("BidRecord : {}", bidRecord);
         notifyClient(auctionId, bidRecord, false, null);
+        log.info("유저들에게 전송 완료");
     }
 
 //    private void updateAuctionEndTime(Long auctionId, LocalDateTime localDateTime) {
