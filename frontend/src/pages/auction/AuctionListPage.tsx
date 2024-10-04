@@ -6,9 +6,12 @@ import { useCallback, useState } from "react";
 const AuctionListPage = () => {
   const [isProgressItem, setIsProgressItem] = useState(false);
 
-  const fetchData = useCallback((page: number, filters: object) => {
-    return getAuctionDatas({ page, ...filters });
-  }, []);
+  const fetchData = useCallback(
+    (page: number, filters: object, isSearch?: boolean) => {
+      return getAuctionDatas({ page, ...filters });
+    },
+    []
+  );
 
   const auctionItems = [<AuctionTurtle key={0} />, <AuctionTurtle key={1} />];
   const progressFilter = () => {
