@@ -101,11 +101,13 @@ public class UserController {
         User user = jwtService.getUserByToken(token).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
         return new UserResponseDTO(
                 user.getId(),
+                user.getUuid(),
                 user.getNickname(),
-                user.getName(),
                 user.getEmail(),
-                user.getProfileImage(),
-                user.getUuid()
+                user.getName(),
+                user.getAddress(),
+                user.getBirth(),
+                user.getProfileImage()
         );
     }
 
