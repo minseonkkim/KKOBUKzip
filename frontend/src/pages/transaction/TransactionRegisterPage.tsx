@@ -6,6 +6,7 @@ import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
 import { ChangeEvent, useState } from "react";
 import { addTransactionItem } from "../../apis/tradeApi";
 import formatDate from "../../utils/formatDate";
+import { useWeb3Store } from "../../store/useWeb3Store";
 
 import { useWeb3Store } from "../../store/useWeb3Store";
 import { useLocation } from "react-router-dom";
@@ -27,6 +28,7 @@ export default function TransactionRegisterPage() {
   const [images, setImages] = useState<File[]>([]);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const { account } = useWeb3Store();
 
   const [transactionData, setTransactionData] = useState({
     weight: "",
@@ -85,7 +87,7 @@ export default function TransactionRegisterPage() {
     console.log(turtleData);
 
     const formData = new FormData();
-    
+
     const newTransactionData = {
       title: transactionData.title,
       content: transactionData.content,
@@ -107,11 +109,11 @@ export default function TransactionRegisterPage() {
 
     try {
       const response = await addTransactionItem(formData);
-      console.log('Transaction added successfully:', response);
+      console.log("Transaction added successfully:", response);
       // 성공 처리 (예: 사용자에게 성공 메시지 표시, 페이지 리디렉션 등)
     } catch (error) {
-      console.error('Error adding transaction:', error);
-      alert("새로운 거래 생성에 실패했습니다. 다시 시도해 주세요.")
+      console.error("Error adding transaction:", error);
+      alert("새로운 거래 생성에 실패했습니다. 다시 시도해 주세요.");
     }
   };
   const gender = {
