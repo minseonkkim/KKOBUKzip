@@ -113,8 +113,15 @@ public class UserController {
 
     @GetMapping("/{userId}")
     // 유저 없을 때 에러 던져주기
-    public UserResponseDTO getUserById(@PathVariable Long userId) {
+    public UserResponseDTO getUserById(@PathVariable("userId") Long userId) {
         return userService.getByUserId(userId);
+    }
+
+    @GetMapping("/{userId}/turtle")
+    // 유저 없을 때 에러 던져주기
+    public List<FeignTurtleResponseDTO> getTurtlesByUserId(@PathVariable("userId") Long userId) {
+        // 유저 없을 때 에러 던져주기
+        return userService.getTurtlesdtoByUserId(userId);
     }
 
     @GetMapping("/nickname")
