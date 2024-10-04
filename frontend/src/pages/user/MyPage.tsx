@@ -18,11 +18,9 @@ import CustomProfile11 from "../../../public/custom_profile/profile11.gif";
 import CustomProfile12 from "../../../public/custom_profile/profile12.gif";
 import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
 import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
-
 import { EscrowDummy } from "../../fixtures/escrowDummy";
 import { getMyTransaction, patchProfileImage } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
-
 function MyPage() {
   
     const profileImages = [
@@ -47,22 +45,18 @@ function MyPage() {
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
   const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } =
     EscrowDummy.data.data.transactions[0];
-
   useEffect(() => {
     const init = async () => {
       (await getMyTransaction()).data?.data.transaction;
     };
     init();
   }, []);
-
   const openCustomModal = () => {
     setIsCustomModalOpen(true);
   };
-
   const closeCustomModal = () => {
     setIsCustomModalOpen(false);
   };
-
   const handleCustomOverlayClick = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
@@ -70,35 +64,27 @@ function MyPage() {
       closeCustomModal();
     }
   };
-
   const getRandomProfileImage = () => {
     const randomNumber = Math.floor(Math.random() * profileImages.length);
     setProfileImage(profileImages[randomNumber]);
   };
-
   const changeProfileImage = async () => {
   if (!profileImage) {
     console.error('Profile image is not defined');
     return; 
   }
-
   const response = await fetch(profileImage);
   const blob = await response.blob();
   const imageName = profileImage.split('/').pop() || 'default.gif';
-
   // blob의 MIME 타입을 명시적으로 image/gif로 변환
   const gifBlob = blob.slice(0, blob.size, 'image/gif');
   const file = new File([gifBlob], imageName, { type: 'image/gif' });
-
-
   try {
     const result = await patchProfileImage(file);
-
     const newProfileImageUrl = result.data?.data.url;
     
     if (newProfileImageUrl) {
     useUserStore.getState().setProfileImage(newProfileImageUrl);
-
     // 모달 닫기
     closeCustomModal();
     console.log("프로필사진 업데이트 완료:", newProfileImageUrl);
@@ -110,7 +96,6 @@ function MyPage() {
     console.error('Error uploading image:', error);
   }
 }
-
   return (
     <>
       <Helmet>
@@ -144,7 +129,6 @@ function MyPage() {
             </button>
           </div>
         </div>
-
         <div className="mt-[25px] text-[21px] lg:text-[23px] flex flex-row cursor-pointer mb-[10px] font-stardust">
           <div
             className={`w-1/2 lg:w-[130px] h-[42px] border-b-[4px] text-center ${
@@ -196,14 +180,12 @@ function MyPage() {
                 amount={price}
               />
             </div>
-
             // 거래내역이 없을 경우
             // <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
             //   <img src={NoImage} className="w-[200px] mb-7" draggable="false" />
             //   <div className="text-[25px] font-bold text-center font-stardust">거래 내역이 없어요.</div>
             // </div>
           )}
-
           {/* 나의 거북이 */}
           {selectedMenu === 1 && (
             // 나의 거북이가 있을 경우
@@ -216,7 +198,6 @@ function MyPage() {
           )}
         </div>
       </main>
-
       {isCustomModalOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100000]"
@@ -239,7 +220,6 @@ function MyPage() {
                   랜덤 뽑기
                 </div>
               </div>
-
               <button className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white" onClick={changeProfileImage}>
                 수정하기
               </button>
@@ -250,5 +230,4 @@ function MyPage() {
     </>
   );
 }
-
 export default MyPage;
