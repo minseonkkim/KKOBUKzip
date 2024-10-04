@@ -13,5 +13,4 @@ public class BidMessage {
     private String nickname;
     private Double bidAmount;
     private Double nextBid;
-    private Double remainingTime;
 }
