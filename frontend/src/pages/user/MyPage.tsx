@@ -21,7 +21,6 @@ import CustomProfile12 from "../../../public/custom_profile/profile12.gif";
 import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
 import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 
-// import { EscrowDummy } from "../../fixtures/escrowDummy";
 import {
   getMyTransaction,
   getMyTurtle,
@@ -214,11 +213,13 @@ function MyPage() {
               {turtleData.map((turtle) => (
                 <MyTurtle
                   key={turtle.id}
+                  turtleId={turtle.id}
                   name={turtle.name}
                   scientificName={turtle.scientificName}
                   gender={turtle.gender}
                   weight={turtle.weight}
                   birth={turtle.birth}
+                  imageAddress={turtle.imageAddress!}
                 />
               ))}
             </div>
