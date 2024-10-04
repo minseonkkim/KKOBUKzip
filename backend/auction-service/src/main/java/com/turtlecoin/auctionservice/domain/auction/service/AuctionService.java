@@ -188,6 +188,8 @@ public class AuctionService {
             // null값일 때 어떻게 하지?
             Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX + auctionId, TimeUnit.MILLISECONDS);
 
+            log.info("RemainingTime : {}", remainingTime);
+
             AuctionResponseDTO data = AuctionResponseDTO.from(auction, turtle, user, remainingTime);
             return new ResponseEntity<>(ResponseVO.success("경매가 정상적으로 조회되었습니다.", "auction", data), HttpStatus.OK);
         } catch (AuctionNotFoundException e) {
