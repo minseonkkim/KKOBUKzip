@@ -1,7 +1,5 @@
 package com.turtlecoin.auctionservice.domain.auction.controller;
 
-import com.turtlecoin.auctionservice.domain.auction.dto.AuctionFilterResponseDTO;
-import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
