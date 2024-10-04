@@ -7,6 +7,8 @@ import { ChangeEvent, useState } from "react";
 import { addTransactionItem } from "../../apis/tradeApi";
 import formatDate from "../../utils/formatDate";
 
+import { account } from "../../store/useWeb3Store";
+
 const turtleData = {
   id: 1,
   name: "꼬집이",
@@ -80,8 +82,32 @@ export default function TransactionRegisterPage() {
     console.log(turtleData);
 
     const formData = new FormData();
+    
+    const newTransactionData = {
+      title: transactionData.title,
+      content: transactionData.content,
+      price: price,
+      turtleId: 1,
+      sellerAddress: account,
+      transactionTags: [selectedGender, selectedSize],
+    }
+    const blob = new Blob([JSON.stringify(newTransactionData)], {
+      type: "application/json",
+    });
 
-    const response = await addTransactionItem(formData);
+    formData.append("data", blob);
+    images.forEach((image) => {
+      formData.append(`transactionPhotos`, image);
+    });
+
+    try {
+      const response = await addTransactionItem(formData);
+      console.log('Transaction added successfully:', response);
+      // 성공 처리 (예: 사용자에게 성공 메시지 표시, 페이지 리디렉션 등)
+    } catch (error) {
+      console.error('Error adding transaction:', error);
+      alert("새로운 거래 생성에 실패했습니다. 다시 시도해 주세요.")
+    }
   };
   const gender = {
     MALE: "수컷",
