@@ -1,34 +1,22 @@
+import { ChangeEvent, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
-import { ChangeEvent, useState } from "react";
 import { addTransactionItem } from "../../apis/tradeApi";
 import formatDate from "../../utils/formatDate";
 import { useWeb3Store } from "../../store/useWeb3Store";
 
-import { useWeb3Store } from "../../store/useWeb3Store";
-import { useLocation } from "react-router-dom";
-
-const turtleData = {
-  id: 1,
-  name: "꼬집이",
-  scientificName: "페닐슐라쿠터 ",
-  gender: "MALE", // 암컷 : w , 수컷 : m
-  weight: 10,
-  birth: "2024-09-03 01:01:01",
-  dead: false,
-  imageAddress: "http://dkfdsfsd",
-};
 
 export default function TransactionRegisterPage() {
-  const { account } = useWeb3Store();
   const { state } = useLocation();
+  const navigate = useNavigate();
+  const { account } = useWeb3Store();
   const [images, setImages] = useState<File[]>([]);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const { account } = useWeb3Store();
 
   const [transactionData, setTransactionData] = useState({
     weight: "",
@@ -36,6 +24,7 @@ export default function TransactionRegisterPage() {
     content: "",
   });
   const [price, setPrice] = useState("");
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []); // 파일 리스트를 배열로 변환
     if (files.length + images.length > 3) {
@@ -79,15 +68,9 @@ export default function TransactionRegisterPage() {
   const submitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
     alert("submit");
     e.preventDefault();
-    console.log(transactionData);
-    console.log(price);
-    console.log(images);
-    console.log(selectedGender);
-    console.log(selectedSize);
-    console.log(turtleData);
 
     const formData = new FormData();
-
+    
     const newTransactionData = {
       title: transactionData.title,
       content: transactionData.content,
@@ -96,8 +79,6 @@ export default function TransactionRegisterPage() {
       sellerAddress: account,
       transactionTags: [selectedGender, selectedSize],
     }
-    console.log('------------------------------------------')
-    console.log(newTransactionData)
     const blob = new Blob([JSON.stringify(newTransactionData)], {
       type: "application/json",
     });
@@ -110,7 +91,10 @@ export default function TransactionRegisterPage() {
     try {
       const response = await addTransactionItem(formData);
       console.log("Transaction added successfully:", response);
-      // 성공 처리 (예: 사용자에게 성공 메시지 표시, 페이지 리디렉션 등)
+      
+      // 성공 처리
+      alert(`${state.name}(이)의 거래 등록이 완료되었습니다.`)
+      navigate("/mypage");
     } catch (error) {
       console.error("Error adding transaction:", error);
       alert("새로운 거래 생성에 실패했습니다. 다시 시도해 주세요.");
@@ -143,7 +127,7 @@ export default function TransactionRegisterPage() {
               {state.name}
             </div>
             <div className="text-gray-600 text-[18px] md:text-[21px]">
-              {gender[turtleData.gender as "MALE" | "FEMALE" | "NONE"]} |{" "}
+              {gender[state.gender as "MALE" | "FEMALE" | "NONE"]} |{" "}
               {formatDate(state.birth)}생
             </div>
           </div>
