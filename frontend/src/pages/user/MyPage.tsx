@@ -21,6 +21,7 @@ import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 import { EscrowDummy } from "../../fixtures/escrowDummy";
 import { getMyTransaction, patchProfileImage } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
+import { TransactionItemDataType } from "../../types/transaction";
 function MyPage() {
   const profileImages = [
     CustomProfile1,
@@ -42,11 +43,25 @@ function MyPage() {
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
-  const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } =
-    EscrowDummy.data.data.transactions[0];
+  // const {
+  //   transactionId,
+  //   sellerName,
+  //   sellerId,
+  //   transactionTag,
+  //   turtleId,
+  //   sellerAddress,
+  //   price,
+  // } = EscrowDummy.data.data.transactions[0];
+  const [data, setData] = useState<TransactionItemDataType[]>([]);
   useEffect(() => {
     const init = async () => {
-      (await getMyTransaction()).data?.data.transaction;
+      const { success, data, error } = await getMyTransaction();
+      if (success) {
+        setData(data!.data.transaction);
+        console.log(data);
+      } else {
+        alert(error);
+      }
     };
     init();
   }, []);
@@ -68,33 +83,32 @@ function MyPage() {
     setProfileImage(profileImages[randomNumber]);
   };
   const changeProfileImage = async () => {
-  if (!profileImage) {
-    console.error('Profile image is not defined');
-    return; 
-  }
-  const response = await fetch(profileImage);
-  const blob = await response.blob();
-  const imageName = profileImage.split('/').pop() || 'default.gif';
-  // blob의 MIME 타입을 명시적으로 image/gif로 변환
-  const gifBlob = blob.slice(0, blob.size, 'image/gif');
-  const file = new File([gifBlob], imageName, { type: 'image/gif' });
-  try {
-    const result = await patchProfileImage(file);
-    const newProfileImageUrl = result.data?.data.url;
-    
-    if (newProfileImageUrl) {
-    useUserStore.getState().setProfileImage(newProfileImageUrl);
-    // 모달 닫기
-    closeCustomModal();
-    console.log("프로필사진 업데이트 완료:", newProfileImageUrl);
-  } else {
-    console.error('No valid profile image URL found in response:', result);
-  }
-    
-  } catch (error) {
-    console.error('Error uploading image:', error);
-  }
-}
+    if (!profileImage) {
+      console.error("Profile image is not defined");
+      return;
+    }
+    const response = await fetch(profileImage);
+    const blob = await response.blob();
+    const imageName = profileImage.split("/").pop() || "default.gif";
+    // blob의 MIME 타입을 명시적으로 image/gif로 변환
+    const gifBlob = blob.slice(0, blob.size, "image/gif");
+    const file = new File([gifBlob], imageName, { type: "image/gif" });
+    try {
+      const result = await patchProfileImage(file);
+      const newProfileImageUrl = result.data?.data.url;
+
+      if (newProfileImageUrl) {
+        useUserStore.getState().setProfileImage(newProfileImageUrl);
+        // 모달 닫기
+        closeCustomModal();
+        console.log("프로필사진 업데이트 완료:", newProfileImageUrl);
+      } else {
+        console.error("No valid profile image URL found in response:", result);
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
+  };
   return (
     <>
       <Helmet>
@@ -151,33 +165,19 @@ function MyPage() {
           {selectedMenu === 0 && (
             // 거래 내역이 있을 경우
             <div className="flex flex-col space-y-3">
-              <TransactionHistory
-                turtleId={turtleId}
-                transactionId={transactionId}
-                sellerId={sellerId}
-                transactionTag={transactionTag}
-                sellerName={sellerName}
-                sellerAddress={sellerAddress}
-                amount={price}
-              />
-              <TransactionHistory
-                turtleId={turtleId}
-                transactionId={transactionId}
-                sellerId={sellerId}
-                transactionTag={transactionTag}
-                sellerName={sellerName}
-                sellerAddress={sellerAddress}
-                amount={price}
-              />
-              <TransactionHistory
-                turtleId={turtleId}
-                transactionId={transactionId}
-                sellerId={sellerId}
-                transactionTag={transactionTag}
-                sellerName={sellerName}
-                sellerAddress={sellerAddress}
-                amount={price}
-              />
+              {data.map((item) => (
+                <TransactionHistory
+                  key={item.transactionId}
+                  transactionImage={item.transactionImage[0]}
+                  turtleId={item.turtleId}
+                  transactionId={item.transactionId}
+                  sellerId={item.sellerId}
+                  transactionTag={item.transactionTag}
+                  sellerName={item.sellerName}
+                  sellerAddress={item.sellerAddress}
+                  amount={item.price}
+                />
+              ))}
             </div>
             // 거래내역이 없을 경우
             // <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
@@ -219,7 +219,10 @@ function MyPage() {
                   랜덤 뽑기
                 </div>
               </div>
-              <button className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white" onClick={changeProfileImage}>
+              <button
+                className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white"
+                onClick={changeProfileImage}
+              >
                 수정하기
               </button>
             </div>
