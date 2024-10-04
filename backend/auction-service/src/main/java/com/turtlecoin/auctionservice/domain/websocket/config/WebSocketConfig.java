@@ -16,14 +16,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/sub"); //메세지 받을 때 경로
-        config.setApplicationDestinationPrefixes("/pub"); //메세지 보낼 때 경로
+        config.enableSimpleBroker("/sub", "/queue"); // 메세지 받을 때 경로
+        config.setApplicationDestinationPrefixes("/pub"); // 메세지 보낼 때 경로
+        config.setUserDestinationPrefix("/user"); // user로 사용자 경로 구분
     }
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws/auction") //우리의 endpoint
-                .setAllowedOrigins("*");
-//                        .addInterceptors(handshakeInterceptor);
+                .setAllowedOrigins("*")
+                .addInterceptors(handshakeInterceptor);
         System.out.println("registry: "+registry);
 //                .addInterceptors(handshakeInterceptor); // 핸드셰이크 인터셉터 추가
     }
