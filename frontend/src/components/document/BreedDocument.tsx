@@ -25,7 +25,7 @@ function BreedDocument() {
     name: "",
     birth: null,
     weight: 0,
-    gender: "",
+    gender: "MALE",
   });
   const [shelterImg, setShelterImg] = useState<File | null>(null);
   const [locationImg, setLocationImg] = useState<File | null>(null);
@@ -63,6 +63,25 @@ function BreedDocument() {
     }
 
     const formData = new FormData();
+
+    // const locationImgBlob = new Blob([locationImg], {
+    //   type: locationImg.type,
+    // });
+    // formData.append("locationSpecification", locationImgBlob, locationImg.name);
+    // const multiplicationImgBlob = new Blob([multiplicationImg], {
+    //   type: multiplicationImg.type,
+    // });
+    // formData.append(
+    //   "multiplicationMethod",
+    //   multiplicationImgBlob,
+    //   multiplicationImg.name
+    // );
+
+    // const shelterImgBlob = new Blob([shelterImg], {
+    //   type: shelterImg.type,
+    // });
+    // formData.append("shelterSpecification", shelterImgBlob, shelterImg.name);
+
     formData.append("locationSpecification", locationImg);
     formData.append("multiplicationMethod", multiplicationImg);
     formData.append("shelterSpecification", shelterImg);
@@ -71,14 +90,22 @@ function BreedDocument() {
     // 적당히 useEffect 내부에서 detail에 반영하면 될 듯
     const breedData = {
       docType: "인공증식증명서",
-      applicant: "d271c7d8-3f7b-4d4e-8a9e-d60f896b84cb", // storage에서 긁어올 것
+      applicant: "abcd-1234-abcd", // storage에서 긁어올 것
       detail: {
         ...data,
+        weight: Number(data.weight),
+        motherUUID: "uuid-test-123",
+        fatherUUID: "uuid-test-456",
         location: postcodeData?.roadAddress + " / " + detailLocation,
         registerDate: new Date().toISOString().substring(0, 10),
       },
     };
-    formData.append("data", JSON.stringify(breedData));
+    const blob = new Blob([JSON.stringify(breedData)], {
+      type: "application/json",
+    });
+    console.log(JSON.stringify(breedData));
+    // formData.append("data", JSON.stringify(breedData));
+    formData.append("data", blob);
     // 데이터 보낼때 multipart로 적당히 던질것
     console.log(breedData);
 
@@ -87,7 +114,7 @@ function BreedDocument() {
 
   const handleGuide = () => {
     breedDoc.drive();
-  }
+  };
 
   return (
     <>
@@ -95,7 +122,12 @@ function BreedDocument() {
         <title>인공증식서류작성</title>
       </Helmet>
 
-      <button onClick={handleGuide} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">가이드 시작</button>
+      <button
+        onClick={handleGuide}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        가이드 시작
+      </button>
 
       {/* 허가 정보 */}
       <form onSubmit={sendBreedDocRequest}>
@@ -230,8 +262,9 @@ function BreedDocument() {
                 onChange={(evt) => changeHandle("gender", evt)}
                 className="cursor-pointer font-medium bg-gray-50 border border-gray text-gray-900 rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
-                <option value="수컷">수컷</option>
-                <option value="암컷">암컷</option>
+                <option value="MALE">수컷</option>
+                <option value="FEMALE">암컷</option>
+                <option value="NONE">미분류</option>
               </select>
             </div>
             <div className="flex items-center">
@@ -309,7 +342,7 @@ function BreedDocument() {
               >
                 보호시설 명세서{" "}
               </p>
-              <DocImgUpload id="setLocationImg" setImage={setLocationImg} />  
+              <DocImgUpload id="setLocationImg" setImage={setLocationImg} />
             </div>
 
             {/* <div>

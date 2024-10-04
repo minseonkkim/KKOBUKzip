@@ -106,6 +106,7 @@ export const createBreedDocumentRequest = async (data: FormData) => {
     authAxios.post(path + `/register/breed`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
+        // Accept: "application/json",
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
       timeout: 10000,

@@ -28,9 +28,9 @@ function LoginPage() {
     e.preventDefault();
     const { success, data, error } = await loginRequest(email, password);
     if (success) {
-      setLogin(data?.data!);
-      localStorage.setItem("accessToken", data?.data?.accessToken!);
-      localStorage.setItem("refreshToken", data?.data?.refreshToken!);
+      setLogin(data?.data?.data!);
+      localStorage.setItem("accessToken", data?.data?.data?.accessToken!);
+      localStorage.setItem("refreshToken", data?.data?.data?.refreshToken!);
       navigate("/");
     } else {
       console.log(error);
