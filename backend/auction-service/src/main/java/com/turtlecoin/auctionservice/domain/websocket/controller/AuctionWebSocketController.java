@@ -5,10 +5,7 @@ import com.turtlecoin.auctionservice.domain.auction.service.BidService;
 import com.turtlecoin.auctionservice.domain.websocket.dto.BidMessage;
 import com.turtlecoin.auctionservice.feign.MainClient;
 import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
-import com.turtlecoin.auctionservice.global.exception.AuctionAlreadyFinishedException;
-import com.turtlecoin.auctionservice.global.exception.AuctionNotFoundException;
-import com.turtlecoin.auctionservice.global.exception.SameUserBidException;
-import com.turtlecoin.auctionservice.global.exception.WrongBidAmountException;
+import com.turtlecoin.auctionservice.global.exception.*;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +34,11 @@ public class AuctionWebSocketController {
         try {
             redissonLockFacade.updateBidWithLock(auctionId, userId, bidAmount);
             log.info("입찰이 성공적으로 처리되었습니다: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount);
+        } catch (BidConcurrencyException e) {
+            log.error("경매를 찾을 수 없습니다: auctionId = {}, userId = {}", auctionId, userId, e);
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
+                    ResponseVO.failure("409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요."));
         } catch (AuctionNotFoundException e) {
             log.error("경매를 찾을 수 없습니다: auctionId = {}, userId = {}", auctionId, userId, e);
             messagingTemplate.convertAndSend("/sub/auction/" + auctionId,

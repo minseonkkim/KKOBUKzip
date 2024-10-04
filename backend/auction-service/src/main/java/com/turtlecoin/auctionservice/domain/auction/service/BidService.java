@@ -218,6 +218,12 @@ public class BidService {
         messagingTemplate.convertAndSendToUser(userId.toString(), destination, message);
     }
 
+    public void sendRemainingTimeToUser(Long userId, String auctionId, Long remainingTime) {
+        // 특정 사용자에게만 WebSocket 경로로 남은 시간 전송
+        String destination = "/user/" + userId + "/queue/auction/" + auctionId;
+        messagingTemplate.convertAndSendToUser(userId.toString(), destination, "남은 시간: " + remainingTime + " ms");
+    }
+
     // 경매 종료 시간 설정 및 TTL 적용
     public void setAuctionEndTime(Long auctionId, LocalDateTime endTime) {
         String key = AUCTION_END_KEY_PREFIX + auctionId;

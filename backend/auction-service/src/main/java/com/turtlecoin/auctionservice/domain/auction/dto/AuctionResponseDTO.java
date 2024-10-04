@@ -28,6 +28,7 @@ public class AuctionResponseDTO {
     private LocalDateTime endTime;
     private String content;
     private String progress;
+    private Long remainingTime;
     private List<AuctionTagDTO> tags;
 
     // 이미지 주소 리스트로 변경
@@ -36,7 +37,7 @@ public class AuctionResponseDTO {
     private TurtleResponseDTO turtleInfo;
     private UserResponseDTO userInfo;
 
-    public static AuctionResponseDTO from(Auction auction, TurtleResponseDTO turtleInfo, UserResponseDTO userInfo) {
+    public static AuctionResponseDTO from(Auction auction, TurtleResponseDTO turtleInfo, UserResponseDTO userInfo, Long remainingTime) {
         return AuctionResponseDTO.builder()
                 .id(auction.getId())
                 .turtleId(auction.getTurtleId())
@@ -50,6 +51,7 @@ public class AuctionResponseDTO {
                 .endTime(LocalDateTime.now())
                 .content(auction.getContent())
                 .sellerAddress(auction.getSellerAddress())
+                .remainingTime(remainingTime)
                 .progress(auction.getAuctionProgress().toString())
                 .tags(auction.getAuctionTags().stream()
                         .map(AuctionTagDTO::from)
