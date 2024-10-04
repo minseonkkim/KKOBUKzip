@@ -164,23 +164,15 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
         </div>
 
         <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
-          {/* {skeletonComponent} */}
-          {!initialLoad && items}
-          {initialLoad ||
-            (itemLoading && (
-              <>
-                <div className="hidden md:block col-span-1">
-                  <AuctionTurtleSkeleton />
-                </div>
-                <div className="hidden xl:block col-span-1">
-                  <AuctionTurtleSkeleton />
-                </div>
-                <div className="block col-span-1">
-                  <AuctionTurtleSkeleton />
-                </div>
-              </>
-            ))}
-          <div ref={ref} className="w-full h-[1px] col-span-full" />
+          {itemLoading ? (
+            <>
+              {Array(6).fill(null).map((_, index) => (
+                <AuctionTurtleSkeleton key={index} />
+              ))}
+            </>
+          ) : (
+            items
+          )}
         </div>
       </main>
     </>
