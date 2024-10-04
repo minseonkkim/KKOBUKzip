@@ -104,7 +104,8 @@ public class UserController {
                 user.getNickname(),
                 user.getName(),
                 user.getEmail(),
-                user.getProfileImage()
+                user.getProfileImage(),
+                user.getUuid()
         );
     }
 
