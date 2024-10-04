@@ -19,8 +19,9 @@ import CustomProfile12 from "../../../public/custom_profile/profile12.gif";
 import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
 import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 import { EscrowDummy } from "../../fixtures/escrowDummy";
-import { getMyTransaction, patchProfileImage } from "../../apis/userApi";
+import { getMyTransaction, getMyTurtle, patchProfileImage } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
+import { TurtleDataType } from "../../types/turtle";
 function MyPage() {
   
     const profileImages = [
@@ -39,17 +40,34 @@ function MyPage() {
     CustomProfile13,
     CustomProfile14,
   ];
+  const [turtleData, setTurtleData] = useState<TurtleDataType[]>([]);
   const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
   const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } =
     EscrowDummy.data.data.transactions[0];
+
   useEffect(() => {
     const init = async () => {
       (await getMyTransaction()).data?.data.transaction;
     };
     init();
+
+    
+    const fetchTurtleData = async () => {
+      try {
+        const response = await getMyTurtle();
+        setTurtleData(response.data.data.data.data);
+        console.log("거북이 목록", response.data.data.data.data);
+      } catch (error) {
+        console.error("Error fetching turtle data:", error);
+      }
+    };
+
+    fetchTurtleData();
+
+
   }, []);
   const openCustomModal = () => {
     setIsCustomModalOpen(true);
@@ -190,10 +208,9 @@ function MyPage() {
           {selectedMenu === 1 && (
             // 나의 거북이가 있을 경우
             <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-              <MyTurtle />
-              <MyTurtle />
-              <MyTurtle />
-              <MyTurtle />
+              {turtleData.map((turtle) => (
+                <MyTurtle key={turtle.id} name={turtle.name} scientificName={turtle.scientificName} gender={turtle.gender} weight={turtle.weight} birth={turtle.birth}/>
+              ))}
             </div>
           )}
         </div>

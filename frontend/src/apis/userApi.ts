@@ -175,7 +175,19 @@ interface CreateEmailRequestResponseData {
 // 하단은 내 정보 - 미작성
 //---------------------------
 
+
 // 내 거북이들 확인하기
+export const getMyTurtle = async () => {
+  return apiRequest(() =>
+    authAxios.get("/main/user/turtle", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      timeout: 10000,
+    })
+  );
+};
 
 // 내 거북이 상세 조회
 
@@ -192,7 +204,9 @@ const getMyTransaction = async () => {
   );
 };
 
+
 // 내 거래 내역 상세 조회
+
 
 // 프로필사진 수정
 interface Data{
