@@ -14,7 +14,11 @@ import AuctionTurtleSkeleton from "../components/skeleton/auction/AuctionTurtleS
 interface TurtleListLayoutProps {
   title: string;
   items: JSX.Element[];
-  fetchData: (page: number, filters: object) => Promise<any>;
+  fetchData: (
+    page: number,
+    filters: object,
+    isSearch?: boolean
+  ) => Promise<any>;
   isProgressItemChecked: boolean;
   setIsProgressItemChecked: () => void;
 }
@@ -78,7 +82,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
 
   const searchHandle = async () => {
     setPages(0);
-    await fetchData(0, filters);
+    await fetchData(0, filters, true);
     // console.log(filters);
   };
   return (
