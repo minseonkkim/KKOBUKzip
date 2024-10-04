@@ -17,6 +17,9 @@ public class DetailTransactionResponseDto {
     private String createDate;
     private String title;
     private String sellerImageUrl;
+    private String sellerUuid;
+    private String sellerAddress;
+    private String turtleUuid;
     private int weight;
     private String content;
     private List<String> transactionTag;  // 태그 목록

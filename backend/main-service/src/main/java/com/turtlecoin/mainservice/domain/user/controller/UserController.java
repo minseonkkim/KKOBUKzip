@@ -151,7 +151,7 @@ public class UserController {
                     throw new Exception("이미지 삭제 실패");
                 }
             }
-            
+
             String url = imageUploadService.upload(image,"user");
             user.get().modifyProfileImage(url);
             userRepository.save(user.get());
