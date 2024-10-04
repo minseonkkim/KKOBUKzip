@@ -1,47 +1,22 @@
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
-// import TmpProfileImg from "../../assets/tmp_profile.gif";
 import { useEffect, useState } from "react";
 import MyTurtle from "../../components/user/MyTurtle";
 import TransactionHistory from "../../components/user/TransactionHistory";
-// import NoImage from "../../assets/no_image.webp";
 import { FaRandom } from "@react-icons/all-files/fa/FaRandom";
-import CustomProfile1 from "../../../public/custom_profile/profile1.gif";
-import CustomProfile2 from "../../../public/custom_profile/profile2.gif";
-import CustomProfile3 from "../../../public/custom_profile/profile3.gif";
-import CustomProfile4 from "../../../public/custom_profile/profile4.gif";
-import CustomProfile5 from "../../../public/custom_profile/profile5.gif";
-import CustomProfile6 from "../../../public/custom_profile/profile6.gif";
-import CustomProfile7 from "../../../public/custom_profile/profile7.gif";
-import CustomProfile8 from "../../../public/custom_profile/profile8.gif";
-import CustomProfile9 from "../../../public/custom_profile/profile9.gif";
-import CustomProfile10 from "../../../public/custom_profile/profile10.gif";
-import CustomProfile11 from "../../../public/custom_profile/profile11.gif";
-import CustomProfile12 from "../../../public/custom_profile/profile12.gif";
-import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
-import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 
 import { EscrowDummy } from "../../fixtures/escrowDummy";
 import { getMyTransaction, patchProfileImage } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
 
 function MyPage() {
-    const profileImages = [
-    CustomProfile1,
-    CustomProfile2,
-    CustomProfile3,
-    CustomProfile4,
-    CustomProfile5,
-    CustomProfile6,
-    CustomProfile7,
-    CustomProfile8,
-    CustomProfile9,
-    CustomProfile10,
-    CustomProfile11,
-    CustomProfile12,
-    CustomProfile13,
-    CustomProfile14,
-  ];
+  const images = import.meta.glob('../../../public/custom_profile/*.gif', { eager: true });
+
+  // 가져온 이미지를 배열로 변환
+  const profileImages: string[] = Object.values(images).map((module) => {
+    return (module as { default: string }).default;
+  });
+
   const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const { userInfo } = useUserStore();
