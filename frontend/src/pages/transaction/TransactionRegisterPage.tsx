@@ -7,7 +7,8 @@ import { ChangeEvent, useState } from "react";
 import { addTransactionItem } from "../../apis/tradeApi";
 import formatDate from "../../utils/formatDate";
 
-import { account } from "../../store/useWeb3Store";
+import { useWeb3Store } from "../../store/useWeb3Store";
+import { useLocation } from "react-router-dom";
 
 const turtleData = {
   id: 1,
@@ -21,6 +22,8 @@ const turtleData = {
 };
 
 export default function TransactionRegisterPage() {
+  const { account } = useWeb3Store();
+  const { state } = useLocation();
   const [images, setImages] = useState<File[]>([]);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -86,11 +89,13 @@ export default function TransactionRegisterPage() {
     const newTransactionData = {
       title: transactionData.title,
       content: transactionData.content,
-      price: price,
-      turtleId: 1,
+      price: parseFloat(price),
+      turtleId: state.turtleId,
       sellerAddress: account,
       transactionTags: [selectedGender, selectedSize],
     }
+    console.log('------------------------------------------')
+    console.log(newTransactionData)
     const blob = new Blob([JSON.stringify(newTransactionData)], {
       type: "application/json",
     });
@@ -126,18 +131,18 @@ export default function TransactionRegisterPage() {
         </div>
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">
           <img
-            src={TmpTurtleImg}
+            src={state.imageAddress ? state.imageAddress : TmpTurtleImg}
             draggable="false"
             className="w-[150px] md:w-[170px] h-full object-cover rounded-[10px] mr-4 md:mr-8"
             alt="turtle image"
           />
           <div className="flex flex-col">
             <div className="text-[24px] md:text-[26px] font-bold mb-2">
-              {turtleData.name}
+              {state.name}
             </div>
             <div className="text-gray-600 text-[18px] md:text-[21px]">
               {gender[turtleData.gender as "MALE" | "FEMALE" | "NONE"]} |{" "}
-              {formatDate(turtleData.birth)}생
+              {formatDate(state.birth)}생
             </div>
           </div>
         </div>
