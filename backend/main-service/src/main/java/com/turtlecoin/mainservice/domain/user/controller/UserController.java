@@ -101,11 +101,20 @@ public class UserController {
         User user = jwtService.getUserByToken(token).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
         return new UserResponseDTO(
                 user.getId(),
+                user.getUuid(),
                 user.getNickname(),
-                user.getName(),
                 user.getEmail(),
+                user.getName(),
+                user.getAddress(),
+                user.getBirth(),
                 user.getProfileImage()
         );
+    }
+
+    @GetMapping("/{userId}")
+    // 유저 없을 때 에러 던져주기
+    public UserResponseDTO getUserById(@PathVariable Long userId) {
+        return userService.getByUserId(userId);
     }
 
     @GetMapping("/nickname")
@@ -151,7 +160,7 @@ public class UserController {
                     throw new Exception("이미지 삭제 실패");
                 }
             }
-            
+
             String url = imageUploadService.upload(image,"user");
             user.get().modifyProfileImage(url);
             userRepository.save(user.get());

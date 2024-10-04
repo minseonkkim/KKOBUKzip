@@ -13,19 +13,6 @@ function MainPage() {
   const [showTurtleMoving, setShowTurtleMoving] = useState(true);
   const [showContent, setShowContent] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
-  const [showTurtle, setShowTurtle] = useState(true);
-
-  const [scrollPosition, setScrollPosition] = useState(0);
-
-  // 스크롤 감지
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollPosition(window.scrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     const timers: NodeJS.Timeout[] = [];
@@ -61,6 +48,8 @@ function MainPage() {
         <div className="img-box-center">
           <img
             src={BackgroundImg}
+            srcSet={`${BackgroundImg} 768w, ${BackgroundImg} 1024w, ${BackgroundImg} 1280w`}
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="absolute inset-0 w-full h-[100vh] object-cover object-center"
             loading="lazy"
             alt="Background"
@@ -68,7 +57,7 @@ function MainPage() {
           />
         </div>
 
-        {showTurtle && (
+        {
           <img
             src={showTurtleMoving ? TurtleStop : TurtleMoving}
             loading="lazy"
@@ -79,7 +68,7 @@ function MainPage() {
             draggable="false"
             alt={showTurtleMoving ? "Turtle Stop" : "Turtle Moving"}
           />
-        )}
+        }
         <div className="absolute top-[170px] w-full text-center flex flex-col items-center">
           {showContent && (
             <div className="left-0 text-center flex flex-col items-center">
@@ -126,7 +115,6 @@ function MainPage() {
           )}
         </div>
       </div>
-
 
       <style>{`
         .turtle-animation {

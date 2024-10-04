@@ -59,7 +59,8 @@ const logoutRequest = async (): Promise<{
       {},
       {
         headers: {
-          "Refresh-Token": localStorage.getItem("refreshToken") || "",
+          "Refresh-Token":
+            "Bearer " + localStorage.getItem("refreshToken") || "",
         },
       }
     )
@@ -131,15 +132,20 @@ interface LoginResponseData {
   status: number;
   message: string;
   data: {
-    accessToken: string;
-    refreshToken: string;
-    role: string; // 유저는 user 관리자는 admin
-    userId: number;
-    email: string;
-    address: string;
-    phoneNumber: string;
-    nickname: string;
-    profileImage: string;
+    data: {
+      accessToken: string;
+      refreshToken: string;
+      role: string; // 유저는 user 관리자는 admin
+      userId: number;
+      email: string;
+      address: string;
+      phoneNumber: string;
+      nickname: string;
+      profileImage: string;
+      uuid: string;
+      name: string;
+      birth: string;
+    };
   };
 }
 
@@ -191,15 +197,19 @@ const getMyTransaction = async () => {
 
 // 내 거래 내역 상세 조회
 
-
-
-
 // 프로필사진 수정
+interface Data {
+  url: string;
+}
 export const patchProfileImage = async (profileImg: File) => {
   const formData = new FormData();
   formData.append("profileImage", profileImg);
 
-  const response = await apiRequest<{ status: number; message: string }>(() =>
+  const response = await apiRequest<{
+    status: number;
+    data: Data;
+    message: string;
+  }>(() =>
     authAxios.patch("/main/user/image", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -211,8 +221,6 @@ export const patchProfileImage = async (profileImg: File) => {
   return response;
 };
 
-
-
 export {
   registerRequest,
   loginRequest,
@@ -222,3 +230,4 @@ export {
   createEmailRequest,
   getMyTransaction,
 };
+

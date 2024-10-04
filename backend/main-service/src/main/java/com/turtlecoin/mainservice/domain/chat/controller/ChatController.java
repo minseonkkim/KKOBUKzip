@@ -1,6 +1,5 @@
 package com.turtlecoin.mainservice.domain.chat.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -60,7 +59,8 @@ public class ChatController {
 		return new ResponseEntity<>(ResponseVO.success("성공"), HttpStatus.OK);
 	}
 
-	@GetMapping("myList")
+	// 채팅창 목록 조회
+	@GetMapping("/{memberId}")
 	public ResponseEntity<?> listMyChats(@RequestHeader HttpHeaders header, Pageable pageable){
 		String accessToken = header.getFirst("Authorization").split("Bearer ")[1].split(" ")[0];
 		String userId = jwtUtil.getUsernameFromToken(accessToken);
@@ -72,7 +72,7 @@ public class ChatController {
 				return new ResponseEntity<>(ResponseVO.failure("404", "사용자를 찾을 수 없습니다."), HttpStatus.BAD_REQUEST);
 			}
 
-			list = chatService.listMyChats(user.getId(), pageable);
+			list = chatService.listChattingRoomList(user.getId(), pageable);
 		}
 		catch(IllegalArgumentException | TransactionNotFoundException e){
 			return new ResponseEntity<>(ResponseVO.failure("404", e.getMessage()), HttpStatus.NOT_FOUND);
@@ -83,6 +83,7 @@ public class ChatController {
 		return new ResponseEntity<>(ResponseSingle.success("채팅 기록 조회에 성공했습니다.", list), HttpStatus.OK);
 	}
 
+	// 채팅방 하나 디테일 조회
 	@GetMapping("/detail")
 	public ResponseEntity<?> listChatWithOpponent(@RequestHeader HttpHeaders header, @RequestParam("id") Long id, @RequestParam("type") String type ,Pageable pageable) {
 		String accessToken = header.getFirst("Authorization").split("Bearer ")[1].split(" ")[0];
@@ -97,10 +98,10 @@ public class ChatController {
 
 			if(type.equals("user")){
 				UserResponseDTO opponent = userService.getByUserId(id);
-				list = chatService.getChatListFromUser(user.getId(), id, pageable);
+				list = chatService.getChatDetailList(user.getId(), opponent.getUserId(), user.getId(), pageable);
 			}
 			else {
-				list = chatService.getChatListFromTransaction(user.getId(), id, pageable);
+				list = chatService.getChatListFromTransaction(user.getId(), id, user.getId(), pageable);
 			}
 
 		}

@@ -1,6 +1,5 @@
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
-// import TmpProfileImg from "../../assets/tmp_profile.gif";
 import { useEffect, useState } from "react";
 import MyTurtle from "../../components/user/MyTurtle";
 import TransactionHistory from "../../components/user/TransactionHistory";
@@ -25,9 +24,8 @@ import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 // import { EscrowDummy } from "../../fixtures/escrowDummy";
 import { getMyTransaction, patchProfileImage } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
-
 function MyPage() {
-    const profileImages = [
+  const profileImages = [
     CustomProfile1,
     CustomProfile2,
     CustomProfile3,
@@ -59,15 +57,12 @@ function MyPage() {
     };
     init();
   }, []);
-
   const openCustomModal = () => {
     setIsCustomModalOpen(true);
   };
-
   const closeCustomModal = () => {
     setIsCustomModalOpen(false);
   };
-
   const handleCustomOverlayClick = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
@@ -75,40 +70,38 @@ function MyPage() {
       closeCustomModal();
     }
   };
-
   const getRandomProfileImage = () => {
     const randomNumber = Math.floor(Math.random() * profileImages.length);
     setProfileImage(profileImages[randomNumber]);
   };
-
   const changeProfileImage = async () => {
   if (!profileImage) {
     console.error('Profile image is not defined');
     return; 
   }
-
   const response = await fetch(profileImage);
   const blob = await response.blob();
   const imageName = profileImage.split('/').pop() || 'default.gif';
-
   // blob의 MIME 타입을 명시적으로 image/gif로 변환
   const gifBlob = blob.slice(0, blob.size, 'image/gif');
   const file = new File([gifBlob], imageName, { type: 'image/gif' });
-
-  // 서버에 POST 요청 전송
   try {
-    const data = await patchProfileImage(file);
-    console.log('Upload successful:', file, data);
+    const result = await patchProfileImage(file);
+    const newProfileImageUrl = result.data?.data.url;
     
+    if (newProfileImageUrl) {
+    useUserStore.getState().setProfileImage(newProfileImageUrl);
     // 모달 닫기
     closeCustomModal();
-    console.log("프로필사진", userInfo?.profileImage);
+    console.log("프로필사진 업데이트 완료:", newProfileImageUrl);
+  } else {
+    console.error('No valid profile image URL found in response:', result);
+  }
     
   } catch (error) {
     console.error('Error uploading image:', error);
   }
 }
-
   return (
     <>
       <Helmet>
@@ -142,7 +135,6 @@ function MyPage() {
             </button>
           </div>
         </div>
-
         <div className="mt-[25px] text-[21px] lg:text-[23px] flex flex-row cursor-pointer mb-[10px] font-stardust">
           <div
             className={`w-1/2 lg:w-[130px] h-[42px] border-b-[4px] text-center ${
@@ -218,7 +210,6 @@ function MyPage() {
               </div>
             )
           )}
-
           {/* 나의 거북이 */}
           {selectedMenu === 1 && (
             // 나의 거북이가 있을 경우
@@ -231,7 +222,6 @@ function MyPage() {
           )}
         </div>
       </main>
-
       {isCustomModalOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100000]"
@@ -254,7 +244,6 @@ function MyPage() {
                   랜덤 뽑기
                 </div>
               </div>
-
               <button className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white" onClick={changeProfileImage}>
                 수정하기
               </button>
@@ -265,5 +254,4 @@ function MyPage() {
     </>
   );
 }
-
 export default MyPage;

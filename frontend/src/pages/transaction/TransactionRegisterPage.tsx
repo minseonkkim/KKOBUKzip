@@ -4,13 +4,31 @@ import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
 import { ChangeEvent, useState } from "react";
-import { registerRequest } from "../../apis/userApi";
+import { addTransactionItem } from "../../apis/tradeApi";
+import formatDate from "../../utils/formatDate";
+
+const turtleData = {
+  id: 1,
+  name: "꼬집이",
+  scientificName: "페닐슐라쿠터 ",
+  gender: "MALE", // 암컷 : w , 수컷 : m
+  weight: 10,
+  birth: "2024-09-03 01:01:01",
+  dead: false,
+  imageAddress: "http://dkfdsfsd",
+};
 
 export default function TransactionRegisterPage() {
   const [images, setImages] = useState<File[]>([]);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
+  const [transactionData, setTransactionData] = useState({
+    weight: "",
+    title: "",
+    content: "",
+  });
+  const [price, setPrice] = useState("");
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []); // 파일 리스트를 배열로 변환
     if (files.length + images.length > 3) {
@@ -42,13 +60,33 @@ export default function TransactionRegisterPage() {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.target.value = formatNumberWithCommas(e.target.value);
+    setPrice(e.target.value);
   };
 
-  const submitHandle = (e: React.FormEvent<HTMLFormElement>) => {
+  const changeHandle = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setTransactionData({ ...transactionData, [name]: value });
+  };
+  const submitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
     alert("submit");
     e.preventDefault();
+    console.log(transactionData);
+    console.log(price);
+    console.log(images);
+    console.log(selectedGender);
+    console.log(selectedSize);
+    console.log(turtleData);
+
     const formData = new FormData();
-    registerRequest(formData);
+
+    const response = await addTransactionItem(formData);
+  };
+  const gender = {
+    MALE: "수컷",
+    FEMALE: "암컷",
+    NONE: "미분류",
   };
   return (
     <>
@@ -69,10 +107,11 @@ export default function TransactionRegisterPage() {
           />
           <div className="flex flex-col">
             <div className="text-[24px] md:text-[26px] font-bold mb-2">
-              꼬부기
+              {turtleData.name}
             </div>
             <div className="text-gray-600 text-[18px] md:text-[21px]">
-              수컷 | 18년 3월 2일생
+              {gender[turtleData.gender as "MALE" | "FEMALE" | "NONE"]} |{" "}
+              {formatDate(turtleData.birth)}생
             </div>
           </div>
         </div>
@@ -87,6 +126,9 @@ export default function TransactionRegisterPage() {
               type="text"
               name="bid"
               onInput={handleInputChange}
+              value={price}
+              placeholder="판매가를 입력해주세요"
+              maxLength={15}
               required
             />
             TURT
@@ -98,12 +140,17 @@ export default function TransactionRegisterPage() {
               type="number"
               name="weight"
               required
+              value={transactionData.weight}
+              placeholder="체중을 입력해주세요"
+              maxLength={8}
+              pattern="[0-9]*"
+              onChange={changeHandle}
               onInput={(e) => {
                 const target = e.target as HTMLInputElement;
                 target.value = target.value.replace(/[^0-9]/g, "");
               }}
             />
-            kg
+            g
           </div>
 
           {/* 제목 30자 이내로만 입력할 수 있게 하기 */}
@@ -112,13 +159,21 @@ export default function TransactionRegisterPage() {
             <input
               className="md:w-[540px] w-[270px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
               type="text"
+              onChange={changeHandle}
               name="title"
+              maxLength={30}
+              placeholder="제목을 입력해주세요"
+              value={transactionData.title}
               required
             />
           </div>
           <div className="flex flex-row items-start">
             <label className="w-[108px] md:w-[120px]">상세 설명</label>
             <textarea
+              onChange={changeHandle}
+              name="content"
+              value={transactionData.content}
+              placeholder="상세 설명을 입력해주세요"
               rows={3}
               className="flex-grow text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
             ></textarea>
@@ -185,6 +240,16 @@ export default function TransactionRegisterPage() {
                   onClick={() => handleGenderClick("#수컷")}
                 >
                   #수컷
+                </span>
+                <span
+                  className={`whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[17px] ${
+                    selectedGender === "#미분류"
+                      ? "bg-[#D5F0DD] text-[#065F46]"
+                      : "bg-gray-300 text-gray-600"
+                  }`}
+                  onClick={() => handleGenderClick("#미분류")}
+                >
+                  #미분류
                 </span>
               </div>
               <div className="flex flex-row items-center space-x-2">

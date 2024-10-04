@@ -18,6 +18,7 @@ import com.turtlecoin.auctionservice.feign.MainClient;
 import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
 import com.turtlecoin.auctionservice.global.exception.*;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpConnectException;
@@ -53,6 +54,7 @@ public class AuctionService {
     private final SchedulingService schedulingService;
     private final BidService bidService;
     private final SseService sseService;
+    private static final String AUCTION_END_KEY_PREFIX = "auction_end_";
 
     // 경매 등록
     @Transactional
@@ -180,14 +182,19 @@ public class AuctionService {
             Auction auction = auctionRepository.findById(auctionId)
                     .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다: " + auctionId));
 
-            TurtleResponseDTO turtle = mainClient.getTurtle(auctionId);
+            TurtleResponseDTO turtle = mainClient.getTurtle(auction.getTurtleId());
             UserResponseDTO user = mainClient.getUserById(auction.getUserId());
 
-            AuctionResponseDTO data = AuctionResponseDTO.from(auction, turtle, user);
+            // null값일 때 어떻게 하지?
+            Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX + auctionId, TimeUnit.MILLISECONDS);
+
+            AuctionResponseDTO data = AuctionResponseDTO.from(auction, turtle, user, remainingTime);
             return new ResponseEntity<>(ResponseVO.success("경매가 정상적으로 조회되었습니다.", "auction", data), HttpStatus.OK);
         } catch (AuctionNotFoundException e) {
             return new ResponseEntity<>(ResponseVO.failure("400", e.getMessage()), HttpStatus.BAD_REQUEST);
 
+        } catch (FeignException e) {
+          return new ResponseEntity<>(ResponseVO.failure("503", "Main-Service가 응답하지 않습니다."+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch(Exception e){
             return new ResponseEntity<>(ResponseVO.failure("500","경매 조회 과정 중에 서버 에러가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -256,22 +263,22 @@ public class AuctionService {
 
 //    // 거북이 정보를 받아와서 경매정보를 DTO로 변환
 //    // 수정, 테스트 필요
-    public AuctionResponseDTO convertToDTO(Auction auction) {
-        log.info("Turtle ID: {}", auction.getTurtleId());
-        TurtleResponseDTO turtleInfo = mainClient.getTurtle(auction.getTurtleId());
-
-        if (turtleInfo == null) {
-            throw new TurtleNotFoundException("Main-service에서 거북이를 가져올 수 없습니다.");
-        }
-        UserResponseDTO userInfo = mainClient.getUserById(auction.getUserId());
-        if (userInfo == null) {
-            throw new UserNotFoundException("Main-service에서 유저 정보를 가져올 수 없습니다.");
-        }
-
-        log.info("Turtle info retrieved: {}", turtleInfo);
-        log.info("User info retrieved: {}", userInfo);
-        return AuctionResponseDTO.from(auction, turtleInfo, userInfo);
-    }
+//    public AuctionResponseDTO convertToDTO(Auction auction) {
+//        log.info("Turtle ID: {}", auction.getTurtleId());
+//        TurtleResponseDTO turtleInfo = mainClient.getTurtle(auction.getTurtleId());
+//
+//        if (turtleInfo == null) {
+//            throw new TurtleNotFoundException("Main-service에서 거북이를 가져올 수 없습니다.");
+//        }
+//        UserResponseDTO userInfo = mainClient.getUserById(auction.getUserId());
+//        if (userInfo == null) {
+//            throw new UserNotFoundException("Main-service에서 유저 정보를 가져올 수 없습니다.");
+//        }
+//
+//        log.info("Turtle info retrieved: {}", turtleInfo);
+//        log.info("User info retrieved: {}", userInfo);
+//        return AuctionResponseDTO.from(auction, turtleInfo, userInfo);
+//    }
 
     public void processBid(Long auctionId, Long userId, Double newBidAmount) {
         redissonLockFacade.updateBidWithLock(auctionId, userId, newBidAmount);
