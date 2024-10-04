@@ -269,15 +269,7 @@ public class DocumentService {
 					turtle.turtleDie();
 				}
 			}
-			// 소유권 변경된 걸 변경해줘야 되는데 빠졌네!!
 			else if(document.getDocType() == DocType.TRANSFER){
-				
-				// 소유권 변경하기
-				Turtle turtle = turtleService.findTurtleByUUID(document.getTurtleUUID());
-
-				TurtleDocumentation.Transfer transfer = contractService.searchTurtleTransferDocument(document.getTurtleUUID(), document.getDocumentHash());
-				turtle.turtleTransfer(userService.getUserByUUID(transfer.assigneeId));
-				
 				contractService.approveTransfer(document.getTurtleUUID(), document.getDocumentHash());
 			}
 		}
