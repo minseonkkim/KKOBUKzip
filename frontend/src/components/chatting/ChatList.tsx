@@ -31,7 +31,8 @@ export default function ChatList() {
     const getChatData = async () => {
       const fetchedChats = await fetchChatListData(1);
       if (fetchedChats.success) {
-        initChatRoomList(fetchedChats.data!);
+        console.log(fetchedChats.data.data!);
+        initChatRoomList(fetchedChats.data.data!);
       }
       // 유저 id로 바꿀것
     };
@@ -63,7 +64,7 @@ export default function ChatList() {
         eventSource.close(); // 컴포넌트 언마운트 시 연결 종료
       };
     };
-    initChatRoomList(dummyData);
+    //initChatRoomList(dummyData);
     fetchDataAndInitializeSSE();
   }, []);
 

@@ -33,7 +33,9 @@ export const fetchChatMessageData = async (
 // 채팅 목록
 export const fetchChatListData = async (memberId: number) => {
   try {
-    const response = await authAxios<ChatListItem[]>(`${path}/${memberId}`);
+    const response = await authAxios<{ data: ChatListItem[] }>(
+      `${path}/${memberId}`
+    );
     return {
       success: true,
       data: response.data,

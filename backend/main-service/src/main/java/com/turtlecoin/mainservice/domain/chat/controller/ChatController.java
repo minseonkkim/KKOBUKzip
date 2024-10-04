@@ -43,6 +43,7 @@ public class ChatController {
 			chatService.createChat(id1, id2);
 		}
 		catch(Exception e){
+			e.printStackTrace();
 			return new ResponseEntity<>(ResponseVO.failure("400", "실패"), HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(ResponseVO.success("성공"), HttpStatus.OK);
