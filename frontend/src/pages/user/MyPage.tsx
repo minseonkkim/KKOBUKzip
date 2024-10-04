@@ -22,25 +22,11 @@ import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
 import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 
 import { EscrowDummy } from "../../fixtures/escrowDummy";
-import { getMyTransaction } from "../../apis/userApi";
+import { getMyTransaction, patchProfileImage } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
 
 function MyPage() {
-  const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
-  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
-  const [profileImage, setProfileImage] = useState(CustomProfile1);
-  const { userInfo } = useUserStore();
-  const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } =
-    EscrowDummy.data.data.transactions[0];
-
-  useEffect(() => {
-    const init = async () => {
-      (await getMyTransaction()).data?.data.transaction;
-    };
-    init();
-  }, []);
-
-  const profileImages = [
+    const profileImages = [
     CustomProfile1,
     CustomProfile2,
     CustomProfile3,
@@ -56,6 +42,19 @@ function MyPage() {
     CustomProfile13,
     CustomProfile14,
   ];
+  const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const { userInfo } = useUserStore();
+  const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
+  const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } =
+    EscrowDummy.data.data.transactions[0];
+
+  useEffect(() => {
+    const init = async () => {
+      (await getMyTransaction()).data?.data.transaction;
+    };
+    init();
+  }, []);
 
   const openCustomModal = () => {
     setIsCustomModalOpen(true);
@@ -78,6 +77,34 @@ function MyPage() {
     setProfileImage(profileImages[randomNumber]);
   };
 
+  const changeProfileImage = async () => {
+  if (!profileImage) {
+    console.error('Profile image is not defined');
+    return; 
+  }
+
+  const response = await fetch(profileImage);
+  const blob = await response.blob();
+  const imageName = profileImage.split('/').pop() || 'default.gif';
+
+  // blob의 MIME 타입을 명시적으로 image/gif로 변환
+  const gifBlob = blob.slice(0, blob.size, 'image/gif');
+  const file = new File([gifBlob], imageName, { type: 'image/gif' });
+
+  // 서버에 POST 요청 전송
+  try {
+    const data = await patchProfileImage(file);
+    console.log('Upload successful:', file, data);
+    
+    // 모달 닫기
+    closeCustomModal();
+    console.log("프로필사진", userInfo?.profileImage);
+    
+  } catch (error) {
+    console.error('Error uploading image:', error);
+  }
+}
+
   return (
     <>
       <Helmet>
@@ -90,7 +117,7 @@ function MyPage() {
             <div className="font-dnf-bitbit text-[#4B721F] text-[24px] md:text-[27px] mt-1 mb-2 md:mb-5">
               내 정보
             </div>
-            <div className="lg:text-[20px] text-[17px] space-y-1">
+            <div className="lg:text-[19px] text-[17px] space-y-1">
               <div>닉네임: {userInfo?.nickname}</div>
               <div>주소: {userInfo?.address}</div>
               <div>연락처: {userInfo?.phoneNumber}</div>
@@ -136,7 +163,6 @@ function MyPage() {
             // 거래 내역이 있을 경우
             <div className="flex flex-col space-y-3">
               <TransactionHistory
-                isAuction={false}
                 turtleId={turtleId}
                 transactionId={transactionId}
                 sellerId={sellerId}
@@ -146,7 +172,6 @@ function MyPage() {
                 amount={price}
               />
               <TransactionHistory
-                isAuction={false}
                 turtleId={turtleId}
                 transactionId={transactionId}
                 sellerId={sellerId}
@@ -156,7 +181,6 @@ function MyPage() {
                 amount={price}
               />
               <TransactionHistory
-                isAuction={false}
                 turtleId={turtleId}
                 transactionId={transactionId}
                 sellerId={sellerId}
@@ -210,7 +234,7 @@ function MyPage() {
                 </div>
               </div>
 
-              <button className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white">
+              <button className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white" onClick={changeProfileImage}>
                 수정하기
               </button>
             </div>

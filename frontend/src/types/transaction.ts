@@ -54,6 +54,7 @@ export interface TransactionItemDetailType {
   transactionId: number;
   sellerId: number;
   sellerName: string;
+  sellerImageUrl: string;
   turtleId: number;
   scientificName: string;
   price: number;

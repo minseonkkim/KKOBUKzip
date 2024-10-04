@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "transaction")
 public class Transaction extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -96,6 +97,9 @@ public class Transaction extends BaseEntity {
                 .progress(this.progress.name()) // Enum 값 (거래 진행 상황)
                 .sellerImageUrl(this.turtle.getUser().getProfileImage())
                 .title(this.title)
+                .sellerAddress(this.turtle.getUser().getAddress())
+                .sellerAddress(this.turtle.getUser().getUuid())
+                .turtleUuid(this.turtle.getUuid())
                 .build();
     }
 }

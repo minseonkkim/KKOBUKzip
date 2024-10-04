@@ -3,6 +3,7 @@ package com.turtlecoin.mainservice.domain.user.entity;
 import com.turtlecoin.mainservice.global.entity.BaseEntity;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @AllArgsConstructor
+@Table(name = "user")
 public class User extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
@@ -61,6 +63,11 @@ public class User extends BaseEntity {
         if (!passwordEncoder.matches(password, this.password)) {
             throw new IllegalArgumentException("Invalid password");
         }
+    }
+
+    @Transactional
+    public void modifyProfileImage(String imageURL){
+        this.profileImage = imageURL;
     }
     public User(String email, String password, String nickname, String name,
                 Boolean foreignFlag, LocalDate birth, String phonenumber,

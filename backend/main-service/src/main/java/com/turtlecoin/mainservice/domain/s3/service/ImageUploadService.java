@@ -58,6 +58,11 @@ public class ImageUploadService {
 		return uploadImageUrl;
 	}
 
+	private String extractKeyNameFromUrl(String imageUrl) {
+		// URL에서 버킷명과 경로를 추출
+		// 예시: https://your-bucket.s3.amazonaws.com/path/to/image.jpg
+		return imageUrl.replace("https://" + bucket + ".s3.amazonaws.com/", "");
+	}
 	public List<String> uploadMultiple(List<MultipartFile> multipartFiles, String dir) throws IOException {
 		List<String> uploadedImageUrls = new ArrayList<>();
 		for (MultipartFile multipartFile : multipartFiles) {

@@ -53,7 +53,18 @@ const logoutRequest = async (): Promise<{
   success: boolean;
   error?: string;
 }> => {
-  return apiRequest(() => authAxios.post("/main/user/logout"));
+  return apiRequest(() =>
+    authAxios.post(
+      "/main/user/logout",
+      {},
+      {
+        headers: {
+          "Refresh-Token":
+            "Bearer " + localStorage.getItem("refreshToken") || "",
+        },
+      }
+    )
+  );
 };
 
 // 회원가입
@@ -121,15 +132,17 @@ interface LoginResponseData {
   status: number;
   message: string;
   data: {
-    accessToken: string;
-    refreshToken: string;
-    role: string; // 유저는 user 관리자는 admin
-    userId: number;
-    email: string;
-    address: string;
-    phoneNumber: string;
-    nickname: string;
-    profileImage: string;
+    data: {
+      accessToken: string;
+      refreshToken: string;
+      role: string; // 유저는 user 관리자는 admin
+      userId: number;
+      email: string;
+      address: string;
+      phoneNumber: string;
+      nickname: string;
+      profileImage: string;
+    };
   };
 }
 
@@ -180,6 +193,23 @@ const getMyTransaction = async () => {
 };
 
 // 내 거래 내역 상세 조회
+
+// 프로필사진 수정
+export const patchProfileImage = async (profileImg: File) => {
+  const formData = new FormData();
+  formData.append("profileImage", profileImg);
+
+  const response = await apiRequest<{ status: number; message: string }>(() =>
+    authAxios.patch("/main/user/image", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      timeout: 10000,
+    })
+  );
+  return response;
+};
 
 export {
   registerRequest,
