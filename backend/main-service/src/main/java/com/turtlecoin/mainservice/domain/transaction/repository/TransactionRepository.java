@@ -41,8 +41,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             Pageable pageable
     );
     Optional<Transaction> findOneById(Long id);
-    @Query("SELECT t FROM Transaction t WHERE t.buyerId = :userId OR t.turtle.user.id = :userId")
-    List<Transaction> findAllByUser(User user);
+
+    @Query("SELECT t FROM Transaction t WHERE t.buyerId = :id OR t.turtle.user.id = :id")
+    List<Transaction> findAllByUser(Long id);
 
     Transaction findByTurtle(Turtle turtle);
 }

@@ -61,9 +61,10 @@ public class TransactionController {
     // 거래 등록
     @PostMapping(value="/", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> enrollTransaction(
+            @RequestHeader("Authorization") String token,
             @RequestPart("data") TransactionRequestDto dto,
             @RequestPart("transactionPhotos") List<MultipartFile> photos){
-        return transactionService.enrollTransaction(dto,photos);
+        return transactionService.enrollTransaction(dto,photos,token);
     }
 
     @PatchMapping("/start/{transactionId}")
