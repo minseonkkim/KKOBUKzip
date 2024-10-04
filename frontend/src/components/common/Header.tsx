@@ -9,6 +9,7 @@ import Modal from "./Modal";
 import { useUserStore } from "../../store/useUserStore";
 import { RiLogoutBoxLine } from "@react-icons/all-files/ri/RiLogoutBoxLine";
 import { logoutRequest } from "../../apis/userApi";
+import { useStore } from "zustand";
 
 // Wallet 컴포넌트를 lazy로 import
 const Wallet = lazy(() => import("./Wallet"));
@@ -21,7 +22,7 @@ export default function Header() {
   const shouldLoadWallet = usePriorityLoading(1);
   const navigate = useNavigate();
   const headerBackgroundColor = location.pathname === "/" ? "#AAE0F2" : "#fff";
-
+  const role = useStore(useUserStore, (state) => state.userInfo?.role);
   const toggleWallet = () => {
     setIsWalletOpen((prev) => !prev);
   };
@@ -103,7 +104,9 @@ export default function Header() {
                   </span>
                 )}
               </div>
-              <Link to="/mypage">
+              <Link
+                to={role === "ROLE_ADMIN" ? "/admin/document/list" : "/mypage"}
+              >
                 <div
                   className={`${
                     isMobile ? "rounded-full px-1.5" : "rounded-[10px] px-2"
@@ -119,7 +122,7 @@ export default function Header() {
                     />
                   ) : (
                     <span className="whitespace-nowrap text-white text-[17px] lg:text-[20px] tracking-widest">
-                      마이페이지
+                      {role !== "ROLE_ADMIN" ? "마이페이지" : "문서 관리"}
                     </span>
                   )}
                 </div>
