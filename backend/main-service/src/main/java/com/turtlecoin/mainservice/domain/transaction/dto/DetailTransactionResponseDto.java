@@ -20,6 +20,8 @@ public class DetailTransactionResponseDto {
     private String sellerUuid;
     private String sellerAddress;
     private String turtleUuid;
+    private Long buyerId;
+    private String buyerUuid;
     private int weight;
     private String content;
     private List<String> transactionTag;  // 태그 목록
