@@ -233,3 +233,37 @@ export const addTransactionItem = async (transactionData: FormData) => {
   );
   return response;
 };
+
+// 거래 상태 변경 (SALE -> 서류 검토)
+export const changeTransactionStateToStart = async (transactionId: number) => {
+  const response = await apiRequest<{ status: number; message: string }>(() =>
+    authAxios.patch(
+      `/main/transaction/start/${transactionId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        timeout: 10000,
+      }
+    )
+  );
+  return response;
+};
+
+// 거래 상태 변경 (구매 확정 -> 거래 완료)
+export const changeTransactionStateToEnd = async (transactionId: number) => {
+  const response = await apiRequest<{ status: number; message: string }>(() =>
+    authAxios.patch(
+      `/main/transaction/end/${transactionId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        timeout: 10000,
+      }
+    )
+  );
+  return response;
+};
