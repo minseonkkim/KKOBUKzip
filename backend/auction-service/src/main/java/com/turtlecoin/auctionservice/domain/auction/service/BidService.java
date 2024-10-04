@@ -62,8 +62,8 @@ public class BidService {
         Long currentUserId = getCurrentBidUserId(auctionId, auction);
         Double currentBid = getCurrentBidAmount(auctionId, auction);
 
-        // 3. 입찰 검증 로직
-        validateBid(auctionId, userId, bidAmount, currentUserId, currentBid);
+//        // 3. 입찰 검증 로직
+//        validateBid(auctionId, userId, bidAmount, currentUserId, currentBid);
 
         // 4. 입찰 정보 갱신
         Double newBidAmount = updateBidInfo(auctionId, userId, bidAmount);
