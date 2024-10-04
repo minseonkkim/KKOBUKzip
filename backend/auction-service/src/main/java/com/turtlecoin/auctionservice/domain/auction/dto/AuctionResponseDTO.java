@@ -37,13 +37,13 @@ public class AuctionResponseDTO {
     private TurtleResponseDTO turtleInfo;
     private UserResponseDTO userInfo;
 
-    public static AuctionResponseDTO from(Auction auction, TurtleResponseDTO turtleInfo, UserResponseDTO userInfo, Long remainingTime) {
+    public static AuctionResponseDTO from(Auction auction, TurtleResponseDTO turtleInfo, UserResponseDTO userInfo, Long remainingTime, Double nowBid) {
         return AuctionResponseDTO.builder()
                 .id(auction.getId())
                 .turtleId(auction.getTurtleId())
                 .title(auction.getTitle())
                 .minBid(auction.getMinBid())
-                .nowBid(auction.getNowBid())
+                .nowBid(nowBid)
                 .winningBid(auction.getWinningBid())
                 .buyerId(auction.getBuyerId())
                 .sellerId(auction.getUserId())

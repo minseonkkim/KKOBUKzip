@@ -55,7 +55,7 @@ public class AuctionService {
     private final BidService bidService;
     private final SseService sseService;
     private static final String AUCTION_END_KEY_PREFIX = "auction_end_";
-
+    private static final String AUCTION_BID_KEY = "auction_bid_";
     // 경매 등록
     @Transactional
     public ResponseEntity<?> registerAuction(RegisterAuctionDTO registerAuctionDTO, List<MultipartFile> images) {
@@ -190,12 +190,25 @@ public class AuctionService {
             TurtleResponseDTO turtle = mainClient.getTurtle(auction.getTurtleId());
             UserResponseDTO user = mainClient.getUserById(auction.getUserId());
 
+            String key = AUCTION_BID_KEY+auction;
+
             // null값일 때 어떻게 하지?
             Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX + auctionId, TimeUnit.MILLISECONDS);
 
+            Object bidAmountObj = redisTemplate.opsForHash().get(key, "bidAmount");
+
+            Double nowBid;
+            if (bidAmountObj == null) {
+                nowBid = auction.getMinBid();
+                log.info("redis에 입찰 가격이 없을 때");
+            } else {
+                nowBid = Double.parseDouble(bidAmountObj.toString());  // Object를 Double로 변환
+                log.info("redis에 입찰 가격이 있을 때");
+            }
+
             log.info("RemainingTime : {}", remainingTime);
 
-            AuctionResponseDTO data = AuctionResponseDTO.from(auction, turtle, user, remainingTime);
+            AuctionResponseDTO data = AuctionResponseDTO.from(auction, turtle, user, remainingTime, nowBid);
             return new ResponseEntity<>(ResponseVO.success("경매가 정상적으로 조회되었습니다.", "auction", data), HttpStatus.OK);
         } catch (AuctionNotFoundException e) {
             return new ResponseEntity<>(ResponseVO.failure("400", e.getMessage()), HttpStatus.BAD_REQUEST);
