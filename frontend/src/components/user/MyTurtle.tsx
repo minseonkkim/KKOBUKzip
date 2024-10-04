@@ -103,15 +103,17 @@ const exampleData3: AdminDeathDocumentDataType = {
 
 
 interface MyTurtleProps{
+  turtleId: number;
   name: string;
   scientificName: string;
   gender: string;
   weight: number;
   birth: string;
+  imageAddress: string;
 }
 
 
-export default function MyTurtle({name, scientificName, gender, weight, birth}:MyTurtleProps) {
+export default function MyTurtle({turtleId, name, scientificName, gender, weight, birth, imageAddress}:MyTurtleProps) {
   const navigate = useNavigate();
   const [selectedMenu, setSelectedMenu] = useState(0);  // 0은 인공증식, 1은 양도양수, 2는 폐사
 
@@ -123,7 +125,7 @@ export default function MyTurtle({name, scientificName, gender, weight, birth}:M
   };
 
   const goToTransactionRegister = () => {
-    navigate("/transaction-register");
+    navigate("/transaction-register", { state: { turtleId: turtleId, name: name, scientificName: scientificName, gender: gender, weight: weight, birth: birth, imageAddress: imageAddress } });
   };
 
   const openDetailModal = () => {
