@@ -47,7 +47,7 @@ function MyPage() {
     CustomProfile14,
   ];
   const [turtleData, setTurtleData] = useState<TurtleDataType[]>([]);
-  const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
+  const [selectedMenu, setSelectedMenu] = useState(1); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [myTransactions, setMyTransactions] = useState<
     TransactionItemDataType[]
@@ -154,30 +154,37 @@ function MyPage() {
             </button>
           </div>
         </div>
-        <div className="mt-[25px] text-[21px] lg:text-[23px] flex flex-row cursor-pointer mb-[10px] font-stardust">
-          <div
-            className={`w-1/2 lg:w-[130px] h-[42px] border-b-[4px] text-center ${
-              selectedMenu === 0 && "border-[#4B721F] font-bold"
-            }`}
-            onClick={() => setSelectedMenu(0)}
-          >
-            거래 내역
+        <div className="flex flex-row justify-between items-center">
+          <div className="mt-[25px] text-[21px] lg:text-[23px] flex flex-row cursor-pointer mb-[10px] font-stardust">
+              <div
+              className={`w-1/2 lg:w-[150px] h-[42px] border-b-[4px] text-center ${
+                selectedMenu === 1 && "border-[#4B721F] font-bold"
+              }`}
+              onClick={() => setSelectedMenu(1)}
+            >
+              나의 거북이
+            </div>
+            <div
+              className={`w-1/2 lg:w-[150px] h-[42px] border-b-[4px] text-center ${
+                selectedMenu === 0 && "border-[#4B721F] font-bold"
+              }`}
+              onClick={() => setSelectedMenu(0)}
+            >
+              거래 내역
+            </div>
+          
           </div>
-          <div
-            className={`w-1/2 lg:w-[130px] h-[42px] border-b-[4px] text-center ${
-              selectedMenu === 1 && "border-[#4B721F] font-bold"
-            }`}
-            onClick={() => setSelectedMenu(1)}
-          >
-            나의 거북이
-          </div>
+          {selectedMenu === 1 &&
+          <button className="text-[20px] rounded-[10px] bg-[#F5E0E4] h-[37px] px-3 border-2 border-dotted border-[#353535]">인공증식 등록</button>
+          }
+          
         </div>
         <div className="overflow-y-auto flex-1 mb-4">
           {/* 거래내역 */}
           {selectedMenu === 0 &&
             // 거래 내역이 있을 경우
             (myTransactions.length !== 0 ? (
-              <div className="flex flex-col space-y-3">
+              <div className="flex flex-col space-y-4">
                 {myTransactions.map((item) => (
                   <TransactionHistory
                     key={item.transactionId}
@@ -210,7 +217,7 @@ function MyPage() {
           {/* 나의 거북이 */}
           {selectedMenu === 1 && (
             // 나의 거북이가 있을 경우
-            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 xl:grid-cols-3 gap-5">
               {turtleData.map((turtle) => (
                 <MyTurtle
                   key={turtle.id}
