@@ -213,6 +213,11 @@ public class BidService {
         messagingTemplate.convertAndSend("/sub/auction/" + auctionId, response);
     }
 
+    public void notifyUser (Long userId, String message) {
+        String destination = "/user/" + userId + "/queue/auction";
+        messagingTemplate.convertAndSendToUser(userId.toString(), destination, message);
+    }
+
     // 경매 종료 시간 설정 및 TTL 적용
     public void setAuctionEndTime(Long auctionId, LocalDateTime endTime) {
         String key = AUCTION_END_KEY_PREFIX + auctionId;

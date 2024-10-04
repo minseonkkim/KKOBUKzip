@@ -17,11 +17,11 @@ public class BidController {
     private final AuctionService auctionService;
     private final WebSocketService webSocketService;
 
-    @MessageMapping("/{auctionId}/bid")
-    public void processBid(@DestinationVariable Long auctionId, BidRequestDTO bidRequestDTO) {
-        auctionService.processBid(auctionId, bidRequestDTO.getUserId(), bidRequestDTO.getBidAmount());
-        webSocketService.sendBidUpdate(auctionId, bidRequestDTO.getUserId(), bidRequestDTO.getBidAmount());
-    }
+//    @MessageMapping("/{auctionId}/bid")
+//    public void processBid(@DestinationVariable Long auctionId, BidRequestDTO bidRequestDTO) {
+//        auctionService.processBid(auctionId, bidRequestDTO.getUserId(), bidRequestDTO.getBidAmount());
+//        webSocketService.sendBidUpdate(auctionId, bidRequestDTO.getUserId(), bidRequestDTO.getBidAmount());
+//    }
 
 //    @PostMapping("/{auctionId}/bid")
 //    public ResponseEntity<ResponseVO<?>> auctionBid(@PathVariable Long auctionId, @RequestBody BidRequestDTO bidRequestdto) {
