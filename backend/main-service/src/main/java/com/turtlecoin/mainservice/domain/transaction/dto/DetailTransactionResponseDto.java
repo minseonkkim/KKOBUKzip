@@ -11,6 +11,7 @@ public class DetailTransactionResponseDto {
     private Long transactionId;
     private Long sellerId;
     private String sellerName;
+    private String documentHash;
     private Long turtleId;
     private String scientificName;
     private Double price;
