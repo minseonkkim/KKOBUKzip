@@ -1,16 +1,15 @@
-package com.turtlecoin.auctionservice.feign.dto;
+package com.turtlecoin.mainservice.domain.user.dto;
 
-import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
+import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class TurtleResponseDTO {
+public class FeignTurtleResponseDTO {
     private Long id;
     private Gender gender;
     private int weight;

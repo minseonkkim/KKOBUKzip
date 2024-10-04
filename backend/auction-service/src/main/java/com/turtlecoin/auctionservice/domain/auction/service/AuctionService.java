@@ -67,22 +67,24 @@ public class AuctionService {
             if (registerAuctionDTO.getTurtleId() == null || registerAuctionDTO.getSellerAddress() == null || registerAuctionDTO.getTitle() == null || registerAuctionDTO.getMinBid() == null) {
                 throw new IllegalArgumentException("필수 필드가 누락됐습니다.");
             }
-
+            log.info("첫번째 검증");
             validateUserOwnsTurtle(registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
+            log.info("두번째 검증");
             validateTurtleNotAlreadyRegistered(registerAuctionDTO.getTurtleId());
-
+            log.info("검증 끝");
             // 경매 저장
             Auction auction = auctionRepository.save(registerAuctionDTO.toEntity());
-
+            log.info("경매 저장");
             // 동적 스케줄링 수행
             Consumer<Long> startAuction = bidService::startAuction;
             schedulingService.scheduleTask(auction.getId(), startAuction, auction.getStartTime());
-
+            log.info("스케줄링 완료");
             // 이미지 업로드 처리
             if (images != null && !images.isEmpty()) {
                 uploadedPhotos = uploadImages(images, auction);  // 이미지 업로드
                 auction.getAuctionPhotos().addAll(uploadedPhotos);  // 업로드된 이미지 경매와 연결
             }
+            log.info("이미지 업로드 완료");
 
             return new ResponseEntity<>(ResponseVO.success("경매가 성공적으로 등록됐습니다."), HttpStatus.OK);
 
@@ -128,15 +130,18 @@ public class AuctionService {
 
     // 사용자가 소유한 거북이인지 검증 메서드
     private void validateUserOwnsTurtle(Long userId, Long turtleId) {
+        log.info("Main-service에서 조회");
         List<TurtleResponseDTO> userTurtles = mainClient.getTurtlesByUserId(userId);
-        if (userTurtles.isEmpty()) {
-            throw new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId);
-        }
 
+        if (userTurtles.isEmpty()) {
+            throw new UserNotFoundException("유저의 거북이를 찾을 수 없습니다: " + userId);
+        }
+        log.info("거북이 확인 완료");
         boolean isUserTurtle = userTurtles.stream().anyMatch(turtle -> turtle.getId().equals(turtleId));
         if (!isUserTurtle) {
             throw new TurtleNotFoundException("해당 거북이는 사용자가 소유한 거북이가 아닙니다.");
         }
+        log.info("거북이 일치여부 확인 완료");
     }
 
     private void validateTurtleNotAlreadyRegistered(Long turtleId) {
