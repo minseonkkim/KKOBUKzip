@@ -39,7 +39,9 @@ public class SendService {
     }
 
     public void sendMessage(AuctionResultDTO auctionResultDTO) {
+        log.info("경매 종료 후 데이터 전송 시도");
         rabbitTemplate.convertAndSend("auction.result.exchange", "auction.result.key", auctionResultDTO);
+        log.info("경매 종료 후 데이터 전송 완료");
     }
 
     // 경매 종료 알림, DB저장 로직
@@ -59,7 +61,7 @@ public class SendService {
             response = ResponseVO.success("경매가 유찰됐습니다.");
             messagingTemplate.convertAndSend("/sub/auction/" + auctionId, response);
             // rabbitmq로 보내기
-//            sendMessage(auctionResultDTO);
+            sendMessage(auctionResultDTO);
             log.info("해당 경매에 입찰 기록이 없습니다: auctionId = {}", auctionId);
             return;
         }
