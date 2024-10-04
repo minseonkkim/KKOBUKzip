@@ -125,6 +125,8 @@ public class UserService {
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .name(user.getName())
+                .address(user.getAddress())
+                .birth(user.getBirth())
                 .profileImage(user.getProfileImage())
                 .build();
     }
