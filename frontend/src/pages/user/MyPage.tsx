@@ -22,7 +22,7 @@ import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
 import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 
 // import { EscrowDummy } from "../../fixtures/escrowDummy";
-import { getMyTransaction, patchProfileImage } from "../../apis/userApi";
+import { getMyTransaction, getMyTurtle, patchProfileImage } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
 import { TurtleDataType } from "../../types/turtle";
 function MyPage() {
