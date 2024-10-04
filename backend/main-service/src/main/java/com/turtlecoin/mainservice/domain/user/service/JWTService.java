@@ -62,6 +62,7 @@ public class JWTService {
             data.put("accessToken", access);
             data.put("refreshToken", refresh);
             data.put("role", role);
+            data.put("uuid",user.get().getUuid());
             data.put("nickname", user.get().getNickname());
             data.put("email", user.get().getEmail());
             data.put("address",user.get().getAddress());
