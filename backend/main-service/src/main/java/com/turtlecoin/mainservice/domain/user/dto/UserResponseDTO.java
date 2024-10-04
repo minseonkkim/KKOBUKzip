@@ -8,6 +8,7 @@ import lombok.*;
 @Builder
 public class UserResponseDTO {
     private Long userId;
+    private String uuid;
     private String nickname;
     private String email;
     private String name;

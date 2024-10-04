@@ -104,7 +104,8 @@ public class UserController {
                 user.getNickname(),
                 user.getName(),
                 user.getEmail(),
-                user.getProfileImage()
+                user.getProfileImage(),
+                user.getUuid()
         );
     }
 
@@ -151,7 +152,7 @@ public class UserController {
                     throw new Exception("이미지 삭제 실패");
                 }
             }
-            
+
             String url = imageUploadService.upload(image,"user");
             user.get().modifyProfileImage(url);
             userRepository.save(user.get());
