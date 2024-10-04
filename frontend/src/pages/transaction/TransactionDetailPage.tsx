@@ -68,12 +68,15 @@ function TransactionDetailPage() {
   };
 
   const handleDeposit = async () => {
-    await createTransaction(transactionData!.transactionId, transactionData!.sellerAddress, ~~(transactionData!.price), transactionData!.turtleUuid, userInfo!.uuid, transactionData!.sellerUuid);
-    // 
-    alert(
-      "결제가 완료되었습니다. 마이페이지로 이동하여 서류 작성을 진행해 주세요!"
-    );
-    navigate("/mypage");
+    const result = await createTransaction(transactionData!.transactionId, transactionData!.sellerAddress, ~~(transactionData!.price), transactionData!.turtleUuid, userInfo!.uuid, transactionData!.sellerUuid);
+    
+    if (result) {
+      alert("거래 대금 송금이 완료되었습니다. 마이페이지로 이동하여 서류 작성을 진행해 주세요!");
+      navigate("/mypage");
+    } else {
+      alert("거래 대금 송금이 실패했습니다. 다시 시도해 주세요.")
+    }
+    
   };
 
   const openChat = () => {
