@@ -3,6 +3,8 @@ import Header from "../../components/common/Header";
 import { useEffect, useState } from "react";
 import MyTurtle from "../../components/user/MyTurtle";
 import TransactionHistory from "../../components/user/TransactionHistory";
+import { TransactionItemDataType } from "../../types/transaction";
+import NoImage from "../../assets/no_image.webp";
 import { FaRandom } from "@react-icons/all-files/fa/FaRandom";
 import CustomProfile1 from "../../../public/custom_profile/profile1.gif";
 import CustomProfile2 from "../../../public/custom_profile/profile2.gif";
@@ -18,13 +20,13 @@ import CustomProfile11 from "../../../public/custom_profile/profile11.gif";
 import CustomProfile12 from "../../../public/custom_profile/profile12.gif";
 import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
 import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
-import { EscrowDummy } from "../../fixtures/escrowDummy";
-import { getMyTransaction, getMyTurtle, patchProfileImage } from "../../apis/userApi";
+
+// import { EscrowDummy } from "../../fixtures/escrowDummy";
+import { getMyTransaction, patchProfileImage } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
 import { TurtleDataType } from "../../types/turtle";
 function MyPage() {
-  
-    const profileImages = [
+  const profileImages = [
     CustomProfile1,
     CustomProfile2,
     CustomProfile3,
@@ -43,14 +45,17 @@ function MyPage() {
   const [turtleData, setTurtleData] = useState<TurtleDataType[]>([]);
   const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const [myTransactions, setMyTransactions] = useState<TransactionItemDataType[]>([]);
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
-  const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } =
-    EscrowDummy.data.data.transactions[0];
+  // const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } = EscrowDummy.data.data.transactions[0];
 
   useEffect(() => {
     const init = async () => {
-      (await getMyTransaction()).data?.data.transaction;
+      const response = (await getMyTransaction())
+      if(response.success) {
+        setMyTransactions(response.data!.data.transaction)
+      }
     };
     init();
 
@@ -169,8 +174,9 @@ function MyPage() {
           {/* 거래내역 */}
           {selectedMenu === 0 && (
             // 거래 내역이 있을 경우
-            <div className="flex flex-col space-y-3">
-              <TransactionHistory
+            myTransactions.length !== 0 ? (
+              <div className="flex flex-col space-y-3">
+              {/* <TransactionHistory
                 turtleId={turtleId}
                 transactionId={transactionId}
                 sellerId={sellerId}
@@ -196,13 +202,30 @@ function MyPage() {
                 sellerName={sellerName}
                 sellerAddress={sellerAddress}
                 amount={price}
-              />
+              /> */}
+              {myTransactions.map((item) => (
+                <TransactionHistory
+                  key={item.transactionId}
+                  auctionFlag={item.auctionFlag}
+                  turtleId={item.turtleId}
+                  turtleUuid={item.turtleUuid}
+                  transactionId={item.transactionId}
+                  sellerId={item.sellerId}
+                  sellerUuid={item.sellerUuid}
+                  sellerName={item.sellerName}
+                  sellerAddress={item.sellerAddress}
+                  transactionTag={item.transactionTag}
+                  amount={item.price}
+                />
+                ))}
             </div>
-            // 거래내역이 없을 경우
-            // <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
-            //   <img src={NoImage} className="w-[200px] mb-7" draggable="false" />
-            //   <div className="text-[25px] font-bold text-center font-stardust">거래 내역이 없어요.</div>
-            // </div>
+            ) : (
+              // 거래내역이 없을 경우
+              <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
+                <img src={NoImage} className="w-[200px] mb-7" draggable="false" />
+                <div className="text-[25px] font-bold text-center font-stardust">거래 내역이 없어요.</div>
+              </div>
+            )
           )}
           {/* 나의 거북이 */}
           {selectedMenu === 1 && (

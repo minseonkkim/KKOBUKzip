@@ -50,19 +50,29 @@ function CompleteBreedDocument({ data }: { data: AdminBreedDocumentDataType }) {
           <div className="flex items-center">
             <label className="w-1/4 font-medium">인공증식시설</label>
             <span className="w-3/4 px-3 py-2">
-              {data.detail.locationSpecification}
+              <img
+                src={data.detail.locationSpecification}
+                alt="locationSpecification"
+                className="w-full h-auto"
+              />
             </span>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-medium">인공증식방법</label>
             <span className="w-3/4 px-3 py-2">
-              {data.detail.multiplicationMethod}
+              <img
+                src={data.detail.multiplicationMethod}
+                className="w-full h-auto"
+              />
             </span>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-medium">보호시설</label>
             <span className="w-3/4 px-3 py-2">
-              {data.detail.shelterSpecification}
+              <img
+                className="w-full h-auto"
+                src={data.detail.shelterSpecification}
+              />
             </span>
           </div>
         </div>

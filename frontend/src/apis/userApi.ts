@@ -142,6 +142,9 @@ interface LoginResponseData {
       phoneNumber: string;
       nickname: string;
       profileImage: string;
+      uuid: string;
+      name: string;
+      birth: string;
     };
   };
 }
@@ -209,14 +212,18 @@ const getMyTransaction = async () => {
 
 
 // 프로필사진 수정
-interface Data{
-  url:string;
+interface Data {
+  url: string;
 }
 export const patchProfileImage = async (profileImg: File) => {
   const formData = new FormData();
   formData.append("profileImage", profileImg);
 
-  const response = await apiRequest<{ status: number; data: Data; message: string }>(() =>
+  const response = await apiRequest<{
+    status: number;
+    data: Data;
+    message: string;
+  }>(() =>
     authAxios.patch("/main/user/image", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
