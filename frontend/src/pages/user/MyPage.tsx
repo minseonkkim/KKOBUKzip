@@ -91,14 +91,21 @@ function MyPage() {
   const gifBlob = blob.slice(0, blob.size, 'image/gif');
   const file = new File([gifBlob], imageName, { type: 'image/gif' });
 
-  // 서버에 POST 요청 전송
+
   try {
-    const data = await patchProfileImage(file);
-    console.log('Upload successful:', file, data);
+    const result = await patchProfileImage(file);
+
+    const newProfileImageUrl = result.data?.data.url;
     
+    if (newProfileImageUrl) {
+    useUserStore.getState().setProfileImage(newProfileImageUrl);
+
     // 모달 닫기
     closeCustomModal();
-    console.log("프로필사진", userInfo?.profileImage);
+    console.log("프로필사진 업데이트 완료:", newProfileImageUrl);
+  } else {
+    console.error('No valid profile image URL found in response:', result);
+  }
     
   } catch (error) {
     console.error('Error uploading image:', error);
