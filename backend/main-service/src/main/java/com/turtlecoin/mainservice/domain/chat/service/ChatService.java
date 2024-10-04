@@ -110,7 +110,7 @@ public class ChatService {
 	}
 
 	// 거래에서 넘어오는 경우
-	public List<ChatResponseDto> getChatListFromTransaction(Long userId, Long transactionId, Pageable pageable) throws Exception {
+	public List<ChatResponseDto> getChatListFromTransaction(Long userId, Long transactionId, Long loginId, Pageable pageable) throws Exception {
 		Transaction transaction = transactionService.findTransactionById(transactionId);
 		if(transaction == null){
 			throw new TransactionNotFoundException("거래를 찾을 수 없습니다.");

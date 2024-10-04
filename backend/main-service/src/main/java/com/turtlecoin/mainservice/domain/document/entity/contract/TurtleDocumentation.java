@@ -9,6 +9,7 @@ import java.util.List;
 import org.web3j.abi.EventEncoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;
+import org.web3j.abi.datatypes.Bool;
 import org.web3j.abi.datatypes.DynamicStruct;
 import org.web3j.abi.datatypes.Event;
 import org.web3j.abi.datatypes.Function;
@@ -71,6 +72,8 @@ public class TurtleDocumentation extends Contract {
     public static final String FUNC_SEARCHTURTLEMULTIPLICATIONDOCUMENT = "searchTurtleMultiplicationDocument";
 
     public static final String FUNC_SEARCHTURTLETRANSFERDOCUMENT = "searchTurtleTransferDocument";
+
+    public static final String FUNC_TURTLEVALID = "turtleValid";
 
     public static final Event CURRENTTURTLEDOCUMENT_EVENT = new Event("CurrentTurtleDocument", 
             Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>(true) {}, new TypeReference<Bytes32>(true) {}));
@@ -288,7 +291,7 @@ public class TurtleDocumentation extends Contract {
             String _area, String _purpose, String _location, String _fatherId, String _motherId,
             String _birth, String _name, BigInteger _weight, String _gender,
             String _locationSpecification, String _multiplicationMethod,
-            String _shelterSpecification) {
+            String _shelterSpecification, byte[] _turtleHash) {
         final Function function = new Function(
                 FUNC_REGISTERTURTLEMULTIPLICATIONDOCUMENT, 
                 Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
@@ -306,7 +309,8 @@ public class TurtleDocumentation extends Contract {
                 new org.web3j.abi.datatypes.Utf8String(_gender), 
                 new org.web3j.abi.datatypes.Utf8String(_locationSpecification), 
                 new org.web3j.abi.datatypes.Utf8String(_multiplicationMethod), 
-                new org.web3j.abi.datatypes.Utf8String(_shelterSpecification)), 
+                new org.web3j.abi.datatypes.Utf8String(_shelterSpecification), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_turtleHash)), 
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
@@ -549,6 +553,14 @@ public class TurtleDocumentation extends Contract {
                 new org.web3j.abi.datatypes.generated.Bytes32(_documentHash)), 
                 Arrays.<TypeReference<?>>asList(new TypeReference<Transfer>() {}));
         return executeRemoteCallSingleValueReturn(function, Transfer.class);
+    }
+
+    public RemoteFunctionCall<Boolean> turtleValid(String _turtleId, byte[] _hash) {
+        final Function function = new Function(FUNC_TURTLEVALID, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_hash)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {}));
+        return executeRemoteCallSingleValueReturn(function, Boolean.class);
     }
 
     @Deprecated

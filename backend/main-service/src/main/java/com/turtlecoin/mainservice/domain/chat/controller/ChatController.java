@@ -101,7 +101,7 @@ public class ChatController {
 				list = chatService.getChatDetailList(user.getId(), opponent.getUserId(), user.getId(), pageable);
 			}
 			else {
-				list = chatService.getChatListFromTransaction(user.getId(), id, pageable);
+				list = chatService.getChatListFromTransaction(user.getId(), id, user.getId(), pageable);
 			}
 
 		}
