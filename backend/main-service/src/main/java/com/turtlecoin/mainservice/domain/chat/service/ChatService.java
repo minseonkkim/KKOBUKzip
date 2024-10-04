@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
@@ -38,6 +37,7 @@ public class ChatService {
 	private final UserRepository userRepository;
 
 	public ObjectId createChat(Long smallUserId, Long bigUserId) throws Exception{
+		System.out.println("만들어진건데");
 		// 호출 해보면서 없는 아이디인지 확인
 		UserResponseDTO smallUser = userService.getByUserId(smallUserId);
 		UserResponseDTO bigUser = userService.getByUserId(bigUserId);
@@ -66,7 +66,7 @@ public class ChatService {
 			.text(message)
 			.registTime(LocalDateTime.now().toString())
 			.build();
-		chatRepository.insertBySmallUserAndBigUser(smallUserId, bigUserId, chatTextMessage);
+		chatRepository.insertByParticipant(smallUserId, bigUserId, chatTextMessage);
 		chatRepository.updateRecentChatting(smallUserId, bigUserId, chatTextMessage);
 
 		return chatTextMessage;
@@ -79,16 +79,16 @@ public class ChatService {
 			.price(price)
 			.image(image)
 			.build();
-		chatRepository.insertBySmallUserAndBigUser(smallUserId, bigUserId, chatTurtleMessage);
+		chatRepository.insertByParticipant(smallUserId, bigUserId, chatTurtleMessage);
 	}
 
 	// 채팅 리스트에서 넘어와서 채팅 목록을 조회하는 경우
-	public List<ChatResponseDto> getChatListFromUser(Long userId, Long opponentId, Pageable pageable) throws Exception {
+	public List<ChatResponseDto> getChatDetailList(Long userId, Long opponentId, Long loginId, Pageable pageable) throws Exception {
 		// 더 작은 쪽이 왼쪽 매개변수로 들어가게 해야 함
 		Long left = Math.min(opponentId, userId);
 		Long right = Math.max(opponentId, userId);
 
-		return chatRepository.getChatByPage(left, right, pageable.getPageNumber(), pageable.getPageSize())
+		return chatRepository.getChatByPage(left, right,  loginId, pageable.getPageNumber(), pageable.getPageSize())
 			.stream().map((chatMessage) ->{
 				if(chatMessage instanceof ChatTextMessage) {
 					UserResponseDTO userResponseDTO = userService.getByUserId(((ChatTextMessage)chatMessage).getSender());
@@ -127,7 +127,7 @@ public class ChatService {
 		}
 		addChatTurtleMessage(left, right, transaction.getTitle(), transaction.getPrice(), transaction.getTransactionPhotos().get(0).getImageAddress());
 
-		return chatRepository.getChatByPage(left, right, pageable.getPageNumber(), pageable.getPageSize())
+		return chatRepository.getChatByPage(left, right, loginId, pageable.getPageNumber(), pageable.getPageSize())
 			.stream().map((chatMessage) ->{
 				if(chatMessage instanceof ChatTextMessage) {
 					UserResponseDTO userResponseDTO = userService.getByUserId(((ChatTextMessage)chatMessage).getSender());
@@ -148,7 +148,7 @@ public class ChatService {
 			.collect(Collectors.toList());
 	}
 
-	public List<ChatListDto> listMyChats(Long userId, Pageable pageable) throws Exception {
+	public List<ChatListDto> listChattingRoomList(Long userId, Pageable pageable) throws Exception {
 		List<Chat> chatList = chatRepository.findRecentChatsByUser(userId, pageable.getPageNumber(), pageable.getPageNumber());
 
 		return chatList.stream().map((chat) -> {
