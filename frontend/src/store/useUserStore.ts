@@ -20,6 +20,7 @@ export const useUserStore = create<UserStore>()(
         set({
           userInfo: {
             userId: userInfo.userId,
+            uuid: userInfo.uuid,
             email: userInfo.email,
             address: userInfo.address,
             phoneNumber: userInfo.phoneNumber,
