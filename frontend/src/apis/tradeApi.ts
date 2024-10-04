@@ -223,7 +223,7 @@ export const getTransactionDetailItemData = (transactionId: string) => {
 // 거래 등록
 export const addTransactionItem = async (transactionData: FormData) => {
   const response = await apiRequest<{ status: number; message: string }>(() =>
-    authAxios.post("/main/transaction", transactionData, {
+    authAxios.post("/main/transaction/", transactionData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
