@@ -54,16 +54,13 @@ export default function TransactionTurtle({
               ))}
             </div>
           </div>
-          {/* <div className="whitespace-nowrap font-extrabold text-[28px] text-[#4B721F] font-stardust">
-            {item.price.toLocaleString("ko-KR")} TURT
-          </div> */}
 
           <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
-                      <div className="text-[28px] md:text-[32px]">
-                        {Math.floor(8000000).toLocaleString()} 
-                      </div>
-                      <div className="text-[18px] md:text-[22px]">TURT</div>
-                      </div>
+            <div className="text-[28px] md:text-[32px]">
+              {Math.floor(8000000).toLocaleString()} 
+            </div>
+            <div className="text-[18px] md:text-[22px]">TURT</div>
+          </div>
         </div>
       </div>
     </>
