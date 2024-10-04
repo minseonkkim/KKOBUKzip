@@ -5,6 +5,7 @@ import { BreedDocumentDataType, BreedFetchData } from "../../types/document";
 import DocImgUpload from "./DocImgUpload";
 import { createBreedDocumentRequest } from "../../apis/documentApis";
 import { breedDoc } from "../../utils/breedDriverObject";
+import { useNavigate } from "react-router-dom";
 
 // 특이사항
 // 신청인 정보 동적으로 할당할 것(아마 store에서)
@@ -33,6 +34,7 @@ function BreedDocument() {
 
   const [detailLocation, setDetailLocation] = useState("");
 
+  const navigate = useNavigate();
   const changeHandle = (
     type: keyof BreedDocumentDataType,
     evt:
@@ -50,52 +52,45 @@ function BreedDocument() {
   ) => {
     event.preventDefault();
     if (!locationImg) {
-      alert("시설 명세를 확인해주세요");
+      alert("시설 명세 파일을 확인해주세요");
       return;
     }
     if (!multiplicationImg) {
-      alert("증식 명세를 확인해주세요");
+      alert("증식 명세 파일을 확인해주세요");
       return;
     }
     if (!shelterImg) {
-      alert("보호시설 명세를 확인해주세요");
+      alert("보호시설 명세 파일을 확인해주세요");
+      return;
+    }
+    // area, birth, weight data check and alert message
+    if (!data.area) {
+      alert("시설면적을 입력해주세요");
+      return;
+    }
+    if (!data.birth) {
+      alert("생년월일을 입력해주세요");
+      return;
+    }
+    if (!data.weight) {
+      alert("무게를 입력해주세요");
       return;
     }
 
     const formData = new FormData();
 
-    // const locationImgBlob = new Blob([locationImg], {
-    //   type: locationImg.type,
-    // });
-    // formData.append("locationSpecification", locationImgBlob, locationImg.name);
-    // const multiplicationImgBlob = new Blob([multiplicationImg], {
-    //   type: multiplicationImg.type,
-    // });
-    // formData.append(
-    //   "multiplicationMethod",
-    //   multiplicationImgBlob,
-    //   multiplicationImg.name
-    // );
-
-    // const shelterImgBlob = new Blob([shelterImg], {
-    //   type: shelterImg.type,
-    // });
-    // formData.append("shelterSpecification", shelterImgBlob, shelterImg.name);
-
     formData.append("locationSpecification", locationImg);
     formData.append("multiplicationMethod", multiplicationImg);
     formData.append("shelterSpecification", shelterImg);
-    // 신청인 정보는 applicant에서 넘어가기에 작성 안 해도 됨
-    // 마더빠더 UUID 검증할것
-    // 적당히 useEffect 내부에서 detail에 반영하면 될 듯
+
     const breedData = {
       docType: "인공증식증명서",
-      applicant: "abcd-1234-abcd", // storage에서 긁어올 것
+      applicant: "some-uuid-value", // storage에서 긁어올 것
       detail: {
         ...data,
         weight: Number(data.weight),
-        motherUUID: "uuid-test-123",
-        fatherUUID: "uuid-test-456",
+        motherUUID: "uuid-male-001",
+        fatherUUID: "uuid-female-001",
         location: postcodeData?.roadAddress + " / " + detailLocation,
         registerDate: new Date().toISOString().substring(0, 10),
       },
@@ -110,6 +105,12 @@ function BreedDocument() {
     console.log(breedData);
 
     const result = await createBreedDocumentRequest(formData);
+    if (result.success) {
+      alert("서류가 성공적으로 등록되었습니다.");
+      navigate("/mypage");
+    } else {
+      alert(result.message);
+    }
   };
 
   const handleGuide = () => {

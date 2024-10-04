@@ -45,7 +45,7 @@ export const apiHelper = async <T>(
     let errorMessage = "Unknown error";
     let errorCode = 0;
     if (error instanceof AxiosError) {
-      errorMessage = error.message;
+      errorMessage = error.response?.data.message || error.message;
       errorCode = ~~error?.code!;
     }
     console.error(`Document API Request: ${errorCode} - ${errorMessage}`);
