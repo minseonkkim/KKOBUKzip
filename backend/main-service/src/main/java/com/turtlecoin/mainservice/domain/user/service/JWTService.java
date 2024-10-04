@@ -140,4 +140,10 @@ public class JWTService {
 
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
+    public Long getIdFromToken(String token) {
+        return jwtUtil.getIdFromToken(token);
+    }
+    public String getUUIDFromToken(String token) {
+        return jwtUtil.getUuidFromToken(token);
+    }
 }

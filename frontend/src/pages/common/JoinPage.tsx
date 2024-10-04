@@ -383,9 +383,10 @@ function JoinPage() {
       <Header />
       <main>
         <div className="px-4 lg:px-[250px] flex justify-center items-center mt-[60px] h-[calc(100vh-60px)]">
-          <div className="relative w-full bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex h-[640px] md:h-[600px] flex-col md:flex-row">
+          <div className="relative w-full bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex h-[680px] md:h-[600px] flex-col md:flex-row">
+            
             {step === 1 && (
-              <section className="p-2.5 my-3 w-full md:w-1/2">
+              <section className="p-2.5 my-3 w-full md:w-1/2 h-[460px] md:h-full">
                 <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
                   <div className="w-4/5">
                     <h2 className="text-[35px] md:text-[38px] text-center mb-5 md:mb-8 font-dnf-bitbit">
@@ -506,7 +507,7 @@ function JoinPage() {
             )}
 
             {step === 2 && (
-              <section className="p-2.5 my-3 w-full md:w-1/2">
+              <section className="p-2.5 my-3 w-full md:w-1/2 h-[460px] md:h-full">
                 <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
                   <div className="w-4/5">
                     <h2 className="text-[38px] text-center mb-6 font-dnf-bitbit">
@@ -607,7 +608,7 @@ function JoinPage() {
             )}
 
             {step === 3 && (
-              <section className="p-2.5 my-3 w-full md:w-1/2">
+              <section className="p-2.5 my-3 w-full md:w-1/2 h-[460px] md:h-full">
                 <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
                   <div className="w-4/5">
                     <h2 className="text-[38px] text-center mb-6 font-dnf-bitbit">
@@ -833,10 +834,10 @@ function JoinPage() {
               </section>
             )}
 
-            <div className="w-full md:w-1/2 h-[190px] md:h-full">
+            <div className="w-full md:w-1/2 h-[220px] md:h-full">
               <img
                 src={StopTurtleImg}
-                className="w-full rounded-tr-none md:rounded-tr-[20px] rounded-bl-[20px] md:rounded-bl-none rounded-br-[20px] md:rounded-br-none md:rounded-br-[20px] h-full object-cover"
+                className="w-full rounded-tr-none md:rounded-tr-[20px] rounded-bl-[20px] md:rounded-bl-none rounded-br-[20px] h-full object-cover"
                 draggable="false"
               />
             </div>

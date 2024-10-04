@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { useWeb3Store } from './useWeb3Store';
+import { changeTransactionStateToStart, changeTransactionStateToEnd } from '../apis/tradeApi';
 
 interface TransactionDetails {
   buyer: string,
@@ -13,7 +14,7 @@ interface TransactionDetails {
 interface EscrowState {
   transactionDetails: TransactionDetails | null;
   error: string | null;
-  createTransaction: (transactionId: number, seller: string, amount: number, turtleId: string, buyerId: string, sellerId: string ) => Promise<boolean | undefined>;
+  createTransaction: (transactionId: number, seller: string, amount: number, turtleUuid: string, buyerUuid: string, sellerUuid: string ) => Promise<boolean | undefined>;
   releaseFunds: (transactionId: number) => Promise<boolean | undefined>;
   refund: (transactionId: number) => Promise<void>;
   getTransactionDetails: (transactionId: number) => Promise<void>;
@@ -25,7 +26,7 @@ export const useEscrowStore = create<EscrowState>((set) => ({
   transactionDetails: null,
   error: null,
 
-  createTransaction: async (transactionId: number, seller: string, amount: number, turtleId: string, buyerId: string, sellerId: string) => {
+  createTransaction: async (transactionId: number, seller: string, amount: number, turtleUuid: string, buyerUuid: string, sellerUuid: string) => {
     const { account } = useWeb3Store.getState();
     const escrowContract = useWeb3Store.getState().getEscrowContract();
     if (!escrowContract || !account) {
@@ -34,7 +35,10 @@ export const useEscrowStore = create<EscrowState>((set) => ({
     }
 
     try {
-      await escrowContract.methods.createTransaction(transactionId, seller, amount, turtleId, buyerId, sellerId).send({ from: account });
+      // 블록체인 트랜잭션 생성 함수 호출
+      await escrowContract.methods.createTransaction(transactionId, seller, amount, turtleUuid, buyerUuid, sellerUuid).send({ from: account });
+      // 거래에 대한 상태 변경 api
+      await changeTransactionStateToStart(transactionId);
       set({ error: null });
       return true;
     } catch {
@@ -52,7 +56,10 @@ export const useEscrowStore = create<EscrowState>((set) => ({
     }
 
     try {
+      // 블록체인 트랜잭션 거래 완료 함수 호출
       await escrowContract.methods.releaseFunds(transactionId).send({ from: account });
+      // 거래에 대한 상태 변경 api
+      await changeTransactionStateToEnd(transactionId);
       set({ error: null });
       return true;
     } catch {

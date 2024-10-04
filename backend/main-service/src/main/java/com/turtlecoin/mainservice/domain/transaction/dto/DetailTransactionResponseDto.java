@@ -11,6 +11,7 @@ public class DetailTransactionResponseDto {
     private Long transactionId;
     private Long sellerId;
     private String sellerName;
+    private String documentHash;
     private Long turtleId;
     private String scientificName;
     private Double price;
@@ -20,6 +21,8 @@ public class DetailTransactionResponseDto {
     private String sellerUuid;
     private String sellerAddress;
     private String turtleUuid;
+    private Long buyerId;
+    private String buyerUuid;
     private int weight;
     private String content;
     private List<String> transactionTag;  // 태그 목록

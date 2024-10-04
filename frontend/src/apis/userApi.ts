@@ -142,6 +142,9 @@ interface LoginResponseData {
       phoneNumber: string;
       nickname: string;
       profileImage: string;
+      uuid: string;
+      name: string;
+      birth: string;
     };
   };
 }
@@ -175,7 +178,19 @@ interface CreateEmailRequestResponseData {
 // 하단은 내 정보 - 미작성
 //---------------------------
 
+
 // 내 거북이들 확인하기
+export const getMyTurtle = async () => {
+  return apiRequest(() =>
+    authAxios.get("/main/user/turtle", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      timeout: 10000,
+    })
+  );
+};
 
 // 내 거북이 상세 조회
 
@@ -192,14 +207,23 @@ const getMyTransaction = async () => {
   );
 };
 
+
 // 내 거래 내역 상세 조회
 
+
 // 프로필사진 수정
+interface Data {
+  url: string;
+}
 export const patchProfileImage = async (profileImg: File) => {
   const formData = new FormData();
   formData.append("profileImage", profileImg);
 
-  const response = await apiRequest<{ status: number; message: string }>(() =>
+  const response = await apiRequest<{
+    status: number;
+    data: Data;
+    message: string;
+  }>(() =>
     authAxios.patch("/main/user/image", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -220,3 +244,4 @@ export {
   createEmailRequest,
   getMyTransaction,
 };
+

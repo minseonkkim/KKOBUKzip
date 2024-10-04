@@ -9,6 +9,7 @@ import CompleteBreedDocument from "../document/complete/CompleteBreedDocument";
 import { AdminAssignDocumentDataType, AdminBreedDocumentDataType, AdminDeathDocumentDataType } from "../../types/document";
 import CompleteAssignGrantDocument from "../document/complete/CompleteAssignGrantDocument";
 import CompleteDeathDocument from "../document/complete/CompleteDeathDocument";
+import formatDate from "../../utils/formatDate";
 
 // 더미데이터
 const exampleData: AdminBreedDocumentDataType = {
@@ -101,8 +102,16 @@ const exampleData3: AdminDeathDocumentDataType = {
 };
 
 
+interface MyTurtleProps{
+  name: string;
+  scientificName: string;
+  gender: string;
+  weight: number;
+  birth: string;
+}
 
-export default function MyTurtle() {
+
+export default function MyTurtle({name, scientificName, gender, weight, birth}:MyTurtleProps) {
   const navigate = useNavigate();
   const [selectedMenu, setSelectedMenu] = useState(0);  // 0은 인공증식, 1은 양도양수, 2는 폐사
 
@@ -149,8 +158,7 @@ export default function MyTurtle() {
     <>
       <div className="border-[2px] rounded-[20px] p-2 md:p-[15px] bg-[#f8f8f8]">
         <div className="flex flex-row justify-between items-center mb-3">
-          <div className="text-[18px] md:text-[20px]">꼬북이</div>
-          <div className="font-bold text-gray-400">24.09.01</div>
+          <div className="text-[18px] md:text-[20px]">{name}</div>
         </div>
         <img
           src={TmpTurtleImg}
@@ -204,10 +212,10 @@ export default function MyTurtle() {
                     <img src={TmpTurtleImg} className="object-cover rounded-[10px] w-full h-[155px] md:h-[180px]" draggable="false" alt="turtle image"/>
                 </div>
                 <div className="w-1/2 md:text-[19px] text-[17px] flex flex-col space-y-2">
-                    <div>이름: 김거북</div>
-                    <div>종: 페닐슐라쿠터</div>
-                    <div>성별 : 암컷</div>
-                    <div>생년월일 : 24년 8월 30일</div>
+                    <div>이름: {name}</div>
+                    <div>종: {scientificName}</div>
+                    <div>성별 : {gender == "MALE" ? "수컷" : "암컷"}</div>
+                    <div>생년월일 : {formatDate(birth)}</div>
                 </div>
             </div>
 

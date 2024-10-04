@@ -67,7 +67,7 @@ public class TurtleService {
     public ResponseEntity<?> getTurtleById(Long turtleId) {
         try {
             Turtle turtle = turtleRepository.findById(turtleId)
-                    .orElseThrow(() -> new IllegalArgumentException("해당 ID의 거북이를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new TurtleNotFoundException("해당 ID의 거북이를 찾을 수 없습니다."));
 
             TurtleResponseDTO data = TurtleResponseDTO.builder()
                     .id(turtle.getId())

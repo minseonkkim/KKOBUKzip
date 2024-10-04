@@ -67,7 +67,7 @@ public class EmailService {
                 throw new VerificationNotFoundException("올바른 요청이 아닙니다. (Redis에 이메일에 대한 인증코드가 저장되지 않음)");
             }
             Map<String, Object> responseBody = new HashMap<>();
-            if(storedCode.equals(emailDto.getVerification())){
+            if(!storedCode.equals(emailDto.getVerification())){
                 throw new WrongVerificationCodeException("이메일 인증번호가 일치하지 않습니다.");
             }
         }catch(VerificationNotFoundException e){
