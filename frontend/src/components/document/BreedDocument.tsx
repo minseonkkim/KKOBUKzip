@@ -64,27 +64,27 @@ function BreedDocument() {
 
     const formData = new FormData();
 
-    const locationImgBlob = new Blob([locationImg], {
-      type: locationImg.type,
-    });
-    formData.append("locationSpecification", locationImgBlob, locationImg.name);
-    const multiplicationImgBlob = new Blob([multiplicationImg], {
-      type: multiplicationImg.type,
-    });
-    formData.append(
-      "multiplicationMethod",
-      multiplicationImgBlob,
-      multiplicationImg.name
-    );
+    // const locationImgBlob = new Blob([locationImg], {
+    //   type: locationImg.type,
+    // });
+    // formData.append("locationSpecification", locationImgBlob, locationImg.name);
+    // const multiplicationImgBlob = new Blob([multiplicationImg], {
+    //   type: multiplicationImg.type,
+    // });
+    // formData.append(
+    //   "multiplicationMethod",
+    //   multiplicationImgBlob,
+    //   multiplicationImg.name
+    // );
 
-    const shelterImgBlob = new Blob([shelterImg], {
-      type: shelterImg.type,
-    });
-    formData.append("shelterSpecification", shelterImgBlob, shelterImg.name);
+    // const shelterImgBlob = new Blob([shelterImg], {
+    //   type: shelterImg.type,
+    // });
+    // formData.append("shelterSpecification", shelterImgBlob, shelterImg.name);
 
-    // formData.append("locationSpecification", locationImg);
-    // formData.append("multiplicationMethod", multiplicationImg);
-    // formData.append("shelterSpecification", shelterImg);
+    formData.append("locationSpecification", locationImg);
+    formData.append("multiplicationMethod", multiplicationImg);
+    formData.append("shelterSpecification", shelterImg);
     // 신청인 정보는 applicant에서 넘어가기에 작성 안 해도 됨
     // 마더빠더 UUID 검증할것
     // 적당히 useEffect 내부에서 detail에 반영하면 될 듯

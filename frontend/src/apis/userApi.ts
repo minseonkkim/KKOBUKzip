@@ -59,7 +59,8 @@ const logoutRequest = async (): Promise<{
       {},
       {
         headers: {
-          "Refresh-Token": localStorage.getItem("refreshToken") || "",
+          "Refresh-Token":
+            "Bearer " + localStorage.getItem("refreshToken") || "",
         },
       }
     )
@@ -131,15 +132,17 @@ interface LoginResponseData {
   status: number;
   message: string;
   data: {
-    accessToken: string;
-    refreshToken: string;
-    role: string; // 유저는 user 관리자는 admin
-    userId: number;
-    email: string;
-    address: string;
-    phoneNumber: string;
-    nickname: string;
-    profileImage: string;
+    data: {
+      accessToken: string;
+      refreshToken: string;
+      role: string; // 유저는 user 관리자는 admin
+      userId: number;
+      email: string;
+      address: string;
+      phoneNumber: string;
+      nickname: string;
+      profileImage: string;
+    };
   };
 }
 
@@ -191,9 +194,6 @@ const getMyTransaction = async () => {
 
 // 내 거래 내역 상세 조회
 
-
-
-
 // 프로필사진 수정
 export const patchProfileImage = async (profileImg: File) => {
   const formData = new FormData();
@@ -210,8 +210,6 @@ export const patchProfileImage = async (profileImg: File) => {
   );
   return response;
 };
-
-
 
 export {
   registerRequest,

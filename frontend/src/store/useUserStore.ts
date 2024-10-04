@@ -16,8 +16,8 @@ export const useUserStore = create<UserStore>()(
       userInfo: null,
       isLogin: false,
 
-      setLogin: (userInfo: UserInfo) =>
-        set({
+      setLogin: (userInfo: UserInfo) => {
+        return set({
           userInfo: {
             userId: userInfo.userId,
             email: userInfo.email,
@@ -28,7 +28,8 @@ export const useUserStore = create<UserStore>()(
             role: userInfo.role,
           },
           isLogin: true,
-        }),
+        });
+      },
       setLogout: () => {
         set({ userInfo: null, isLogin: false });
         localStorage.clear();
