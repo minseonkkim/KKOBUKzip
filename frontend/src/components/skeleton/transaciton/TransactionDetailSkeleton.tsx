@@ -38,19 +38,22 @@ const TransactionDetailSkeleton = () => {
       </div>
 
       {/* Right Side (Price and Action) */}
-      <div className="my-5 mb-10 md:my-0 md:mb-0 w-full md:w-[48%] h-[130px] md:h-[675px] bg-[#EAF5DD] rounded-[20px] flex flex-col justify-start items-center">
-        <div className="w-full px-[20px] md:px-[40px] h-full flex justify-center items-center mt-3 md:mt-0">
-          <div className="w-full flex flex-row md:flex-col justify-between items-center mb-4">
-            <div className="whitespace-nowrap flex flex-row md:flex-col xl:flex-row items-center">
-              <div className="font-bold text-[20px] md:text-[27px]">
-                판매가&nbsp;&nbsp;
-              </div>
-              <Skeleton height={40} width={100} />
+      <div className="my-5 mb-10 md:my-0 md:mb-0 w-full md:w-[48%] h-[130px] md:h-[675px] bg-[#f4f4f4] rounded-[20px] flex flex-col justify-start items-center">
+      <div className="w-full px-[20px] md:px-[40px] h-full flex justify-center items-center mt-3 md:mt-0">
+        <div className="w-full flex flex-row md:flex-col justify-between items-center mb-4">
+          <div className="whitespace-nowrap flex flex-row md:flex-col xl:flex-row items-center">
+            <div className="font-bold text-[20px] md:text-[25px]">
+              <Skeleton width={100} />
             </div>
-            <Skeleton height={40} width={150} />
+            <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
+              <Skeleton width={150} height={40} />
+            </div>
           </div>
+
+          <Skeleton width={150} height={50} className="mt-0 md:mt-5" />
         </div>
       </div>
+    </div>
     </>
   );
 };
