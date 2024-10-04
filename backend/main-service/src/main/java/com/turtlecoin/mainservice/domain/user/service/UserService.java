@@ -4,10 +4,7 @@ import com.turtlecoin.mainservice.domain.chat.service.SseService;
 import com.turtlecoin.mainservice.domain.s3.service.ImageUploadService;
 import com.turtlecoin.mainservice.domain.turtle.dto.TurtleResponseDTO;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
-import com.turtlecoin.mainservice.domain.user.dto.LoginUserDto;
-import com.turtlecoin.mainservice.domain.user.dto.UserRequestDto;
-import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
-import com.turtlecoin.mainservice.domain.user.dto.UserTurtleResponseDTO;
+import com.turtlecoin.mainservice.domain.user.dto.*;
 import com.turtlecoin.mainservice.domain.user.entity.Role;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.domain.user.exception.DuplicatedUserEmail;
@@ -20,6 +17,7 @@ import com.turtlecoin.mainservice.global.response.ResponseVO;
 import io.jsonwebtoken.Jwts;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -34,6 +32,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserService {
 
@@ -138,11 +137,47 @@ public class UserService {
         return user.getProfileImage();
     }
 
-    public ResponseEntity<?> getTurtlesByUserId(Long userId) {
+    public List<FeignTurtleResponseDTO> getTurtlesdtoByUserId(Long userId) {
+        log.info("거북이 조회 호출");
         try {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+            log.info("사용자 조회 완료");
+            List<FeignTurtleResponseDTO> dtos = user.getTurtles().stream()
+                    .map(turtle -> FeignTurtleResponseDTO.builder()
+                            .id(turtle.getId())
+                            .gender(turtle.getGender())
+                            .birth(turtle.getBirth())
+                            .weight(turtle.getWeight())
+                            .userId(user.getId())
+                            .build())
+                    .toList();
+            log.info("처리 완료");
+            return dtos;
+        } catch (Exception e) {
+            log.info("에러 메시지 : " + e.getMessage());
+            return null;
+        }
+    }
 
+
+
+//            log.info("DTO로 거북이 변환 완료");
+//            int cnt = dtos.size();
+//            log.info("cnt : {}", cnt);
+//            Map<String, Object> data = new HashMap<>();
+//
+//            data.put("data", dtos);
+//            data.put("cnt", cnt);
+//
+//            return
+
+    public ResponseEntity<?> getTurtlesByUserId (Long userId) {
+        log.info("거북이 조회 호출");
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+            log.info("사용자 조회 완료");
             List<UserTurtleResponseDTO> dtos =  user.getTurtles().stream()
                     .map(turtle -> UserTurtleResponseDTO.builder()
                             .id(turtle.getId())
@@ -157,9 +192,9 @@ public class UserService {
                             .gender(turtle.getGender())
                             .build())
                     .toList();
-
+            log.info("DTO로 거북이 변환 완료");
             int cnt = dtos.size();
-
+            log.info("cnt : {}", cnt);
             Map<String, Object> data = new HashMap<>();
 
             data.put("data", dtos);
@@ -176,7 +211,7 @@ public class UserService {
 
         } catch (Exception e) {
             // 기타 예외 처리 (서버 오류)
-            e.printStackTrace();  // 로그 출력
+            log.error(e.getMessage());
             return new ResponseEntity<>(ResponseVO.failure("500", "서버 에러가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
