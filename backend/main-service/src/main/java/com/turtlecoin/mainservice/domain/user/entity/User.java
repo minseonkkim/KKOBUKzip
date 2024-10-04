@@ -66,6 +66,7 @@ public class User extends BaseEntity {
     }
 
     @Transactional
+
     public void modifyProfileImage(String imageURL){
         this.profileImage = imageURL;
     }
