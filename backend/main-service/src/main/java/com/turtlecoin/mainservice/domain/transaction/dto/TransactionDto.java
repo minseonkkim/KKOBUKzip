@@ -27,6 +27,7 @@ public class TransactionDto extends BaseEntity {
     @Transactional
     public Transaction toEntity() {
         return Transaction.builder()
+                .auctionFlag(false)
                 .title(title)
                 .content(content)
                 .price(price)

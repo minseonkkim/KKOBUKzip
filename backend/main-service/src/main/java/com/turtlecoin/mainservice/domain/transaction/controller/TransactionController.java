@@ -9,6 +9,8 @@ import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
+import com.turtlecoin.mainservice.domain.user.service.JWTService;
+import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,9 +29,11 @@ import java.util.Map;
 @RequestMapping("/main/transaction")
 public class TransactionController {
     private final TransactionService transactionService;
+    private final JWTUtil jwtUtil;
     private final TransactionRepository transactionRepository;
-    public TransactionController(TransactionService transactionService, TransactionRepository transactionRepository) {
+    public TransactionController(TransactionService transactionService, JWTUtil jwtUtil, TransactionRepository transactionRepository) {
         this.transactionService = transactionService;
+        this.jwtUtil = jwtUtil;
         this.transactionRepository = transactionRepository;
     }
 
@@ -63,11 +67,11 @@ public class TransactionController {
     }
 
     @PatchMapping("/start/{transactionId}")
-    public ResponseEntity<?> startTransaction(@PathVariable("transactionId") Long transactionId)  {
+    public ResponseEntity<?> startTransaction(@RequestHeader("Authorization") String token,@PathVariable("transactionId") Long transactionId)  {
         try{
             Transaction transaction = transactionRepository.findById(transactionId)
                     .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 거래 ID입니다."));
-            transaction.changeStatusToReviewDocument();
+            transaction.changeStatusToReviewDocument(jwtUtil.getIdFromToken(token), jwtUtil.getUuidFromToken(token));
             transactionRepository.save(transaction);
             return new ResponseEntity<>(ResponseVO.success("거래 상태가 정상적으로 업데이트되었습니다."), HttpStatus.OK);
         } catch (IllegalArgumentException e) {

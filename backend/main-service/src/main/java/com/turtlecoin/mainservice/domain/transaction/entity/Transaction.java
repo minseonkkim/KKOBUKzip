@@ -55,6 +55,9 @@ public class Transaction extends BaseEntity {
     @Column(name = "buyer_id")
     private Long buyerId;
 
+    @Column(name="buyer_uuid")
+    private String buyerUuid;
+
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     @Column(name = "transaction_photos")
     @Builder.Default
@@ -66,7 +69,9 @@ public class Transaction extends BaseEntity {
 
 
     @Transactional
-    public void changeStatusToReviewDocument() {
+    public void changeStatusToReviewDocument(Long id, String uuid) {
+        this.buyerId = id;
+        this.buyerUuid = uuid;
         this.progress = TransactionProgress.REVIEW_DOCUMENT;
     }
 
@@ -80,6 +85,8 @@ public class Transaction extends BaseEntity {
 
         return DetailTransactionResponseDto.builder()
                 .transactionId(this.id)
+                .buyerId(this.getBuyerId())
+                .buyerUuid(this.getBuyerUuid())
                 .sellerId(this.turtle.getUser().getId()) // Seller ID
                 .sellerName(this.turtle.getUser().getName()) // Seller Name
                 .turtleId(this.turtle.getId()) // Turtle ID
