@@ -13,19 +13,6 @@ function MainPage() {
   const [showTurtleMoving, setShowTurtleMoving] = useState(true);
   const [showContent, setShowContent] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
-  const [showTurtle, setShowTurtle] = useState(true);
-
-  const [scrollPosition, setScrollPosition] = useState(0);
-
-  // 스크롤 감지
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollPosition(window.scrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     const timers: NodeJS.Timeout[] = [];
@@ -68,10 +55,9 @@ function MainPage() {
             alt="Background"
             draggable="false"
           />
-
         </div>
 
-        {showTurtle && (
+        {
           <img
             src={showTurtleMoving ? TurtleStop : TurtleMoving}
             loading="lazy"
@@ -82,7 +68,7 @@ function MainPage() {
             draggable="false"
             alt={showTurtleMoving ? "Turtle Stop" : "Turtle Moving"}
           />
-        )}
+        }
         <div className="absolute top-[170px] w-full text-center flex flex-col items-center">
           {showContent && (
             <div className="left-0 text-center flex flex-col items-center">
@@ -129,7 +115,6 @@ function MainPage() {
           )}
         </div>
       </div>
-
 
       <style>{`
         .turtle-animation {

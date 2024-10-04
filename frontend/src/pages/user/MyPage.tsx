@@ -24,8 +24,7 @@ import { getMyTransaction, patchProfileImage } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
 
 function MyPage() {
-  
-    const profileImages = [
+  const profileImages = [
     CustomProfile1,
     CustomProfile2,
     CustomProfile3,
@@ -45,8 +44,15 @@ function MyPage() {
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
-  const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } =
-    EscrowDummy.data.data.transactions[0];
+  const {
+    transactionId,
+    sellerName,
+    sellerId,
+    transactionTag,
+    turtleId,
+    sellerAddress,
+    price,
+  } = EscrowDummy.data.data.transactions[0];
 
   useEffect(() => {
     const init = async () => {
@@ -77,39 +83,37 @@ function MyPage() {
   };
 
   const changeProfileImage = async () => {
-  if (!profileImage) {
-    console.error('Profile image is not defined');
-    return; 
-  }
+    if (!profileImage) {
+      console.error("Profile image is not defined");
+      return;
+    }
 
-  const response = await fetch(profileImage);
-  const blob = await response.blob();
-  const imageName = profileImage.split('/').pop() || 'default.gif';
+    const response = await fetch(profileImage);
+    const blob = await response.blob();
+    const imageName = profileImage.split("/").pop() || "default.gif";
 
-  // blob의 MIME 타입을 명시적으로 image/gif로 변환
-  const gifBlob = blob.slice(0, blob.size, 'image/gif');
-  const file = new File([gifBlob], imageName, { type: 'image/gif' });
+    // blob의 MIME 타입을 명시적으로 image/gif로 변환
+    const gifBlob = blob.slice(0, blob.size, "image/gif");
+    const file = new File([gifBlob], imageName, { type: "image/gif" });
 
+    try {
+      const result = await patchProfileImage(file);
 
-  try {
-    const result = await patchProfileImage(file);
+      const newProfileImageUrl = result.data?.data.url;
 
-    const newProfileImageUrl = result.data?.data.url;
-    
-    if (newProfileImageUrl) {
-    useUserStore.getState().setProfileImage(newProfileImageUrl);
+      if (newProfileImageUrl) {
+        useUserStore.getState().setProfileImage(newProfileImageUrl);
 
-    // 모달 닫기
-    closeCustomModal();
-    console.log("프로필사진 업데이트 완료:", newProfileImageUrl);
-  } else {
-    console.error('No valid profile image URL found in response:', result);
-  }
-    
-  } catch (error) {
-    console.error('Error uploading image:', error);
-  }
-}
+        // 모달 닫기
+        closeCustomModal();
+        console.log("프로필사진 업데이트 완료:", newProfileImageUrl);
+      } else {
+        console.error("No valid profile image URL found in response:", result);
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
+  };
 
   return (
     <>
@@ -240,7 +244,10 @@ function MyPage() {
                 </div>
               </div>
 
-              <button className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white" onClick={changeProfileImage}>
+              <button
+                className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white"
+                onClick={changeProfileImage}
+              >
                 수정하기
               </button>
             </div>
