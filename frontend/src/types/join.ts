@@ -4,8 +4,8 @@ export interface JoinDataType {
   foreignFlag: boolean;
   name: string;
   nickname: string;
-  birthday: string;
-  phoneNumber: string;
+  birth: string;
+  phonenumber: string;
   address: string;
   profileImage?: File;
 }

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
-import useDeviceStore from "../../store/useDeviceStore";
+// import useDeviceStore from "../../store/useDeviceStore";
 import ErrorMessage from "../../components/common/join/ErrorMessage";
 import { JoinDataType } from "../../types/join";
 import {
@@ -30,7 +30,7 @@ interface ErrorStateType {
 }
 
 function JoinPage() {
-  const isMobile = useDeviceStore((state) => state.isMobile);
+  // const isMobile = useDeviceStore((state) => state.isMobile);
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
   const [step, setStep] = useState(1);
@@ -40,8 +40,8 @@ function JoinPage() {
     foreignFlag: false,
     name: "",
     nickname: "",
-    birthday: "",
-    phoneNumber: "",
+    birth: "",
+    phonenumber: "",
     address: "",
   });
   const [detailedAddress, setDetailAddress] = useState("");
@@ -82,13 +82,13 @@ function JoinPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (postcodeData?.jibunAddress) {
+    if (postcodeData?.roadAddress) {
       setData((prev) => ({
         ...prev,
-        address: postcodeData.jibunAddress,
+        address: postcodeData.roadAddress,
       }));
     }
-  }, [postcodeData?.jibunAddress]);
+  }, [postcodeData?.roadAddress]);
 
   const onChangeHandle =
     (key: keyof JoinDataType) => (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,6 +124,7 @@ function JoinPage() {
     (evt: React.ChangeEvent<HTMLInputElement>) => {
       const value = evt.target.value;
       setData((prev) => ({ ...prev, [type]: value }));
+      console.log(data);
     };
 
   const confirmPasswordChangeHandle = (
@@ -312,8 +313,8 @@ function JoinPage() {
 
       const jsonData = {
         ...data,
-        birth: `${birth.y}-${birth.m}-${birth.d}`,
-        address: `${data.address} / ${detailedAddress}`,
+        birth: `${birth.y}-${birth.m && ((birth.m)/10 >= 1) ? birth.m : `0${birth.m}`}-${birth.d}`,
+        address: `${data.address}/${detailedAddress}`,
         phonenumber: `${phoneNumber.first}-${phoneNumber.second}-${phoneNumber.third}`,
       };
       // formData.append("data", JSON.stringify(jsonData));
@@ -322,7 +323,6 @@ function JoinPage() {
         type: "application/json",
       });
       formData.append("data", blob);
-      console.log(jsonData);
       const rst = await registerRequest(formData);
       if (rst.success) {
         alert("회원가입 완료!");
