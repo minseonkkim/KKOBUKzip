@@ -236,6 +236,7 @@ function MyPage() {
                 <MyTurtle
                   key={turtle.id}
                   turtleId={turtle.id}
+                  turtleUuid={turtle.turtleUuid}
                   name={turtle.name}
                   scientificName={turtle.scientificName}
                   gender={turtle.gender}
