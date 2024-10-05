@@ -1,5 +1,6 @@
 package com.turtlecoin.auctionservice.domain.auction.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.turtlecoin.auctionservice.domain.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -55,6 +56,7 @@ public class Auction extends BaseEntity {
 
     @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
+    @JsonManagedReference
     private List<AuctionPhoto> auctionPhotos = new ArrayList<>();
 
     @OneToMany(mappedBy = "auction")

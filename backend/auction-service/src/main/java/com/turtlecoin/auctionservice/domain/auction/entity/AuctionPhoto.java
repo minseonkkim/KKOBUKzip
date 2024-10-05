@@ -1,5 +1,6 @@
 package com.turtlecoin.auctionservice.domain.auction.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.turtlecoin.auctionservice.domain.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,6 +20,7 @@ public class AuctionPhoto extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_id", nullable = false)
+    @JsonBackReference
     private Auction auction;
 
     public String getImageUrl() {

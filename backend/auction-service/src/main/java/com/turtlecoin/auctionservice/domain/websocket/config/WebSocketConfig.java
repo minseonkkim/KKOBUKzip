@@ -2,8 +2,12 @@ package com.turtlecoin.auctionservice.domain.websocket.config;
 
 
 import com.turtlecoin.auctionservice.domain.websocket.interceptor.WebSocketHandshakeInterceptor;
+import com.turtlecoin.auctionservice.feign.MainClient;
+import com.turtlecoin.auctionservice.global.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.*;
 
@@ -11,6 +15,10 @@ import org.springframework.web.socket.config.annotation.*;
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final JWTUtil jwtUtil;
+    private final MainClient mainClient;
+    private final RedisTemplate redisTemplate;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -21,7 +29,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws/auction") //우리의 endpoint
-                .setAllowedOrigins("*");
+                .setAllowedOrigins("*")
+                .addInterceptors(new WebSocketHandshakeInterceptor(jwtUtil, mainClient, redisTemplate));
         System.out.println("registry: "+registry);
     }
     @Override
