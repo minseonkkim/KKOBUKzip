@@ -188,7 +188,18 @@ public class AuctionService {
                     .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다: " + auctionId));
 
             TurtleResponseDTO turtle = mainClient.getTurtle(auction.getTurtleId());
+
+            if (turtle == null) {
+                log.warn("거북이 정보를 찾을 수 없습니다: turtleId={}", auction.getTurtleId());
+                throw new TurtleNotFoundException("Main-service에서 거북이정보를 찾을 수 없습니다.");
+            }
+            log.info("TurtleID: {}",turtle.getId());
             UserResponseDTO user = mainClient.getUserById(auction.getUserId());
+            if (turtle == null) {
+                log.warn("사용자 정보를 찾을 수 없습니다: UserId={}", auction.getUserId());
+                throw new UserNotFoundException("Main-service에서 사용자정보를 찾을 수 없습니다.");
+            }
+            log.info("UserID: {}",user.getUserId());
 
             String key = AUCTION_BID_KEY+auction;
 
