@@ -17,20 +17,20 @@ export const useUserStore = create<UserStore>()(
       userInfo: null,
       isLogin: false,
 
-      setLogin: (userInfo: UserInfo) => {
+      setLogin: (userInfo: Partial<UserInfo>) => {
         return set({
           userInfo: {
-            userId: userInfo.userId,
-            uuid: userInfo.uuid,
-            name: userInfo.name,
-            birth: userInfo.birth,
-            email: userInfo.email,
-            address: userInfo.address,
-            phoneNumber: userInfo.phoneNumber,
+            userId: userInfo.userId!,
+            uuid: userInfo.uuid!,
+            name: userInfo.name!,
+            birth: userInfo.birth!,
+            email: userInfo.email!,
+            address: userInfo.address!,
+            phoneNumber: userInfo.phoneNumber!,
             foreignFlag: false,
-            nickname: userInfo.nickname,
-            profileImage: userInfo.profileImage,
-            role: userInfo.role,
+            nickname: userInfo.nickname!,
+            profileImage: userInfo.profileImage!,
+            role: userInfo.role!,
           },
           isLogin: true,
         });
