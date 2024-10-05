@@ -18,6 +18,7 @@ export interface AuctionItemDataType {
     gender: string;
     weight: number;
     userId: number;
+    scientificName: string;
   };
 }
 

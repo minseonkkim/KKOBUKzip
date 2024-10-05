@@ -169,6 +169,7 @@ export default function MyTurtle({turtleId, name, scientificName, gender, weight
         </div>
         <img
           src={TmpTurtleImg}
+          loading="lazy"
           className="rounded-[10px] w-full lg:h-[160px] md:h-[170px] h-[130px] object-cover"
           draggable="false"
           alt="turtle image"
