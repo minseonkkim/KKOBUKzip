@@ -1,4 +1,3 @@
-// TurtleListLayout.tsx
 import { Helmet } from "react-helmet-async";
 import Header from "../components/common/Header";
 import { GrPowerReset } from "@react-icons/all-files/gr/GrPowerReset";
@@ -30,11 +29,10 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   isProgressItemChecked,
   setIsProgressItemChecked,
 }) => {
-  // const [isChecked, setIsChecked] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [itemLoading, setItemLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
-  const [pages, setPages] = useState(0); // next page, 0부터~
+  const [pages, setPages] = useState(0);
   const [maxPage, setMaxPage] = useState(-1);
 
   const [ref, inView] = useInView({ threshold: 1 });
@@ -59,7 +57,6 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
 
   const loadMore = async () => {
     if (itemLoading || pages >= maxPage) return;
-    console.log(pages >= maxPage);
     setItemLoading(true);
     try {
       const response = await fetchData(pages, filters);
@@ -83,8 +80,9 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   const searchHandle = async () => {
     setPages(0);
     await fetchData(0, filters, true);
-    // console.log(filters);
+    setIsFilterOpen(false);
   };
+
   return (
     <>
       <Helmet>
@@ -124,14 +122,15 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
           </div>
 
           <div className="flex flex-row items-center space-x-3">
-            <div className="flex items-center xl:w-[320px] lg:w-[190px] md:w-[300px] h-[38px] bg-[#f2f2f2] rounded-[10px] p-1">
+            {/* <div className="flex items-center xl:w-[320px] lg:w-[190px] md:w-[300px] h-[38px] bg-[#f2f2f2] rounded-[10px] p-1">
               <IoIosSearch className="text-gray-400 mx-2 text-[20px] md:text-[30px]" />
               <input
                 type="text"
                 placeholder="종을 검색하세요"
                 className="w-full h-full bg-[#f2f2f2] text-[16px] md:text-[19px] focus:outline-none p-1"
+                onChange={(e) => updateFilter("species", e.target.value)}
               />
-            </div>
+            </div> */}
 
             <div
               className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[30px] w-[80px] md:w-[90px] h-[42px] cursor-pointer hover:text-[#4B721F]"
@@ -166,9 +165,11 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
         <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
           {itemLoading ? (
             <>
-              {Array(6).fill(null).map((_, index) => (
-                <AuctionTurtleSkeleton key={index} />
-              ))}
+              {Array(6)
+                .fill(null)
+                .map((_, index) => (
+                  <AuctionTurtleSkeleton key={index} />
+                ))}
             </>
           ) : (
             items
