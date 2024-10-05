@@ -28,7 +28,11 @@ import {
 } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
 import { TurtleDataType } from "../../types/turtle";
+import { useNavigate } from "react-router-dom";
+
+
 function MyPage() {
+  const navigate = useNavigate();
   const profileImages = [
     CustomProfile1,
     CustomProfile2,
@@ -48,12 +52,9 @@ function MyPage() {
   const [turtleData, setTurtleData] = useState<TurtleDataType[]>([]);
   const [selectedMenu, setSelectedMenu] = useState(1); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
-  const [myTransactions, setMyTransactions] = useState<
-    TransactionItemDataType[]
-  >([]);
+  const [myTransactions, setMyTransactions] = useState<TransactionItemDataType[]>([]);
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
-  // const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } = EscrowDummy.data.data.transactions[0];
 
   useEffect(() => {
     const init = async () => {
@@ -76,12 +77,14 @@ function MyPage() {
 
     fetchTurtleData();
   }, []);
+
   const openCustomModal = () => {
     setIsCustomModalOpen(true);
   };
   const closeCustomModal = () => {
     setIsCustomModalOpen(false);
   };
+
   const handleCustomOverlayClick = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
@@ -89,10 +92,12 @@ function MyPage() {
       closeCustomModal();
     }
   };
+
   const getRandomProfileImage = () => {
     const randomNumber = Math.floor(Math.random() * profileImages.length);
     setProfileImage(profileImages[randomNumber]);
   };
+
   const changeProfileImage = async () => {
     if (!profileImage) {
       console.error("Profile image is not defined");
@@ -120,6 +125,11 @@ function MyPage() {
       console.error("Error uploading image:", error);
     }
   };
+
+  const goToBreedDocPage = () => {
+    navigate("/doc-form/breed");
+  }
+
   return (
     <>
       <Helmet>
@@ -174,7 +184,12 @@ function MyPage() {
           
           </div>
           {selectedMenu === 1 &&
-          <button className="text-[20px] rounded-[10px] bg-[#F5E0E4] h-[37px] px-3 border-2 border-dotted border-[#353535]">인공증식 등록</button>
+          <button
+            className="text-[20px] rounded-[10px] bg-[#F5E0E4] h-[37px] px-3 border-2 border-dotted border-[#353535]"
+            onClick={goToBreedDocPage}
+          >
+            인공증식 등록
+          </button>
           }
           
         </div>
