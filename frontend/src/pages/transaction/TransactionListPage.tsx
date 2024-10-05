@@ -6,16 +6,17 @@ import { TransactionItemDataType } from "../../types/transaction";
 
 const TransactionListPage = () => {
   const [TransactionItems, setTransactionItems] = useState<JSX.Element[]>([]);
-  const [ProgressTransactionItems, setProgressTransactionItems] = useState<
-    JSX.Element[]
-  >([]);
+  const [ProgressTransactionItems, setProgressTransactionItems] = useState<JSX.Element[]>([]);
   const [isProgressItem, setIsProgressItem] = useState(false);
+  const [pages, setPages] = useState(0); 
+  const [filters, setFilters] = useState<object>({}); 
+
 
   const fetchData = useCallback(
-    async (page: number, filters: object, isSearch?: boolean) => {
+    async (page: number, filters: object, isSearch?: boolean): Promise<void> => {
       const result = await getTransactionData({ page, ...filters });
 
-      if (result.success) {
+      if (result?.success) {
         const progressItems: JSX.Element[] = [];
         const transactionItems = result.data.data.data.transactions.map(
           (item: TransactionItemDataType) => {
@@ -27,18 +28,19 @@ const TransactionListPage = () => {
             return <TransactionTurtle key={item.transactionId} item={item} />;
           }
         );
+
         if (isSearch) {
-          setTransactionItems(() => [...transactionItems]);
-          setProgressTransactionItems(() => [...progressItems]);
+          setTransactionItems(transactionItems);
+          setProgressTransactionItems(progressItems);
         } else {
           setTransactionItems((prev) => [...prev, ...transactionItems]);
           setProgressTransactionItems((prev) => [...prev, ...progressItems]);
         }
-        return result;
       }
     },
     []
   );
+
 
   const progressFilter = () => {
     setIsProgressItem(!isProgressItem);
