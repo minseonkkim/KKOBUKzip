@@ -23,6 +23,7 @@ function LoginPage() {
   const [hide, setHide] = useState(true);
   const { setLogin } = useUserStore();
   const navigate = useNavigate();
+  const [failMessage, setFailMessage] = useState("");
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,7 +35,7 @@ function LoginPage() {
       navigate("/");
     } else {
       console.log(error);
-      alert(error);
+      setFailMessage("이메일 또는 비밀번호를 올바르지 않습니다.");
     }
   };
 
@@ -95,7 +96,7 @@ function LoginPage() {
                     </div>
                   )}
                 </div>
-
+                <div className="text-red-700 text-center">{failMessage}</div>
                 <button className="w-full bg-[#4B721F] text-[22px] text-white py-3 rounded hover:bg-[#3E5A1E]">
                   로그인하기
                 </button>
