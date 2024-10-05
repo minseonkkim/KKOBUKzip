@@ -179,32 +179,29 @@ export const getTransactionData = async ({
   maxWeight?: string;
   minPrice?: string;
   maxPrice?: string;
-  progress?: number;
+  progress?: string;
 }) => {
-  const pageQuery = page ? `page=${page}` : "page=0";
+  const pageQuery = `page=${page ? page : 0}`;
   const genderQuery = gender ? `&gender=${gender}` : "";
   const sizeQuery =
     minWeight || maxWeight
-      ? `&size=${minWeight ? minWeight : "0"}between${
-          maxWeight ? maxWeight : "999999999999"
-        }`
+      ? `&size=${minWeight ? minWeight : "0"}-${maxWeight ? maxWeight : "999999999999"}`
       : "";
-  const priceQuery =
-    minPrice || maxPrice
-      ? `&price=${minPrice ? minPrice : "0"}between${
-          maxPrice ? maxPrice : "999999999999"
-        }`
-      : "";
-  const progressQuery = progress ? `&progress=${progress}` : "";
+  
+  const cleanedMinPrice = minPrice ? minPrice.replace(/,/g, '') : "0";
+  const cleanedMaxPrice = maxPrice ? maxPrice.replace(/,/g, '') : "999999999999";
+  const priceQuery = `&price=${cleanedMinPrice}-${cleanedMaxPrice}`;
 
-  const query =
-    pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
+  const progressQuery = progress ? `&progress=${progress}` : ""; // 수정: progress string
+
+  const query = `${pageQuery}${genderQuery}${sizeQuery}${priceQuery}${progressQuery}`;
 
   const response = await apiRequest<{ data: TransactionListData }>(() =>
     guestAxios.get(`/main/transaction/?${query}`)
   );
   return response;
 };
+
 
 interface TransactionItemDetailData {
   status: number;
