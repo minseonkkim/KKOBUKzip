@@ -9,8 +9,7 @@ const TransactionListPage = () => {
   const [ProgressTransactionItems, setProgressTransactionItems] = useState<JSX.Element[]>([]);
   const [isProgressItem, setIsProgressItem] = useState(false);
   const [pages, setPages] = useState(0); 
-  const [filters, setFilters] = useState<object>({}); 
-
+  const [filters, setFilters] = useState<object>({});
 
   const fetchData = useCallback(
     async (page: number, filters: object, isSearch?: boolean): Promise<void> => {
@@ -41,9 +40,14 @@ const TransactionListPage = () => {
     []
   );
 
-
   const progressFilter = () => {
     setIsProgressItem(!isProgressItem);
+  };
+
+  const resetFilters = () => {
+    setFilters({}); 
+    setPages(0); 
+    fetchData(0, {}, true);
   };
 
   return (
@@ -53,6 +57,7 @@ const TransactionListPage = () => {
       fetchData={fetchData}
       isProgressItemChecked={isProgressItem}
       setIsProgressItemChecked={progressFilter}
+      resetFilters={resetFilters} 
     />
   );
 };

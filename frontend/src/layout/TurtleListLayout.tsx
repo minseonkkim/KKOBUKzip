@@ -20,6 +20,7 @@ interface TurtleListLayoutProps {
   ) => Promise<any>;
   isProgressItemChecked: boolean;
   setIsProgressItemChecked: () => void;
+  resetFilters: () => void;
 }
 
 const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
@@ -28,12 +29,14 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   fetchData,
   isProgressItemChecked,
   setIsProgressItemChecked,
+  resetFilters,
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [itemLoading, setItemLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
   const [pages, setPages] = useState(0);
   const [maxPage, setMaxPage] = useState(-1);
+  const [selectedFiltersText, setSelectedFiltersText] = useState("필터");
 
   const [ref, inView] = useInView({ threshold: 1 });
   const { filters, filterResetHandle, updateFilter } = useTradeFilter();
@@ -81,6 +84,18 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
     setPages(0);
     await fetchData(0, filters, true);
     setIsFilterOpen(false);
+    updateSelectedFiltersText();
+  };
+
+  const updateSelectedFiltersText = () => {
+    const filterTexts: string[] = [];
+    if (filters.gender) filterTexts.push(filters.gender === "FEMALE" ? "암컷" : "수컷");
+    if (filters.minWeight && filters.maxWeight)
+      filterTexts.push(`${filters.minWeight}~${filters.maxWeight}kg`);
+    if (filters.minPrice && filters.maxPrice)
+      filterTexts.push(`${filters.minPrice}~${filters.maxPrice}원`);
+
+    setSelectedFiltersText(filterTexts.length > 0 ? filterTexts.join(", ") : "필터");
   };
 
   return (
@@ -115,41 +130,37 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
                 {isProgressItemChecked && <FaCheck />}
               </div>
               <span className="cursor-pointer whitespace-nowrap text-[20px] md:text-[18px] xl:text-[21px]">
-                {title.includes("판매") ? "거래가능한" : "경매중인"} 거북이만
-                보기
+                {title.includes("판매") ? "거래가능한" : "경매중인"} 거북이만 보기
               </span>
             </label>
           </div>
 
           <div className="flex flex-row items-center space-x-3">
-            {/* <div className="flex items-center xl:w-[320px] lg:w-[190px] md:w-[300px] h-[38px] bg-[#f2f2f2] rounded-[10px] p-1">
-              <IoIosSearch className="text-gray-400 mx-2 text-[20px] md:text-[30px]" />
-              <input
-                type="text"
-                placeholder="종을 검색하세요"
-                className="w-full h-full bg-[#f2f2f2] text-[16px] md:text-[19px] focus:outline-none p-1"
-                onChange={(e) => updateFilter("species", e.target.value)}
-              />
-            </div> */}
-
             <div
-              className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[30px] w-[80px] md:w-[90px] h-[42px] cursor-pointer hover:text-[#4B721F]"
+              className={`flex justify-center items-center border-[2px] rounded-[30px] px-3 h-[42px] cursor-pointer hover:text-[#4B721F] hover:border-[#4B721F] ${
+                selectedFiltersText !== "필터" ? "text-[#4B721F] bg-[#E0F3C9] border-[#4B721F]" : "border-[#DADADA]"
+              }`}
               onClick={toggleFilterDiv}
             >
-              <IoFilterOutline className="text-[18px] md:text-[22px] mr-2" />
-              <span className="text-[16px] md:text-[18px]">필터</span>
+              <IoFilterOutline className={`text-[18px] md:text-[22px] mr-2 ${
+                selectedFiltersText !== "필터" ? "text-[#4B721F] font-bold" : ""
+              }`} />
+              <span className="text-[16px] md:text-[18px]">{selectedFiltersText}</span>
             </div>
             <div
-              onClick={filterResetHandle}
-              className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[360px] w-[38px] md:w-[42px] h-[38px] md:h-[42px] cursor-pointer font-bold hover:text-[#4B721F]"
+              onClick={() => {
+                resetFilters();
+                setSelectedFiltersText("필터");
+              }}
+              className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[360px] w-[38px] md:w-[42px] h-[38px] md:h-[42px] cursor-pointer font-bold hover:text-[#4B721F] hover:border-[#4B721F]"
             >
-              <GrPowerReset className="text-[18px] md:text-[20px]" />
+              <GrPowerReset className="text-[18px] md:text-[20px] " />
             </div>
           </div>
         </div>
 
         <div
-          className={`transition-all duration-300 ease-in-out transform ${
+          className={`transition-all duration-300 ease-in-out transform  ${
             isFilterOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
           } overflow-hidden`}
         >

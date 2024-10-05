@@ -181,8 +181,9 @@ export const getTransactionData = async ({
   maxPrice?: string;
   progress?: string;
 }) => {
-  const pageQuery = `page=${page ? page : 0}`;
-  const genderQuery = gender ? `&gender=${gender}` : "";
+  // const pageQuery = `page=${page ? page : 0}`;
+  const pageQuery = "";
+  const genderQuery = gender || gender !== "" ? `&gender=${gender}` : "";
   const sizeQuery =
     minWeight || maxWeight
       ? `&size=${minWeight ? minWeight : "0"}-${maxWeight ? maxWeight : "999999999999"}`
@@ -190,15 +191,17 @@ export const getTransactionData = async ({
   
   const cleanedMinPrice = minPrice ? minPrice.replace(/,/g, '') : "0";
   const cleanedMaxPrice = maxPrice ? maxPrice.replace(/,/g, '') : "999999999999";
-  const priceQuery = `&price=${cleanedMinPrice}-${cleanedMaxPrice}`;
+  const priceQuery = minPrice || maxPrice ? `&price=${cleanedMinPrice}-${cleanedMaxPrice}` : "";
 
-  const progressQuery = progress ? `&progress=${progress}` : ""; // 수정: progress string
+  const progressQuery = progress ? `&progress=${progress}` : ""; 
 
   const query = `${pageQuery}${genderQuery}${sizeQuery}${priceQuery}${progressQuery}`;
 
   const response = await apiRequest<{ data: TransactionListData }>(() =>
     guestAxios.get(`/main/transaction/?${query}`)
   );
+  console.log(query);
+  console.log(response);
   return response;
 };
 
