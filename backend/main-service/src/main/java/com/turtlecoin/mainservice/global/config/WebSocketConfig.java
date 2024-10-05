@@ -8,6 +8,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import com.turtlecoin.mainservice.global.interceptor.JwtHandshakeInterceptor;
 import com.turtlecoin.mainservice.global.scheduler.CustomWebSocketHandler;
 
 @Configuration
@@ -21,7 +22,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/ws/main") //우리의 endpoint
-			.setAllowedOrigins("*");
+			.setAllowedOrigins("*")
+			.addInterceptors(new JwtHandshakeInterceptor());  // 인터셉터 등록
 		//System.out.println("registry: "+registry);
 		//                .addInterceptors(handshakeInterceptor); // 핸드셰이크 인터셉터 추가
 	}

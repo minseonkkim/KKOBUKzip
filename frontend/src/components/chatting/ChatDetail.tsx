@@ -9,6 +9,7 @@ import { CompatClient, Stomp } from "@stomp/stompjs";
 import formatDate from "../../utils/formatDate";
 import { fetchChatMessageData } from "../../apis/chatApi";
 import SystemMessageItem from "./SystemMessageItem";
+import { useUserStore } from "../../store/useUserStore";
 
 interface ChatDetailProps {
   closeChatDetail: () => void;
@@ -24,66 +25,6 @@ interface ChatDetailProps {
 // 3. sockent send, sub
 // 4. sockent disconnet
 // 5. 컴포넌트 이동 시에 소켓 확인
-
-const data: ChatData[] = [
-  {
-    userId: 1,
-    nickname: "구매자",
-    message: "거북이 키우고 싶어요",
-    registTime: "2024-09-09T10:15:30",
-
-    userProfile: TmpProfileImg,
-  },
-  {
-    userId: 3,
-    nickname: "판매자",
-    message: "거북거북",
-    registTime: "2024-09-10T10:15:30",
-    userProfile: TmpProfileImg,
-  },
-  {
-    userId: 1,
-    nickname: "구매자",
-    message: "구북이 키우고싶어요",
-    registTime: "2024-09-13T10:15:30",
-    userProfile: TmpProfileImg,
-  },
-  {
-    userId: 3,
-    nickname: "판매자",
-    message: "입금해주세요1",
-    registTime: "2024-09-15T10:15:30",
-    userProfile: TmpProfileImg,
-  },
-  {
-    userId: 3,
-    nickname: "판매자",
-    message: "입금해주세요2",
-    registTime: "2024-09-22T10:15:30",
-    userProfile: TmpProfileImg,
-  },
-  {
-    userId: 3,
-    nickname: "판매자",
-    message: "입금해주세요3",
-    registTime: "2024-09-22T10:15:30",
-    userProfile: TmpProfileImg,
-  },
-  {
-    userId: 3,
-    nickname: "판매자",
-    message: "입금해주세요4",
-    registTime: "2024-09-22T10:15:30",
-    userProfile: TmpProfileImg,
-  },
-  {
-    userId: 3,
-    nickname: "판매자",
-    message: "입금해주세요5",
-    registTime: "2024-09-23T10:15:30",
-    userProfile: TmpProfileImg,
-  },
-];
 
 interface SystemMessageType {
   title: string;
@@ -102,9 +43,14 @@ export default function ChatDetail({
   const [groupedChat, setGroupedChat] = useState<
     { date: string; messages: (ChatData | SystemMessageType)[] }[]
   >([]);
+  const { userInfo } = useUserStore();
+  const [chatData, setChatData] = useState<ChatData[]>([]);
 
   const myNickName = "판매자";
-  const chatId = Math.min(1, chattingId) + "-" + Math.max(1, chattingId);
+  const chatId =
+    Math.min(userInfo?.userId!, chattingId) +
+    "-" +
+    Math.max(userInfo?.userId!, chattingId);
   useEffect(() => {
     const getChatData = async () => {
       await initData();
@@ -118,12 +64,15 @@ export default function ChatDetail({
 
   // 데이터 초기화 및 전처리
   const initData = async () => {
-    // const { success, data } = await fetchChatMessageData(1, chattingId);
-    // if (success) {
+    const { success, data } = await fetchChatMessageData(chattingId);
+    if (success) {
+      setChatData(data?.data!.reverse());
+    }
 
     // 날짜별로 메시지 그룹화
     const groupedMessages: { date: string; messages: ChatData[] }[] = [];
-    data!.forEach((message) => {
+    console.log(data!);
+    data?.data!.forEach((message) => {
       const messageDate = formatDate(message.registTime);
 
       const lastGroup = groupedMessages[groupedMessages.length - 1];
@@ -253,6 +202,7 @@ export default function ChatDetail({
                       <OtherChatItem
                         key={index}
                         message={message.message}
+                        time={message.registTime}
                         profileImg={message.userProfile}
                       />
                     );

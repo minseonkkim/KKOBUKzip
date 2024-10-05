@@ -28,19 +28,19 @@ public class SseController {
 
 	@GetMapping(value = "/sse/subscribe/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public SseEmitter subscribe(@PathVariable Long id, @RequestHeader HttpHeaders header) {
-		// String accessToken = header.getFirst("Authorization").split("Bearer ")[1].split(" ")[0];
-		// String userId = jwtUtil.getUsernameFromToken(accessToken);
-		//
-		// User user = userService.getUserByEmail(userId);
-		//
-		// // 본인만 본인 SSE에 연결가능함
-		// if(user != null && user.getId().equals(id)){
-		// 	return sseService.subscribe(id);
-		// }
-		// else{
-		// 	return null;
-		// }
-		return sseService.subscribe(id);
+		String accessToken = header.getFirst("Authorization").split("Bearer ")[1].split(" ")[0];
+		String userId = jwtUtil.getUsernameFromToken(accessToken);
+
+		User user = userService.getUserByEmail(userId);
+
+		// 본인만 본인 SSE에 연결가능함
+		if(user != null && user.getId().equals(id)){
+			return sseService.subscribe(id);
+		}
+		else{
+			return null;
+		}
+		//return sseService.subscribe(id);
 	}
 
 	@PostMapping("/send-data/{id}")

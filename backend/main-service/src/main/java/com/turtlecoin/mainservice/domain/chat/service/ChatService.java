@@ -68,26 +68,6 @@ public class ChatService {
 		chatRepository.insertByParticipant(smallUserId, bigUserId, chatTextMessage);
 		chatRepository.updateRecentChatting(smallUserId, bigUserId, chatTextMessage);
 
-		Long opponentUserId = smallUserId.equals(sender) ? bigUserId : smallUserId;
-
-		// 상대방이 현재 방에 접속중이 아니라면
-		if(!customWebSocketHandler.isUserConnected("" + opponentUserId)){
-			UserResponseDTO user = userService.getByUserId(opponentUserId);
-
-			ChatTextResponseDto chatTextResponseDto = ChatTextResponseDto.builder()
-				.userId(chatTextMessage.getSender())
-				.nickname(user.getNickname() != null ? user.getNickname() : "알수없음")
-				.message(chatTextMessage.getText())
-				.registTime(chatTextMessage.getRegistTime())
-				.userProfile(user.getProfileImage() != null ? user.getProfileImage() : "")
-				.build();
-
-			// 안읽은 횟수를 증가시켜주고
-			chatRepository.addUnreadCount(smallUserId, bigUserId, opponentUserId);
-			// SSE 메세지를 보내줘야 함
-			sseService.notify(opponentUserId, chatTextResponseDto);
-		}
-
 		return chatTextMessage;
 	}
 
@@ -99,6 +79,10 @@ public class ChatService {
 			.image(image)
 			.build();
 		chatRepository.insertByParticipant(smallUserId, bigUserId, chatTurtleMessage);
+	}
+
+	public void addUnreadCount(Long smallUserId, Long bigUserId, Long loginId) throws Exception{
+		chatRepository.addUnreadCount(smallUserId, bigUserId, loginId);
 	}
 
 	// 채팅 리스트에서 넘어와서 채팅 목록을 조회하는 경우
