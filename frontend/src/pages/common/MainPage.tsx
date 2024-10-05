@@ -51,7 +51,6 @@ function MainPage() {
             srcSet={`${BackgroundImg} 768w, ${BackgroundImg} 1024w, ${BackgroundImg} 1280w`}
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="absolute inset-0 w-full h-[100vh] object-cover object-center"
-            loading="lazy"
             alt="Background"
             draggable="false"
           />
@@ -60,7 +59,6 @@ function MainPage() {
         {
           <img
             src={showTurtleMoving ? TurtleStop : TurtleMoving}
-            loading="lazy"
             className={`w-[270px] md:w-[300px] lg:w-[380px] h-auto absolute ${
               !showTurtleMoving ? "turtle-animation" : ""
             }`}
