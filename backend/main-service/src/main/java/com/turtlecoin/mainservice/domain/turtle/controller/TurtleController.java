@@ -4,6 +4,7 @@ import com.turtlecoin.mainservice.domain.turtle.dto.AuctionTurtleInfoDTO;
 import com.turtlecoin.mainservice.domain.turtle.dto.TurtleResponseDTO;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.service.TurtleService;
+import com.turtlecoin.mainservice.global.exception.TurtleNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class TurtleController {
     }
 
     @GetMapping("/{turtleId}")
-    public ResponseEntity<?> getTurtleById (@PathVariable("turtleId") Long turtleId) {
+    public TurtleResponseDTO getTurtleById (@PathVariable("turtleId") Long turtleId) {
         return turtleService.getTurtleById(turtleId);
     }
 
