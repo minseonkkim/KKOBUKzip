@@ -46,6 +46,12 @@ const AuctionListPage = () => {
     setIsProgressItem(!isProgressItem);
   };
 
+  const resetFilters = () => {
+    setFilters({}); 
+    setPages(0); 
+    fetchData(0, {}, true);
+  };
+
 
   return (
     <TurtleListLayout
@@ -54,6 +60,7 @@ const AuctionListPage = () => {
       fetchData={fetchData} 
       isProgressItemChecked={isProgressItem}
       setIsProgressItemChecked={progressFilter}
+       resetFilters={resetFilters}
     />
   );
 };
