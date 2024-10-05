@@ -90,9 +90,11 @@ export const useWeb3Store = create<Web3State>((set, get) => ({
           TURTLE_ESCROW_ADDRESS
         );
 
+        const accountAddress = web3Instance.utils.toChecksumAddress(accounts[0]);
+
         set({
           web3: web3Instance,
-          account: accounts[0],
+          account: accountAddress,
           tokenContract,
           escrowContract,
           error: null,
