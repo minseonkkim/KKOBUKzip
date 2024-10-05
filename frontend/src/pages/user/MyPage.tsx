@@ -56,25 +56,26 @@ function MyPage() {
   // const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } = EscrowDummy.data.data.transactions[0];
 
   useEffect(() => {
-    const init = async () => {
-      const response = await getMyTransaction();
-      if (response.success) {
-        setMyTransactions(response.data!.data.transaction);
+  const init = async () => {
+    try {
+      const [transactionResponse, turtleResponse] = await Promise.all([
+        getMyTransaction(),
+        getMyTurtle(),
+      ]);
+      
+      if (transactionResponse.success) {
+        setMyTransactions(transactionResponse.data!.data.transaction);
       }
-    };
+
+      if (turtleResponse.success) {
+        setTurtleData(turtleResponse.data.data.data.data);
+        console.log("거북이 목록", turtleResponse.data.data.data.data);
+      }
+    } catch (error) {
+      console.error("Error initializing data:", error);
+    }
+  };
     init();
-
-    const fetchTurtleData = async () => {
-      try {
-        const response = await getMyTurtle();
-        setTurtleData(response.data.data.data.data);
-        console.log("거북이 목록", response.data.data.data.data);
-      } catch (error) {
-        console.error("Error fetching turtle data:", error);
-      }
-    };
-
-    fetchTurtleData();
   }, []);
   const openCustomModal = () => {
     setIsCustomModalOpen(true);
@@ -202,7 +203,7 @@ function MyPage() {
               </div>
             ) : (
               // 거래내역이 없을 경우
-              <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
+              <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-28">
                 <img
                   src={NoImage}
                   className="w-[200px] mb-7"
@@ -215,6 +216,7 @@ function MyPage() {
             ))}
           {/* 나의 거북이 */}
           {selectedMenu === 1 && (
+            (turtleData.length !== 0 ? (
             // 나의 거북이가 있을 경우
             <div className="grid grid-cols-2 xl:grid-cols-3 gap-5">
               {turtleData.map((turtle) => (
@@ -230,7 +232,19 @@ function MyPage() {
                 />
               ))}
             </div>
-          )}
+            ): (
+              <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-28">
+                <img
+                  src={NoImage}
+                  className="w-[200px] mb-7"
+                  draggable="false"
+                />
+                <div className="text-[25px] font-bold text-center font-stardust">
+                  나의 거북이가 없어요.
+                </div>
+              </div>
+            )
+          ))}
         </div>
       </main>
       {isCustomModalOpen && (
