@@ -108,7 +108,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
     if (filters.minWeight && filters.maxWeight)
       filterTexts.push(`${filters.minWeight}~${filters.maxWeight}kg`);
     if (filters.minPrice && filters.maxPrice)
-      filterTexts.push(`${filters.minPrice}~${filters.maxPrice}원`);
+      filterTexts.push(`${filters.minPrice}~${filters.maxPrice}TURT`);
 
     setSelectedFiltersText(filterTexts.length > 0 ? filterTexts.join(", ") : "필터");
   };
