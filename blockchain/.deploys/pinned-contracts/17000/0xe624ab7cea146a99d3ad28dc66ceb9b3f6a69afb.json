@@ -1,6 +1,6 @@
 {
   "name": "TurtleDocumentation",
-  "address": "0x3b3782ef792bdac3e9ca3ed4d83e07a3b205acb6",
+  "address": "0xe624ab7cea146a99d3ad28dc66ceb9b3f6a69afb",
   "abi": [
     {
       "inputs": [
@@ -551,8 +551,80 @@
           "type": "string"
         }
       ],
+      "name": "searchCurrentDeathDocumentHash",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_turtleId",
+          "type": "string"
+        }
+      ],
       "name": "searchCurrentDocumentHash",
       "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_turtleId",
+          "type": "string"
+        }
+      ],
+      "name": "searchCurrentMultiplicationDocumentHash",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_turtleId",
+          "type": "string"
+        }
+      ],
+      "name": "searchCurrentTransferredDocumentHash",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        },
         {
           "internalType": "bytes32",
           "name": "",
@@ -821,5 +893,5 @@
     }
   ],
   "filePath": " - connect to localhost - /contracts/TurtleDocumentation.sol",
-  "pinnedAt": 1727833832637
+  "pinnedAt": 1728194531653
 }
