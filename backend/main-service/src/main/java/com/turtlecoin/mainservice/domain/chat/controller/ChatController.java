@@ -24,6 +24,7 @@ import com.turtlecoin.mainservice.domain.transaction.exception.TransactionNotFou
 import com.turtlecoin.mainservice.global.exception.ChatNotFoundException;
 import com.turtlecoin.mainservice.global.response.ResponseSingle;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
+import com.turtlecoin.mainservice.global.util.WebSocketUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +37,7 @@ public class ChatController {
 	private final JWTUtil jwtUtil;
 	private final UserService userService;
 	private final TransactionService transactionService;
+	private final WebSocketUtil customWebSocketHandler;
 
 	@GetMapping("/create")
 	public ResponseEntity<?> createChat(@RequestParam Long id1, @RequestParam Long id2) {
@@ -120,5 +122,13 @@ public class ChatController {
 			return new ResponseEntity<>(ResponseVO.failure("500", "조회 중 문제가 발생했습니다."), HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(ResponseSingle.success("채팅방 목록 조회에 성공했습니다.", list), HttpStatus.OK);
+	}
+
+	@GetMapping("/connectUser")
+	public String connectUser() {
+		for(String s : customWebSocketHandler.getConnectedUsers()) {
+			System.out.println(s);
+		}
+		return "Success";
 	}
 }

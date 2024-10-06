@@ -18,7 +18,6 @@ import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.domain.user.service.JWTService;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
-import com.turtlecoin.mainservice.global.util.AESUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,35 +28,6 @@ public class SseController {
 	private final SseService sseService;
 	private final UserService userService;
 	private final JWTUtil jwtUtil;
-	private final AESUtil aesUtil;
-	private final RedisTemplate<String, String> redisTemplate;
-
-	// @GetMapping(value = "/sse/subscribe/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	// public SseEmitter subscribe(@PathVariable Long id, @RequestParam(name = "token", required = false) String token) {
-	// 	try{
-	// 		// 레디스에 있는 해당 유저의 토큰과 동일한지 확인
-	// 		String sseToken = (String) redisTemplate.opsForHash().get("sseToken:" + id, "token");
-	// 		// System.out.println("레디스: " + sseToken + " 인풋 : " + token);
-	// 		if(sseToken != null && sseToken.equals(token)) {
-	// 			return sseService.subscribe(id);
-	// 		}
-	// 		else {
-	// 			// 만약 일치하지 않은 경우 새로 연결 가능한지 확인
-	// 			Long userId = Long.parseLong(aesUtil.decrypt(token));
-	// 			UserResponseDTO user = userService.getByUserId(userId);
-	//
-	// 			if(user != null && userId.equals(id)){
-	// 				return sseService.subscribe(id);
-	// 			}
-	// 			else{
-	// 				return null;
-	// 			}
-	// 		}
-	// 	}
-	// 	catch(Exception e){
-	// 		return null;
-	// 	}
-	// }
 
 	@GetMapping(value = "/sse/subscribe/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public SseEmitter subscribe(@PathVariable Long id, @RequestHeader HttpHeaders headers) {

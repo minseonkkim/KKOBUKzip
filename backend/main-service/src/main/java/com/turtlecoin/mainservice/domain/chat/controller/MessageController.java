@@ -1,11 +1,16 @@
 package com.turtlecoin.mainservice.domain.chat.controller;
 
+import java.security.Principal;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 
 import com.turtlecoin.mainservice.domain.chat.dto.ChatListDto;
@@ -18,7 +23,7 @@ import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
-import com.turtlecoin.mainservice.global.util.CustomWebSocketHandler;
+import com.turtlecoin.mainservice.global.util.WebSocketUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,8 +34,25 @@ public class MessageController {
 	private final SimpMessagingTemplate messagingTemplate;
 	private final UserService userService;
 	private final SseService sseService;
-	private final CustomWebSocketHandler customWebSocketHandler;
+	private final WebSocketUtil webSocketUtil;
 	private final JWTUtil jwtUtil;
+	private final RedisTemplate<String, String> redisTemplate;
+
+	@SubscribeMapping("/main/{chattingId}")  // 특정 방에 대한 구독 처리
+	public void handleSubscribe(SimpMessageHeaderAccessor headerAccessor, @DestinationVariable String chattingId) {
+		// 세션에서 사용자 ID 가져오기
+		Principal principal = headerAccessor.getUser();
+		if (principal != null) {
+			String userId = principal.getName();  // CustomPrincipal에서 userId 가져오기
+
+			// 유저가 구독한 주소 저장 (예: DB 또는 메모리)
+			redisTemplate.opsForHash().put("userId:" + userId, "room", chattingId);
+			// TTL(만료 시간) 설정
+			redisTemplate.expire("user:" + userId, 60, TimeUnit.MINUTES);
+
+			//System.out.println(userId);
+		}
+	}
 
 	// (/pub/main/{chattingID})
 	@MessageMapping("/main/{chattingId}")
@@ -81,20 +103,18 @@ public class MessageController {
 
 
 			Long opponentUserId = smallUserId.equals(userId) ? bigUserId : smallUserId;
-
-			// 상대방이 현재 방에 접속중이 아니라면
-			if(!customWebSocketHandler.isUserConnected("" + opponentUserId)){
+			String roomId = (String) redisTemplate.opsForHash().get("userId:" + opponentUserId, "room");
+			// 상대방이 현재 방에 접속중이 아니면
+			if(!webSocketUtil.isUserConnected("" + opponentUserId) || !chattingId.equals(roomId)){
 				UserResponseDTO user = userService.getByUserId(opponentUserId);
 				// 안읽은 횟수를 증가시켜주고
 				chatService.addUnreadCount(smallUserId, bigUserId, opponentUserId);
-				// SSE 메세지를 보내줘야 함
-
-				ChatListDto chatListDto = chatService.chattingRoomList(smallUserId, bigUserId, userId);
-				System.out.println(chatListDto.toString());
-
-				sseService.notify(opponentUserId, chatListDto);
 			}
+			// SSE 메세지를 보내줘야 함
+			ChatListDto chatListDto = chatService.chattingRoomList(smallUserId, bigUserId, userId);
+			sseService.notify(opponentUserId, chatListDto);
 		} catch (Exception e){
+			e.printStackTrace();
 			messagingTemplate.convertAndSend("/sub/main/" + chattingId,
 				ResponseVO.failure("500", "전송 중 오류가 발생했습니다."));
 			return;

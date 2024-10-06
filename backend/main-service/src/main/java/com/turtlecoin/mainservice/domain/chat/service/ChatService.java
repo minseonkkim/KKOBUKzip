@@ -27,7 +27,7 @@ import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.domain.transaction.exception.TransactionNotFoundException;
 import com.turtlecoin.mainservice.global.exception.InvalidChattingException;
 import com.turtlecoin.mainservice.global.exception.ChatNotFoundException;
-import com.turtlecoin.mainservice.global.util.CustomWebSocketHandler;
+import com.turtlecoin.mainservice.global.util.WebSocketUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,9 +37,7 @@ public class ChatService {
 	private final ChatRepository chatRepository;
 	private final UserService userService;
 	private final TransactionService transactionService;
-	private final UserRepository userRepository;
-	private final SseService sseService;
-	private final CustomWebSocketHandler customWebSocketHandler;
+	private final WebSocketUtil webSocketUtil;
 
 	public ObjectId createChat(Long smallUserId, Long bigUserId) throws Exception{
 		// 호출 해보면서 없는 아이디인지 확인
@@ -201,11 +199,13 @@ public class ChatService {
 		}
 		else{
 			Long left; Long right;
-			Long otherUserId; Integer myUnreadCount; ChatTextMessage chatTextMessage;
+			Long otherUserId; Integer opponentUnreadCount; ChatTextMessage chatTextMessage;
 
 			left = chat.getParticipants().get(0); right = chat.getParticipants().get(1);
 			otherUserId = left == userId ? right : left;
-			myUnreadCount = left == userId ? chat.getUnreadCount().get(0) : chat.getUnreadCount().get(1);
+			// 상대방에게 보내주는 목적이니까
+			// 상대방을 기준으로 읽었나 안읽었나 횟수가 기준이 됨
+			opponentUnreadCount = left == otherUserId ? chat.getUnreadCount().get(0) : chat.getUnreadCount().get(1);
 			chatTextMessage = chat.getRecentMessage();
 			UserResponseDTO userResponseDTO = userService.getByUserId(otherUserId);
 
@@ -216,7 +216,7 @@ public class ChatService {
 				.otherUserProfileImage(userResponseDTO.getProfileImage())
 				.lastMessage(chatTextMessage.getText())
 				.lastMessageTime(chatTextMessage.getRegistTime())
-				.unreadCount(myUnreadCount)
+				.unreadCount(opponentUnreadCount)
 				.build();
 		}
 	}
