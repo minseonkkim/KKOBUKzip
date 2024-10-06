@@ -1,14 +1,14 @@
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Header from "../components/common/Header";
 import { GrPowerReset } from "@react-icons/all-files/gr/GrPowerReset";
 import { FaCheck } from "@react-icons/all-files/fa/FaCheck";
 import { IoIosSearch } from "@react-icons/all-files/io/IoIosSearch";
 import { IoFilterOutline } from "@react-icons/all-files/io5/IoFilterOutline";
-import { useEffect, useState } from "react";
-import OptionFilter from "../components/common/OptionFilter";
 import { useInView } from "react-intersection-observer";
 import useTradeFilter from "../hooks/useTradeFilter";
 import AuctionTurtleSkeleton from "../components/skeleton/auction/AuctionTurtleSkeleton";
+import OptionFilter from "../components/common/OptionFilter";
 
 interface TurtleListLayoutProps {
   title: string;
@@ -40,6 +40,15 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
 
   const [ref, inView] = useInView({ threshold: 1 });
   const { filters, filterResetHandle, updateFilter } = useTradeFilter();
+
+  const resetFilterState = () => {
+    // Reset filters to their initial values
+    updateFilter("gender", "");
+    updateFilter("minWeight", "");
+    updateFilter("maxWeight", "");
+    updateFilter("minPrice", "");
+    updateFilter("maxPrice", "");
+  };
 
   useEffect(() => {
     const getData = async () => {
@@ -77,6 +86,13 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   }, [inView]);
 
   const toggleFilterDiv = () => {
+    if (isFilterOpen) {
+      // 필터를 닫을 때 필터 초기화
+      filterResetHandle();
+    } else {
+      // 필터를 다시 열 때 필터 초기화
+      resetFilterState();
+    }
     setIsFilterOpen(!isFilterOpen);
   };
 
@@ -142,9 +158,11 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
               }`}
               onClick={toggleFilterDiv}
             >
-              <IoFilterOutline className={`text-[18px] md:text-[22px] mr-2 ${
-                selectedFiltersText !== "필터" ? "text-[#4B721F] font-bold" : ""
-              }`} />
+              <IoFilterOutline
+                className={`text-[18px] md:text-[22px] mr-2 ${
+                  selectedFiltersText !== "필터" ? "text-[#4B721F] font-bold" : ""
+                }`}
+              />
               <span className="text-[16px] md:text-[18px]">{selectedFiltersText}</span>
             </div>
             <div

@@ -26,6 +26,7 @@ const exampleData: AdminBreedDocumentDataType = {
     birth: "2001-08-02",
     email: "sds@ssafy.com",
     address: "under the sea",
+    detailedAddress: "under the sea"
   },
   detail: {
     scientificName: "Malaclemys terrapin",
@@ -55,6 +56,7 @@ const exampleData2: AdminAssignDocumentDataType = {
     birth: "2001-08-02",
     email: "sds@ssafy.com",
     address: "under the sea",
+    detailedAddress: "under the sea"
   },
   assignee: {
     name: "Michael Johnson",
@@ -91,6 +93,7 @@ const exampleData3: AdminDeathDocumentDataType = {
     birth: "2001-08-02",
     email: "sds@ssafy.com",
     address: "under the sea",
+    detailedAddress: "under the sea"
   },
   detail: {
     scientificName: "Malaclemys terrapin",
