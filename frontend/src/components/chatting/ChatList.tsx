@@ -43,6 +43,7 @@ export default function ChatList() {
 
     // SSE 연결하는 함수
     const initializeSSE = () => {
+      console.log("sse 연결 시도");
       const SSE_URL =
         import.meta.env.VITE_SSE_MAIN_URL +
         "/"+
@@ -58,6 +59,7 @@ export default function ChatList() {
       });
       eventSource.onopen = () => {
         console.log("!SSE 연결 성공!");
+        console.log("readyState:", eventSource.readyState);
       };
   
       eventSource.onmessage = (event: MessageEvent) => {
