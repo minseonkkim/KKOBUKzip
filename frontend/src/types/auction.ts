@@ -11,6 +11,7 @@ export interface AuctionItemDataType {
   endTime: Date | null;
   content: string;
   progress: "BEFORE_AUCTION" | "DURING_AUCTION" | "NO_BID" | "SUCCESSFUL_BID"; // 1: 경매전 2: 경매중, 유찰, 낙찰
+  remainingTime: number;
   tags: string[];
   images: string[];
   turtleInfo: {
