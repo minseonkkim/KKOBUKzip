@@ -161,6 +161,10 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
     }
   };
 
+  const goToDeathDocumentaion = () => {
+    navigate("/doc-form/death", { state: { turtleId, turtleUuid }});
+  }
+
   const handleTurtleDataVerification = async () => {
     const turtleHash = Web3.utils.sha3(`${birth}${weight}${gender==='m' ? 'MALE' : 'FEMALE'}`)
     const result = await documentContract?.methods.turtleValid(turtleUuid, turtleHash).call()
@@ -206,6 +210,7 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
         <div className="flex flex-row justify-between mt-3 lg:text-[17px] text-[16px]">
           <button
             className="w-[48%] h-[33px] md:h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
+            onClick={goToDeathDocumentaion}
           >
             질병·퇴사 등록
           </button>
