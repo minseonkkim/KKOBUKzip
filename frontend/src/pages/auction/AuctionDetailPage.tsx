@@ -140,6 +140,8 @@ function AuctionDetailPage() {
             <DuringAuction
               minBid={auctionItemData?.minBid!}
               channelId={String(auctionItemData?.id)}
+              nowBid={auctionItemData?.nowBid!}
+              remainingTime={auctionItemData?.remainingTime!}
             />
           )}
           {(auctionStatus === "NO_BID" ||
