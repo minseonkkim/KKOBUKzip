@@ -198,6 +198,7 @@ public class UserService {
                     .map(turtle -> UserTurtleResponseDTO.builder()
                             .id(turtle.getId())
                             .name(turtle.getName())
+                            .uuid(turtle.getUuid())
                             .scientificName(turtle.getScientificName())
                             .gender(turtle.getGender())
                             .weight(turtle.getWeight())
