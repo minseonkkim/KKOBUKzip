@@ -42,7 +42,6 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   const { filters, filterResetHandle, updateFilter } = useTradeFilter();
 
   const resetFilterState = () => {
-    // Reset filters to their initial values
     updateFilter("gender", "");
     updateFilter("minWeight", "");
     updateFilter("maxWeight", "");
@@ -166,8 +165,10 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
               <span className="text-[16px] md:text-[18px]">{selectedFiltersText}</span>
             </div>
             <div
-              onClick={() => {
+              onClick={async () => {
                 resetFilters();
+                await fetchData(0, {}, true);
+                setIsFilterOpen(false);
                 setSelectedFiltersText("필터");
               }}
               className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[360px] w-[38px] md:w-[42px] h-[38px] md:h-[42px] cursor-pointer font-bold hover:text-[#4B721F] hover:border-[#4B721F]"
