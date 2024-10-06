@@ -4,7 +4,7 @@ function OtherChatItem({
   profileImg,
 }: {
   message: string;
-  time: Date;
+  time: string;
   profileImg: string;
 }) {
   // 초과된 밀리초 부분을 자르고 Date 객체 생성
