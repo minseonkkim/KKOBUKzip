@@ -18,6 +18,7 @@ interface TransactionHistoryProps {
     sellerName: string;
     sellerAddress: string;
     transactionTag: string[];
+    transactionImage: string[];
     amount: number;
 }
 
@@ -78,21 +79,21 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
   };
 
     return <>
-        <div className="w-full border-[2px] rounded-[20px] p-[15px] bg-[#f8f8f8] flex flex-col md:flex-row lg:flex-col xl:flex-row">
+        <div className="w-full border-[2px] rounded-[20px] p-[15px] bg-[#f8f8f8] flex flex-col justify-between md:flex-row lg:flex-col xl:flex-row">
             <div className="flex flex-row">
-                <img src={TmpTurtleImg} loading="lazy" className="w-[130px] lg:w-[200px] h-[130px] lg:h-[150px] rounded-[10px] object-cover" draggable="false" alt="turtle image"/>
-                <div className="flex flex-col justify-between w-[460px] ml-[20px]">
+                <img src={props.transactionImage? props.transactionImage[0] : TmpTurtleImg} loading="lazy" className="w-[130px] lg:w-[200px] object-cover h-[130px] lg:h-[150px] rounded-[10px] object-cover" draggable="false" alt="turtle image"/>
+                <div className="flex flex-col justify-between w-[300px] ml-[15px]">
                     <div>
                         {/* <div>{props.sellerName}</div> */}
                         
                         <div className="mb-1 whitespace-nowrap font-extrabold text-[25px] text-[#4B721F] font-stardust">
                             {props.amount?.toLocaleString("ko-KR")}TURT
                         </div>
-                        <div className="text-[15px] text-gray-700 flex flex-wrap space-x-1.5">
+                        <div className="text-[15px] text-gray-700 flex flex-wrap space-x-1">
                             {props.transactionTag?.map((tag, index) => (
                                 <span
                                 key={index}
-                                className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full"
+                                className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 my-0.5 rounded-full"
                                 >
                                 #{tag}
                                 </span>
@@ -115,7 +116,7 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
             </div>
             <div>
             
-            <div className="w-[360px] h-[104px] relative mt-[18px]">
+            <div className="w-[340px] h-[104px] relative mt-[18px]">
                 <div className="w-[290px] h-[0px] left-[24px] top-[68px] absolute border-[1.4px] border-gray-400"></div>
                 
                 <div className="left-0 top-0 absolute text-center text-black text-[16px]">입금대기</div>
