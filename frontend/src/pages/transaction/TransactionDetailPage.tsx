@@ -178,7 +178,7 @@ function TransactionDetailPage() {
                       </div>
                       <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
                         <div className="text-[31px] md:text-[39px]">
-                          {Math.floor(8000000).toLocaleString()} 
+                          {Math.floor(transactionData.price).toLocaleString()} 
                         </div>
                         <div className="text-[27px] md:text-[29px]">TURT</div>
                       </div>

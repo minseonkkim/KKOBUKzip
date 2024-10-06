@@ -57,18 +57,13 @@ export default function ChatList() {
         heartbeatTimeout: 7200 * 1000,
       });
 
-      eventSource.onopen = () => {
-        console.log("!SSE 연결 성공!");
-      };
-  
-
-      eventSource.onmessage = (event) => {
-        const newChat: ChatListItem = JSON.parse(event.data);
+      eventSource.onmessage = (event: MessageEvent) => {
         console.log("SSE가 도착한다!");
+        const newChat: ChatListItem = JSON.parse(event.data);
         updateRoomList(newChat);
       };
 
-      eventSource.onerror = (error) => {
+      eventSource.onerror = (error: Event) => {
         console.error("SSE 에러 발생:", error);
         eventSource.close(); // 에러 발생 시 연결 종료
       };
