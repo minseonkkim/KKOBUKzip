@@ -7,9 +7,11 @@ import { ChangeEvent, useState } from "react";
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import { addAuctionItem } from "../../apis/tradeApi";
 import formatDate from "../../utils/formatDate";
+import { useWeb3Store } from "../../store/useWeb3Store";
 
 
 export default function AuctionRegisterPage() {
+  const { account } = useWeb3Store();
   const [images, setImages] = useState<File[]>([]);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -60,9 +62,14 @@ export default function AuctionRegisterPage() {
 
   const submitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!account) {
+      alert("메타마스크 계정이 연결되지 않았습니다. 연결 확인 후 다시 시도해 주세요.");
+      return;
+    }
+
     const parsedUserStore = userStore ? JSON.parse(userStore) : null;
     const userId = parsedUserStore?.state?.userInfo?.userId;
-    const sellerAddress = parsedUserStore?.state?.userInfo?.address;
     const data = {
       title: title,
       turtleId: state.turtleId,
@@ -71,7 +78,7 @@ export default function AuctionRegisterPage() {
       minBid: Number(minBid.replace(/,/g, "")),
       startTime: startTime,
       auctionTags: [selectedGender, selectedSize],
-      sellerAddress:sellerAddress
+      sellerAddress: account
     };
 
     const formData = new FormData();
