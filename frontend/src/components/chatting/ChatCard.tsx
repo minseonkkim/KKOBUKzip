@@ -10,21 +10,26 @@ interface ChatCardProps {
 export default function ChatCard({ openChatDetail, chat }: ChatCardProps) {
   const isTablet = useDeviceStore((state) => state.isTablet);
 
+  // console.log(openChatDetail, chat);
   return (
     <div
-      className="w-full text-black bg-white rounded-[10px] py-2 lg:my-3 my-4 mx-1 w-full cursor-pointer"
+      className="w-full text-black bg-white rounded-[10px] py-2 lg:my-3 my-4 mx-1 cursor-pointer"
       onClick={() => openChatDetail(chat.otherUserId, chat.otherUserNickname)}
     >
       <div className="flex flex-row justify-between items-center w-full">
         <img
-          src={TmpProfileImg}
+          src={chat?.otherUserProfileImage}
+          loading="lazy"
+          decoding="async"
           className="rounded-full w-[60px] h-[60px] lg:w-[52px] lg:h-[52px] mx-2"
           draggable="false"
           alt="profile image"
         />
         <div className="flex flex-col justify-between w-full pr-3">
           <div className="flex flex-row justify-between mb-1">
-            <div className="text-[17px] lg:text-[16px]">{chat.otherUserNickname}</div>
+            <div className="text-[17px] lg:text-[16px]">
+              {chat.otherUserNickname}
+            </div>
             <div className="font-bold text-[15px] text-gray-300">
               {formatDate(chat.lastMessageTime)}
             </div>
