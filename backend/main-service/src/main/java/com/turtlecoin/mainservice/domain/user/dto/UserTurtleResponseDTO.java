@@ -14,7 +14,7 @@ public class UserTurtleResponseDTO {
     private Long id;
     private String name;
     private String scientificName;
-    private String uuid;
+    private String turtleUuid;
     private Gender gender;
     private int weight;
     private LocalDate birth;
