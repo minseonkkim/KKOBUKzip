@@ -22,7 +22,8 @@ public class AuctionTag extends BaseEntity {
     @JoinColumn(name = "auction_id", nullable = false)
     private Auction auction;
 
-    public AuctionTag(String tag) {
+    public AuctionTag(Auction auction, String tag) {
+        this.auction = auction;
         this.tag = tag;
     }
 }

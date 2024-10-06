@@ -3,12 +3,13 @@ package com.turtlecoin.auctionservice.domain.auction.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.turtlecoin.auctionservice.domain.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.*;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -59,7 +60,7 @@ public class Auction extends BaseEntity {
     @JsonManagedReference
     private List<AuctionPhoto> auctionPhotos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "auction")
+    @OneToMany(mappedBy = "auction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<AuctionTag> auctionTags = new ArrayList<>();
 
