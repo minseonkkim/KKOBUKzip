@@ -183,7 +183,7 @@ export const getTransactionData = async ({
 }) => {
   // const pageQuery = `page=${page ? page : 0}`;
   const pageQuery = "";
-  const genderQuery = gender || gender !== "" ? `&gender=${gender}` : "";
+  const genderQuery = gender && gender !== "" ? `&gender=${gender}` : "";
   const sizeQuery =
     minWeight || maxWeight
       ? `&size=${minWeight ? minWeight : "0"}-${maxWeight ? maxWeight : "999999999999"}`

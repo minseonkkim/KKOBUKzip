@@ -57,7 +57,7 @@ export default function TransactionTurtle({
 
           <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
             <div className="text-[28px] md:text-[32px]">
-              {Math.floor(8000000).toLocaleString()} 
+              {Math.floor(item.price).toLocaleString()} 
             </div>
             <div className="text-[18px] md:text-[22px]">TURT</div>
           </div>
