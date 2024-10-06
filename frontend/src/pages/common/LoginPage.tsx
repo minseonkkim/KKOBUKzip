@@ -33,7 +33,6 @@ function LoginPage() {
     if (success) {
       const userData = {
         ...data?.data?.data!,
-        foreignFlag: false,
       };
 
       setLogin(userData);
