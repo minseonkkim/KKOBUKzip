@@ -314,7 +314,7 @@ function JoinPage() {
       const jsonData = {
         ...data,
         birth: `${birth.y}-${birth.m && ((birth.m)/10 >= 1) ? birth.m : `0${birth.m}`}-${birth.d}`,
-        address: `${data.address}/${detailedAddress}`,
+        address: `${data.address} / ${detailedAddress}`,
         phonenumber: `${phoneNumber.first}-${phoneNumber.second}-${phoneNumber.third}`,
       };
       // formData.append("data", JSON.stringify(jsonData));

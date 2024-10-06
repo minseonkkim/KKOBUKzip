@@ -11,6 +11,8 @@ import { AdminAssignDocumentDataType, AdminBreedDocumentDataType, AdminDeathDocu
 import CompleteAssignGrantDocument from "../document/complete/CompleteAssignGrantDocument";
 import CompleteDeathDocument from "../document/complete/CompleteDeathDocument";
 import formatDate from "../../utils/formatDate";
+import Web3 from "web3";
+import { useWeb3Store } from "../../store/useWeb3Store";
 
 // 더미데이터
 const exampleData: AdminBreedDocumentDataType = {
@@ -105,6 +107,7 @@ const exampleData3: AdminDeathDocumentDataType = {
 
 interface MyTurtleProps{
   turtleId: number;
+  turtleUuid: string;
   name: string;
   scientificName: string;
   gender: string;
@@ -114,8 +117,9 @@ interface MyTurtleProps{
 }
 
 
-export default function MyTurtle({turtleId, name, scientificName, gender, weight, birth, imageAddress}:MyTurtleProps) {
+export default function MyTurtle({turtleId, turtleUuid, name, scientificName, gender, weight, birth, imageAddress}:MyTurtleProps) {
   const navigate = useNavigate();
+  const { documentContract } = useWeb3Store();
   const [selectedMenu, setSelectedMenu] = useState(0);  // 0은 인공증식, 1은 양도양수, 2는 폐사
 
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -157,6 +161,20 @@ export default function MyTurtle({turtleId, name, scientificName, gender, weight
     }
   };
 
+  const goToDeathDocumentaion = () => {
+    navigate("/doc-form/death", { state: { turtleId, turtleUuid }});
+  }
+
+  const handleTurtleDataVerification = async () => {
+    const turtleHash = Web3.utils.sha3(`${birth}${weight}${gender==='m' ? 'MALE' : 'FEMALE'}`)
+    const result = await documentContract?.methods.turtleValid(turtleUuid, turtleHash).call()
+    if (result) {
+      alert("블록체인 네트워크의 해시 정보와 일치합니다.")
+    } else {
+      alert("블록체인 네트워크의 해시 정보와 일치하지 않습니다. 관리자에게 문의 부탁드립니다.")
+    }
+  }
+
   return (
     <>
       <div className="border-[2px] rounded-[20px] p-2 md:p-[15px] bg-[#f8f8f8]">
@@ -193,11 +211,13 @@ export default function MyTurtle({turtleId, name, scientificName, gender, weight
         <div className="flex flex-row justify-between mt-3 lg:text-[17px] text-[16px]">
           <button
             className="w-[48%] h-[33px] md:h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
+            onClick={goToDeathDocumentaion}
           >
             질병·퇴사 등록
           </button>
           <button
             className="w-[48%] h-[33px] md:h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
+            onClick={handleTurtleDataVerification}
           >
             정보 검증
           </button>

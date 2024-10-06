@@ -107,7 +107,8 @@ export interface ApplicantInfoType {
   phonenumber: string; // 전화번호
   birth: string; // 생년월일
   email: string; // 이메일
-  address: string; // 주소
+  address: string; // 기본 주소
+  detailedAddress: string; // 세부 주소
 }
 
 interface baseAdminDocumentType {

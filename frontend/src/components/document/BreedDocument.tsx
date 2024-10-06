@@ -6,11 +6,13 @@ import DocImgUpload from "./DocImgUpload";
 import { createBreedDocumentRequest } from "../../apis/documentApis";
 import { breedDoc } from "../../utils/breedDriverObject";
 import { useNavigate } from "react-router-dom";
+import { useUserStore } from "../../store/useUserStore";
 
 // 특이사항
 // 신청인 정보 동적으로 할당할 것(아마 store에서)
 
 function BreedDocument() {
+  const { userInfo } = useUserStore();
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
 
@@ -85,7 +87,7 @@ function BreedDocument() {
 
     const breedData = {
       docType: "인공증식증명서",
-      applicant: "some-uuid-value", // storage에서 긁어올 것
+      applicant: userInfo!.uuid,
       detail: {
         ...data,
         weight: Number(data.weight),
