@@ -61,6 +61,7 @@ function AuctionDetailPage() {
   }, [auctionId]);
 
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     if (!isValidId) {

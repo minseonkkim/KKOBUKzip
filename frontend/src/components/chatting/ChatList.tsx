@@ -27,6 +27,7 @@ export default function ChatList() {
     chatRoomList,
   } = useChatStore();
   const { userInfo } = useUserStore();
+  const accessToken = localStorage.getItem("accessToken");
   const isOpen = isChattingOpen;
 
   useEffect(() => {
@@ -43,15 +44,22 @@ export default function ChatList() {
     // SSE 연결하는 함수
     const initializeSSE = () => {
       const SSE_URL =
-        import.meta.env.VITE_SSE_MAIN_URL + "/" + userInfo?.userId;
+        import.meta.env.VITE_SSE_MAIN_URL +
+        "/"+
+        Number(userInfo?.userId)
       // const eventSource = new EventSource(SSE_URL);
       // EventSourcePolyfill 사용
       const eventSource = new EventSourcePolyfill(SSE_URL, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          Authorization: `Bearer ${accessToken}`,
           Accept: "text/event-stream",
         },
+        heartbeatTimeout: 7200 * 1000,
       });
+      
+      eventSource.onopen = () => {
+        console.log("!SSE 연결 성공!");
+      };
 
       eventSource.onmessage = (event) => {
         console.log("SSE가 도착한다!");

@@ -33,7 +33,7 @@ public class AuctionReceiveService {
                 .content(auctionResultDTO.getContent())
                 .sellerAddress(auctionResultDTO.getSellerAddress())
                 .price(auctionResultDTO.getWinningBid())
-                .progress(TransactionProgress.REVIEW_DOCUMENT) // 임시로 넣었음
+                .progress(TransactionProgress.SAIL) // 임시로 넣었음
                 .documentHash("123143") // 임시로 넣었음
                 .weight(auctionResultDTO.getWeight())
                 .turtle(turtle)

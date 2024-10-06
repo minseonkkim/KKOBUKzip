@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { AuctionItemDataType } from "../../types/auction";
+import { FaAngleLeft } from "@react-icons/all-files/fa/FaAngleLeft";
+import { FaAngleRight } from "@react-icons/all-files/fa/FaAngleRight";
 // import useChatStore from "../../store/useChatStore";
 
 function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
@@ -27,18 +29,8 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
               alt="Turtle"
               draggable="false"
             />
-            <button
-              onClick={handlePrev}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white text-[27px] p-2 rounded-full font-bold"
-            >
-              &lt;
-            </button>
-            <button
-              onClick={handleNext}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white text-[27px] p-2 rounded-full font-bold"
-            >
-              &gt;
-            </button>
+            <FaAngleLeft onClick={handlePrev} className="cursor-pointer absolute left-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"/>
+            <FaAngleRight onClick={handleNext} className="cursor-pointer absolute right-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"/>
             <div className="absolute bottom-3 right-3 bg-black/60 text-white px-4 py-2 rounded-[20px]">
               {currentIndex + 1} / {itemData.images.length}
             </div>
