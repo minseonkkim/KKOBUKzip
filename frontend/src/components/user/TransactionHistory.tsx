@@ -101,9 +101,12 @@ export default function TransactionHistory(
                 <div className="flex flex-col justify-between w-[300px] ml-[15px]">
                     <div>
                         {/* <div>{props.sellerName}</div> */}
-                        
-                        <div className="mb-1 whitespace-nowrap font-extrabold text-[25px] text-[#4B721F] font-stardust">
-                            {props.amount?.toLocaleString("ko-KR")}TURT
+
+                        <div className="mb-1 whitespace-nowrap flex flex-row items-end font-bold font-stardust text-[#4B721F]">
+                            <div className="text-[27px] md:text-[29px]">
+                              {props.amount?.toLocaleString("ko-KR")}
+                            </div>
+                            <div className="text-[20px] md:text-[21px]">TURT</div>
                         </div>
                         <div className="text-[15px] text-gray-700 flex flex-wrap space-x-1">
                             {props.transactionTag?.map((tag, index) => (
