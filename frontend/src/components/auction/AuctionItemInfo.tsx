@@ -7,12 +7,12 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
   // const { openChatDetail } = useChatStore();
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % itemData.auctionPhotos.length);
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % itemData.images.length);
   };
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? itemData.auctionPhotos.length - 1 : prevIndex - 1
+      prevIndex === 0 ? itemData.images.length - 1 : prevIndex - 1
     );
   };
 
@@ -22,7 +22,7 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
         <figure>
           <div className="relative w-full flex-grow md:flex-1 h-[240px] md:h-auto rounded-[20px] overflow-hidden">
             <img
-              src={itemData.auctionPhotos[currentIndex]}
+              src={itemData.images[currentIndex]}
               className="w-full h-[380px] object-cover rounded-[20px]"
               alt="Turtle"
               draggable="false"
@@ -40,7 +40,7 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
               &gt;
             </button>
             <div className="absolute bottom-3 right-3 bg-black/60 text-white px-4 py-2 rounded-[20px]">
-              {currentIndex + 1} / {itemData.auctionPhotos.length}
+              {currentIndex + 1} / {itemData.images.length}
             </div>
           </div>
         </figure>
@@ -49,11 +49,11 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
 
         <div className="flex flex-row justify-between lg:justify-start xl:justify-between items-center mt-[5px] mb-[10px]">
           <div className="text-[#9A9A9A] text-[17px]">
-            {/* {itemData.turtleInfo.} */} | {itemData.weight}kg
+            {/* {itemData.turtleInfo.} */} | {itemData.turtleInfo.weight}kg
             {/* 24년 8월 10일생 | 8kg */}
           </div>
           <div className="flex flex-row space-x-2">
-            {itemData.auctionTags.map((tag, index) => (
+            {itemData.tags.map((tag, index) => (
               <span
                 key={index}
                 className="whitespace-nowrap px-2 py-1 rounded-full text-[18px] bg-[#D5F0DD] text-[#065F46]"
