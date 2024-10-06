@@ -121,9 +121,7 @@ export const getAuctionDatas = async ({
   const query =
     pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
   // request
-  const response = await apiRequest<AuctionListData>(() =>
-    guestAxios.get(`/auction?${query}`)
-  );
+  const response = guestAxios.get(`/auction?${query}`);
   return response;
 };
 
@@ -181,32 +179,32 @@ export const getTransactionData = async ({
   maxWeight?: string;
   minPrice?: string;
   maxPrice?: string;
-  progress?: number;
+  progress?: string;
 }) => {
-  const pageQuery = page ? `page=${page}` : "page=0";
-  const genderQuery = gender ? `&gender=${gender}` : "";
+  // const pageQuery = `page=${page ? page : 0}`;
+  const pageQuery = "";
+  const genderQuery = gender && gender !== "" ? `&gender=${gender}` : "";
   const sizeQuery =
     minWeight || maxWeight
-      ? `&size=${minWeight ? minWeight : "0"}between${
-          maxWeight ? maxWeight : "999999999999"
-        }`
+      ? `&size=${minWeight ? minWeight : "0"}-${maxWeight ? maxWeight : "999999999999"}`
       : "";
-  const priceQuery =
-    minPrice || maxPrice
-      ? `&price=${minPrice ? minPrice : "0"}between${
-          maxPrice ? maxPrice : "999999999999"
-        }`
-      : "";
-  const progressQuery = progress ? `&progress=${progress}` : "";
+  
+  const cleanedMinPrice = minPrice ? minPrice.replace(/,/g, '') : "0";
+  const cleanedMaxPrice = maxPrice ? maxPrice.replace(/,/g, '') : "999999999999";
+  const priceQuery = minPrice || maxPrice ? `&price=${cleanedMinPrice}-${cleanedMaxPrice}` : "";
 
-  const query =
-    pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
+  const progressQuery = progress ? `&progress=${progress}` : ""; 
+
+  const query = `${pageQuery}${genderQuery}${sizeQuery}${priceQuery}${progressQuery}`;
 
   const response = await apiRequest<{ data: TransactionListData }>(() =>
     guestAxios.get(`/main/transaction/?${query}`)
   );
+  console.log(query);
+  console.log(response);
   return response;
 };
+
 
 interface TransactionItemDetailData {
   status: number;
@@ -223,7 +221,7 @@ export const getTransactionDetailItemData = (transactionId: string) => {
 // 거래 등록
 export const addTransactionItem = async (transactionData: FormData) => {
   const response = await apiRequest<{ status: number; message: string }>(() =>
-    authAxios.post("/main/transaction", transactionData, {
+    authAxios.post("/main/transaction/", transactionData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

@@ -54,10 +54,12 @@ function DuringAuction({
       const socket = new WebSocket(socketAddress);
       auctionStompClient.current = Stomp.over(socket);
 
+      const token = localStorage.getItem("accessToken");
+      console.log("token", token)
       // 메세지 수신
       auctionStompClient.current.connect(
         {
-          //  Authorization:
+          Authorization: `Bearer ${token}`,
         },
         (frame: StompFrame) => {
           console.log("Connected: " + frame);

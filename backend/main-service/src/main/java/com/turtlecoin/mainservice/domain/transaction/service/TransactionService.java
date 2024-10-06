@@ -76,7 +76,7 @@ public class TransactionService {
             transaction.setTitle(dto.getTitle());
             transaction.setContent(dto.getContent());
             transaction.setPrice(dto.getPrice());
-            transaction.setSellerAddress(turtle.getUser().getAddress());
+            transaction.setSellerAddress(dto.getSellerAddress());
             transaction.setTurtle(turtle);
             transaction.setTransactionPhotos(new ArrayList<>());
             transaction.setTransactionTags(new ArrayList<>());

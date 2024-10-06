@@ -4,12 +4,15 @@ import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import TmpTurtleImg2 from "../../assets/tmp_turtle_2.jpg";
 import TmpTurtleImg3 from "../../assets/tmp_turtle_3.jpg";
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
-// import BreedDocument from "../document/BreedDocument";
+import { IoMdDocument } from "@react-icons/all-files/io/IoMdDocument";
+import { FaSearch } from "@react-icons/all-files/fa/FaSearch";
 import CompleteBreedDocument from "../document/complete/CompleteBreedDocument";
 import { AdminAssignDocumentDataType, AdminBreedDocumentDataType, AdminDeathDocumentDataType } from "../../types/document";
 import CompleteAssignGrantDocument from "../document/complete/CompleteAssignGrantDocument";
 import CompleteDeathDocument from "../document/complete/CompleteDeathDocument";
 import formatDate from "../../utils/formatDate";
+import Web3 from "web3";
+import { useWeb3Store } from "../../store/useWeb3Store";
 
 // 더미데이터
 const exampleData: AdminBreedDocumentDataType = {
@@ -23,6 +26,7 @@ const exampleData: AdminBreedDocumentDataType = {
     birth: "2001-08-02",
     email: "sds@ssafy.com",
     address: "under the sea",
+    detailedAddress: "under the sea"
   },
   detail: {
     scientificName: "Malaclemys terrapin",
@@ -52,6 +56,7 @@ const exampleData2: AdminAssignDocumentDataType = {
     birth: "2001-08-02",
     email: "sds@ssafy.com",
     address: "under the sea",
+    detailedAddress: "under the sea"
   },
   assignee: {
     name: "Michael Johnson",
@@ -88,6 +93,7 @@ const exampleData3: AdminDeathDocumentDataType = {
     birth: "2001-08-02",
     email: "sds@ssafy.com",
     address: "under the sea",
+    detailedAddress: "under the sea"
   },
   detail: {
     scientificName: "Malaclemys terrapin",
@@ -103,27 +109,31 @@ const exampleData3: AdminDeathDocumentDataType = {
 
 
 interface MyTurtleProps{
+  turtleId: number;
+  turtleUuid: string;
   name: string;
   scientificName: string;
   gender: string;
   weight: number;
   birth: string;
+  imageAddress: string;
 }
 
 
-export default function MyTurtle({name, scientificName, gender, weight, birth}:MyTurtleProps) {
+export default function MyTurtle({turtleId, turtleUuid, name, scientificName, gender, weight, birth, imageAddress}:MyTurtleProps) {
   const navigate = useNavigate();
+  const { documentContract } = useWeb3Store();
   const [selectedMenu, setSelectedMenu] = useState(0);  // 0은 인공증식, 1은 양도양수, 2는 폐사
 
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
 
   const goToAuctionRegister = () => {
-    navigate("/auction-register");
+    navigate("/auction-register",{ state: { turtleId: turtleId, name: name, scientificName: scientificName, gender: gender, weight: weight, birth: birth, imageAddress: imageAddress } });
   };
 
   const goToTransactionRegister = () => {
-    navigate("/transaction-register");
+    navigate("/transaction-register", { state: { turtleId: turtleId, name: name, scientificName: scientificName, gender: gender, weight: weight, birth: birth, imageAddress: imageAddress } });
   };
 
   const openDetailModal = () => {
@@ -154,44 +164,65 @@ export default function MyTurtle({name, scientificName, gender, weight, birth}:M
     }
   };
 
+  const goToDeathDocumentaion = () => {
+    navigate("/doc-form/death", { state: { turtleId, turtleUuid }});
+  }
+
+  const handleTurtleDataVerification = async () => {
+    const turtleHash = Web3.utils.sha3(`${birth}${weight}${gender==='m' ? 'MALE' : 'FEMALE'}`)
+    const result = await documentContract?.methods.turtleValid(turtleUuid, turtleHash).call()
+    if (result) {
+      alert("블록체인 네트워크의 해시 정보와 일치합니다.")
+    } else {
+      alert("블록체인 네트워크의 해시 정보와 일치하지 않습니다. 관리자에게 문의 부탁드립니다.")
+    }
+  }
+
   return (
     <>
       <div className="border-[2px] rounded-[20px] p-2 md:p-[15px] bg-[#f8f8f8]">
         <div className="flex flex-row justify-between items-center mb-3">
           <div className="text-[18px] md:text-[20px]">{name}</div>
+          <div className="flex flex-row items-center space-x-2">
+            <FaSearch onClick={openDetailModal} className="size-5 text-[#adb5bd] hover:text-[#495057] cursor-pointer"/>
+            <IoMdDocument onClick={openDocumentModal} className="size-6 text-[#adb5bd] hover:text-[#495057] cursor-pointer"/>
+          </div>
         </div>
         <img
           src={TmpTurtleImg}
-          className="rounded-[10px] w-full lg:h-[190px] md:h-[170px] h-[130px] object-cover"
+          
+          className="rounded-[10px] w-full lg:h-[160px] md:h-[170px] h-[130px] object-cover"
           draggable="false"
           alt="turtle image"
         />
-        <div className="flex flex-row justify-between mt-4 lg:text-[17px] text-[16px]">
-          <button
-            onClick={openDetailModal}
-            className="w-[48%] h-[33px] md:h-[37px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
-          >
-            상세 정보
-          </button>
-          <button className="w-[48%] h-[33px] md:h-[37px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
-            onClick={openDocumentModal}>
-            서류 조회
-          </button>
-        </div>
         <div className="flex flex-row justify-between mt-3 lg:text-[17px] text-[16px]">
           {/* 판매 등록 했을 경우 버튼 비활성화 */}
           <button
             onClick={goToTransactionRegister}
-            className="w-[48%] h-[33px] md:h-[37px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
+            className="w-[48%] h-[33px] md:h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
           >
             판매 등록
           </button>
           {/* 경매 등록 했을 경우 버튼 비활성화 */}
           <button
             onClick={goToAuctionRegister}
-            className="w-[48%] h-[33px] md:h-[37px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
+            className="w-[48%] h-[33px] md:h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
           >
             경매 등록
+          </button>
+        </div>
+        <div className="flex flex-row justify-between mt-3 lg:text-[17px] text-[16px]">
+          <button
+            className="w-[48%] h-[33px] md:h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
+            onClick={goToDeathDocumentaion}
+          >
+            질병·퇴사 등록
+          </button>
+          <button
+            className="w-[48%] h-[33px] md:h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
+            onClick={handleTurtleDataVerification}
+          >
+            정보 검증
           </button>
         </div>
       </div>

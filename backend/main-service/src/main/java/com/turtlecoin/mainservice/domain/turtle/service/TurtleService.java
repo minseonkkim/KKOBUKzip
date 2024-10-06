@@ -64,24 +64,25 @@ public class TurtleService {
         turtleRepository.save(turtle);
     }
 
-    public ResponseEntity<?> getTurtleById(Long turtleId) {
+    public TurtleResponseDTO getTurtleById(Long turtleId) {
         try {
+            // 거북이 정보 조회
             Turtle turtle = turtleRepository.findById(turtleId)
                     .orElseThrow(() -> new TurtleNotFoundException("해당 ID의 거북이를 찾을 수 없습니다."));
 
-            TurtleResponseDTO data = TurtleResponseDTO.builder()
+            // DTO로 변환하여 반환
+            return TurtleResponseDTO.builder()
                     .id(turtle.getId())
                     .weight(turtle.getWeight())
                     .gender(turtle.getGender())
+                    .birth(turtle.getBirth())
                     .userId(turtle.getUser().getId())
                     .build();
-            return new ResponseEntity<>(ResponseVO.success("거북이가 정상적으로 조회되었습니다.", "turtle", data), HttpStatus.OK);
-        }
-        catch (TurtleNotFoundException e) {
-            return new ResponseEntity<>(ResponseVO.failure("400", e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
-        catch (Exception e) {
-            return new ResponseEntity<>(ResponseVO.failure("500","거북이 조회 과정 중에 서버 에러가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+
+        } catch (TurtleNotFoundException e) {
+            throw new TurtleNotFoundException("해당 ID의 거북이를 찾을 수 없습니다.");
+        } catch (Exception e) {
+            throw new RuntimeException("거북이 조회 과정 중에 서버 에러가 발생하였습니다.");
         }
     }
 

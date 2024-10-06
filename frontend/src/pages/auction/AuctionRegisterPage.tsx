@@ -1,3 +1,4 @@
+import { useLocation,useNavigate } from "react-router-dom"
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
@@ -5,6 +6,8 @@ import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
 import { ChangeEvent, useState } from "react";
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import { addAuctionItem } from "../../apis/tradeApi";
+import formatDate from "../../utils/formatDate";
+
 
 export default function AuctionRegisterPage() {
   const [images, setImages] = useState<File[]>([]);
@@ -12,6 +15,10 @@ export default function AuctionRegisterPage() {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [minBid, setMinBid] = useState("");
   const [startTime, setStartTime] = useState("");
+  const [title, setTitle] = useState("");
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  const userStore = localStorage.getItem('userStore');
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length + images.length > 3) {
@@ -34,9 +41,13 @@ export default function AuctionRegisterPage() {
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(formatNumberWithCommas(e.target.value));
-    setMinBid(formatNumberWithCommas(e.target.value));
-    // setMinBid(e.target.value);
+    const { name, value } = e.target;
+  
+    if (name === "min_bid") {
+      setMinBid(formatNumberWithCommas(value));
+    } else if (name === "title") {
+      setTitle(value);
+    }
   };
 
   const handleGenderClick = (tag: string) => {
@@ -49,26 +60,42 @@ export default function AuctionRegisterPage() {
 
   const submitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const parsedUserStore = userStore ? JSON.parse(userStore) : null;
+    const userId = parsedUserStore?.state?.userInfo?.userId;
+    const sellerAddress = parsedUserStore?.state?.userInfo?.address;
     const data = {
-      title: "params으로 넘겨받을 이름",
-      turtleId: "params으로 넘겨받은 아이디",
-      userId: "store에서 가져온 유저아이디",
+      title: title,
+      turtleId: state.turtleId,
+      userId: userId,
       content: e.currentTarget.content.value,
-      minBid: minBid.replace(/,/g, ""),
+      minBid: Number(minBid.replace(/,/g, "")),
       startTime: startTime,
-      tags: [selectedGender, selectedSize],
+      auctionTags: [selectedGender, selectedSize],
+      sellerAddress:sellerAddress
     };
 
     const formData = new FormData();
     images.forEach((image) => {
       formData.append("images", image);
     });
-    formData.append("data", JSON.stringify(data));
-
+    formData.append(
+      'data',
+      new Blob([JSON.stringify(data)],{
+        type:'application/json'
+      })
+    )
     console.log(data);
 
-    await addAuctionItem(formData);
-    alert("서브밋 핸들");
+    try{
+      await addAuctionItem(formData);
+      // 성공 처리
+      alert(`${state.name}(이)의 거래 등록이 완료되었습니다.`)
+      navigate("/mypage");
+    }catch(error){
+      console.error("Error adding transaction:", error);
+      alert("새로운 경매 생성에 실패했습니다. 다시 시도해 주세요.");
+    }
+    
   };
   return (
     <>
@@ -84,17 +111,17 @@ export default function AuctionRegisterPage() {
         </h1>
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">
           <img
-            src={TmpTurtleImg}
+            src={state.imageAddress ? state.imageAddress : TmpTurtleImg}
             alt="turtle image"
             draggable="false"
             className="w-[150px] md:w-[170px] h-full object-cover rounded-[10px] mr-4 md:mr-8"
           />
           <div className="flex flex-col">
             <div className="text-[24px] md:text-[26px] font-bold mb-2">
-              꼬부기
+              {state.name}
             </div>
             <div className="text-gray-600 text-[18px] md:text-[21px]">
-              수컷 | 18년 3월 2일생
+            {state.gender} | {formatDate(state.birth)}생
             </div>
           </div>
         </div>
@@ -158,7 +185,7 @@ export default function AuctionRegisterPage() {
               className="md:w-[540px] lg:w-[400px] xl:w-[540px] w-[270px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
               type="text"
               name="title"
-              onInput={handleInputChange}
+              onChange={handleInputChange}
               required
             />
           </div>
@@ -215,28 +242,28 @@ export default function AuctionRegisterPage() {
                 <span className="text-[17px] w-[50px]">성별</span>
                 <span
                   className={`whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[17px] ${
-                    selectedGender === "#암컷"
+                    selectedGender === "암컷"
                       ? "bg-[#D5F0DD] text-[#065F46]"
                       : "bg-gray-300 text-gray-600"
                   }`}
-                  onClick={() => handleGenderClick("#암컷")}
+                  onClick={() => handleGenderClick("암컷")}
                 >
                   #암컷
                 </span>
                 <span
                   className={`whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[17px] ${
-                    selectedGender === "#수컷"
+                    selectedGender === "수컷"
                       ? "bg-[#D5F0DD] text-[#065F46]"
                       : "bg-gray-300 text-gray-600"
                   }`}
-                  onClick={() => handleGenderClick("#수컷")}
+                  onClick={() => handleGenderClick("수컷")}
                 >
                   #수컷
                 </span>
               </div>
               <div className="flex flex-row items-center space-x-2">
                 <span className="text-[17px] w-[50px]">크기</span>
-                {["#베이비", "#아성체", "#준성체", "#성체"].map((tag) => (
+                {["베이비", "아성체", "준성체", "성체"].map((tag) => (
                   <span
                     key={tag}
                     className={`whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[17px] ${
@@ -246,7 +273,7 @@ export default function AuctionRegisterPage() {
                     }`}
                     onClick={() => handleSizeClick(tag)}
                   >
-                    {tag}
+                    #{tag}
                   </span>
                 ))}
               </div>

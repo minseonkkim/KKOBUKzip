@@ -5,7 +5,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class UserResponseDTO {

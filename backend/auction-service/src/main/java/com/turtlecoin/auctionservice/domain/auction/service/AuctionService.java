@@ -55,7 +55,7 @@ public class AuctionService {
     private final BidService bidService;
     private final SseService sseService;
     private static final String AUCTION_END_KEY_PREFIX = "auction_end_";
-
+    private static final String AUCTION_BID_KEY = "auction_bid_";
     // 경매 등록
     @Transactional
     public ResponseEntity<?> registerAuction(RegisterAuctionDTO registerAuctionDTO, List<MultipartFile> images) {
@@ -67,22 +67,24 @@ public class AuctionService {
             if (registerAuctionDTO.getTurtleId() == null || registerAuctionDTO.getSellerAddress() == null || registerAuctionDTO.getTitle() == null || registerAuctionDTO.getMinBid() == null) {
                 throw new IllegalArgumentException("필수 필드가 누락됐습니다.");
             }
-
+            log.info("첫번째 검증");
             validateUserOwnsTurtle(registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
+            log.info("두번째 검증");
             validateTurtleNotAlreadyRegistered(registerAuctionDTO.getTurtleId());
-
+            log.info("검증 끝");
             // 경매 저장
             Auction auction = auctionRepository.save(registerAuctionDTO.toEntity());
-
+            log.info("경매 저장");
             // 동적 스케줄링 수행
             Consumer<Long> startAuction = bidService::startAuction;
             schedulingService.scheduleTask(auction.getId(), startAuction, auction.getStartTime());
-
+            log.info("스케줄링 완료");
             // 이미지 업로드 처리
             if (images != null && !images.isEmpty()) {
                 uploadedPhotos = uploadImages(images, auction);  // 이미지 업로드
                 auction.getAuctionPhotos().addAll(uploadedPhotos);  // 업로드된 이미지 경매와 연결
             }
+            log.info("이미지 업로드 완료");
 
             return new ResponseEntity<>(ResponseVO.success("경매가 성공적으로 등록됐습니다."), HttpStatus.OK);
 
@@ -128,15 +130,18 @@ public class AuctionService {
 
     // 사용자가 소유한 거북이인지 검증 메서드
     private void validateUserOwnsTurtle(Long userId, Long turtleId) {
+        log.info("Main-service에서 조회");
         List<TurtleResponseDTO> userTurtles = mainClient.getTurtlesByUserId(userId);
-        if (userTurtles.isEmpty()) {
-            throw new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId);
-        }
 
+        if (userTurtles.isEmpty()) {
+            throw new UserNotFoundException("유저의 거북이를 찾을 수 없습니다: " + userId);
+        }
+        log.info("거북이 확인 완료");
         boolean isUserTurtle = userTurtles.stream().anyMatch(turtle -> turtle.getId().equals(turtleId));
         if (!isUserTurtle) {
             throw new TurtleNotFoundException("해당 거북이는 사용자가 소유한 거북이가 아닙니다.");
         }
+        log.info("거북이 일치여부 확인 완료");
     }
 
     private void validateTurtleNotAlreadyRegistered(Long turtleId) {
@@ -183,14 +188,38 @@ public class AuctionService {
                     .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다: " + auctionId));
 
             TurtleResponseDTO turtle = mainClient.getTurtle(auction.getTurtleId());
+
+            if (turtle == null) {
+                log.warn("거북이 정보를 찾을 수 없습니다: turtleId={}", auction.getTurtleId());
+                throw new TurtleNotFoundException("Main-service에서 거북이정보를 찾을 수 없습니다.");
+            }
+            log.info("TurtleID: {}",turtle.getId());
             UserResponseDTO user = mainClient.getUserById(auction.getUserId());
+            if (turtle == null) {
+                log.warn("사용자 정보를 찾을 수 없습니다: UserId={}", auction.getUserId());
+                throw new UserNotFoundException("Main-service에서 사용자정보를 찾을 수 없습니다.");
+            }
+            log.info("UserID: {}",user.getUserId());
+
+            String key = AUCTION_BID_KEY+auction;
 
             // null값일 때 어떻게 하지?
             Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX + auctionId, TimeUnit.MILLISECONDS);
 
+            Object bidAmountObj = redisTemplate.opsForHash().get(key, "bidAmount");
+
+            Double nowBid;
+            if (bidAmountObj == null) {
+                nowBid = auction.getMinBid();
+                log.info("redis에 입찰 가격이 없을 때");
+            } else {
+                nowBid = Double.parseDouble(bidAmountObj.toString());  // Object를 Double로 변환
+                log.info("redis에 입찰 가격이 있을 때");
+            }
+
             log.info("RemainingTime : {}", remainingTime);
 
-            AuctionResponseDTO data = AuctionResponseDTO.from(auction, turtle, user, remainingTime);
+            AuctionResponseDTO data = AuctionResponseDTO.from(auction, turtle, user, remainingTime, nowBid);
             return new ResponseEntity<>(ResponseVO.success("경매가 정상적으로 조회되었습니다.", "auction", data), HttpStatus.OK);
         } catch (AuctionNotFoundException e) {
             return new ResponseEntity<>(ResponseVO.failure("400", e.getMessage()), HttpStatus.BAD_REQUEST);
@@ -299,4 +328,5 @@ public class AuctionService {
             }
         }
     }
+
 }

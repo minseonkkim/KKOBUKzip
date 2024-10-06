@@ -48,7 +48,7 @@ function AuctionDetailPage() {
       }
       const response = await getAuctionDetailItemData(auctionId);
       if (response.success) {
-        console.log(response.data.data.auction);
+        console.log(response);
         setAuctionStatus(response.data.data.auction.progress);
         setAuctionItemData(response.data.data.auction);
       } else {

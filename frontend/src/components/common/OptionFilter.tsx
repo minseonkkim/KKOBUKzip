@@ -57,8 +57,6 @@ function OptionFilter({
     <>
       <style>{`
         .custom-checkbox {
-          display: flex;
-          align-items: center;
           cursor: pointer;
           position: relative;
           padding-left: 30px;
@@ -75,11 +73,13 @@ function OptionFilter({
           position: absolute;
           top: 0;
           left: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
           height: 20px;
           width: 20px;
           background-color: #eee;
           border-radius: 50%;
-          border: 2px solid #d1d1d1;
           transition: background-color 0.3s, border-color 0.3s;
         }
 
@@ -99,10 +99,8 @@ function OptionFilter({
         }
 
         .custom-checkbox .checkbox-mark:after {
-          top: 3px;
-          left: 3px;
-          width: 9.7px;
-          height: 9.7px;
+          width: 10px;
+          height: 10px;
           border-radius: 50%;
           background: white;
         }
