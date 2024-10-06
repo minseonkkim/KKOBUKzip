@@ -27,6 +27,7 @@ export default function ChatList() {
     chatRoomList,
   } = useChatStore();
   const { userInfo } = useUserStore();
+  const accessToken = localStorage.getItem("accessToken");
   const isOpen = isChattingOpen;
 
   useEffect(() => {
@@ -44,17 +45,16 @@ export default function ChatList() {
     const initializeSSE = () => {
       const SSE_URL =
         import.meta.env.VITE_SSE_MAIN_URL +
-        "/" +
-        userInfo?.userId +
-        "?token=" +
-        userInfo?.token;
+        "/"+
+        Number(userInfo?.userId)
       // const eventSource = new EventSource(SSE_URL);
       // EventSourcePolyfill 사용
       const eventSource = new EventSourcePolyfill(SSE_URL, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          Authorization: `Bearer ${accessToken}`,
           Accept: "text/event-stream",
         },
+        heartbeatTimeout: 7200 * 1000,
       });
 
       eventSource.onmessage = (event: MessageEvent) => {
