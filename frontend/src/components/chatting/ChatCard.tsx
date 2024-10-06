@@ -1,5 +1,4 @@
 import useDeviceStore from "../../store/useDeviceStore";
-import TmpProfileImg from "../../assets/tmp_profile.gif";
 import { ChatListItem } from "../../types/chatting";
 import formatDate from "../../utils/formatDate";
 
