@@ -57,13 +57,6 @@ public class JWTUtil {
 
     // accessToken 검증 로직
     public Boolean validateAccessToken(String token) throws IOException {
-        String tokens[] = token.split(" ");
-        System.out.println("token : "+token);
-        if(token==null||!"Bearer".equals(tokens[0])){
-            System.out.println("token format is wrong");
-            return false;
-        }
-        token = tokens[1];
         try {
             isTokenExpired(token);  // 토큰 만료 여부 확인
         } catch (ExpiredJwtException e) {

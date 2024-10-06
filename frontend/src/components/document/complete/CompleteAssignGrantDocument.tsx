@@ -6,17 +6,25 @@ import MyDocumentDataForm from "../MyDocumentDataForm";
 function CompleteAssignGrantDocument({
   data,
 }: {
-  data: AdminAssignDocumentDataType;
+  data: AdminAssignDocumentDataType | null;
 }) {
+  if (data === null) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-xl font-semibold">양도/양수 문서가 없습니다.</p>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="flex text-xs justify-between">
-        <span>Doc No. {data.documentHash}</span>
-        <span>turtle_id:{data.turtleUUID}</span>
+        <span>Doc No. {data!.documentHash}</span>
+        <span>turtle_id:{data!.turtleUUID}</span>
       </div>
       <h2 className="text-3xl font-bold my-6 text-center">양도·양수 확인서</h2>
       <div className="my-6 h-0.5 border-b " />
-      <MyDocumentDataForm info={data?.applicant} />
+      <MyDocumentDataForm info={data!.applicant} />
 
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">상세정보</h3>
@@ -24,7 +32,7 @@ function CompleteAssignGrantDocument({
           <div className="flex items-center">
             <label className="w-1/4 font-medium">개체 학명</label>
             <span className="w-3/4 px-3 py-2">
-              {data.detail.scientificName}
+              {data!.detail.scientificName}
             </span>
           </div>
           <div className="flex items-center">
@@ -34,28 +42,28 @@ function CompleteAssignGrantDocument({
 
           <div className="flex items-center">
             <label className="w-1/4 font-medium">수량</label>
-            <span className="w-3/4 px-3 py-2">{data.detail.count}</span>
+            <span className="w-3/4 px-3 py-2">{data!.detail.count}</span>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-medium">양수 사유</label>
             <span className="w-3/4 px-3 py-2">
-              {data.detail.transferReason}
+              {data!.detail.transferReason}
             </span>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-medium">입수 경위</label>
-            <span className="w-3/4 px-3 py-2">{data.detail.aquisition}</span>
+            <span className="w-3/4 px-3 py-2">{data!.detail.aquisition}</span>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-medium">모 개체</label>
             <span className="w-3/4 px-3 py-2">
-              {data.detail.motherAquisition}
+              {data!.detail.motherAquisition}
             </span>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-medium">부 개체</label>
             <span className="w-3/4 px-3 py-2">
-              {data.detail.fatherAquisition}
+              {data!.detail.fatherAquisition}
             </span>
           </div>
         </div>
