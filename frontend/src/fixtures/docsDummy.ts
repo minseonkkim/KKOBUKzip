@@ -13,6 +13,7 @@ export const applicant: ApplicantInfoType = {
   birth: "2024-01-02",
   email: "ssafy@ssafy.com",
   address: "광주광역시 하남산단6번로 107",
+  detailedAddress: "광주광역시 하남산단6번로 107",
 };
 
 // admin - 서류 조회 더미데이터
@@ -67,6 +68,7 @@ export const adminBreedResultdata: AdminBreedDocumentDataType = {
     email: "ssafy@ssafy.com",
     birth: "2000-01-01",
     address: "광주광역시 하남산단로6 133",
+    detailedAddress: "광주광역시 하남산단6번로 107",
   },
   detail: {
     scientificName: "Malaclemys terrapin",
@@ -96,6 +98,7 @@ export const adminAssignGrantData: AdminAssignDocumentDataType = {
     email: "ssafy@ssafy.com",
     birth: "2000-01-01",
     address: "광주광역시 하남산단로6 133",
+    detailedAddress: "광주광역시 하남산단6번로 107",
   },
   assignee: {
     name: "김싸피",
@@ -132,6 +135,7 @@ export const adminDeathData: AdminDeathDocumentDataType = {
     email: "ssafy@ssafy.com",
     birth: "2000-01-01",
     address: "광주광역시 하남산단로6 133",
+    detailedAddress: "광주광역시 하남산단6번로 107",
   },
   detail: {
     scientificName: "Malaclemys terrapin",
