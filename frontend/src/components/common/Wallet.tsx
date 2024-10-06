@@ -141,8 +141,8 @@ const Wallet: React.FC = () => {
   return (
     <div className="bg-yellow-400 text-black p-6 rounded-[10px] w-full shadow-md">
       {/* 계정 정보 및 잔액 표시 */}
-      <div className="mt-0 mb-4">
-        <div className="truncate w-80">
+      <div className="mt-3 mb-4">
+        <div className="truncate w-70">
           <span className="font-semibold">활성 지갑 주소 |</span> {account || "연결되지 않음"}
         </div>
         <div>

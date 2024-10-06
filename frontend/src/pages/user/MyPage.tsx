@@ -58,12 +58,17 @@ function MyPage() {
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        const [transactionResponse, turtleResponse] = await Promise.all([
-          getMyTransaction(),
-          getMyTurtle(),
-        ]);
+  const init = async () => {
+    try {
+      const [transactionResponse, turtleResponse] = await Promise.all([
+        getMyTransaction(),
+        getMyTurtle(),
+      ]);
+      
+      if (transactionResponse.success) {
+        setMyTransactions(transactionResponse.data!.data.transaction);
+        console.log("거래내역 목록", transactionResponse.data!.data.transaction);
+      }
 
         if (transactionResponse.success) {
           setMyTransactions(transactionResponse.data!.data.transaction);
@@ -168,9 +173,9 @@ function MyPage() {
             </button>
           </div>
         </div>
-        <div className="flex flex-row justify-between items-center">
-          <div className="mt-[25px] text-[21px] lg:text-[23px] flex flex-row cursor-pointer mb-[10px] font-stardust">
-            <div
+        <div className="w-full flex lg:flex-row flex-col justify-between items-center">
+          <div className="lg:w-auto w-full mt-[25px] text-[21px] lg:text-[23px] flex flex-row cursor-pointer mb-[10px] font-stardust">
+              <div
               className={`w-1/2 lg:w-[150px] h-[42px] border-b-[4px] text-center ${
                 selectedMenu === 1 && "border-[#4B721F] font-bold"
               }`}
@@ -215,7 +220,7 @@ function MyPage() {
                     sellerAddress={item.sellerAddress}
                     transactionTag={item.transactionTag}
                     amount={item.price}
-                    turtleImage={item.transactionImage[0]}
+                    transactionImage={item.transactionImage}
                   />
                 ))}
               </div>
@@ -224,6 +229,7 @@ function MyPage() {
               <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-28">
                 <img
                   src={NoImage}
+                  alt="turtle image"
                   className="w-[200px] mb-7"
                   draggable="false"
                 />
@@ -255,6 +261,7 @@ function MyPage() {
               <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-28">
                 <img
                   src={NoImage}
+                  alt="turtle image"
                   className="w-[200px] mb-7"
                   draggable="false"
                 />

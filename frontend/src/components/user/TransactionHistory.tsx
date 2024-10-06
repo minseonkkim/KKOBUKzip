@@ -7,17 +7,17 @@ import { useUserStore } from "../../store/useUserStore";
 import useChatStore from "../../store/useChatStore";
 
 interface TransactionHistoryProps {
-  auctionFlag: boolean;
-  turtleId: number;
-  turtleUuid: string;
-  transactionId: number;
-  sellerId: number;
-  sellerUuid: string;
-  sellerName: string;
-  sellerAddress: string;
-  transactionTag: string[];
-  turtleImage: string;
-  amount: number;
+    auctionFlag: boolean;
+    turtleId: number;
+    turtleUuid: string;
+    transactionId: number;
+    sellerId: number;
+    sellerUuid: string;
+    sellerName: string;
+    sellerAddress: string;
+    transactionTag: string[];
+    transactionImage: string[];
+    amount: number;
 }
 
 export default function TransactionHistory(
@@ -93,21 +93,55 @@ export default function TransactionHistory(
     }
   };
 
-  return (
-    <>
-      <div className="w-full border-[2px] rounded-[20px] p-[15px] bg-[#f8f8f8] flex flex-col md:flex-row lg:flex-col xl:flex-row">
-        <div className="flex flex-row">
-          <img
-            src={props.turtleImage}
-            loading="lazy"
-            decoding="async"
-            className="w-[130px] lg:w-[200px] h-[130px] lg:h-[150px] rounded-[10px] object-cover"
-            draggable="false"
-            alt="turtle image"
-          />
-          <div className="flex flex-col justify-between w-[460px] ml-[20px]">
+    return <>
+        <div className="w-full border-[2px] rounded-[20px] p-[15px] bg-[#f8f8f8] flex flex-col justify-between md:flex-row lg:flex-col xl:flex-row">
+            <div className="flex flex-row">
+                <img src={props.transactionImage? props.transactionImage[0] : TmpTurtleImg} loading="lazy" className="w-[130px] lg:w-[200px] object-cover h-[130px] lg:h-[150px] rounded-[10px] object-cover" draggable="false" alt="turtle image"/>
+                <div className="flex flex-col justify-between w-[300px] ml-[15px]">
+                    <div>
+                        {/* <div>{props.sellerName}</div> */}
+                        
+                        <div className="mb-1 whitespace-nowrap font-extrabold text-[25px] text-[#4B721F] font-stardust">
+                            {props.amount?.toLocaleString("ko-KR")}TURT
+                        </div>
+                        <div className="text-[15px] text-gray-700 flex flex-wrap space-x-1">
+                            {props.transactionTag?.map((tag, index) => (
+                                <span
+                                key={index}
+                                className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 my-0.5 rounded-full"
+                                >
+                                #{tag}
+                                </span>
+                            ))}
+                            </div>
+                    </div>
+                    <div className="flex flex-row space-x-3">
+                        {/* 아래 버튼은 거래 진행 상황에 따라 on/off하기! */}
+                        <div className="text-[18px] font-bold">
+                            {/* 경매 거래인 경우에만 활성화 해당(입금 대기 상태일 때) */}
+                            <button className="whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0]" onClick={handleDeposit}>입금하기</button>
+                            {/* 예약 단계에 활성화 */}
+                            <button className="whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0] hidden" onClick={startPaperwork}>서류 작성</button>
+                            {/* 서류 검토 */}
+                            <button className="whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0] hidden" onClick={finalizeTransaction}>구매 확정</button>
+                        </div>
+                        <button onClick={openChat} className="whitespace-nowrap text-[18px] font-bold w-auto px-3 h-10 bg-[#D7E7F7] rounded-[10px] hover:bg-[#C9DBED]">채팅하기</button>
+                    </div>
+                </div>
+            </div>
             <div>
-              {/* <div>{props.sellerName}</div> */}
+            
+            <div className="w-[340px] h-[104px] relative mt-[18px]">
+                <div className="w-[290px] h-[0px] left-[24px] top-[68px] absolute border-[1.4px] border-gray-400"></div>
+                
+                <div className="left-0 top-0 absolute text-center text-black text-[16px]">입금대기</div>
+                {/* 입금대기-완료 */}
+                <div className="w-[30px] h-[30px] left-[8px] top-[53px] absolute bg-[#e7f6d1] rounded-full border border-black" />
+                <div className="w-[14px] h-[14px] left-[10px] top-[54px] absolute"><IoCheckmark className="text-[28px]"/></div>
+                {/* 입금대기-진행중 */}
+                {/* <img className="w-[68px] left-[7px] top-[40px] absolute origin-top-left" src={BabyTurtleImg} draggable="false"/> */}
+                {/* 입금대기-전 */}
+                {/* <div className="w-[23px] h-[23px] left-[19px] top-[61px] absolute bg-[#aeaeae] rounded-full border border-black" /> */}
 
               <div className="mb-1 whitespace-nowrap font-extrabold text-[25px] text-[#4B721F] font-stardust">
                 {props.amount?.toLocaleString("ko-KR")}TURT
