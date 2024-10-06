@@ -1,5 +1,4 @@
 import { ChangeEvent, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
