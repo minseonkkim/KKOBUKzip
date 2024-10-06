@@ -167,12 +167,18 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
 
   const handleTurtleDataVerification = async () => {
     const turtleHash = Web3.utils.sha3(`${birth}${weight}${gender==='m' ? 'MALE' : 'FEMALE'}`)
-    const result = await documentContract?.methods.turtleValid(turtleUuid, turtleHash).call()
-    if (result) {
-      alert("블록체인 네트워크의 해시 정보와 일치합니다.")
-    } else {
-      alert("블록체인 네트워크의 해시 정보와 일치하지 않습니다. 관리자에게 문의 부탁드립니다.")
+    try {
+      const result = await documentContract?.methods.turtleValid(turtleUuid, turtleHash).call()
+      if (result) {
+        alert("블록체인 네트워크의 해시 정보와 일치합니다.")
+      } else {
+        alert("블록체인 네트워크의 해시 정보와 일치하지 않습니다. 관리자에게 문의 부탁드립니다.")
+      }
+    } catch (error) {
+      console.log("에러 : ", error);
+      alert("블록체인 네트워크와 통신 중 오류가 발생했습니다. 다시 시도해 주세요.")
     }
+    
   }
 
   return (
