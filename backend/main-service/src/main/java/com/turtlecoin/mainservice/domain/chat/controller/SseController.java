@@ -61,21 +61,22 @@ public class SseController {
 
 	@GetMapping(value = "/sse/subscribe/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public SseEmitter subscribe(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
-		try{
-			String token = headers.getFirst("Authorization");
-			Long userId = jwtUtil.getIdFromToken(token.substring(7));
-			System.out.println(userId);
-
-			if(id.equals(userId)) {
-				return sseService.subscribe(id);
-			}
-			else{
-				return null;
-			}
-		}
-		catch(Exception e){
-			return null;
-		}
+		// try{
+		// 	String token = headers.getFirst("Authorization");
+		// 	Long userId = jwtUtil.getIdFromToken(token.substring(7));
+		// 	System.out.println(userId);
+		//
+		// 	if(id.equals(userId)) {
+		// 		return sseService.subscribe(id);
+		// 	}
+		// 	else{
+		// 		return null;
+		// 	}
+		// }
+		// catch(Exception e){
+		// 	return null;
+		// }
+		return sseService.subscribe(id);
 	}
 
 	@PostMapping("/send-data/{id}")

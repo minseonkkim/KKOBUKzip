@@ -1,4 +1,4 @@
-import { ChatData, ChatListItem } from "../types/chatting";
+import { ChatData, ChatListItem, ChatResponse } from "../types/chatting";
 import authAxios from "./http-commons/authAxios";
 
 const path = "/main/chatting";
@@ -6,12 +6,12 @@ const path = "/main/chatting";
 // 채팅창에서 채팅 디테일 조회
 export const fetchChatMessageData = async (memberId: number) => {
   try {
-    const response = await authAxios<ChatData[]>(
+    const response = await authAxios<ChatResponse>(
       `${path}/detail?id=${memberId}&type=user`
     );
     return {
       success: true,
-      data: response.data,
+      data: response.data.data,
     };
   } catch (error) {
     let message = "Unknown Error";
