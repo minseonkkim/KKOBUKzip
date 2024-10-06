@@ -57,13 +57,13 @@ export default function ChatList() {
         },
       });
 
-      eventSource.onmessage = (event) => {
-        const newChat: ChatListItem = JSON.parse(event.data);
+      eventSource.onmessage = (event: MessageEvent) => {
         console.log("SSE가 도착한다!");
+        const newChat: ChatListItem = JSON.parse(event.data);
         updateRoomList(newChat);
       };
 
-      eventSource.onerror = (error) => {
+      eventSource.onerror = (error: Event) => {
         console.error("SSE 에러 발생:", error);
         eventSource.close(); // 에러 발생 시 연결 종료
       };
