@@ -8,6 +8,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import com.turtlecoin.mainservice.domain.chat.dto.ChatListDto;
 import com.turtlecoin.mainservice.domain.chat.dto.ChatRequestDto;
 import com.turtlecoin.mainservice.domain.chat.dto.ChatTextResponseDto;
 import com.turtlecoin.mainservice.domain.chat.entity.ChatTextMessage;
@@ -87,7 +88,11 @@ public class MessageController {
 				// 안읽은 횟수를 증가시켜주고
 				chatService.addUnreadCount(smallUserId, bigUserId, opponentUserId);
 				// SSE 메세지를 보내줘야 함
-				sseService.notify(opponentUserId, chatTextResponseDto);
+
+				ChatListDto chatListDto = chatService.chattingRoomList(smallUserId, bigUserId, userId);
+				System.out.println(chatListDto.toString());
+
+				sseService.notify(opponentUserId, chatListDto);
 			}
 		} catch (Exception e){
 			messagingTemplate.convertAndSend("/sub/main/" + chattingId,

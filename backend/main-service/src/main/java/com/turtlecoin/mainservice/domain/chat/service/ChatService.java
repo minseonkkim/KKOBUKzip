@@ -161,6 +161,7 @@ public class ChatService {
 			.collect(Collectors.toList());
 	}
 
+	// 채팅방 목록 전체 조회하기
 	public List<ChatListDto> listChattingRoomList(Long userId, Pageable pageable) throws Exception {
 		List<Chat> chatList = chatRepository.findRecentChatsByUser(userId, pageable.getPageNumber(), pageable.getPageNumber());
 
@@ -190,5 +191,33 @@ public class ChatService {
 				.unreadCount(myUnreadCount)
 				.build();
 		}).toList();
+	}
+	
+	// 채팅방 목록중 하나를 조회하기
+	public ChatListDto chattingRoomList(Long smallUserId, Long bigUserId, Long userId) throws Exception {
+		Chat chat = chatRepository.getSingleChatById(smallUserId, bigUserId);
+		if(chat == null){
+			throw new ChatNotFoundException("채팅을 찾을 수 없습니다.");
+		}
+		else{
+			Long left; Long right;
+			Long otherUserId; Integer myUnreadCount; ChatTextMessage chatTextMessage;
+
+			left = chat.getParticipants().get(0); right = chat.getParticipants().get(1);
+			otherUserId = left == userId ? right : left;
+			myUnreadCount = left == userId ? chat.getUnreadCount().get(0) : chat.getUnreadCount().get(1);
+			chatTextMessage = chat.getRecentMessage();
+			UserResponseDTO userResponseDTO = userService.getByUserId(otherUserId);
+
+			return ChatListDto.builder()
+				.chattingId(chat.getId().toHexString())
+				.otherUserId(otherUserId)
+				.otherUserNickname(userResponseDTO.getNickname())
+				.otherUserProfileImage(userResponseDTO.getProfileImage())
+				.lastMessage(chatTextMessage.getText())
+				.lastMessageTime(chatTextMessage.getRegistTime())
+				.unreadCount(myUnreadCount)
+				.build();
+		}
 	}
 }
