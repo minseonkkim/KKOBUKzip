@@ -34,8 +34,8 @@ function DocumentFormPage() {
     phonenumber: userInfo!.phoneNumber,
     email: userInfo!.email,
     foreignFlag: userInfo!.foreignFlag,
-    address: userInfo!.address.split('/')[0].trim(),
-    detailedAddress: userInfo!.address.split('/')[1].trim(),
+    address: userInfo!.address.split(' / ')[0]?.trim(),
+    detailedAddress: userInfo!.address.split(' / ')[1]?.trim(),
   };
 
   useEffect(() => {
