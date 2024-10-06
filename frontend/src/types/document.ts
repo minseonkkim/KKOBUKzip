@@ -108,7 +108,7 @@ export interface ApplicantInfoType {
   birth: string; // 생년월일
   email: string; // 이메일
   address: string; // 기본 주소
-  detailedAddress: string; // 세부 주소
+  detailedAddress?: string; // 세부 주소
 }
 
 interface baseAdminDocumentType {
