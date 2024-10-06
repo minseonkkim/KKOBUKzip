@@ -1,3 +1,4 @@
+import { UserInfo } from "./../types/user";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import guestAxios from "./http-commons/guestAxios";
 import { JoinDataType } from "../types/join";
@@ -126,26 +127,17 @@ const createEmailRequest = async (
   );
 };
 
+interface UserState extends UserInfo {
+  accessToken: string;
+  refreshToken: string;
+}
 // 응답 데이터 타입 정의
 interface LoginResponseData {
   // 로그인 성공 시 반환되는 데이터 타입을 정의합니다.
   status: number;
   message: string;
   data: {
-    data: {
-      accessToken: string;
-      refreshToken: string;
-      role: string; // 유저는 user 관리자는 admin
-      userId: number;
-      email: string;
-      address: string;
-      phoneNumber: string;
-      nickname: string;
-      profileImage: string;
-      uuid: string;
-      name: string;
-      birth: string;
-    };
+    data: UserState;
   };
 }
 
@@ -178,7 +170,6 @@ interface CreateEmailRequestResponseData {
 // 하단은 내 정보 - 미작성
 //---------------------------
 
-
 // 내 거북이들 확인하기
 export const getMyTurtle = async () => {
   return apiRequest(() =>
@@ -207,9 +198,7 @@ const getMyTransaction = async () => {
   );
 };
 
-
 // 내 거래 내역 상세 조회
-
 
 // 프로필사진 수정
 interface Data {
@@ -244,4 +233,3 @@ export {
   createEmailRequest,
   getMyTransaction,
 };
-
