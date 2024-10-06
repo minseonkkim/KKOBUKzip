@@ -216,7 +216,7 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
             className="w-[48%] h-[33px] md:h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
             onClick={goToDeathDocumentaion}
           >
-            질병·퇴사 등록
+            질병·폐사 등록
           </button>
           <button
             className="w-[48%] h-[33px] md:h-[38px] bg-[#D8F1D5] rounded-[10px] hover:bg-[#CAEAC6]"
@@ -301,19 +301,19 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
 
                 {/* 인공증식 */}
                 {selectedMenu === 0 &&
-                <div className="md:h-[510px] h-[390px] overflow-y-auto md:p-12 p-3">
+                <div className="md:h-[440px] h-[390px] overflow-y-auto md:p-12 p-3">
                     <CompleteBreedDocument data={exampleData}/>
                 </div>}
 
                 {/* 양도양수 */}
                 {selectedMenu === 1 &&
-                <div className="md:h-[510px] h-[390px] overflow-y-auto md:p-12 p-3">
+                <div className="md:h-[440px] h-[390px] overflow-y-auto md:p-12 p-3">
                     <CompleteAssignGrantDocument data={exampleData2}/>
                 </div>}
 
                 {/* 폐사 */}
                 {selectedMenu === 2 &&
-                <div className="md:h-[510px] h-[390px] overflow-y-auto md:p-12 p-3">
+                <div className="md:h-[440px] h-[390px] overflow-y-auto md:p-12 p-3">
                     <CompleteDeathDocument data={exampleData3}/>
                 </div>}
 
