@@ -56,7 +56,10 @@ export default function ChatList() {
         },
         heartbeatTimeout: 7200 * 1000,
       });
-
+      eventSource.onopen = () => {
+        console.log("!SSE 연결 성공!");
+      };
+  
       eventSource.onmessage = (event: MessageEvent) => {
         console.log("SSE가 도착한다!");
         const newChat: ChatListItem = JSON.parse(event.data);
