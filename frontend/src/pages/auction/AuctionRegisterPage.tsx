@@ -1,27 +1,23 @@
-import { useParams } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import { addAuctionItem } from "../../apis/tradeApi";
+import formatDate from "../../utils/formatDate";
 
 
 export default function AuctionRegisterPage() {
   const [images, setImages] = useState<File[]>([]);
-  const { turtleId } = useParams<{ turtleId: number }>(); 
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [minBid, setMinBid] = useState("");
   const [startTime, setStartTime] = useState("");
   const [title, setTitle] = useState("");
-  type Turtle = {
-    imageUrl : String,
-    name: String,
-    gender: String,
-    date: Date
-  }
+  const { state } = useLocation();
+  const userStore = localStorage.getItem('userStore');
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length + images.length > 3) {
@@ -63,15 +59,18 @@ export default function AuctionRegisterPage() {
 
   const submitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const parsedUserStore = userStore ? JSON.parse(userStore) : null;
+    const userId = parsedUserStore?.state?.userInfo?.userId;
+    const sellerAddress = parsedUserStore?.state?.userInfo?.address;
     const data = {
       title: title,
-      turtleId: turtleId,
-      userId: localStorage.getItem("accessToken"),
+      turtleId: state.turtleId,
+      userId: userId,
       content: e.currentTarget.content.value,
-      minBid: minBid.replace(/,/g, ""),
+      minBid: Number(minBid.replace(/,/g, "")),
       startTime: startTime,
       auctionTags: [selectedGender, selectedSize],
-      sellerAddress:"temporary seller address"
+      sellerAddress:sellerAddress
     };
 
     const formData = new FormData();
@@ -84,8 +83,7 @@ export default function AuctionRegisterPage() {
         type:'application/json'
       })
     )
-    
-    console.log(formData);
+    console.log(data);
 
     await addAuctionItem(formData);
     alert("서브밋 핸들");
@@ -104,17 +102,17 @@ export default function AuctionRegisterPage() {
         </h1>
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">
           <img
-            src={TmpTurtleImg}
+            src={state.imageAddress ? state.imageAddress : TmpTurtleImg}
             alt="turtle image"
             draggable="false"
             className="w-[150px] md:w-[170px] h-full object-cover rounded-[10px] mr-4 md:mr-8"
           />
           <div className="flex flex-col">
             <div className="text-[24px] md:text-[26px] font-bold mb-2">
-              꼬부기
+              {state.name}
             </div>
             <div className="text-gray-600 text-[18px] md:text-[21px]">
-              수컷 | 18년 3월 2일생
+            {state.gender} | {formatDate(state.birth)}생
             </div>
           </div>
         </div>
@@ -235,28 +233,28 @@ export default function AuctionRegisterPage() {
                 <span className="text-[17px] w-[50px]">성별</span>
                 <span
                   className={`whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[17px] ${
-                    selectedGender === "#암컷"
+                    selectedGender === "암컷"
                       ? "bg-[#D5F0DD] text-[#065F46]"
                       : "bg-gray-300 text-gray-600"
                   }`}
-                  onClick={() => handleGenderClick("#암컷")}
+                  onClick={() => handleGenderClick("암컷")}
                 >
                   #암컷
                 </span>
                 <span
                   className={`whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[17px] ${
-                    selectedGender === "#수컷"
+                    selectedGender === "수컷"
                       ? "bg-[#D5F0DD] text-[#065F46]"
                       : "bg-gray-300 text-gray-600"
                   }`}
-                  onClick={() => handleGenderClick("#수컷")}
+                  onClick={() => handleGenderClick("수컷")}
                 >
                   #수컷
                 </span>
               </div>
               <div className="flex flex-row items-center space-x-2">
                 <span className="text-[17px] w-[50px]">크기</span>
-                {["#베이비", "#아성체", "#준성체", "#성체"].map((tag) => (
+                {["베이비", "아성체", "준성체", "성체"].map((tag) => (
                   <span
                     key={tag}
                     className={`whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[17px] ${
@@ -266,7 +264,7 @@ export default function AuctionRegisterPage() {
                     }`}
                     onClick={() => handleSizeClick(tag)}
                   >
-                    {tag}
+                    #{tag}
                   </span>
                 ))}
               </div>
