@@ -48,9 +48,9 @@ function AuctionDetailPage() {
       }
       const response = await getAuctionDetailItemData(auctionId);
       if (response.success) {
-        console.log(response.data.data.auction);
+        console.log(response);
         setAuctionStatus(response.data.data.auction.progress);
-        setAuctionItemData(response.data.data.auction);
+        // setAuctionItemData(response.data.data.auction);
       } else {
         // 요청 실패 혹은 없는 거북이면 되돌아감
         goBack();
