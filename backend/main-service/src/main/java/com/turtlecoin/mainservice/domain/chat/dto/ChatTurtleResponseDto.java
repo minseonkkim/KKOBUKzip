@@ -2,6 +2,10 @@ package com.turtlecoin.mainservice.domain.chat.dto;
 
 import com.turtlecoin.mainservice.domain.chat.entity.ChatTurtleMessage;
 
+import lombok.Data;
+import lombok.Getter;
+
+@Data
 public class ChatTurtleResponseDto implements ChatResponseDto {
 	private String title;
 	private Double price;

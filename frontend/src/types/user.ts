@@ -10,4 +10,5 @@ export interface UserInfo {
   phoneNumber: string;
   nickname: string;
   profileImage: string;
+  token: string;
 }

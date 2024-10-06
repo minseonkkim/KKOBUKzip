@@ -5,8 +5,7 @@ export interface ChatListItem {
   otherUserProfileImage: string;
   lastMessage: string;
   lastMessageTime: string;
-  isOpened: boolean;
-  chatCnt: number;
+  unreadCount: number;
 }
 
 export interface ChatData {

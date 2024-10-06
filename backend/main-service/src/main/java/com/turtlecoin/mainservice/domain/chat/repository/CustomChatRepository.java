@@ -17,4 +17,6 @@ public interface CustomChatRepository {
 	List<ChatMessage> getChatByPage(Long smallUserId, Long bigUserId, Long loginId, int page, int size);
 
 	List<Chat> findRecentChatsByUser(Long userId, int page, int size);
+
+	void addUnreadCount(Long smallUserId, Long bigUserId, Long opponentUserId);
 }
