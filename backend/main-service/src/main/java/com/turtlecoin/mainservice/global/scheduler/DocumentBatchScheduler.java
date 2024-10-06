@@ -22,7 +22,7 @@ public class DocumentBatchScheduler {
     @Qualifier("DocUpdateJob")
     private Job updateDocumentJob;  // 실행할 Job 주입
 
-    @Scheduled(fixedDelay = 60000)
+    @Scheduled(fixedDelay = 180000)
     public void runUpdateDocumentJob() throws Exception {
         // 매번 실행되는 배치마다 유일성을 보장하기 위해 ( 중복 실행 방지 ) 시간을 입력해준다.
         JobParameters jobParameters = new JobParametersBuilder()
