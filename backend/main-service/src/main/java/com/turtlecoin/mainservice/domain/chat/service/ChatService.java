@@ -27,7 +27,7 @@ import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.domain.transaction.exception.TransactionNotFoundException;
 import com.turtlecoin.mainservice.global.exception.InvalidChattingException;
 import com.turtlecoin.mainservice.global.exception.ChatNotFoundException;
-import com.turtlecoin.mainservice.global.util.CustomWebSocketHandler;
+import com.turtlecoin.mainservice.global.util.WebSocketUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,9 +37,7 @@ public class ChatService {
 	private final ChatRepository chatRepository;
 	private final UserService userService;
 	private final TransactionService transactionService;
-	private final UserRepository userRepository;
-	private final SseService sseService;
-	private final CustomWebSocketHandler customWebSocketHandler;
+	private final WebSocketUtil webSocketUtil;
 
 	public ObjectId createChat(Long smallUserId, Long bigUserId) throws Exception{
 		// 호출 해보면서 없는 아이디인지 확인
@@ -161,6 +159,7 @@ public class ChatService {
 			.collect(Collectors.toList());
 	}
 
+	// 채팅방 목록 전체 조회하기
 	public List<ChatListDto> listChattingRoomList(Long userId, Pageable pageable) throws Exception {
 		List<Chat> chatList = chatRepository.findRecentChatsByUser(userId, pageable.getPageNumber(), pageable.getPageNumber());
 
@@ -190,5 +189,35 @@ public class ChatService {
 				.unreadCount(myUnreadCount)
 				.build();
 		}).toList();
+	}
+	
+	// 채팅방 목록중 하나를 조회하기
+	public ChatListDto chattingRoomList(Long smallUserId, Long bigUserId, Long userId) throws Exception {
+		Chat chat = chatRepository.getSingleChatById(smallUserId, bigUserId);
+		if(chat == null){
+			throw new ChatNotFoundException("채팅을 찾을 수 없습니다.");
+		}
+		else{
+			Long left; Long right;
+			Long otherUserId; Integer opponentUnreadCount; ChatTextMessage chatTextMessage;
+
+			left = chat.getParticipants().get(0); right = chat.getParticipants().get(1);
+			otherUserId = left == userId ? right : left;
+			// 상대방에게 보내주는 목적이니까
+			// 상대방을 기준으로 읽었나 안읽었나 횟수가 기준이 됨
+			opponentUnreadCount = left == otherUserId ? chat.getUnreadCount().get(0) : chat.getUnreadCount().get(1);
+			chatTextMessage = chat.getRecentMessage();
+			UserResponseDTO userResponseDTO = userService.getByUserId(otherUserId);
+
+			return ChatListDto.builder()
+				.chattingId(chat.getId().toHexString())
+				.otherUserId(otherUserId)
+				.otherUserNickname(userResponseDTO.getNickname())
+				.otherUserProfileImage(userResponseDTO.getProfileImage())
+				.lastMessage(chatTextMessage.getText())
+				.lastMessageTime(chatTextMessage.getRegistTime())
+				.unreadCount(opponentUnreadCount)
+				.build();
+		}
 	}
 }
