@@ -121,7 +121,7 @@ export default function AuctionRegisterPage() {
               {state.name}
             </div>
             <div className="text-gray-600 text-[18px] md:text-[21px]">
-            {state.gender} | {formatDate(state.birth)}생
+            {state.gender == "FEMALE" ? "암컷" : (state.gender == "MALE" ? "수컷" : "미구분")} | {formatDate(state.birth)}생
             </div>
           </div>
         </div>
