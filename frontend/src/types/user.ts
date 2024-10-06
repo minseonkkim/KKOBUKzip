@@ -3,6 +3,7 @@ export interface UserInfo {
   userId: number;
   uuid: string;
   name: string;
+  foreignFlag: boolean;
   birth: string;
   email: string;
   address: string;

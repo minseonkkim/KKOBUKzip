@@ -5,6 +5,7 @@ import { Contract } from "web3-eth-contract";
 import { AbiItem } from "web3-utils";
 import TurtleTokenAbi from "../abi/TurtleToken.json";
 import TurtleEscrowAbi from '../abi/TurtleEscrow.json';
+import TurtleDocumentationAbi from "../abi/TurtleDocumentation.json"
 
 const TURTLE_TOKEN_ADDRESS = "0xe01a5F9cb53755236d1E754eb4d42286E1b62166";
 const TURTLE_TOKEN_ABI: AbiItem[] = TurtleTokenAbi.abi as AbiItem[];
@@ -12,18 +13,23 @@ const TURTLE_TOKEN_ABI: AbiItem[] = TurtleTokenAbi.abi as AbiItem[];
 const TURTLE_ESCROW_ADDRESS = "0x4C3f97793a723BEe60d27c53255aC372A23d4Ba2";
 const TURTLE_ESCROW_ABI: AbiItem[] = TurtleEscrowAbi.abi as AbiItem[];
 
+const TURTLE_DOCUMENTATION_ADDRESS = "0x3b3782ef792bdac3e9ca3ed4d83e07a3b205acb6";
+const TURTLE_DOCUMENTATION_ABI: AbiItem[] = TurtleDocumentationAbi.abi as AbiItem[];
+
 interface Web3State {
   MMSDK: MetaMaskSDK | null;
   web3: Web3 | null;
   account: string;
   tokenContract: Contract<typeof TURTLE_TOKEN_ABI> | null;
   escrowContract: Contract<typeof TURTLE_ESCROW_ABI> | null;
+  documentContract: Contract<typeof TURTLE_DOCUMENTATION_ABI> | null;
   error: string | null;
   isInitialized: boolean;
   initializeSDK: () => Promise<void>;
   connectWallet: () => Promise<void>;
   getTokenContract: () => Contract<typeof TURTLE_TOKEN_ABI> | null;
   getEscrowContract: () => Contract<typeof TURTLE_ESCROW_ABI> | null;
+  getDocumentContract: () => Contract<typeof TURTLE_DOCUMENTATION_ABI> | null;
   handleAccountsChanged: (accounts: string[]) => void;
 }
 
@@ -33,6 +39,7 @@ export const useWeb3Store = create<Web3State>((set, get) => ({
   account: "",
   tokenContract: null,
   escrowContract: null,
+  documentContract: null,
   error: null,
   isInitialized: false,
 
@@ -99,12 +106,17 @@ export const useWeb3Store = create<Web3State>((set, get) => ({
           TURTLE_ESCROW_ABI,
           TURTLE_ESCROW_ADDRESS
         );
+        const documentContract = new web3Instance.eth.Contract(
+          TURTLE_DOCUMENTATION_ABI,
+          TURTLE_DOCUMENTATION_ADDRESS
+        );
 
         set({
           web3: web3Instance,
           account: newAccount,
           tokenContract,
           escrowContract,
+          documentContract,
           error: null,
         });
 
@@ -141,11 +153,16 @@ export const useWeb3Store = create<Web3State>((set, get) => ({
         TURTLE_ESCROW_ABI,
         TURTLE_ESCROW_ADDRESS
       );
+      const documentContract = new web3.eth.Contract(
+        TURTLE_DOCUMENTATION_ABI,
+        TURTLE_DOCUMENTATION_ADDRESS
+      );
 
       set({ 
         account: newAccount, 
         tokenContract, 
         escrowContract,
+        documentContract,
         error: null 
       });
 
@@ -155,4 +172,5 @@ export const useWeb3Store = create<Web3State>((set, get) => ({
 
   getTokenContract: () => get().tokenContract,
   getEscrowContract: () => get().escrowContract,
+  getDocumentContract: () => get().documentContract,
 }));
