@@ -223,16 +223,13 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
     console.log(`${birth}${weight}${gender==='m' ? 'MALE' : 'FEMALE'}`);
     const turtleHash = Web3.utils.sha3(`${birth}${weight}${gender==='m' ? 'MALE' : 'FEMALE'}`)
     const result = await documentContract?.methods.turtleValid(turtleUuid, turtleHash).call()
-    if (result) {
-      openAgreeAlert();
-    } else {
-      openDisagreeAlert();
+
     try {
       const result = await documentContract!.methods.turtleValid(turtleUuid, turtleHash).call()
       if (result) {
-        alert("블록체인 네트워크의 해시 정보와 일치합니다.")
+        openAgreeAlert();
       } else {
-        alert("블록체인 네트워크의 해시 정보와 일치하지 않습니다. 관리자에게 문의 부탁드립니다.")
+        openDisagreeAlert();
       }
     } catch (error) {
       console.log("에러 : ", error);
