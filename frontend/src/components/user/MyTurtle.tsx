@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import TmpTurtleImg2 from "../../assets/tmp_turtle_2.jpg";
@@ -13,99 +13,97 @@ import CompleteDeathDocument from "../document/complete/CompleteDeathDocument";
 import formatDate from "../../utils/formatDate";
 import Web3 from "web3";
 import { useWeb3Store } from "../../store/useWeb3Store";
+import { getDetailDocumentData } from "../../apis/documentApis";
 
 // 더미데이터
-const exampleData: AdminBreedDocumentDataType = {
-  docType: "인공증식증명서", 
-  documentHash: "ABC123XYZ", 
-  turtleUUID: "TURTLE-001", 
-  applicant: {
-    name: "민선",
-    foreignFlag: true,
-    phonenumber: "010-0000-0000",
-    birth: "2001-08-02",
-    email: "sds@ssafy.com",
-    address: "under the sea",
-    detailedAddress: "under the sea"
-  },
-  detail: {
-    scientificName: "Malaclemys terrapin",
-    area: "50 square meters",
-    count: 5,
-    purpose: "연구",
-    registerDate: "2024-09-20",
-    motherUUID: "MOTHER-UUID-001",
-    motherAquisition: "Wild captured in 2018",
-    fatherUUID: "FATHER-UUID-001",
-    fatherAquisition: "Bred in captivity in 2019",
-    locationSpecification:
-      "Artificial breeding facility located at the coastal area, equipped with saltwater tanks.",
-    multiplicationMethod: "Egg incubation with temperature control", 
-    shelterSpecification: "Includes UVB lighting and heat lamps", 
-  },
-};
+// const exampleData: AdminBreedDocumentDataType = {
+//   docType: "인공증식증명서", 
+//   documentHash: "ABC123XYZ", 
+//   turtleUUID: "TURTLE-001", 
+//   applicant: {
+//     name: "민선",
+//     foreignFlag: true,
+//     phonenumber: "010-0000-0000",
+//     birth: "2001-08-02",
+//     email: "sds@ssafy.com",
+//     address: "under the sea",
+//   },
+//   detail: {
+//     scientificName: "Malaclemys terrapin",
+//     area: "50 square meters",
+//     count: 5,
+//     purpose: "연구",
+//     registerDate: "2024-09-20",
+//     motherUUID: "MOTHER-UUID-001",
+//     motherAquisition: "Wild captured in 2018",
+//     fatherUUID: "FATHER-UUID-001",
+//     fatherAquisition: "Bred in captivity in 2019",
+//     locationSpecification:
+//       "Artificial breeding facility located at the coastal area, equipped with saltwater tanks.",
+//     multiplicationMethod: "Egg incubation with temperature control", 
+//     shelterSpecification: "Includes UVB lighting and heat lamps", 
+//   },
+// };
 
-const exampleData2: AdminAssignDocumentDataType = {
-  docType: "양도양수확인서",
-  documentHash: "DEF456UVW",
-  turtleUUID: "TURTLE-002",
-  applicant: {
-    name: "민선",
-    foreignFlag: true,
-    phonenumber: "010-0000-0000",
-    birth: "2001-08-02",
-    email: "sds@ssafy.com",
-    address: "under the sea",
-    detailedAddress: "under the sea"
-  },
-  assignee: {
-    name: "Michael Johnson",
-    address: "789 Coastal Road, Bay Area",
-    phoneNumber: "010-1111-2222",
-  },
-  grantor: {
-    name: "Sarah Lee",
-    address: "321 Marine Drive, Coral City",
-    phoneNumber: "010-3333-4444",
-  },
-  detail: {
-    scientificName: "Malaclemys terrapin",
-    count: 2,
-    registerDate: "2024-09-20",
-    transferReason: "For research purposes",
-    aquisition: "Purchased from a licensed breeder in 2023",
-    motherUUID: "MOTHER-UUID-002",
-    motherAquisition: "Acquired from a conservation program in 2019",
-    fatherUUID: "FATHER-UUID-002",
-    fatherAquisition: "Bred in a certified facility in 2020",
-  },
-};
+// const exampleData2: AdminAssignDocumentDataType = {
+//   docType: "양도양수확인서",
+//   documentHash: "DEF456UVW",
+//   turtleUUID: "TURTLE-002",
+//   applicant: {
+//     name: "민선",
+//     foreignFlag: true,
+//     phonenumber: "010-0000-0000",
+//     birth: "2001-08-02",
+//     email: "sds@ssafy.com",
+//     address: "under the sea",
+//   },
+//   assignee: {
+//     name: "Michael Johnson",
+//     address: "789 Coastal Road, Bay Area",
+//     phoneNumber: "010-1111-2222",
+//   },
+//   grantor: {
+//     name: "Sarah Lee",
+//     address: "321 Marine Drive, Coral City",
+//     phoneNumber: "010-3333-4444",
+//   },
+//   detail: {
+//     scientificName: "Malaclemys terrapin",
+//     count: 2,
+//     registerDate: "2024-09-20",
+//     transferReason: "For research purposes",
+//     aquisition: "Purchased from a licensed breeder in 2023",
+//     motherUUID: "MOTHER-UUID-002",
+//     motherAquisition: "Acquired from a conservation program in 2019",
+//     fatherUUID: "FATHER-UUID-002",
+//     fatherAquisition: "Bred in a certified facility in 2020",
+//   },
+// };
 
 
-const exampleData3: AdminDeathDocumentDataType = {
-  docType: "폐사질병서류", 
-  documentHash: "GHI789JKL", 
-  turtleUUID: "TURTLE-003", 
-  applicant: {
-    name: "민선",
-    foreignFlag: true,
-    phonenumber: "010-0000-0000",
-    birth: "2001-08-02",
-    email: "sds@ssafy.com",
-    address: "under the sea",
-    detailedAddress: "under the sea"
-  },
-  detail: {
-    scientificName: "Malaclemys terrapin",
-    shelter: "Aquatic Facility, Room 3",
-    count: 1,
-    registerDate: "2024-09-20",
-    deathReason: "Bacterial infection", 
-    plan: "Disposal through authorized biological waste disposal service", 
-    deathImage: "image_url_of_deceased_turtle.jpg", 
-    diagnosis: "Veterinarian's diagnosis confirming infection", 
-  },
-};
+// const exampleData3: AdminDeathDocumentDataType = {
+//   docType: "폐사질병서류", 
+//   documentHash: "GHI789JKL", 
+//   turtleUUID: "TURTLE-003", 
+//   applicant: {
+//     name: "민선",
+//     foreignFlag: true,
+//     phonenumber: "010-0000-0000",
+//     birth: "2001-08-02",
+//     email: "sds@ssafy.com",
+//     address: "under the sea",
+//   },
+//   detail: {
+//     scientificName: "Malaclemys terrapin",
+//     shelter: "Aquatic Facility, Room 3",
+//     count: 1,
+//     registerDate: "2024-09-20",
+//     deathReason: "Bacterial infection", 
+//     plan: "Disposal through authorized biological waste disposal service", 
+//     deathImage: "image_url_of_deceased_turtle.jpg", 
+//     diagnosis: "Veterinarian's diagnosis confirming infection", 
+//   },
+// };
 
 
 interface MyTurtleProps{
@@ -119,7 +117,6 @@ interface MyTurtleProps{
   imageAddress: string;
 }
 
-
 export default function MyTurtle({turtleId, turtleUuid, name, scientificName, gender, weight, birth, imageAddress}:MyTurtleProps) {
   const navigate = useNavigate();
   const { documentContract } = useWeb3Store();
@@ -127,6 +124,49 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
 
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
+
+  const [breedDocumentData, setBreedDocumentData] = useState<AdminBreedDocumentDataType | null>(null);
+  const [transferDocumentData, setTransferDocumentData] = useState<AdminAssignDocumentDataType | null>(null);
+  const [deathDocumentData, setDeathDocumentData] = useState<AdminDeathDocumentDataType | null>(null);
+
+  console.log("turtleUuid", turtleUuid);
+
+  useEffect(() => {
+    async function fetchData () {
+      const { hasMultiplicationRecord, documentHash: breedDocumentHash }: { hasMultiplicationRecord: boolean, documentHash: string } = await documentContract!.methods.searchCurrentMultiplicationDocumentHash(turtleUuid).call();
+      const { hasTransferRecord, documentHash: transferDocumentHash }: { hasTransferRecord: boolean, documentHash: string } = await documentContract!.methods.searchCurrentTransferredDocumentHash(turtleUuid).call();
+      const { hasDeathRecord, documentHash: deathDocumentHash }: { hasDeathRecord: boolean, documentHash: string } = await documentContract!.methods.searchCurrentDeathDocumentHash(turtleUuid).call();
+
+      if (hasMultiplicationRecord) {
+        const {message, success, data, error} = await getDetailDocumentData(turtleUuid, breedDocumentHash);
+        if (success) {
+          setBreedDocumentData(data! as AdminBreedDocumentDataType);
+        } else {
+          console.error("breedDocData : ", error, message);
+        }
+      }
+
+      if (hasTransferRecord) {
+        const {message, success, data, error} = await getDetailDocumentData(turtleUuid, transferDocumentHash);
+        if (success) {
+          setTransferDocumentData(data! as AdminAssignDocumentDataType);
+        } else {
+          console.error("transferDocData : ", error, message);
+        }
+      }
+      
+      if (hasDeathRecord) {
+        const {message, success, data, error} = await getDetailDocumentData(turtleUuid, deathDocumentHash);
+        if (success) {
+          setDeathDocumentData(data! as AdminDeathDocumentDataType);
+        } else {
+          console.error("deathDocData : ", error, message);
+        }
+      }
+    }
+
+    fetchData();
+  }, [documentContract, turtleUuid])
 
   const goToAuctionRegister = () => {
     navigate("/auction-register",{ state: { turtleId: turtleId, name: name, scientificName: scientificName, gender: gender, weight: weight, birth: birth, imageAddress: imageAddress } });
@@ -169,12 +209,18 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
   }
 
   const handleTurtleDataVerification = async () => {
+    console.log(`${birth}${weight}${gender==='m' ? 'MALE' : 'FEMALE'}`);
     const turtleHash = Web3.utils.sha3(`${birth}${weight}${gender==='m' ? 'MALE' : 'FEMALE'}`)
-    const result = await documentContract?.methods.turtleValid(turtleUuid, turtleHash).call()
-    if (result) {
-      alert("블록체인 네트워크의 해시 정보와 일치합니다.")
-    } else {
-      alert("블록체인 네트워크의 해시 정보와 일치하지 않습니다. 관리자에게 문의 부탁드립니다.")
+    try {
+      const result = await documentContract!.methods.turtleValid(turtleUuid, turtleHash).call()
+      if (result) {
+        alert("블록체인 네트워크의 해시 정보와 일치합니다.")
+      } else {
+        alert("블록체인 네트워크의 해시 정보와 일치하지 않습니다. 관리자에게 문의 부탁드립니다.")
+      }
+    } catch (error) {
+      console.log("에러 : ", error);
+      alert("블록체인 네트워크와 통신 중 오류가 발생했습니다. 다시 시도해 주세요.")
     }
   }
 
@@ -301,20 +347,20 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
 
                 {/* 인공증식 */}
                 {selectedMenu === 0 &&
-                <div className="md:h-[440px] h-[390px] overflow-y-auto md:p-12 p-3">
-                    <CompleteBreedDocument data={exampleData}/>
+                <div className="md:h-[510px] h-[390px] overflow-y-auto md:p-12 p-3">
+                    <CompleteBreedDocument data={breedDocumentData}/>
                 </div>}
 
                 {/* 양도양수 */}
                 {selectedMenu === 1 &&
-                <div className="md:h-[440px] h-[390px] overflow-y-auto md:p-12 p-3">
-                    <CompleteAssignGrantDocument data={exampleData2}/>
+                <div className="md:h-[510px] h-[390px] overflow-y-auto md:p-12 p-3">
+                    <CompleteAssignGrantDocument data={transferDocumentData}/>
                 </div>}
 
                 {/* 폐사 */}
                 {selectedMenu === 2 &&
-                <div className="md:h-[440px] h-[390px] overflow-y-auto md:p-12 p-3">
-                    <CompleteDeathDocument data={exampleData3}/>
+                <div className="md:h-[510px] h-[390px] overflow-y-auto md:p-12 p-3">
+                    <CompleteDeathDocument data={deathDocumentData}/>
                 </div>}
 
             </div>
