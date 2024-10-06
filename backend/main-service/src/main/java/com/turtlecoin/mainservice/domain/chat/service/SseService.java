@@ -17,8 +17,9 @@ public class SseService {
 	private final EmitterRepository emitterRepository;
 	private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 변환용 ObjectMapper
 
-	public SseEmitter subscribe(Long userId) {
+	public SseEmitter subscribe(Long userId) throws Exception{
 		SseEmitter emitter = createEmitter(userId);
+		// emitter.send(SseEmitter.event().id(String.valueOf(userId)).name("sse").data("SSE Connected"));
 		return emitter;
 	}
 
