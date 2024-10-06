@@ -37,6 +37,7 @@ export const AuctionResponseDummuy = {
         gender: "FEMALE",
         weight: 12.5,
         userId: 1,
+        scientificName: "turtle",
       },
     },
   },
