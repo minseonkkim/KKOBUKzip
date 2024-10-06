@@ -10,12 +10,14 @@ import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
 import com.turtlecoin.mainservice.global.exception.TurtleNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AuctionReceiveService {
 
@@ -25,6 +27,14 @@ public class AuctionReceiveService {
 
     @RabbitListener(queues = "auction.result.queue")
     public void receiveMessage(AuctionResultDTO auctionResultDTO) {
+        log.info("Received AuctionResultDTO: {}", auctionResultDTO);
+        if (auctionResultDTO.getWinningBid() == null) {
+            log.error("Received message with null price. Message will be discarded.");
+            // 에러 처리 혹은 메시지 무시
+            return;
+        }
+        log.info("여기가 문제");
+        log.info("Received message with price " + auctionResultDTO.getWinningBid());
         Turtle turtle = turtleRepository.findById(auctionResultDTO.getTurtleId()).get();
         String imageAddress = auctionResultDTO.getImageAddress();
 
