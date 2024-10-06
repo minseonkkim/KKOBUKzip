@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom"
+import { useLocation,useNavigate } from "react-router-dom"
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
@@ -17,6 +17,7 @@ export default function AuctionRegisterPage() {
   const [startTime, setStartTime] = useState("");
   const [title, setTitle] = useState("");
   const { state } = useLocation();
+  const navigate = useNavigate();
   const userStore = localStorage.getItem('userStore');
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -85,8 +86,16 @@ export default function AuctionRegisterPage() {
     )
     console.log(data);
 
-    await addAuctionItem(formData);
-    alert("서브밋 핸들");
+    try{
+      await addAuctionItem(formData);
+      // 성공 처리
+      alert(`${state.name}(이)의 거래 등록이 완료되었습니다.`)
+      navigate("/mypage");
+    }catch(error){
+      console.error("Error adding transaction:", error);
+      alert("새로운 경매 생성에 실패했습니다. 다시 시도해 주세요.");
+    }
+    
   };
   return (
     <>
