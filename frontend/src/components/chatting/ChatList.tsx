@@ -9,6 +9,7 @@ import { ChatListItem } from "../../types/chatting";
 import useChatStore from "../../store/useChatStore";
 import { fetchChatListData } from "../../apis/chatApi";
 import { useUserStore } from "../../store/useUserStore";
+import { EventSourcePolyfill } from "event-source-polyfill/src/eventsource.min.js";
 
 const dummyData = chatsData;
 
@@ -42,8 +43,19 @@ export default function ChatList() {
     // SSE 연결하는 함수
     const initializeSSE = () => {
       const SSE_URL =
-        import.meta.env.VITE_SSE_MAIN_URL + "/" + userInfo?.userId;
-      const eventSource = new EventSource(SSE_URL);
+        import.meta.env.VITE_SSE_MAIN_URL +
+        "/" +
+        userInfo?.userId +
+        "?token=" +
+        userInfo?.token;
+      // const eventSource = new EventSource(SSE_URL);
+      // EventSourcePolyfill 사용
+      const eventSource = new EventSourcePolyfill(SSE_URL, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          Accept: "text/event-stream",
+        },
+      });
 
       eventSource.onmessage = (event) => {
         const newChat: ChatListItem = JSON.parse(event.data);

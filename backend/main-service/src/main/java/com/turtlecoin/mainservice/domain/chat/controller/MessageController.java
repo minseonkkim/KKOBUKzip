@@ -3,6 +3,7 @@ package com.turtlecoin.mainservice.domain.chat.controller;
 import java.util.StringTokenizer;
 
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -14,8 +15,9 @@ import com.turtlecoin.mainservice.domain.chat.service.ChatService;
 import com.turtlecoin.mainservice.domain.chat.service.SseService;
 import com.turtlecoin.mainservice.domain.user.dto.UserResponseDTO;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
+import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
-import com.turtlecoin.mainservice.global.scheduler.CustomWebSocketHandler;
+import com.turtlecoin.mainservice.global.util.CustomWebSocketHandler;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,25 +29,13 @@ public class MessageController {
 	private final UserService userService;
 	private final SseService sseService;
 	private final CustomWebSocketHandler customWebSocketHandler;
+	private final JWTUtil jwtUtil;
 
 	// (/pub/main/{chattingID})
 	@MessageMapping("/main/{chattingId}")
-	public void sendMessage(@DestinationVariable String chattingId, ChatRequestDto chatRequestDto) {
+	public void sendMessage(@DestinationVariable String chattingId, ChatRequestDto chatRequestDto, @Header("Authorization") String token) {
 		Long userId = chatRequestDto.getUserId();
 		String message = chatRequestDto.getMessage();
-
-		// HandshakeInterceptor에서 저장한 JWT 가져오기
-		// String jwt = (String) headerAccessor.getSessionAttributes().get("jwt");
-		//
-		// // JWT 검증 로직 수행
-		// if (jwt != null && validateJwtToken(jwt)) {
-		// 	// 정상적인 JWT일 경우 메시지 처리
-		// 	System.out.println("Valid JWT: " + jwt);
-		// } else {
-		// 	// JWT가 유효하지 않은 경우 처리
-		// 	System.out.println("Invalid JWT");
-		// }
-
 
 		StringTokenizer st = new StringTokenizer(chattingId, "-");
 		Long smallUserId = Long.parseLong(st.nextToken());
@@ -57,6 +47,15 @@ public class MessageController {
 		try {
 			// 내 유저 정보를 확인
 			me = userService.getByUserId(smallUserId.equals(userId) ? smallUserId : bigUserId);
+			Long jwtUserId = jwtUtil.getIdFromToken(token.substring(7));
+			// jwt인증이 안되면 에러
+			if(!jwtUserId.equals(userId)) {
+				messagingTemplate.convertAndSend("/sub/main/" + chattingId,
+					ResponseVO.failure("401", "인증 정보가 유효하지 않습니다."));
+				return;
+			}
+
+
 			image = userService.getProfileImageByUserId(userId);
 			// DB에 데이터 저장하기
 			chatTextMessage = chatService.addChatTextMessage(smallUserId, bigUserId, userId, message);
@@ -65,6 +64,7 @@ public class MessageController {
 			// 에러 발생 시 에러 메시지를 클라이언트로 전송
 			messagingTemplate.convertAndSend("/sub/main/" + chattingId,
 				ResponseVO.failure("500", "데이터 저장 중 오류가 발생했습니다."));
+			return;
 		}
 
 		try{
@@ -80,11 +80,9 @@ public class MessageController {
 
 
 			Long opponentUserId = smallUserId.equals(userId) ? bigUserId : smallUserId;
-			System.out.println(opponentUserId);
 
 			// 상대방이 현재 방에 접속중이 아니라면
 			if(!customWebSocketHandler.isUserConnected("" + opponentUserId)){
-				System.out.println("접속중이 아니라는데?");
 				UserResponseDTO user = userService.getByUserId(opponentUserId);
 				// 안읽은 횟수를 증가시켜주고
 				chatService.addUnreadCount(smallUserId, bigUserId, opponentUserId);
@@ -94,6 +92,7 @@ public class MessageController {
 		} catch (Exception e){
 			messagingTemplate.convertAndSend("/sub/main/" + chattingId,
 				ResponseVO.failure("500", "전송 중 오류가 발생했습니다."));
+			return;
 		}
 	}
 

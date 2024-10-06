@@ -61,6 +61,11 @@ public class ChatController {
 		return new ResponseEntity<>(ResponseVO.success("성공"), HttpStatus.OK);
 	}
 
+	// @GetMapping("/verify")
+	// public ResponseEntity<?> verifyToken(@RequestHeader HttpHeaders header) {
+	//
+	// }
+
 	// 채팅창 목록 조회
 	@GetMapping("/{memberId}")
 	public ResponseEntity<?> listMyChats(@RequestHeader HttpHeaders header, Pageable pageable){

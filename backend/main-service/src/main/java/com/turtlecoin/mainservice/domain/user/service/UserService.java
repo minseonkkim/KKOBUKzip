@@ -17,9 +17,14 @@ import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.global.exception.RedisSaveException;
 import com.turtlecoin.mainservice.global.exception.S3SaveException;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
+import com.turtlecoin.mainservice.global.scheduler.KeyScheduler;
+import com.turtlecoin.mainservice.global.util.AESUtil;
+
 import io.jsonwebtoken.Jwts;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,6 +36,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 @Service
@@ -42,7 +48,9 @@ public class UserService {
     private final JWTService jwtService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final SseService sseService;
-
+    private final AESUtil aesUtil;
+    private final KeyScheduler keyScheduler;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
     public ResponseEntity<ResponseVO<?>> saveUser(UserRequestDto dto, MultipartFile image) {
@@ -101,7 +109,15 @@ public class UserService {
                 throw new UserNotFoundException("아이디 혹은 비밀번호가 일치하지 않습니다.");
             }
             Map<String,Object> data = jwtService.issueToken(user);
-            sseService.subscribe(user.get().getId());
+
+            // 연결정보를 redis에 저장하고 클라이언트로 백
+            String token = aesUtil.encrypt(Long.toString(user.get().getId()));
+            data.put("token", token);
+            // 해시맵에 데이터 저장
+            redisTemplate.opsForHash().put("sseToken:" + user.get().getId(), "token", token);
+            // TTL(만료 시간) 설정 (하루로 고정)
+            redisTemplate.expire("user:" + user.get().getId(), 1, TimeUnit.DAYS);
+
             ResponseVO responseVO = ResponseVO.success("200","data",data);
             return ResponseEntity.ok(responseVO);
 

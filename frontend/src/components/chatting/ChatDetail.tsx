@@ -145,7 +145,7 @@ export default function ChatDetail({
   const sendMessage = () => {
     if (inputValue.trim() !== "" && stompClient.current) {
       const message = {
-        userId: 1,
+        userId: userInfo?.userId,
         message: inputValue,
         // 뭘보내야할까요...
         // 이거 2개만 보내시면 됩니다.. 시간같은건 백에서 체크할게요

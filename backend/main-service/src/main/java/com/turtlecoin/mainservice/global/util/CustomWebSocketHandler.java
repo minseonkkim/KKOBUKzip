@@ -1,4 +1,4 @@
-package com.turtlecoin.mainservice.global.scheduler;
+package com.turtlecoin.mainservice.global.util;
 
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Component;

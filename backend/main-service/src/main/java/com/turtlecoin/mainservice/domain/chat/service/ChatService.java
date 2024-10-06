@@ -27,7 +27,7 @@ import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.domain.transaction.exception.TransactionNotFoundException;
 import com.turtlecoin.mainservice.global.exception.InvalidChattingException;
 import com.turtlecoin.mainservice.global.exception.ChatNotFoundException;
-import com.turtlecoin.mainservice.global.scheduler.CustomWebSocketHandler;
+import com.turtlecoin.mainservice.global.util.CustomWebSocketHandler;
 
 import lombok.RequiredArgsConstructor;
 
