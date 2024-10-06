@@ -6,20 +6,20 @@ import TransactionHistory from "../../components/user/TransactionHistory";
 import { TransactionItemDataType } from "../../types/transaction";
 import NoImage from "../../assets/no_image.webp";
 import { FaRandom } from "@react-icons/all-files/fa/FaRandom";
-import CustomProfile1 from "../../../public/custom_profile/profile1.gif";
-import CustomProfile2 from "../../../public/custom_profile/profile2.gif";
-import CustomProfile3 from "../../../public/custom_profile/profile3.gif";
-import CustomProfile4 from "../../../public/custom_profile/profile4.gif";
-import CustomProfile5 from "../../../public/custom_profile/profile5.gif";
-import CustomProfile6 from "../../../public/custom_profile/profile6.gif";
-import CustomProfile7 from "../../../public/custom_profile/profile7.gif";
-import CustomProfile8 from "../../../public/custom_profile/profile8.gif";
-import CustomProfile9 from "../../../public/custom_profile/profile9.gif";
-import CustomProfile10 from "../../../public/custom_profile/profile10.gif";
-import CustomProfile11 from "../../../public/custom_profile/profile11.gif";
-import CustomProfile12 from "../../../public/custom_profile/profile12.gif";
-import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
-import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
+// import CustomProfile1 from "../../../public/custom_profile/profile1.gif";
+// import CustomProfile2 from "../../../public/custom_profile/profile2.gif";
+// import CustomProfile3 from "../../../public/custom_profile/profile3.gif";
+// import CustomProfile4 from "../../../public/custom_profile/profile4.gif";
+// import CustomProfile5 from "../../../public/custom_profile/profile5.gif";
+// import CustomProfile6 from "../../../public/custom_profile/profile6.gif";
+// import CustomProfile7 from "../../../public/custom_profile/profile7.gif";
+// import CustomProfile8 from "../../../public/custom_profile/profile8.gif";
+// import CustomProfile9 from "../../../public/custom_profile/profile9.gif";
+// import CustomProfile10 from "../../../public/custom_profile/profile10.gif";
+// import CustomProfile11 from "../../../public/custom_profile/profile11.gif";
+// import CustomProfile12 from "../../../public/custom_profile/profile12.gif";
+// import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
+// import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 
 import {
   getMyTransaction,
@@ -30,29 +30,30 @@ import { useUserStore } from "../../store/useUserStore";
 import { TurtleDataType } from "../../types/turtle";
 import { useNavigate } from "react-router-dom";
 
-
 function MyPage() {
   const navigate = useNavigate();
-  const profileImages = [
-    CustomProfile1,
-    CustomProfile2,
-    CustomProfile3,
-    CustomProfile4,
-    CustomProfile5,
-    CustomProfile6,
-    CustomProfile7,
-    CustomProfile8,
-    CustomProfile9,
-    CustomProfile10,
-    CustomProfile11,
-    CustomProfile12,
-    CustomProfile13,
-    CustomProfile14,
-  ];
+  // const profileImages = [
+  //   CustomProfile1,
+  //   CustomProfile2,
+  //   CustomProfile3,
+  //   CustomProfile4,
+  //   CustomProfile5,
+  //   CustomProfile6,
+  //   CustomProfile7,
+  //   CustomProfile8,
+  //   CustomProfile9,
+  //   CustomProfile10,
+  //   CustomProfile11,
+  //   CustomProfile12,
+  //   CustomProfile13,
+  //   CustomProfile14,
+  // ];
   const [turtleData, setTurtleData] = useState<TurtleDataType[]>([]);
   const [selectedMenu, setSelectedMenu] = useState(1); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
-  const [myTransactions, setMyTransactions] = useState<TransactionItemDataType[]>([]);
+  const [myTransactions, setMyTransactions] = useState<
+    TransactionItemDataType[]
+  >([]);
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
 
@@ -69,14 +70,18 @@ function MyPage() {
         console.log("거래내역 목록", transactionResponse.data!.data.transaction);
       }
 
-      if (turtleResponse.success) {
-        setTurtleData(turtleResponse.data.data.data.data);
-        console.log("거북이 목록", turtleResponse.data.data.data.data);
+        if (transactionResponse.success) {
+          setMyTransactions(transactionResponse.data!.data.transaction);
+        }
+
+        if (turtleResponse.success) {
+          setTurtleData(turtleResponse.data.data.data.data);
+          console.log("거북이 목록", turtleResponse.data.data.data.data);
+        }
+      } catch (error) {
+        console.error("Error initializing data:", error);
       }
-    } catch (error) {
-      console.error("Error initializing data:", error);
-    }
-  };
+    };
     init();
   }, []);
 
@@ -96,8 +101,11 @@ function MyPage() {
   };
 
   const getRandomProfileImage = () => {
-    const randomNumber = Math.floor(Math.random() * profileImages.length);
-    setProfileImage(profileImages[randomNumber]);
+    const randomIndex = Math.floor(Math.random() * 14) + 1;
+    // const randomIndex = Math.floor(Math.random() * profileImages.length);
+    const selectedImagePath = `custom_profile/profile${randomIndex}.gif`; // public 폴더는 경로에서 제외
+    setProfileImage(selectedImagePath);
+    // setProfileImage(profileImages[randomIndex]);
   };
 
   const changeProfileImage = async () => {
@@ -130,7 +138,7 @@ function MyPage() {
 
   const goToBreedDocPage = () => {
     navigate("/doc-form/breed");
-  }
+  };
 
   return (
     <>
@@ -183,17 +191,15 @@ function MyPage() {
             >
               거래 내역
             </div>
-          
           </div>
-          {selectedMenu === 1 &&
-          <button
-            className="text-[20px] rounded-[10px] bg-[#F5E0E4] h-[37px] px-3 border-2 border-dotted border-[#353535]"
-            onClick={goToBreedDocPage}
-          >
-            인공증식 등록
-          </button>
-          }
-          
+          {selectedMenu === 1 && (
+            <button
+              className="text-[20px] rounded-[10px] bg-[#F5E0E4] h-[37px] px-3 border-2 border-dotted border-[#353535]"
+              onClick={goToBreedDocPage}
+            >
+              인공증식 등록
+            </button>
+          )}
         </div>
         <div className="overflow-y-auto flex-1 mb-4">
           {/* 거래내역 */}
@@ -233,25 +239,25 @@ function MyPage() {
               </div>
             ))}
           {/* 나의 거북이 */}
-          {selectedMenu === 1 && (
+          {selectedMenu === 1 &&
             (turtleData.length !== 0 ? (
-            // 나의 거북이가 있을 경우
-            <div className="grid grid-cols-2 xl:grid-cols-3 gap-5">
-              {turtleData.map((turtle) => (
-                <MyTurtle
-                  key={turtle.id}
-                  turtleId={turtle.id}
-                  turtleUuid={turtle.turtleUuid}
-                  name={turtle.name}
-                  scientificName={turtle.scientificName}
-                  gender={turtle.gender}
-                  weight={turtle.weight}
-                  birth={turtle.birth}
-                  imageAddress={turtle.imageAddress!}
-                />
-              ))}
-            </div>
-            ): (
+              // 나의 거북이가 있을 경우
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-5">
+                {turtleData.map((turtle) => (
+                  <MyTurtle
+                    key={turtle.id}
+                    turtleId={turtle.id}
+                    turtleUuid={turtle.turtleUuid}
+                    name={turtle.name}
+                    scientificName={turtle.scientificName}
+                    gender={turtle.gender}
+                    weight={turtle.weight}
+                    birth={turtle.birth}
+                    imageAddress={turtle.imageAddress!}
+                  />
+                ))}
+              </div>
+            ) : (
               <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-28">
                 <img
                   src={NoImage}
@@ -263,8 +269,7 @@ function MyPage() {
                   나의 거북이가 없어요.
                 </div>
               </div>
-            )
-          ))}
+            ))}
         </div>
       </main>
       {isCustomModalOpen && (
