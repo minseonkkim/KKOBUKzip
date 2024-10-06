@@ -222,7 +222,6 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
   const handleTurtleDataVerification = async () => {
     console.log(`${birth}${weight}${gender==='m' ? 'MALE' : 'FEMALE'}`);
     const turtleHash = Web3.utils.sha3(`${birth}${weight}${gender==='m' ? 'MALE' : 'FEMALE'}`)
-    const result = await documentContract?.methods.turtleValid(turtleUuid, turtleHash).call()
 
     try {
       const result = await documentContract!.methods.turtleValid(turtleUuid, turtleHash).call()
