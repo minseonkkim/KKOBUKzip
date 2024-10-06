@@ -69,6 +69,7 @@ public class JWTService {
             data.put("phoneNumber",user.get().getPhonenumber());
             data.put("profileImage",user.get().getProfileImage());
             data.put("userId",user.get().getId());
+            data.put("foreignFlag",user.get().getForeignFlag());
             return data;
 
         }
