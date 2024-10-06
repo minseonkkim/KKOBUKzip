@@ -65,14 +65,24 @@ export default function ChatDetail({
   // 데이터 초기화 및 전처리
   const initData = async () => {
     const { success, data } = await fetchChatMessageData(chattingId);
+    console.log(data);
     if (success) {
-      setChatData(data?.data!.reverse());
+      const chatMessages = data;
+      if (Array.isArray(chatMessages)) {
+        setChatData(chatMessages.reverse());
+      } else {
+        console.error("Expected an array, but got:", chatMessages);
+      }
     }
+
+    // if (success) {
+    //   setChatData(data!.reverse());
+    // }
 
     // 날짜별로 메시지 그룹화
     const groupedMessages: { date: string; messages: ChatData[] }[] = [];
     console.log(data!);
-    data?.data!.forEach((message) => {
+    data!.forEach((message) => {
       const messageDate = formatDate(message.registTime);
 
       const lastGroup = groupedMessages[groupedMessages.length - 1];

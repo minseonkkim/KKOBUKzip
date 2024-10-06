@@ -15,3 +15,9 @@ export interface ChatData {
   registTime: string;
   userProfile: string;
 }
+
+export interface ChatResponse {
+  status: string;
+  data: ChatData[];
+  message: string;
+}
