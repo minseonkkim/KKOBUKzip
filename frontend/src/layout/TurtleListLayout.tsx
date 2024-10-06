@@ -9,6 +9,7 @@ import { useInView } from "react-intersection-observer";
 import useTradeFilter from "../hooks/useTradeFilter";
 import AuctionTurtleSkeleton from "../components/skeleton/auction/AuctionTurtleSkeleton";
 import OptionFilter from "../components/common/OptionFilter";
+import NoImage from "../assets/no_image.webp";
 
 interface TurtleListLayoutProps {
   title: string;
@@ -191,20 +192,29 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
             />
           )}
         </div>
-
-        <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
-          {itemLoading ? (
-            <>
-              {Array(6)
-                .fill(null)
-                .map((_, index) => (
-                  <AuctionTurtleSkeleton key={index} />
-                ))}
-            </>
+        
+        {itemLoading ? (
+          <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
+            {Array(6)
+              .fill(null)
+              .map((_, index) => (
+                <AuctionTurtleSkeleton key={index} />
+              ))}
+          </div>
+        ) : (
+          items.length === 0 ? (
+            <div className="w-full h-auto flex flex-col items-center justify-center space-y-5 bg-[#f4f4f4] rounded-[20px] py-20">
+              <img src={NoImage} className="w-[220px] h-[220px] object-cover" />
+              <div className="text-[28px] font-bold font-stardust">거북이가 없어요</div>
+            </div>
           ) : (
-            items
-          )}
-        </div>
+            <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
+              {items}
+            </div>
+          )
+        )}
+
+        
       </main>
     </>
   );

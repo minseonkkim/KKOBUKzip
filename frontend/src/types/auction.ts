@@ -10,15 +10,16 @@ export interface AuctionItemDataType {
   startTime: Date;
   endTime: Date | null;
   content: string;
-  auctionProgress: "BEFORE_AUCTION" | "DURING_AUCTION" | "NO_BID" | "SUCCESSFUL_BID"; // 1: 경매전 2: 경매중, 유찰, 낙찰
-  auctionTags: string[];
-  auctionPhotos: string[];
-  turtleid: number;
-  gender: string;
-  weight: number;
-  userId: number;
-  scientificName: string;
-
+  progress: "BEFORE_AUCTION" | "DURING_AUCTION" | "NO_BID" | "SUCCESSFUL_BID"; // 1: 경매전 2: 경매중, 유찰, 낙찰
+  tags: string[];
+  images: string[];
+  turtleInfo: {
+    id: number;
+    gender: string;
+    weight: number;
+    userId: number;
+    scientificName: string;
+  };
 }
 
 export interface AuctionData {
