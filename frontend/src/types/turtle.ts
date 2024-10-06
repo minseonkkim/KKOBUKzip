@@ -1,5 +1,6 @@
 export interface TurtleDataType {
   id: number;
+  turtleUuid: string;
   birth: string;
   dead: boolean;
   gender: string;
