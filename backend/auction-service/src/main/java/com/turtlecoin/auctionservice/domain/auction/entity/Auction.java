@@ -62,6 +62,7 @@ public class Auction extends BaseEntity {
 
     @OneToMany(mappedBy = "auction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonManagedReference
     private List<AuctionTag> auctionTags = new ArrayList<>();
 
     @Column(name="seller_address")
