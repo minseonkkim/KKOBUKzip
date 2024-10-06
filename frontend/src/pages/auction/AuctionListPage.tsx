@@ -17,13 +17,14 @@ const AuctionListPage = () => {
   const fetchData = useCallback(
     async (page: number, filters: object, isSearch?: boolean): Promise<void> => {
       const result = await getAuctionDatas({ page, ...filters });
+      console.log(result);
       console.log(result.data.data.data.auctions);
 
       if (result.status === 200) {
         const progressItems: JSX.Element[] = [];
         const auctionItems = result.data.data.data.auctions.map(
           (item: AuctionItemDataType) => {
-            if (item.progress === "DURING_AUCTION") {
+            if (item.auctionProgress === "DURING_AUCTION") {
               progressItems.push(<AuctionTurtle key={item.id} data={item} />);
             }
             return <AuctionTurtle key={item.id} data={item} />;
