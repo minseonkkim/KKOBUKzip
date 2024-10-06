@@ -13,6 +13,7 @@ import CompleteDeathDocument from "../document/complete/CompleteDeathDocument";
 import formatDate from "../../utils/formatDate";
 import Web3 from "web3";
 import { useWeb3Store } from "../../store/useWeb3Store";
+import Alert from "../common/Alert";
 
 // 더미데이터
 const exampleData: AdminBreedDocumentDataType = {
@@ -128,6 +129,15 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
 
+  const [isAgreeAlertOpen, setIsAgreeAlertOpen] = useState(false);
+  const [isDisagreeAlertOpen, setIsDisagreeAlertOpen] = useState(false);
+
+  const openAgreeAlert = () => setIsAgreeAlertOpen(true);
+  const closeAgreeAlert = () => setIsAgreeAlertOpen(false);
+
+  const openDisagreeAlert = () => setIsDisagreeAlertOpen(true);
+  const closeDisagreeAlert = () => setIsDisagreeAlertOpen(false);
+
   const goToAuctionRegister = () => {
     navigate("/auction-register",{ state: { turtleId: turtleId, name: name, scientificName: scientificName, gender: gender, weight: weight, birth: birth, imageAddress: imageAddress } });
   };
@@ -172,9 +182,9 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
     const turtleHash = Web3.utils.sha3(`${birth}${weight}${gender==='m' ? 'MALE' : 'FEMALE'}`)
     const result = await documentContract?.methods.turtleValid(turtleUuid, turtleHash).call()
     if (result) {
-      alert("블록체인 네트워크의 해시 정보와 일치합니다.")
+      openAgreeAlert();
     } else {
-      alert("블록체인 네트워크의 해시 정보와 일치하지 않습니다. 관리자에게 문의 부탁드립니다.")
+      openDisagreeAlert();
     }
   }
 
@@ -226,6 +236,9 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
           </button>
         </div>
       </div>
+
+      <Alert isOpen={isAgreeAlertOpen} message="블록체인 네트워크의 해시 정보와 일치합니다." onClose={closeAgreeAlert} />
+      <Alert isOpen={isDisagreeAlertOpen} message="블록체인 네트워크의 해시 정보와 일치하지 않습니다. 관리자에게 문의 부탁드립니다." onClose={closeDisagreeAlert} />
 
       {isDetailModalOpen && (
         <div
