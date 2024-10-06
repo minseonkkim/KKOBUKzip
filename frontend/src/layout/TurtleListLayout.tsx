@@ -204,7 +204,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
         ) : (
           items.length === 0 ? (
             <div className="w-full h-auto flex flex-col items-center justify-center space-y-5 bg-[#f4f4f4] rounded-[20px] py-20">
-              <img src={NoImage} className="w-[220px] h-[220px] object-cover" />
+              <img src={NoImage} className="w-[220px] h-[220px] object-cover" draggable="false" alt="turtle image" />
               <div className="text-[28px] font-bold font-stardust">거북이가 없어요</div>
             </div>
           ) : (
