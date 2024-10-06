@@ -29,15 +29,20 @@ function LoginPage() {
     e.preventDefault();
     const { success, data, error } = await loginRequest(email, password);
     if (success) {
-      setLogin(data?.data?.data!);
-      localStorage.setItem("accessToken", data?.data?.data?.accessToken!);
-      localStorage.setItem("refreshToken", data?.data?.data?.refreshToken!);
+      const userData = {
+        ...data?.data?.data!,
+        foreignFlag: false, 
+      };
+      
+      setLogin(userData);
+      localStorage.setItem("accessToken", userData.accessToken);
+      localStorage.setItem("refreshToken", userData.refreshToken);
       navigate("/");
     } else {
       console.log(error);
       setFailMessage("이메일 또는 비밀번호를 올바르지 않습니다.");
     }
-  };
+};
 
   return (
     <>
