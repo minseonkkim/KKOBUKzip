@@ -54,10 +54,12 @@ function DuringAuction({
       const socket = new WebSocket(socketAddress);
       auctionStompClient.current = Stomp.over(socket);
 
+      const token = localStorage.getItem("accessToken");
+      console.log("token", token)
       // 메세지 수신
       auctionStompClient.current.connect(
         {
-          //  Authorization:
+          Authorization: `Bearer ${token}`,
         },
         (frame: StompFrame) => {
           console.log("Connected: " + frame);
@@ -242,22 +244,26 @@ function DuringAuction({
         <div className="w-full px-[40px]">
           <div className="flex flex-col justify-center items-center mb-4">
             <div className="flex flex-row items-center">
-              <div className="font-bold text-[27px]">
+              <div className="font-bold text-[20px] md:text-[25px]">
                 {minBid === bidPrice ? "최소 입찰가" : "현재 입찰가"}
                 &nbsp;&nbsp;
               </div>
-              <animated.div className="font-bold text-[39px] text-[#4B721F] font-stardust">
+              <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
+
+                <animated.div className="text-[31px] md:text-[39px]">
                 {springProps.price.to(
-                  (price) => `${Math.floor(price).toLocaleString()}원`
+                  (price) => `${Math.floor(price).toLocaleString()}`
                 )}
-              </animated.div>
+                </animated.div>
+                <div className="text-[27px] md:text-[29px]">TURT</div>
+              </div>
             </div>
             <button
               onClick={() => {
                 // handleBid();
                 sendBidRequest();
               }}
-              className="cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] active:scale-90 text-[30px] font-dnf-bitbit"
+              className="mt-4 cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] active:scale-90 text-[30px] font-dnf-bitbit"
               disabled={auctionEnded}
             >
               {loading ? (

@@ -33,7 +33,7 @@ public class RegisterAuctionDTO {
     private List<String> auctionTags;
 
     public Auction toEntity() {
-        return Auction.builder()
+        Auction auction = Auction.builder()
                 .turtleId(turtleId)
                 .userId(userId)
                 .startTime(startTime)
@@ -43,11 +43,19 @@ public class RegisterAuctionDTO {
                 .nowBid(minBid)
                 .weight(weight)
                 .sellerAddress(sellerAddress)
-                .auctionTags(auctionTags != null ? auctionTags.stream()
-                        .map(tag -> new AuctionTag(tag))  // String을 AuctionTag로 변환
-                        .collect(Collectors.toList()) : new ArrayList<>())  // tags가 null일 경우 빈 리스트로 초기화
                 .auctionProgress(AuctionProgress.BEFORE_AUCTION)
                 .endTime(startTime.plusSeconds(30))
                 .build();
+
+        // 태그가 있는 경우 AuctionTag 생성 및 Auction과 연관 설정
+        if (auctionTags != null) {
+            log.info("AuctionTags: {}", auctionTags);
+            List<AuctionTag> tagEntities = auctionTags.stream()
+                    .map(tag -> new AuctionTag(auction, tag))  // Auction 객체와 태그 문자열을 함께 전달
+                    .collect(Collectors.toList());
+            auction.getAuctionTags().addAll(tagEntities);  // 생성된 태그 리스트를 Auction에 추가
+        }
+
+        return auction;
     }
 }

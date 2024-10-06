@@ -83,6 +83,8 @@ public class AuctionService {
             if (images != null && !images.isEmpty()) {
                 uploadedPhotos = uploadImages(images, auction);  // 이미지 업로드
                 auction.getAuctionPhotos().addAll(uploadedPhotos);  // 업로드된 이미지 경매와 연결
+            } else {
+                throw new PhotoNotUploadedException("사진이 등록되지 않았습니다.");
             }
             log.info("이미지 업로드 완료");
 
@@ -105,6 +107,8 @@ public class AuctionService {
             // 기타 잘못된 인자 처리
             deleteUploadedImages(uploadedPhotos);
             return new ResponseEntity<>(ResponseVO.failure("400", "필수 필드가 누락되었습니다."), HttpStatus.BAD_REQUEST);
+        } catch (PhotoNotUploadedException e) {
+            return new ResponseEntity<>(ResponseVO.failure("400", "사진이 등록되지 않았습니다."), HttpStatus.BAD_REQUEST);
         } catch (MultipartException e) {
             // Multipart 관련 예외 처리
             log.error("MultipartException 발생: {}", e.getMessage());
@@ -205,6 +209,11 @@ public class AuctionService {
 
             // null값일 때 어떻게 하지?
             Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX + auctionId, TimeUnit.MILLISECONDS);
+
+            // 종료됐거나, 시작하지 않았을 때
+            if (remainingTime == -2) {
+
+            }
 
             Object bidAmountObj = redisTemplate.opsForHash().get(key, "bidAmount");
 

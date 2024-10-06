@@ -43,11 +43,14 @@ function BeforeAuction({
           {formattedDate} 경매 시작
         </div>
         <div className="flex flex-row items-center mt-[15px] whitespace-nowrap mx-2">
-          <div className="font-bold text-[20px] md:text-[27px]">
+          <div className="font-bold text-[20px] md:text-[25px]">
             최소 입찰가&nbsp;&nbsp;
           </div>
-          <div className="font-bold text-[31px] md:text-[39px] text-[#4B721F] font-stardust">
-            {minBid.toLocaleString("ko-KR")}원
+          <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
+            <div className="text-[31px] md:text-[39px]">
+              {minBid.toLocaleString("ko-KR")}
+            </div>
+            <div className="text-[27px] md:text-[29px]">TURT</div>
           </div>
         </div>
       </div>

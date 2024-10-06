@@ -17,7 +17,7 @@ const AuctionListPage = () => {
   const fetchData = useCallback(
     async (page: number, filters: object, isSearch?: boolean): Promise<void> => {
       const result = await getAuctionDatas({ page, ...filters });
-      console.log(result.data.data.data.auctions);
+      console.log(result);
 
       if (result.status === 200) {
         const progressItems: JSX.Element[] = [];

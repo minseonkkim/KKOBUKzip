@@ -66,7 +66,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
         className={`${
         isMobile
           ? "absolute top-[65px] w-full pointer-events-auto transition"
-          : "absolute top-[65px] lg:top-[77px] w-[400px] pointer-events-auto"
+          : "absolute top-[65px] lg:top-[77px] w-[330px] pointer-events-auto"
       } ${animationClass}`}>
         <div className="relative border-2 border-yellow-500 bg-yellow-400 rounded-[10px] shadow-md">
           <button 

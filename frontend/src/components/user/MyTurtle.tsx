@@ -169,7 +169,7 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
   }, [documentContract, turtleUuid])
 
   const goToAuctionRegister = () => {
-    navigate("/auction-register");
+    navigate("/auction-register",{ state: { turtleId: turtleId, name: name, scientificName: scientificName, gender: gender, weight: weight, birth: birth, imageAddress: imageAddress } });
   };
 
   const goToTransactionRegister = () => {

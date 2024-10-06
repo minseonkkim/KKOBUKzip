@@ -15,6 +15,7 @@ import com.turtlecoin.mainservice.domain.chat.dto.ChatResponseDto;
 import com.turtlecoin.mainservice.domain.chat.dto.ChatTextResponseDto;
 import com.turtlecoin.mainservice.domain.chat.dto.ChatTurtleResponseDto;
 import com.turtlecoin.mainservice.domain.chat.entity.Chat;
+import com.turtlecoin.mainservice.domain.chat.entity.ChatMessage;
 import com.turtlecoin.mainservice.domain.chat.entity.ChatTextMessage;
 import com.turtlecoin.mainservice.domain.chat.entity.ChatTurtleMessage;
 import com.turtlecoin.mainservice.domain.chat.repository.ChatRepository;
@@ -25,6 +26,8 @@ import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.domain.transaction.exception.TransactionNotFoundException;
 import com.turtlecoin.mainservice.global.exception.InvalidChattingException;
+import com.turtlecoin.mainservice.global.exception.ChatNotFoundException;
+import com.turtlecoin.mainservice.global.util.CustomWebSocketHandler;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,9 +38,10 @@ public class ChatService {
 	private final UserService userService;
 	private final TransactionService transactionService;
 	private final UserRepository userRepository;
+	private final SseService sseService;
+	private final CustomWebSocketHandler customWebSocketHandler;
 
 	public ObjectId createChat(Long smallUserId, Long bigUserId) throws Exception{
-		System.out.println("만들어진건데");
 		// 호출 해보면서 없는 아이디인지 확인
 		UserResponseDTO smallUser = userService.getByUserId(smallUserId);
 		UserResponseDTO bigUser = userService.getByUserId(bigUserId);
@@ -54,12 +58,7 @@ public class ChatService {
 		return chat.getId();
 	}
 
-	// public boolean isChatExists(Long smallUserId, Long bigUserId) {
-	// 	Optional<Chat> chatOptional = chatRepository.findBySmallUserAndBigUser(smallUserId, bigUserId);
-	// 	return chatOptional.isPresent();
-	// }
-
-	public ChatTextMessage addChatTextMessage(Long smallUserId, Long bigUserId, Long sender, String message) throws Exception{
+	public ChatTextMessage addChatTextMessage(Long smallUserId, Long bigUserId, Long sender, String message) {
 		ChatTextMessage chatTextMessage = ChatTextMessage.builder()
 			.id(new ObjectId())
 			.sender(sender)
@@ -82,11 +81,20 @@ public class ChatService {
 		chatRepository.insertByParticipant(smallUserId, bigUserId, chatTurtleMessage);
 	}
 
+	public void addUnreadCount(Long smallUserId, Long bigUserId, Long loginId) throws Exception{
+		chatRepository.addUnreadCount(smallUserId, bigUserId, loginId);
+	}
+
 	// 채팅 리스트에서 넘어와서 채팅 목록을 조회하는 경우
 	public List<ChatResponseDto> getChatDetailList(Long userId, Long opponentId, Long loginId, Pageable pageable) throws Exception {
 		// 더 작은 쪽이 왼쪽 매개변수로 들어가게 해야 함
 		Long left = Math.min(opponentId, userId);
 		Long right = Math.max(opponentId, userId);
+
+		List<ChatMessage> list = chatRepository.getChatByPage(left, right, loginId, pageable.getPageNumber(), pageable.getPageSize());
+		if(list == null){
+			throw new ChatNotFoundException("채팅을 찾을 수 없습니다.");
+		}
 
 		return chatRepository.getChatByPage(left, right,  loginId, pageable.getPageNumber(), pageable.getPageSize())
 			.stream().map((chatMessage) ->{
@@ -127,6 +135,11 @@ public class ChatService {
 		}
 		addChatTurtleMessage(left, right, transaction.getTitle(), transaction.getPrice(), transaction.getTransactionPhotos().get(0).getImageAddress());
 
+		List<ChatMessage> list = chatRepository.getChatByPage(left, right, loginId, pageable.getPageNumber(), pageable.getPageSize());
+		if(list == null){
+			throw new ChatNotFoundException("채팅을 찾을 수 없습니다.");
+		}
+
 		return chatRepository.getChatByPage(left, right, loginId, pageable.getPageNumber(), pageable.getPageSize())
 			.stream().map((chatMessage) ->{
 				if(chatMessage instanceof ChatTextMessage) {
@@ -156,9 +169,9 @@ public class ChatService {
 			Long otherUserId; Integer myUnreadCount; ChatTextMessage chatTextMessage;
 
 			try{
-				left = chat.participants.get(0); right = chat.participants.get(1);
+				left = chat.getParticipants().get(0); right = chat.getParticipants().get(1);
 				otherUserId = left == userId ? right : left;
-				myUnreadCount = left == userId ? chat.unreadCount.get(0) : chat.unreadCount.get(1);
+				myUnreadCount = left == userId ? chat.getUnreadCount().get(0) : chat.getUnreadCount().get(1);
 				chatTextMessage = chat.getRecentMessage();
 			}
 			catch(Exception e){
@@ -168,7 +181,7 @@ public class ChatService {
 			UserResponseDTO userResponseDTO = userService.getByUserId(otherUserId);
 
 			return ChatListDto.builder()
-				.chattingId(chat.getId())
+				.chattingId(chat.getId().toHexString())
 				.otherUserId(otherUserId)
 				.otherUserNickname(userResponseDTO.getNickname())
 				.otherUserProfileImage(userResponseDTO.getProfileImage())

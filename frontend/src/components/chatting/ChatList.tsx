@@ -8,6 +8,8 @@ import { chatsData } from "../../fixtures/chatDummy";
 import { ChatListItem } from "../../types/chatting";
 import useChatStore from "../../store/useChatStore";
 import { fetchChatListData } from "../../apis/chatApi";
+import { useUserStore } from "../../store/useUserStore";
+import { EventSourcePolyfill } from "event-source-polyfill";
 
 const dummyData = chatsData;
 
@@ -24,24 +26,45 @@ export default function ChatList() {
     updateRoomList,
     chatRoomList,
   } = useChatStore();
+  const { userInfo } = useUserStore();
+  const accessToken = localStorage.getItem("accessToken");
   const isOpen = isChattingOpen;
 
   useEffect(() => {
     // 초기 데이터를 load하는 함수
     const getChatData = async () => {
-      const fetchedChats = await fetchChatListData(1);
+      if (!userInfo) return;
+      const fetchedChats = await fetchChatListData(userInfo.userId);
       if (fetchedChats.success) {
-        initChatRoomList(fetchedChats.data!);
+        initChatRoomList(fetchedChats.data?.data!);
       }
       // 유저 id로 바꿀것
     };
 
     // SSE 연결하는 함수
     const initializeSSE = () => {
-      const SSE_URL = import.meta.env.VITE_SSE_MAIN_URL;
-      const eventSource = new EventSource(SSE_URL);
+      console.log("sse 연결 시도");
+      const SSE_URL =
+        import.meta.env.VITE_SSE_MAIN_URL +
+        "/"+
+        Number(userInfo?.userId)
+      // const eventSource = new EventSource(SSE_URL);
+      // EventSourcePolyfill 사용
+      const eventSource = new EventSourcePolyfill(SSE_URL, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: "text/event-stream",
+        },
+        heartbeatTimeout: 7200 * 1000,
+      });
+      
+      eventSource.onopen = () => {
+        console.log("!SSE 연결 성공!");
+        console.log("readyState:", eventSource.readyState);
+      };
 
       eventSource.onmessage = (event) => {
+        console.log("SSE가 도착한다!");
         const newChat: ChatListItem = JSON.parse(event.data);
         updateRoomList(newChat);
       };
@@ -63,7 +86,7 @@ export default function ChatList() {
         eventSource.close(); // 컴포넌트 언마운트 시 연결 종료
       };
     };
-    initChatRoomList(dummyData);
+    //initChatRoomList(dummyData);
     fetchDataAndInitializeSSE();
   }, []);
 

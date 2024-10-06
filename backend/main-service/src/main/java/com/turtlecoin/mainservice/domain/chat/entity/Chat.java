@@ -17,10 +17,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public class Chat {
 	@Id
-	public ObjectId id;
-	public List<Long> participants;
-	public ChatTextMessage recentMessage;
-	public List<ChatMessage> messages;
-	public List<Integer> unreadCount;
+	private ObjectId id;
+	private List<Long> participants;
+	private ChatTextMessage recentMessage;
+	private List<ChatMessage> messages;
+	private List<Integer> unreadCount;
 }
 

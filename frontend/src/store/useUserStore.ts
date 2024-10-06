@@ -31,6 +31,7 @@ export const useUserStore = create<UserStore>()(
             nickname: userInfo.nickname!,
             profileImage: userInfo.profileImage!,
             role: userInfo.role!,
+            token: userInfo.token!,
           },
           isLogin: true,
         });

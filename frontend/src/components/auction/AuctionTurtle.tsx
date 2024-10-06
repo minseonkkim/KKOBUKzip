@@ -19,7 +19,7 @@ export default function AuctionTurtle({
       <div className="bg-[#F8F9FA] shadow-lg transition-shadow duration-300 w-full max-w-sm h-[300px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative">
         <div className="overflow-hidden rounded-t-2xl relative">
           <img
-            src={data?.images[0]}
+            src={data?.images && data.images.length > 0 ? data.images[0] : TmpTurtle}
             className="w-full h-[200px] object-cover transition-transform duration-300 hover:scale-110"
             draggable="false"
             alt="turtle image"
@@ -38,7 +38,7 @@ export default function AuctionTurtle({
               페닐슐라쿠터
             </div>
             <div className="text-[15px] text-gray-700 flex space-x-1.5">
-              {data?.tags.map((tag, index) => (
+              {data?.tags?.map((tag, index) => (
               <span
                 key={index}
                 className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full"
