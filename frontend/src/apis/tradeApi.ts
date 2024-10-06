@@ -130,12 +130,12 @@ export const getAuctionDetailItemData = async (auctionID: number) => {
   const response = (await apiRequest)<{
     data: { auction: AuctionItemDataType };
   }>(() => guestAxios.get(`/auction/${auctionID}`));
-  // return response;
+  return response;
 
-  return {
-    success: true,
-    data: { data: AuctionResponseDummuy.data },
-  };
+  // return {
+  //   success: true,
+  //   data: { data: AuctionResponseDummuy.data },
+  // };
 };
 
 // 경매 등록
