@@ -69,6 +69,11 @@ export default function TransactionRegisterPage() {
     alert("submit");
     e.preventDefault();
 
+    if (!account) {
+      alert("메타마스크 계정이 연결되지 않았습니다. 연결 확인 후 다시 시도해 주세요.");
+      return;
+    }
+
     const formData = new FormData();
     
     const newTransactionData = {
