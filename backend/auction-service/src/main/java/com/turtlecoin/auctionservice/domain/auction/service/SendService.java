@@ -61,7 +61,7 @@ public class SendService {
             response = ResponseVO.success("205","경매가 유찰됐습니다.");
             messagingTemplate.convertAndSend("/sub/auction/" + auctionId, response);
             // rabbitmq로 보내기
-            sendMessage(auctionResultDTO);
+//            sendMessage(auctionResultDTO);
             log.info("해당 경매에 입찰 기록이 없습니다: auctionId = {}", auctionId);
             return;
         }
@@ -71,7 +71,7 @@ public class SendService {
         Long winningUserId = Long.parseLong(bidData.get("userId").toString());
 
         AuctionResultDTO auctionResultDTO = createAuctionResultDTO(auction, winningBid, winningUserId);
-        response = ResponseVO.success("205","경매가 종료됐습니다.");
+        response = ResponseVO.success("201","경매가 종료됐습니다.");
 
         auction.updateStatus(AuctionProgress.SUCCESSFUL_BID);
         auction.updateAfterAuction(winningUserId, winningBid);
