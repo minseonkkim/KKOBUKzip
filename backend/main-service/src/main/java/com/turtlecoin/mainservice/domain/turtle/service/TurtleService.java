@@ -11,17 +11,20 @@ import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
 import com.turtlecoin.mainservice.global.exception.TurtleNotFoundException;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TurtleService {
     private final TurtleRepository turtleRepository;
@@ -29,6 +32,8 @@ public class TurtleService {
 
     //거북이를 필터링해서 auction-service에 넘겨주기
     public List<AuctionTurtleInfoDTO> getFilteredTurtles(Gender gender, Double minSize, Double maxSize) {
+        log.info("파라미터 체크 성별: {}, 최소 사이즈 : {}, 최대 사이즈: {}", gender, minSize, maxSize);
+        System.out.println("요청 오는지 체크");
         QTurtle turtle = QTurtle.turtle;
         BooleanBuilder whereClause = new BooleanBuilder();
 
@@ -50,7 +55,17 @@ public class TurtleService {
                 .where(whereClause)
                 .fetch()
                 .stream()
-                .map(t -> new AuctionTurtleInfoDTO(t.getId(), t.getGender(), t.getWeight()))  // 필요한 필드만 DTO로 변환
+                .map(t -> {
+                    // DTO 생성 및 반환
+                    return new AuctionTurtleInfoDTO(
+                            t.getId(),
+                            t.getGender(),
+                            "임시학명 거북이!!!",
+                            t.getWeight(),
+                            t.getBirth(),
+                            t.getUser().getId()
+                    );
+                })
                 .collect(Collectors.toList());
     }
 
@@ -65,17 +80,26 @@ public class TurtleService {
     }
 
     public TurtleResponseDTO getTurtleById(Long turtleId) {
+        log.info("거북이 아이디로 조회 시도");
         try {
             // 거북이 정보 조회
             Turtle turtle = turtleRepository.findById(turtleId)
                     .orElseThrow(() -> new TurtleNotFoundException("해당 ID의 거북이를 찾을 수 없습니다."));
 
+            //
+//            private Long id;
+//            private Gender gender;
+//            private String scientificName;
+//            private int weight;
+//            private Long userId;
+//            private LocalDate birth;
             // DTO로 변환하여 반환
             return TurtleResponseDTO.builder()
                     .id(turtle.getId())
                     .weight(turtle.getWeight())
                     .gender(turtle.getGender())
                     .birth(turtle.getBirth())
+                    .scientificName(turtle.getScientificName())
                     .userId(turtle.getUser().getId())
                     .build();
 

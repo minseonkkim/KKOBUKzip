@@ -3,6 +3,7 @@ package com.turtlecoin.auctionservice.domain.auction.dto;
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionTag;
+import com.turtlecoin.auctionservice.feign.dto.TurtleFilteredResponseDTO;
 import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
 import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
 import lombok.*;
@@ -32,15 +33,16 @@ public class AuctionResponseDTO {
     private String content;
     private String progress;
     private Long remainingTime;
+    private String scientificName;
     private List<String> tags;
 
     // 이미지 주소 리스트로 변경
     private List<String> images;
 
-    private TurtleResponseDTO turtleInfo;
+    private TurtleFilteredResponseDTO turtleInfo;
     private UserResponseDTO userInfo;
 
-    public static AuctionResponseDTO from(Auction auction, TurtleResponseDTO turtleInfo, UserResponseDTO userInfo, Long remainingTime, Double nowBid) {
+    public static AuctionResponseDTO from(Auction auction, TurtleFilteredResponseDTO turtleInfo, UserResponseDTO userInfo, Long remainingTime, Double nowBid) {
         log.info("Auction Tags: {}", auction.getAuctionTags());
         return AuctionResponseDTO.builder()
                 .id(auction.getId())
@@ -56,6 +58,7 @@ public class AuctionResponseDTO {
                 .content(auction.getContent())
                 .sellerAddress(auction.getSellerAddress())
                 .remainingTime(remainingTime)
+                .scientificName("임시학명 거북이!!!")
                 .progress(auction.getAuctionProgress().toString())
                 .tags(auction.getAuctionTags().stream()
                         .map(AuctionTag::getTag)

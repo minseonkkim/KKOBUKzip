@@ -80,15 +80,45 @@ public class AuctionController {
     @GetMapping
     public ResponseEntity<?> getAuctions(
             @RequestParam(value = "gender", required = false) Gender gender,
-            @RequestParam(value = "minSize", required = false) Double minSize,
-            @RequestParam(value = "maxSize", required = false) Double maxSize,
-            @RequestParam(value = "minPrice", required = false) Double minPrice,
-            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "size", required = false) String size,
+            @RequestParam(value = "price", required = false) String price,
             @RequestParam(value = "progress", required = false) AuctionProgress progress,
             @RequestParam(value = "page", defaultValue = "0") int page
     ) {
+
+        log.info("Gender : {}, Size : {}, Price : {}", gender, size, price, progress);
+        // size 파라미터 변환 처리 (AbetweenB -> A-B)
+        Double minSize = null;
+        Double maxSize = null;
+        if (size != null && size.contains("-")) {
+            String[] sizeRange = size.split("-");
+            System.out.println("길이"+ sizeRange.length);
+            if (sizeRange.length == 2) {
+                log.info(sizeRange[0]);
+                log.info(sizeRange[1]);
+                minSize = Double.parseDouble(sizeRange[0]);
+                maxSize = Double.parseDouble(sizeRange[1]);
+            }
+        }
+
+        // price 파라미터 변환 처리 (AbetweenB -> A-B)
+        Double minPrice = null;
+        Double maxPrice = null;
+        if (price != null && price.contains("-")) {
+            String[] priceRange = price.split("-");
+            System.out.println("길이"+ priceRange.length);
+            if (priceRange.length == 2) {
+                log.info(priceRange[0]);
+                log.info(priceRange[1]);
+                minPrice = Double.parseDouble(priceRange[0]);
+                maxPrice = Double.parseDouble(priceRange[1]);
+            }
+        }
+        log.info("Gender : {}, minSize : {}, maxSize : {}, minPrice : {}, maxPrice: {}", gender, minSize, maxSize, minPrice, maxPrice);
+        // 기존 서비스 메서드를 호출
         return auctionService.getFilteredAuctions(gender, minSize, maxSize, minPrice, maxPrice, progress, page);
     }
+
 
     @GetMapping("/{auctionId}")
     public ResponseEntity<?> getAuctionById(@PathVariable Long auctionId) {
