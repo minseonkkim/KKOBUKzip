@@ -51,6 +51,8 @@ export default function ChatDetail({
   const { userInfo } = useUserStore();
   const [chatData, setChatData] = useState<ChatData[]>([]);
 
+  const gchat = useRef([]);
+
   const chatId =
     Math.min(userInfo?.userId!, chattingId) +
     "-" +
@@ -204,12 +206,14 @@ export default function ChatDetail({
                   if ("title" in message) {
                     // 시스템 메시지 처리
                     return (
-                      <SystemMessageItem
-                        key={index}
-                        title={message.title}
-                        price={message.price}
-                        image={message.image}
-                      />
+                      <div className="flex items-center justify-center my-2">
+                        <SystemMessageItem
+                          key={index}
+                          title={message.title}
+                          price={message.price}
+                          image={message.image}
+                        />
+                      </div>
                     );
                   } else if (userInfo?.userId === message.userId) {
                     // 보낸 메시지 처리
