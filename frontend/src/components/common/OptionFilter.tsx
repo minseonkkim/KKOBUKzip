@@ -146,7 +146,38 @@ function OptionFilter({
             </label>
           </div>
         </div>
-        <div className="mb-4 flex flex-row items-center">
+        
+        <div className="mb-4 flex flex-row justify-between">
+          <div className="flex flex-row items-center">
+            <label className="block font-bold text-lg w-[60px] md:w-[100px]">
+              가격
+            </label>
+            <div className="flex space-x-4 items-center">
+              <div >
+              <input
+                value={filters.minPrice}
+                onChange={(e) => updateFilter("minPrice", e.target.value)}
+                className="w-[90px] md:w-[180px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
+                placeholder="최소 가격"
+                onInput={handleInputChange}
+              />
+              <span className="text-[18px]">TURT</span>
+              </div>
+              <span className="text-[22px]">~</span>
+              <input
+                value={filters.maxPrice}
+                onChange={(e) => updateFilter("maxPrice", e.target.value)}
+                className="w-[90px] md:w-[180px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
+                placeholder="최대 가격"
+                onInput={handleInputChange}
+              />
+            </div>
+            <span className="text-[18px]">TURT</span>
+          </div>
+          
+        </div>
+        <div className="flex flex-row justify-between">
+        <div className="flex flex-row items-center">
           <label className="block font-bold text-lg w-[60px] md:w-[100px]">
             체중
           </label>
@@ -162,7 +193,7 @@ function OptionFilter({
                   target.value = target.value.replace(/[^0-9]/g, "");
                 }}
               />
-              <span>kg</span>
+              <span className="text-[18px]">g</span>
             </div>
             <span className="text-[22px]">~</span>
             <div>
@@ -176,32 +207,9 @@ function OptionFilter({
                   target.value = target.value.replace(/[^0-9]/g, "");
                 }}
               />
-              <span>kg</span>
+              <span className="text-[18px]">g</span>
             </div>
           </div>
-        </div>
-        <div className="flex flex-row justify-between">
-          <div className="flex flex-row items-center">
-            <label className="block font-bold text-lg w-[60px] md:w-[100px]">
-              가격
-            </label>
-            <div className="flex space-x-4 items-center">
-              <input
-                value={filters.minPrice}
-                onChange={(e) => updateFilter("minPrice", e.target.value)}
-                className="w-[90px] md:w-[200px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
-                placeholder="최소 가격"
-                onInput={handleInputChange}
-              />
-              <span className="text-[22px]">~</span>
-              <input
-                value={filters.maxPrice}
-                onChange={(e) => updateFilter("maxPrice", e.target.value)}
-                className="w-[90px] md:w-[200px] h-[38px] bg-[#f2f2f2] focus:outline-none rounded-[10px] p-1"
-                placeholder="최대 가격"
-                onInput={handleInputChange}
-              />
-            </div>
           </div>
           <button
             type="button"
@@ -212,6 +220,7 @@ function OptionFilter({
           </button>
         </div>
       </div>
+      
     </>
   );
 }
