@@ -55,7 +55,8 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
       setItemLoading(true);
       try {
         const response = await fetchData(pages, filters);
-        if (response.success || response.status == 200) {
+
+        if (response.status == 200) {
           setMaxPage(response.data.data.data.total_pages);
         }
         setPages(1);
@@ -72,6 +73,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
     setItemLoading(true);
     try {
       const response = await fetchData(pages, filters);
+
       if (response.success) {
         setMaxPage(response.data.data.data.total_pages - 1);
         setPages((prev) => prev + 1);

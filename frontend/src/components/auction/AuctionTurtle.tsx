@@ -1,12 +1,13 @@
+import { useEffect } from "react";
 import TmpTurtle from "../../assets/tmp_turtle_2.jpg";
-import { AuctionItemDataType } from "../../types/auction";
+import { AuctionItemDataType, AuctionListDataType } from "../../types/auction";
 import AuctionStatusTag from "./AuctionStatusTag";
 import { useNavigate } from "react-router-dom";
 
 export default function AuctionTurtle({
   data,
 }: {
-  data?: AuctionItemDataType;
+  data?: AuctionListDataType;
 }) {
   const navigate = useNavigate();
 
@@ -14,12 +15,13 @@ export default function AuctionTurtle({
     navigate("/auction-detail/" + (data?.id ?? 1));
   };
 
+
   return (
     <div onClick={goToDetail}>
       <div className="bg-[#F8F9FA] shadow-lg transition-shadow duration-300 w-full max-w-sm h-[300px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative">
         <div className="overflow-hidden rounded-t-2xl relative">
           <img
-            src={data?.images && data.images.length > 0 ? data.images[0] : TmpTurtle}
+            src={data?.firstImageUrl}
             className="w-full h-[200px] object-cover transition-transform duration-300 hover:scale-110"
             draggable="false"
             alt="turtle image"
@@ -38,15 +40,16 @@ export default function AuctionTurtle({
               페닐슐라쿠터
             </div>
             <div className="text-[15px] text-gray-700 flex space-x-1.5">
-              {data?.tags?.map((tag, index) => (
-              <span
-                key={index}
-                className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full"
-              >
-                {tag}
-              </span>
+              {data?.auctionTags?.map((tag, index) => (
+                <span
+                  key={index}
+                  className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full"
+                >
+                  {tag.tag}
+                </span>
               ))}
             </div>
+
           </div>
           <div className="whitespace-nowrap font-extrabold text-[28px] text-[#4B721F] font-stardust">
             {(data?.nowBid || 0).toLocaleString("ko-KR") + "원 ↑"}
