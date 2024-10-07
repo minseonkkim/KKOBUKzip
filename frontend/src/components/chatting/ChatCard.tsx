@@ -42,9 +42,11 @@ export default function ChatCard({ openChatDetail, chat }: ChatCardProps) {
             >
               {chat.lastMessage}
             </div>
-            <div className="rounded-full bg-[#DE0000] w-[24px] h-[24px] lg:w-[22px] lg:h-[22px] flex justify-center items-center text-white font-bold text-[15px]">
-              1
-            </div>
+            {chat.unreadCount !== 0 && (
+              <div className="rounded-full bg-[#DE0000] w-[24px] h-[24px] lg:w-[22px] lg:h-[22px] flex justify-center items-center text-white font-bold text-[15px]">
+                {chat.unreadCount}
+              </div>
+            )}
           </div>
         </div>
       </div>

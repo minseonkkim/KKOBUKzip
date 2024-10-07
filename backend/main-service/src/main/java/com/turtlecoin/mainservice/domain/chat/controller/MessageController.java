@@ -111,7 +111,7 @@ public class MessageController {
 				chatService.addUnreadCount(smallUserId, bigUserId, opponentUserId);
 			}
 			// SSE 메세지를 보내줘야 함
-			ChatListDto chatListDto = chatService.chattingRoomList(smallUserId, bigUserId, userId);
+			ChatListDto chatListDto = chatService.chattingRoomList(smallUserId, bigUserId, opponentUserId);
 			sseService.notify(opponentUserId, chatListDto);
 		} catch (Exception e){
 			e.printStackTrace();

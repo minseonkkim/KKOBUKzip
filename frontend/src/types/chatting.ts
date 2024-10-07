@@ -8,7 +8,16 @@ export interface ChatListItem {
   unreadCount: number;
 }
 
-export interface ChatData {
+export type ChatData = TurtleChat | TextChat;
+
+export interface TurtleChat {
+  registTime: string;
+  title: string;
+  price: number;
+  image: string;
+}
+
+export interface TextChat {
   userId: number;
   nickname: string;
   message: string;
