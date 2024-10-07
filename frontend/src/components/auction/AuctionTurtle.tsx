@@ -15,7 +15,6 @@ export default function AuctionTurtle({
     navigate("/auction-detail/" + (data?.id ?? 1));
   };
 
-
   return (
     <div onClick={goToDetail}>
       <div className="bg-[#F8F9FA] shadow-lg transition-shadow duration-300 w-full max-w-sm h-[300px] rounded-2xl flex flex-col cursor-pointer active:scale-95 relative">
@@ -28,7 +27,17 @@ export default function AuctionTurtle({
           />
         </div>
         <div className="absolute top-4 right-4">
-          <AuctionStatusTag progress={data?.auctionProgress == "BEFORE_AUCTION" ? "경매전" : ("DURING_AUCTION" ? "경매중" : ("NO_BID" ? "유찰" : "낙찰"))} />
+          <AuctionStatusTag
+            progress={
+              data?.auctionProgress === "BEFORE_AUCTION"
+                ? "경매전"
+                : data?.auctionProgress === "DURING_AUCTION"
+                ? "경매중"
+                : data?.auctionProgress === "NO_BID"
+                ? "유찰"
+                : "낙찰"
+            }
+          />
         </div>
         <div className="px-3 py-2">
           <div className="w-full overflow-hidden text-[20px] mb-4 text-gray-900 whitespace-nowrap text-ellipsis">
@@ -49,11 +58,10 @@ export default function AuctionTurtle({
                 </span>
               ))}
             </div>
-
           </div>
           <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
             <div className="text-[28px] md:text-[32px]">
-            {(data?.nowBid || 0).toLocaleString("ko-KR")}
+              {(data?.nowBid || 0).toLocaleString("ko-KR")}
             </div>
             <div className="text-[18px] md:text-[22px]">TURT</div>
             <div className="text-[28px] md:text-[32px]">↑</div>
