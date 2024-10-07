@@ -27,11 +27,12 @@ function MyPage() {
   >([]);
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
-  const [myTurtlesUuid, setMyTurtlesUuid] = useState<{turtleName: string, turtleUuid: string, turtleGender: string}[]>([]);
+  const [myTurtlesUuid, setMyTurtlesUuid] = useState<
+    { turtleName: string; turtleUuid: string; turtleGender: string }[]
+  >([]);
 
   const userTransactions = useMemo(() => myTransactions, [myTransactions]);
   const userTurtles = useMemo(() => turtleData, [turtleData]);
-
 
   const openCustomModal = useCallback(() => setIsCustomModalOpen(true), []);
   const closeCustomModal = useCallback(() => setIsCustomModalOpen(false), []);
@@ -48,15 +49,12 @@ function MyPage() {
   useEffect(() => {
     const init = async () => {
       try {
-        const [transactionResponse, turtleResponse] = await Promise.all([
-          getMyTransaction(),
-          getMyTurtle(),
-        ]);
-        
-        if (transactionResponse.success) {
-          setMyTransactions(transactionResponse.data!.data.transaction);
-          console.log("거래내역 목록", transactionResponse.data!.data.transaction);
-        }
+        const [transactionResponse, turtleResponse, auctionResponse] =
+          await Promise.all([
+            getMyTransaction(),
+            getMyTurtle(),
+            getMyAuction(),
+          ]);
 
         if (transactionResponse.success) {
           console.log(
@@ -89,15 +87,15 @@ function MyPage() {
   useEffect(() => {
     const makemMTurtlesUuidArray = () => {
       const uuidArray = turtleData.map((turtle) => {
-        console.log(turtle)
-        return ({
+        console.log(turtle);
+        return {
           turtleName: turtle.name,
           turtleUuid: turtle.turtleUuid,
-          turtleGender: turtle.gender
-        })
+          turtleGender: turtle.gender,
+        };
       });
       setMyTurtlesUuid(uuidArray);
-    }
+    };
     makemMTurtlesUuidArray();
   }, [turtleData]);
 
