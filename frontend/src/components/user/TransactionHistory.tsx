@@ -21,7 +21,7 @@ interface TransactionHistoryProps {
     amount: number;
 }
 
-export default function TransactionHistory(
+function TransactionHistory(
   props: TransactionHistoryProps | Partial<TransactionHistoryProps>
 ) {
   const navigate = useNavigate();
@@ -29,6 +29,8 @@ export default function TransactionHistory(
   const { openChatDetail } = useChatStore();
   const { createTransaction, releaseFunds } = useEscrowStore();
   const { account } = useWeb3Store();
+
+
 
   const handleDeposit = async () => {
     if (
@@ -114,7 +116,7 @@ export default function TransactionHistory(
                                 key={index}
                                 className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 my-0.5 rounded-full"
                                 >
-                                #{tag}
+                                {tag}
                                 </span>
                             ))}
                             </div>
@@ -207,3 +209,5 @@ export default function TransactionHistory(
         </div>
     </>;
 }
+
+export default TransactionHistory;
