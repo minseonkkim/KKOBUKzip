@@ -6,10 +6,7 @@ import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository
 import com.turtlecoin.auctionservice.domain.websocket.dto.BidMessage;
 import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
 import com.turtlecoin.auctionservice.feign.service.UserService;
-import com.turtlecoin.auctionservice.global.exception.AuctionAlreadyFinishedException;
-import com.turtlecoin.auctionservice.global.exception.AuctionNotFoundException;
-import com.turtlecoin.auctionservice.global.exception.SameUserBidException;
-import com.turtlecoin.auctionservice.global.exception.WrongBidAmountException;
+import com.turtlecoin.auctionservice.global.exception.*;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -118,16 +115,20 @@ public class BidService {
     }
 
     private void validateBid(Long auctionId, Long userId, Double bidAmount, Long currentUserId, Double currentBid) {
-        LocalDateTime auctionEndTime = getAuctionEndTime(auctionId);
-        if (LocalDateTime.now().isAfter(auctionEndTime)) {
-            notifyClient(auctionId, null, true, "입찰시간이 종료됐습니다");
-            throw new AuctionAlreadyFinishedException("입찰 시간이 종료되었습니다.");
+        // 경매 남은시간 확인
+        log.info("경매 남은시간 검증 후 에러 던져주는 로직");
+        Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX + auctionId, TimeUnit.MILLISECONDS);
+        log.info("remaining time : {}", remainingTime);
+        if (remainingTime == -2) {
+            throw new AuctionTimeNotValidException("입찰 가능한 시간이 아닙니다.");
         }
 
+        log.info("자신의 입찰에 재입찰 하는지 검증하는 로직");
         if (currentUserId != null && currentUserId.equals(userId)) {
             throw new SameUserBidException("자신의 입찰에 재입찰할 수 없습니다: userId = " + userId);
         }
 
+        log.info("적절한 입찰가인지 검증하는 로직");
         if (bidAmount <= currentBid) {
             throw new WrongBidAmountException("현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다: currentBid = " +
                     currentBid + ", bidAmount = " + bidAmount);
@@ -158,12 +159,17 @@ public class BidService {
         log.info("userNickname: {}", userNickname);
 
         log.info("잔여시간 가져오기");
+
+        String key = AUCTION_END_KEY_PREFIX + auctionId;
+        Double remainingTime = (double) redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
+        log.info("remaining time : {}", remainingTime);
         BidMessage bidRecord = BidMessage.builder()
                 .userId(userId)
                 .nickname(userNickname)
                 .auctionId(auctionId)
                 .bidAmount(bidAmount)
                 .nextBid(newBidAmount)
+                .remainingTime(remainingTime)
                 .build();
         log.info("BidRecord : {}", bidRecord);
         notifyClient(auctionId, bidRecord, false, null);
@@ -246,20 +252,22 @@ public class BidService {
 
     // 경매 종료 시간 갱신
     public void resetAuctionEndTime(Long auctionId) {
+        log.info("auctionId: {}", auctionId);
         String key = AUCTION_END_KEY_PREFIX + auctionId;
+        log.info("resetAuctionEndTime 내부에서 입찰시간 갱신");
         redisTemplate.expire(key, (long) (30.1*1000), TimeUnit.MILLISECONDS); // TTL 30초 재설정
     }
 
     // 경매 종료 시간 조회
-    public LocalDateTime getAuctionEndTime (Long auctionId) {
-        String key = AUCTION_END_KEY_PREFIX + auctionId;
-        Object endTimeObj = redisTemplate.opsForValue().get(key);
-        if (endTimeObj instanceof String) {
-            return LocalDateTime.parse((String) endTimeObj);
-        }
-        Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매 시간을 찾을 수 없습니다."));
-        return auction.getEndTime();
-    }
+//    public boolean getAuctionEndTime (Long auctionId) {
+//        String key = AUCTION_END_KEY_PREFIX + auctionId;
+//        Object endTimeObj = redisTemplate.opsForValue().get(key);
+//        if (endTimeObj instanceof String) {
+//            return LocalDateTime.parse((String) endTimeObj);
+//        }
+//        Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매 시간을 찾을 수 없습니다."));
+//        return auction.getEndTime();
+//    }
 
     public Double getAuctionRemainingTime (Long auctionId) {
         String key = AUCTION_END_KEY_PREFIX + auctionId;

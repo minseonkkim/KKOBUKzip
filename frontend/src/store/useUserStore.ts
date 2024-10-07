@@ -27,7 +27,7 @@ export const useUserStore = create<UserStore>()(
             email: userInfo.email!,
             address: userInfo.address!,
             phoneNumber: userInfo.phoneNumber!,
-            foreignFlag: false,
+            foreignFlag: userInfo.foreignFlag!,
             nickname: userInfo.nickname!,
             profileImage: userInfo.profileImage!,
             role: userInfo.role!,

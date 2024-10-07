@@ -21,9 +21,7 @@ function MyPage() {
   const [turtleData, setTurtleData] = useState<TurtleDataType[]>([]);
   const [selectedMenu, setSelectedMenu] = useState(1); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
-  const [myTransactions, setMyTransactions] = useState<
-    TransactionItemDataType[]
-  >([]);
+  const [myTransactions, setMyTransactions] = useState<TransactionItemDataType[]>([]);
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
 
@@ -207,6 +205,7 @@ function MyPage() {
                     transactionTag={item.transactionTag}
                     amount={item.price}
                     transactionImage={item.transactionImage}
+                    progress={item.progress}
                   />
                 ))}
               </div>
