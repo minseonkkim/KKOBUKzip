@@ -66,13 +66,13 @@ function MyPage() {
             ...transactionResponse.data!.data.transaction,
           ]);
         }
-        if (auctionResponse.success) {
-          console.log("경매내역 목록", auctionResponse.data!.data.transaction);
-          setMyTransactions((prevTransactions) => [
-            ...prevTransactions,
-            ...auctionResponse.data!.data.data,
-          ]);
-        }
+        // if (auctionResponse.success) {
+        //   console.log("경매내역 목록", auctionResponse.data!.data.transaction);
+        //   setMyTransactions((prevTransactions) => [
+        //     ...prevTransactions,
+        //     ...auctionResponse.data!.data.data,
+        //   ]);
+        // }
         if (turtleResponse.success) {
           setTurtleData(turtleResponse.data.data.data.data);
           console.log("거북이 목록", turtleResponse.data.data.data.data);
