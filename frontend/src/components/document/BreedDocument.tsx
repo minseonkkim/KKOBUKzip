@@ -130,16 +130,18 @@ function BreedDocument() {
       <Helmet>
         <title>인공증식서류작성</title>
       </Helmet>
-
-      <button
-        onClick={handleGuide}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        가이드 시작
-      </button>
+      
+      <div className="flex justify-end">
+        <button
+          onClick={handleGuide}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          가이드 시작
+        </button>
+      </div>
 
       {/* 허가 정보 */}
-      <form onSubmit={sendBreedDocRequest}>
+      <form id="breedContainer" onSubmit={sendBreedDocRequest}>
         <div className="mb-8">
           <h3 className="text-xl font-semibold mb-4">허가 정보</h3>
           <div className="space-y-2">
