@@ -54,19 +54,20 @@ function MyPage() {
   const [myTransactions, setMyTransactions] = useState<TransactionItemDataType[]>([]);
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
+  const [myTurtlesUuid, setMyTurtlesUuid] = useState<{turtleName: string, turtleUuid: string, turtleGender: string}[]>([]);
 
   useEffect(() => {
-  const init = async () => {
-    try {
-      const [transactionResponse, turtleResponse] = await Promise.all([
-        getMyTransaction(),
-        getMyTurtle(),
-      ]);
-      
-      if (transactionResponse.success) {
-        setMyTransactions(transactionResponse.data!.data.transaction);
-        console.log("거래내역 목록", transactionResponse.data!.data.transaction);
-      }
+    const init = async () => {
+      try {
+        const [transactionResponse, turtleResponse] = await Promise.all([
+          getMyTransaction(),
+          getMyTurtle(),
+        ]);
+        
+        if (transactionResponse.success) {
+          setMyTransactions(transactionResponse.data!.data.transaction);
+          console.log("거래내역 목록", transactionResponse.data!.data.transaction);
+        }
 
         if (transactionResponse.success) {
           setMyTransactions(transactionResponse.data!.data.transaction);
@@ -82,6 +83,21 @@ function MyPage() {
     };
     init();
   }, []);
+
+  useEffect(() => {
+    const makemMTurtlesUuidArray = () => {
+      const uuidArray = turtleData.map((turtle) => {
+        console.log(turtle)
+        return ({
+          turtleName: turtle.name,
+          turtleUuid: turtle.turtleUuid,
+          turtleGender: turtle.gender
+        })
+      });
+      setMyTurtlesUuid(uuidArray);
+    }
+    makemMTurtlesUuidArray();
+  }, [turtleData]);
 
   const openCustomModal = () => {
     setIsCustomModalOpen(true);
@@ -135,7 +151,7 @@ function MyPage() {
   };
 
   const goToBreedDocPage = () => {
-    navigate("/doc-form/breed");
+    navigate("/doc-form/breed", { state: myTurtlesUuid });
   };
 
   return (

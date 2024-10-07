@@ -5,13 +5,21 @@ import { BreedDocumentDataType, BreedFetchData } from "../../types/document";
 import DocImgUpload from "./DocImgUpload";
 import { createBreedDocumentRequest } from "../../apis/documentApis";
 import { breedDoc } from "../../utils/breedDriverObject";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useUserStore } from "../../store/useUserStore";
 
 // 특이사항
 // 신청인 정보 동적으로 할당할 것(아마 store에서)
 
+interface MyTurtleInfo {
+  turtleName: string,
+  turtleUuid: string,
+  turtleGender: string
+}
+
 function BreedDocument() {
+  const navigate = useNavigate();
+  const { state } = useLocation();
   const { userInfo } = useUserStore();
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -33,10 +41,8 @@ function BreedDocument() {
   const [shelterImg, setShelterImg] = useState<File | null>(null);
   const [locationImg, setLocationImg] = useState<File | null>(null);
   const [multiplicationImg, setMultiplicationImg] = useState<File | null>(null);
-
   const [detailLocation, setDetailLocation] = useState("");
 
-  const navigate = useNavigate();
   const changeHandle = (
     type: keyof BreedDocumentDataType,
     evt:
@@ -295,23 +301,33 @@ function BreedDocument() {
               <label className="block font-semibold mb-1">
                 인공증식하려는 국제적 멸종위기종 부모 개체의 고유번호
               </label>
-              <div className="w-full px-3 py-2 mb-2 border rounded bg-gray-50 flex items-center">
-                <span className="text-gray-500 flex-grow">
-                  부 개체 고유번호
-                </span>
-                <input type="file" className="hidden" id="file1" />
-                <label htmlFor="file1" className="cursor-pointer flex-shrink">
-                  개체 찾기
-                </label>
+              <div>
+                <select
+                  className="w-full px-3 py-2 mb-2 border rounded bg-gray-50 flex items-center"
+                  onChange={(evt) => changeHandle("fatherUUID", evt)}
+                  value={data.fatherUUID}
+                >
+                  <option value="" disabled>부 개체 고유번호</option>
+                  {state.map((turtle: MyTurtleInfo) => (
+                    turtle.turtleGender === "MALE" && <option key={turtle.turtleUuid} value={turtle.turtleUuid}>
+                      {turtle.turtleName} / {turtle.turtleGender === "MALE" ? "수컷" : "암컷"} ({turtle.turtleUuid})
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center">
-                <span className="text-gray-500 flex-grow">
-                  모 개체 고유번호
-                </span>
-                <input type="file" className="hidden" id="file1" />
-                <label htmlFor="file1" className="cursor-pointer flex-shrink">
-                  개체 찾기
-                </label>
+              <div>
+                <select
+                  className="w-full px-3 py-2 mb-2 border rounded bg-gray-50 flex items-center"
+                  onChange={(evt) => changeHandle("motherUUID", evt)}
+                  value={data.motherUUID}
+                >
+                  <option value="" disabled>모 개체 고유번호</option>
+                  {state.map((turtle: MyTurtleInfo) => (
+                    turtle.turtleGender === "FEMALE" && <option key={turtle.turtleUuid} value={turtle.turtleUuid}>
+                      {turtle.turtleName} / {turtle.turtleGender === "FEMALE" ? "암컷" : "수컷"} ({turtle.turtleUuid})
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -347,27 +363,6 @@ function BreedDocument() {
               </p>
               <DocImgUpload id="setLocationImg" setImage={setLocationImg} />
             </div>
-
-            {/* <div>
-            <label className="block font-semibold mb-1">인공증식의 방법</label>
-            <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center">
-              <span className="text-gray-500 flex-grow">선택된 파일 없음</span>
-              <input type="file" className="hidden" id="file1" />
-              <label htmlFor="file1" className="cursor-pointer flex-shrink">
-                파일 선택
-              </label>
-            </div>
-          </div>
-          <div>
-            <label className="block font-semibold mb-1">보호시설 명세서</label>
-            <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center">
-              <span className="text-gray-500 flex-grow">선택된 파일 없음</span>
-              <input type="file" className="hidden" id="file1" />
-              <label htmlFor="file1" className="cursor-pointer flex-shrink">
-                파일 선택
-              </label>
-            </div>
-          </div> */}
           </div>
         </div>
         {/* 구비서류 정보 끝 */}
