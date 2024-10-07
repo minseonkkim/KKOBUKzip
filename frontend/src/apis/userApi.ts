@@ -183,6 +183,25 @@ export const getMyTurtle = async () => {
   );
 };
 
+//내 경매 내역 조회
+export const getMyAuction = async () => {
+  return apiRequest(() =>
+    authAxios.get("/auction/my", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      timeout: 10000,
+    })
+  );
+};
+
+// 내 거래 내역 조회
+const getMyTransaction = async () => {
+  return apiRequest<getMyTransactionRequestResponseData>(() =>
+    authAxios.get("/main/user/transaction")
+  );
+};
 // 내 거북이 상세 조회
 
 interface getMyTransactionRequestResponseData {
@@ -191,12 +210,6 @@ interface getMyTransactionRequestResponseData {
   data: { transaction: TransactionItemDataType[] };
   message: string;
 }
-// 내 거래 내역 조회
-const getMyTransaction = async () => {
-  return apiRequest<getMyTransactionRequestResponseData>(() =>
-    authAxios.get("/main/user/transaction")
-  );
-};
 
 // 내 거래 내역 상세 조회
 
