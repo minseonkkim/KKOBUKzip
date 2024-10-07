@@ -112,7 +112,7 @@ export default function TransactionRegisterPage() {
       
       // 성공 처리
       alert(`${state.name}(이)의 거래 등록이 완료되었습니다.`)
-      navigate("/mypage");
+      navigate("/transaction-list");
     } catch (error) {
       console.error("Error adding transaction:", error);
       alert("새로운 거래 생성에 실패했습니다. 다시 시도해 주세요.");
