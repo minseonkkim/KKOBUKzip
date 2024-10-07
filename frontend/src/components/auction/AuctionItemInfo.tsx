@@ -70,13 +70,12 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
         <div className="bg-[#F2F2F2] h-[60px] rounded-[10px] flex flex-row justify-between items-center px-2 py-1">
           <div className="flex flex-row items-center">
             <img
-              //   src={tmpProfileImg}
-              // 데이터에 판매자 프사가 없음...
+              src={itemData.userInfo.profileImage}
               className="rounded-full w-[43px] h-[43px] mr-3"
               draggable="false"
               alt="profile image"
             />
-            <span className="text-[20px]">꼬북맘</span>
+            <span className="text-[20px]">{itemData.userInfo.nickname}</span>
           </div>
           {/* <div
             onClick={() => openChatDetail(itemData.sellerId, "꼬북맘")}
