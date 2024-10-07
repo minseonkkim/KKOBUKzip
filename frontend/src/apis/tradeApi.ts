@@ -41,8 +41,12 @@ const apiRequest = async <T>(
     let statusCode = 500; // internal server error
     if (axios.isAxiosError(error)) {
       // AxiosError 타입 확인 및 처리
-      errorMessage = error.response?.data?.msg || error.message;
-      error.response?.status;
+      errorMessage =
+        error.response?.data?.msg ||
+        error.response?.data?.message ||
+        error.message;
+      statusCode =
+        error.response?.data?.status || error.response?.status || 500;
     } else if (error instanceof Error) {
       // 일반 JavaScript Error 처리
       errorMessage = error.message;
