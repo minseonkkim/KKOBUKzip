@@ -70,7 +70,7 @@ function MyPage() {
           console.log("경매내역 목록", auctionResponse.data!.data.transaction);
           setMyTransactions((prevTransactions) => [
             ...prevTransactions,
-            ...auctionResponse.data!.data.auction,
+            ...auctionResponse.data!.data.data,
           ]);
         }
         if (turtleResponse.success) {
