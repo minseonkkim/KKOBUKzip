@@ -12,6 +12,7 @@ import com.turtlecoin.auctionservice.domain.auction.entity.QAuction;
 import com.turtlecoin.auctionservice.domain.auction.facade.RedissonLockFacade;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
+import com.turtlecoin.auctionservice.feign.dto.TurtleFilteredResponseDTO;
 import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.feign.MainClient;
@@ -87,6 +88,7 @@ public class AuctionService {
                 throw new PhotoNotUploadedException("사진이 등록되지 않았습니다.");
             }
             log.info("이미지 업로드 완료");
+            System.out.println("거북이 무게 : "+auction.getWeight());
 
             return new ResponseEntity<>(ResponseVO.success("경매가 성공적으로 등록됐습니다."), HttpStatus.OK);
 
@@ -156,7 +158,7 @@ public class AuctionService {
 
     // 거북이 정보를 가져와서 RegisterAuctionDTO에 설정하는 메서드
     private RegisterAuctionDTO updateAuctionWithTurtleInfo(RegisterAuctionDTO registerAuctionDTO) {
-        TurtleResponseDTO turtleInfo = mainClient.getTurtle(registerAuctionDTO.getTurtleId());
+        TurtleFilteredResponseDTO turtleInfo = mainClient.getTurtle(registerAuctionDTO.getTurtleId());
 
         return RegisterAuctionDTO.builder()
                 .turtleId(registerAuctionDTO.getTurtleId())
@@ -191,7 +193,7 @@ public class AuctionService {
             Auction auction = auctionRepository.findById(auctionId)
                     .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다: " + auctionId));
 
-            TurtleResponseDTO turtle = mainClient.getTurtle(auction.getTurtleId());
+            TurtleFilteredResponseDTO turtle = mainClient.getTurtle(auction.getTurtleId());
 
             if (turtle == null) {
                 log.warn("거북이 정보를 찾을 수 없습니다: turtleId={}", auction.getTurtleId());
@@ -212,7 +214,7 @@ public class AuctionService {
 
             // 종료됐거나, 시작하지 않았을 때
             if (remainingTime == -2) {
-
+                remainingTime = 50L;
             }
 
             Object bidAmountObj = redisTemplate.opsForHash().get(key, "bidAmount");
@@ -264,17 +266,24 @@ public class AuctionService {
             }
 
             // main-service에서 필터링 엔드포인트 열어둘 것
-            List<TurtleResponseDTO> filteredTurtles = mainClient.getFilteredTurtles(gender, minSize, maxSize);
+            // 무게로 거북이 필터링
 
+            List<TurtleFilteredResponseDTO> filteredTurtles = mainClient.getFilteredTurtles(gender, minSize, maxSize);
+
+            System.out.println("가져오는 거북이 정보 갯수"+filteredTurtles.size());
+            System.out.println("학명 가져오기"+filteredTurtles.get(0).getScientificName());
+            System.out.println("생일 가져오기"+filteredTurtles.get(0).getBirth());
+            System.out.println("성별 가져오기"+filteredTurtles.get(0).getGender());
+            log.info("구문: {}", whereClause.toString());
             long totalAuctions = queryFactory.selectFrom(auction)
                     .where(whereClause.and(auction.turtleId.in(
-                            filteredTurtles.stream().map(TurtleResponseDTO::getId).toList())))
+                            filteredTurtles.stream().map(TurtleFilteredResponseDTO::getId).toList())))
                     .fetch()
                     .size();
 
             List<Auction> auctions = queryFactory.selectFrom(auction)
                     .where(whereClause.and(auction.turtleId.in(
-                            filteredTurtles.stream().map(TurtleResponseDTO::getId).toList())))
+                            filteredTurtles.stream().map(TurtleFilteredResponseDTO::getId).toList())))
                     .offset(page * 20L)
                     .limit(20)
                     .fetch();
