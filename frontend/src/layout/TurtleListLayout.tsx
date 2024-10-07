@@ -107,13 +107,16 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
 
   const updateSelectedFiltersText = () => {
     const filterTexts: string[] = [];
-    if (filters.gender) filterTexts.push(filters.gender === "FEMALE" ? "암컷" : "수컷");
+    if (filters.gender)
+      filterTexts.push(filters.gender === "FEMALE" ? "암컷" : "수컷");
     if (filters.minWeight && filters.maxWeight)
-      filterTexts.push(`${filters.minWeight}~${filters.maxWeight}kg`);
+      filterTexts.push(`${filters.minWeight}~${filters.maxWeight}g`);
     if (filters.minPrice && filters.maxPrice)
       filterTexts.push(`${filters.minPrice}~${filters.maxPrice}TURT`);
 
-    setSelectedFiltersText(filterTexts.length > 0 ? filterTexts.join(", ") : "필터");
+    setSelectedFiltersText(
+      filterTexts.length > 0 ? filterTexts.join(", ") : "필터"
+    );
   };
 
   return (
@@ -148,7 +151,8 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
                 {isProgressItemChecked && <FaCheck />}
               </div>
               <span className="cursor-pointer whitespace-nowrap text-[20px] md:text-[18px] xl:text-[21px]">
-                {title.includes("판매") ? "거래가능한" : "경매중인"} 거북이만 보기
+                {title.includes("판매") ? "거래가능한" : "경매중인"} 거북이만
+                보기
               </span>
             </label>
           </div>
@@ -156,16 +160,22 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
           <div className="flex flex-row items-center space-x-3">
             <div
               className={`flex justify-center items-center border-[2px] rounded-[30px] px-3 h-[42px] cursor-pointer hover:text-[#4B721F] hover:border-[#4B721F] ${
-                selectedFiltersText !== "필터" ? "text-[#4B721F] bg-[#E0F3C9] border-[#4B721F]" : "border-[#DADADA]"
+                selectedFiltersText !== "필터"
+                  ? "text-[#4B721F] bg-[#E0F3C9] border-[#4B721F]"
+                  : "border-[#DADADA]"
               }`}
               onClick={toggleFilterDiv}
             >
               <IoFilterOutline
                 className={`text-[18px] md:text-[22px] mr-2 ${
-                  selectedFiltersText !== "필터" ? "text-[#4B721F] font-bold" : ""
+                  selectedFiltersText !== "필터"
+                    ? "text-[#4B721F] font-bold"
+                    : ""
                 }`}
               />
-              <span className="text-[16px] md:text-[18px]">{selectedFiltersText}</span>
+              <span className="text-[16px] md:text-[18px]">
+                {selectedFiltersText}
+              </span>
             </div>
             <div
               onClick={async () => {
@@ -194,7 +204,7 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
             />
           )}
         </div>
-        
+
         {itemLoading ? (
           <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
             {Array(6)
@@ -203,20 +213,23 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
                 <AuctionTurtleSkeleton key={index} />
               ))}
           </div>
+        ) : items.length === 0 ? (
+          <div className="w-full h-auto flex flex-col items-center justify-center space-y-5 bg-[#f4f4f4] rounded-[20px] py-20">
+            <img
+              src={NoImage}
+              className="w-[220px] h-[220px] object-cover"
+              draggable="false"
+              alt="turtle image"
+            />
+            <div className="text-[28px] font-bold font-stardust">
+              거북이가 없어요
+            </div>
+          </div>
         ) : (
-          items.length === 0 ? (
-            <div className="w-full h-auto flex flex-col items-center justify-center space-y-5 bg-[#f4f4f4] rounded-[20px] py-20">
-              <img src={NoImage} className="w-[220px] h-[220px] object-cover" draggable="false" alt="turtle image" />
-              <div className="text-[28px] font-bold font-stardust">거북이가 없어요</div>
-            </div>
-          ) : (
-            <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
-              {items}
-            </div>
-          )
+          <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
+            {items}
+          </div>
         )}
-
-        
       </main>
     </>
   );
