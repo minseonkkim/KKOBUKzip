@@ -1,0 +1,967 @@
+{
+	"compiler": {
+		"version": "0.8.18+commit.87f61d96"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "string",
+						"name": "turtleId",
+						"type": "string"
+					},
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "documentHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "CurrentTurtleDocument",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "previousOwner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "OwnershipTransferred",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "string",
+						"name": "turtleId",
+						"type": "string"
+					},
+					{
+						"indexed": true,
+						"internalType": "string",
+						"name": "applicant",
+						"type": "string"
+					},
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "documentHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "TurtleDeath",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "string",
+						"name": "turtleId",
+						"type": "string"
+					},
+					{
+						"indexed": true,
+						"internalType": "string",
+						"name": "applicant",
+						"type": "string"
+					},
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "documentHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "TurtleMultiplication",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "string",
+						"name": "turtleId",
+						"type": "string"
+					},
+					{
+						"indexed": true,
+						"internalType": "string",
+						"name": "oldOwner",
+						"type": "string"
+					},
+					{
+						"indexed": true,
+						"internalType": "string",
+						"name": "newOwner",
+						"type": "string"
+					}
+				],
+				"name": "TurtleOwnerChanged",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "string",
+						"name": "turtleId",
+						"type": "string"
+					},
+					{
+						"indexed": true,
+						"internalType": "string",
+						"name": "applicant",
+						"type": "string"
+					}
+				],
+				"name": "TurtleRegistered",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "string",
+						"name": "turtleId",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "grantApplicant",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "assignApplicant",
+						"type": "string"
+					},
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "documentHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "TurtleTransferred",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_documentHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "approveMultiplicationDocByReviewer",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_documentHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "approveTransferDocByReviewer",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_oldOwner",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_newOwner",
+						"type": "string"
+					}
+				],
+				"name": "changeTurtleOwner",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_applicant",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_turtleHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "registerTurtle",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_applicant",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_documentHash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "_assigneeId",
+						"type": "string"
+					},
+					{
+						"internalType": "uint8",
+						"name": "_count",
+						"type": "uint8"
+					},
+					{
+						"internalType": "string",
+						"name": "_transferReason",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_purpose",
+						"type": "string"
+					}
+				],
+				"name": "registerTurtleAssigneeDocument",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_applicant",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_documentHash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "_shelter",
+						"type": "string"
+					},
+					{
+						"internalType": "uint8",
+						"name": "_count",
+						"type": "uint8"
+					},
+					{
+						"internalType": "string",
+						"name": "_deathReason",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_plan",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_deathImage",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_diagnosis",
+						"type": "string"
+					}
+				],
+				"name": "registerTurtleDeathDocument",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_applicant",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_documentHash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "_grantorId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_aquisition",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_fatherId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_motherId",
+						"type": "string"
+					}
+				],
+				"name": "registerTurtleGrantorDocument",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_applicant",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_documentHash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "uint8",
+						"name": "_count",
+						"type": "uint8"
+					},
+					{
+						"internalType": "string",
+						"name": "_area",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_purpose",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_location",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_fatherId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_motherId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_birth",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_name",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_weight",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "_gender",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_locationSpecification",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_multiplicationMethod",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_shelterSpecification",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_turtleHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "registerTurtleMultiplicationDocument",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					}
+				],
+				"name": "searchCurrentDeathDocumentHash",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					}
+				],
+				"name": "searchCurrentDocumentHash",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					}
+				],
+				"name": "searchCurrentMultiplicationDocumentHash",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					}
+				],
+				"name": "searchCurrentTransferredDocumentHash",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_documentHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "searchTurtleDeathDocument",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "applicant",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "shelter",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "count",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "deathReason",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "plan",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "deathImage",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "diagnosis",
+								"type": "string"
+							}
+						],
+						"internalType": "struct TurtleDocumentation.Death",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_documentHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "searchTurtleMultiplicationDocument",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "applicant",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "count",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "area",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "purpose",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "location",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "fatherId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "motherId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "birth",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "weight",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "gender",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "locationSpecification",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "multiplicationMethod",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "shelterSpecification",
+								"type": "string"
+							}
+						],
+						"internalType": "struct TurtleDocumentation.Multiplication",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_documentHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "searchTurtleTransferDocument",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "grantApplicant",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "assignApplicant",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "grantorId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "assigneeId",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "count",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "transferReason",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "purpose",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "aquisition",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "fatherId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "motherId",
+								"type": "string"
+							}
+						],
+						"internalType": "struct TurtleDocumentation.Transfer",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "transferOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_hash",
+						"type": "bytes32"
+					}
+				],
+				"name": "turtleValid",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {
+				"owner()": {
+					"details": "Returns the address of the current owner."
+				},
+				"renounceOwnership()": {
+					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+				},
+				"transferOwnership(address)": {
+					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+				}
+			},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts\\TurtleDocumentation.sol": "TurtleDocumentation"
+		},
+		"evmVersion": "paris",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": [],
+		"viaIR": true
+	},
+	"sources": {
+		"@openzeppelin/contracts/access/Ownable.sol": {
+			"keccak256": "0xba43b97fba0d32eb4254f6a5a297b39a19a247082a02d6e69349e071e2946218",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://fc980984badf3984b6303b377711220e067722bbd6a135b24669ff5069ef9f32",
+				"dweb:/ipfs/QmPHXMSXj99XjSVM21YsY6aNtLLjLVXDbyN76J5HQYvvrz"
+			]
+		},
+		"@openzeppelin/contracts/utils/Context.sol": {
+			"keccak256": "0xa92e4fa126feb6907daa0513ddd816b2eb91f30a808de54f63c17d0e162c3439",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a367861093b74443b137564d3f3c472f70bcf114739e62059c939f25e315706c",
+				"dweb:/ipfs/Qmd7JMpcxD9RuQjK3uM3EzJUgSqdN8vzp8eytEiuwxQJ6h"
+			]
+		},
+		"contracts\\TurtleDocumentation.sol": {
+			"keccak256": "0xb05d52fc6ab372ad4e037c3d3af15531563d97b1437d0acb9967bf836ffbe4cf",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d653019720fa491581ae11cf88e5ca1fca01b1c6e2b2048ba5dae81074e0f83d",
+				"dweb:/ipfs/QmeVdoJHjXEXrrz5Fu8ZDQfMeb54Tjf5pM5v8cwt9VggwX"
+			]
+		}
+	},
+	"version": 1
+}

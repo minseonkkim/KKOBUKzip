@@ -85,10 +85,11 @@ contract TurtleDocumentation is Ownable {
     event CurrentTurtleDocument(string indexed turtleId, bytes32 indexed documentHash);
 
     // (관리자용) 거북이 추가
-    function registerTurtle(string memory _turtleId, string memory _applicant) public onlyOwner {
+    function registerTurtle(string memory _turtleId, string memory _applicant, bytes32 _turtleHash) public onlyOwner {
         require(!turtles[_turtleId].exists, "Turtle already registered");
 
         Turtle storage newTurtle = turtles[_turtleId];
+        newTurtle.turtleHash = _turtleHash;
         newTurtle.exists = true;
         ownerToTurtleIds[_applicant].push(_turtleId);
 
