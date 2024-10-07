@@ -75,7 +75,7 @@ function TransactionDetailPage() {
       ~~transactionData!.price,
       transactionData!.turtleUuid,
       userInfo!.uuid,
-      transactionData!.sellerUuid,
+      transactionData!.sellerUuid
     );
 
     if (result) {
@@ -89,7 +89,9 @@ function TransactionDetailPage() {
   };
 
   const openChat = () => {
-    if (isLogin && userInfo && transactionData) {
+    if (userInfo?.userId === transactionData?.sellerId) {
+      alert("자기 자신과의 채팅방은 생성할 수 없습니다.");
+    } else if (isLogin && userInfo && transactionData) {
       openChatDetailFromTransaction(
         transactionData.sellerId,
         transactionData.sellerName
