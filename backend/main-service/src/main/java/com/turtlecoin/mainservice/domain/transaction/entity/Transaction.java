@@ -95,7 +95,7 @@ public class Transaction extends BaseEntity {
                 .scientificName(this.turtle.getScientificName()) // Scientific Name
                 .price(this.price) // 가격
                 .createDate(this.getCreateDate().toString()) // 생성일자 (BaseEntity에서 상속된 필드)
-                .weight(this.turtle.getWeight()) // 거북이 무게
+                .weight(this.getWeight()) // 거북이 무게
                 .content(this.content) // 거래 내용
                 .transactionTag(this.tags.stream()
                         .map(TransactionTag::getTag)
@@ -106,7 +106,7 @@ public class Transaction extends BaseEntity {
                 .progress(this.progress.name()) // Enum 값 (거래 진행 상황)
                 .sellerImageUrl(this.turtle.getUser().getProfileImage())
                 .title(this.title)
-                .sellerAddress(this.turtle.getUser().getAddress())
+                .sellerAddress(this.sellerAddress)
                 .turtleUuid(this.turtle.getUuid())
                 .documentHash(this.documentHash)
                 .build();

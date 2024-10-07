@@ -24,22 +24,4 @@ public class AuctionResultDTO {
     private String imageAddress;
     private LocalDateTime startTime;
 
-    @Override
-    public String toString() {
-        return "AuctionResultDTO{" +
-                "title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", winningBid=" + winningBid +
-                ", weight=" + weight +
-                ", turtleId=" + turtleId +
-                ", auctionId=" + auctionId +
-                ", sellerAddress='" + sellerAddress + '\'' +
-                ", progress=" + progress +
-                ", auctionFlag=" + auctionFlag +
-                ", buyerId=" + buyerId +
-                ", sellerId=" + sellerId +
-                ", imageAddress='" + imageAddress + '\'' +
-                ", startTime=" + startTime +
-                '}';
-    }
 }
