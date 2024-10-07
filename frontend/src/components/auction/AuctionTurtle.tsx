@@ -28,7 +28,7 @@ export default function AuctionTurtle({
           />
         </div>
         <div className="absolute top-4 right-4">
-          <AuctionStatusTag progress={"경매중"} />
+          <AuctionStatusTag progress={data?.auctionProgress == "BEFORE_AUCTION" ? "경매전" : ("DURING_AUCTION" ? "경매중" : ("NO_BID" ? "유찰" : "낙찰"))} />
         </div>
         <div className="px-3 py-2">
           <div className="w-full overflow-hidden text-[20px] mb-4 text-gray-900 whitespace-nowrap text-ellipsis">
@@ -51,8 +51,12 @@ export default function AuctionTurtle({
             </div>
 
           </div>
-          <div className="whitespace-nowrap font-extrabold text-[28px] text-[#4B721F] font-stardust">
-            {(data?.nowBid || 0).toLocaleString("ko-KR") + "원 ↑"}
+          <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
+            <div className="text-[28px] md:text-[32px]">
+            {(data?.nowBid || 0).toLocaleString("ko-KR")}
+            </div>
+            <div className="text-[18px] md:text-[22px]">TURT</div>
+            <div className="text-[28px] md:text-[32px]">↑</div>
           </div>
         </div>
       </div>
