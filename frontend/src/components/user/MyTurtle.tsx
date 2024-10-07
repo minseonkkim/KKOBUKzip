@@ -129,12 +129,16 @@ function MyTurtle({turtleId, turtleUuid, name, scientificName, gender, weight, b
 
   const [isAgreeAlertOpen, setIsAgreeAlertOpen] = useState(false);
   const [isDisagreeAlertOpen, setIsDisagreeAlertOpen] = useState(false);
+  const [errorAlertOpen, setErrorAlertOpen] = useState(false);
 
   const openAgreeAlert = () => setIsAgreeAlertOpen(true);
   const closeAgreeAlert = () => setIsAgreeAlertOpen(false);
 
   const openDisagreeAlert = () => setIsDisagreeAlertOpen(true);
   const closeDisagreeAlert = () => setIsDisagreeAlertOpen(false);
+
+  const openErrorAlert = () => setErrorAlertOpen(true);
+  const closeErrorAlert = () => setErrorAlertOpen(false);
 
   const [breedDocumentData, setBreedDocumentData] = useState<AdminBreedDocumentDataType | null>(null);
   const [transferDocumentData, setTransferDocumentData] = useState<AdminAssignDocumentDataType | null>(null);
@@ -232,7 +236,7 @@ function MyTurtle({turtleId, turtleUuid, name, scientificName, gender, weight, b
       }
     } catch (error) {
       console.log("에러 : ", error);
-      alert("블록체인 네트워크와 통신 중 오류가 발생했습니다. 다시 시도해 주세요.")
+      openErrorAlert();
     }
   }
 
@@ -287,7 +291,8 @@ function MyTurtle({turtleId, turtleUuid, name, scientificName, gender, weight, b
 
       <Alert isOpen={isAgreeAlertOpen} message="블록체인 네트워크의 해시 정보와 일치합니다." onClose={closeAgreeAlert} />
       <Alert isOpen={isDisagreeAlertOpen} message="블록체인 네트워크의 해시 정보와 일치하지 않습니다. 관리자에게 문의 부탁드립니다." onClose={closeDisagreeAlert} />
-
+      <Alert isOpen={errorAlertOpen} message="블록체인 네트워크와 통신 중 오류가 발생했습니다. 다시 시도해 주세요." onClose={closeErrorAlert} />
+      
       {isDetailModalOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100000]"
