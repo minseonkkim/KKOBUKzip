@@ -21,6 +21,13 @@ export interface AuctionItemDataType {
     userId: number;
     scientificName: string;
   };
+  userInfo: {
+    email: string;
+    name: string;
+    nickname: string;
+    profileImage: string;
+    userId: number;
+  };
 }
 
 export interface AuctionData {

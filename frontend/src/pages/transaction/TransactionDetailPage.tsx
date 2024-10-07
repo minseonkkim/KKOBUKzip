@@ -36,6 +36,7 @@ function TransactionDetailPage() {
       const id = params.id;
       if (id) {
         const result = await getTransactionDetailItemData(id);
+        console.log(result);
         if (result.success) {
           setTransactionData(result.data.data.turtle);
         }
@@ -74,7 +75,7 @@ function TransactionDetailPage() {
       ~~transactionData!.price,
       transactionData!.turtleUuid,
       userInfo!.uuid,
-      transactionData!.sellerUuid
+      transactionData!.sellerUuid,
     );
 
     if (result) {
