@@ -119,6 +119,11 @@
           "internalType": "string",
           "name": "_applicant",
           "type": "string"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_turtleHash",
+          "type": "bytes32"
         }
       ],
       "name": "registerTurtle",
@@ -548,8 +553,80 @@
           "type": "string"
         }
       ],
+      "name": "searchCurrentDeathDocumentHash",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_turtleId",
+          "type": "string"
+        }
+      ],
       "name": "searchCurrentDocumentHash",
       "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_turtleId",
+          "type": "string"
+        }
+      ],
+      "name": "searchCurrentMultiplicationDocumentHash",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_turtleId",
+          "type": "string"
+        }
+      ],
+      "name": "searchCurrentTransferredDocumentHash",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        },
         {
           "internalType": "bytes32",
           "name": "",
