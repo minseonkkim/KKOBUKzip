@@ -26,13 +26,13 @@ function MyPage() {
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
   const [myTurtlesUuid, setMyTurtlesUuid] = useState<{turtleName: string, turtleUuid: string, turtleGender: string}[]>([]);
 
-  // useMemo를 사용하여 불필요한 리렌더링 방지
   const userTransactions = useMemo(() => myTransactions, [myTransactions]);
   const userTurtles = useMemo(() => turtleData, [turtleData]);
 
-  // useCallback을 사용하여 함수의 재생성 방지
+
   const openCustomModal = useCallback(() => setIsCustomModalOpen(true), []);
   const closeCustomModal = useCallback(() => setIsCustomModalOpen(false), []);
+
   const handleCustomOverlayClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       if (e.target === e.currentTarget) {
@@ -84,13 +84,6 @@ function MyPage() {
     }
     makemMTurtlesUuidArray();
   }, [turtleData]);
-
-  const openCustomModal = () => {
-    setIsCustomModalOpen(true);
-  };
-  const closeCustomModal = () => {
-    setIsCustomModalOpen(false);
-  };
 
   // const handleCustomOverlayClick = (
   //   e: React.MouseEvent<HTMLDivElement, MouseEvent>
