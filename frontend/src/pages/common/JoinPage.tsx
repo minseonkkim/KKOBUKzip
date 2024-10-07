@@ -40,8 +40,8 @@ function JoinPage() {
     foreignFlag: false,
     name: "",
     nickname: "",
-    birthday: "",
-    phoneNumber: "",
+    birth: "",
+    phonenumber: "",
     address: "",
   });
   const [detailedAddress, setDetailAddress] = useState("");
@@ -322,7 +322,6 @@ function JoinPage() {
         type: "application/json",
       });
       formData.append("data", blob);
-      console.log(jsonData);
       const rst = await registerRequest(formData);
       if (rst.success) {
         alert("회원가입 완료!");
