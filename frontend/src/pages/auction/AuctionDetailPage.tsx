@@ -139,22 +139,22 @@ function AuctionDetailPage() {
           {auctionStatus === "BEFORE_AUCTION" && (
             <BeforeAuction
               changeAuctionStatus={changeAuctionStatus}
-              startTime={auctionItemData?.startTime!}
-              minBid={auctionItemData?.minBid!}
-              auctionId={auctionId}
+              startTime={auctionItemData!.startTime}
+              minBid={auctionItemData!.minBid}
+              auctionId={Number(auctionId)}
             />
           )}
-          {auctionStatus === "DURING_AUCTION" && (
+          {auctionStatus === "DURING_AUCTION" && auctionItemData!.nowBid !== null && (
             <DuringAuction
-              minBid={auctionItemData?.minBid!}
+              minBid={auctionItemData!.minBid}
               channelId={String(auctionItemData?.id)}
-              nowBid={auctionItemData?.nowBid!}
-              remainingTime={auctionItemData?.remainingTime!}
+              nowBid={auctionItemData!.nowBid}
+              remainingTime={auctionItemData!.remainingTime}
             />
           )}
           {auctionStatus === "NO_BID" || <NoBid />}
-          {auctionStatus === "SUCCESSFUL_BID" && (
-            <SuccessfulBid nowBid={auctionItemData?.nowBid!} />
+          {auctionStatus === "SUCCESSFUL_BID" && auctionItemData!.nowBid !== null && (
+            <SuccessfulBid nowBid={auctionItemData!.nowBid} />
           )}
         </div>
       </main>

@@ -24,9 +24,11 @@ const AuctionListPage = () => {
           (item: AuctionListDataType) => {
             console.log(item.auctionProgress);
             if (item.auctionProgress === "DURING_AUCTION") {
-              progressItems.push(<AuctionTurtle key={item.id} data={item} />);
+              // auctionId로 변경
+              progressItems.push(<AuctionTurtle key={item.auctionId!} data={item} />);
             }
-            return <AuctionTurtle key={item.id} data={item} />;
+            // auctionId로 변경
+            return <AuctionTurtle key={item.auctionId} data={item} />;
           }
         );
 

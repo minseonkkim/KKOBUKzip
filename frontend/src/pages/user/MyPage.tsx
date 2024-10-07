@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import MyTurtle from "../../components/user/MyTurtle";
 import TransactionHistory from "../../components/user/TransactionHistory";
 import { TransactionItemDataType } from "../../types/transaction";
@@ -31,8 +31,8 @@ function MyPage() {
     { turtleName: string; turtleUuid: string; turtleGender: string }[]
   >([]);
 
-  const userTransactions = useMemo(() => myTransactions, [myTransactions]);
-  const userTurtles = useMemo(() => turtleData, [turtleData]);
+  // const userTransactions = useMemo(() => myTransactions, [myTransactions]);
+  // const userTurtles = useMemo(() => turtleData, [turtleData]);
 
   const openCustomModal = useCallback(() => setIsCustomModalOpen(true), []);
   const closeCustomModal = useCallback(() => setIsCustomModalOpen(false), []);

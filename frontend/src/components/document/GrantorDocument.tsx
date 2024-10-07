@@ -101,9 +101,11 @@ function GrantorDocument() {
         <title>양도서류작성</title>
       </Helmet>
 
-      <button onClick={handleGuide} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">가이드 시작</button>
+      <div className="flex justify-end">
+        <button onClick={handleGuide} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">가이드 시작</button>
+      </div>
 
-      <div id="container">
+      <div id="grantContainer">
         <div className="mb-8">
           <div className="w-full flex mb-4">
             <span className="text-xl font-semibold flex-1">양도인</span>
