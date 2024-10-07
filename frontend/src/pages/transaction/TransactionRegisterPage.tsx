@@ -105,9 +105,15 @@ export default function TransactionRegisterPage() {
     images.forEach((image) => {
       formData.append(`transactionPhotos`, image);
     });
+    console.log(newTransactionData)
 
     try {
       const response = await addTransactionItem(formData);
+
+      if (response.success === false) {
+        throw Error(response.message);
+      }
+
       console.log("Transaction added successfully:", response);
       
       // 성공 처리
