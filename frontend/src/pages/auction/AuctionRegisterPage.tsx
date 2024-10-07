@@ -1,4 +1,4 @@
-import { useLocation,useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
@@ -9,7 +9,6 @@ import { addAuctionItem } from "../../apis/tradeApi";
 import formatDate from "../../utils/formatDate";
 import { useWeb3Store } from "../../store/useWeb3Store";
 
-
 export default function AuctionRegisterPage() {
   const { account } = useWeb3Store();
   const [images, setImages] = useState<File[]>([]);
@@ -18,9 +17,10 @@ export default function AuctionRegisterPage() {
   const [minBid, setMinBid] = useState("");
   const [startTime, setStartTime] = useState("");
   const [title, setTitle] = useState("");
+  const [weight, setWeight] = useState(0);
   const { state } = useLocation();
   const navigate = useNavigate();
-  const userStore = localStorage.getItem('userStore');
+  const userStore = localStorage.getItem("userStore");
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length + images.length > 3) {
@@ -44,7 +44,7 @@ export default function AuctionRegisterPage() {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-  
+
     if (name === "min_bid") {
       setMinBid(formatNumberWithCommas(value));
     } else if (name === "title") {
@@ -64,7 +64,9 @@ export default function AuctionRegisterPage() {
     e.preventDefault();
 
     if (!account) {
-      alert("메타마스크 계정이 연결되지 않았습니다. 연결 확인 후 다시 시도해 주세요.");
+      alert(
+        "메타마스크 계정이 연결되지 않았습니다. 연결 확인 후 다시 시도해 주세요."
+      );
       return;
     }
 
@@ -76,9 +78,10 @@ export default function AuctionRegisterPage() {
       userId: userId,
       content: e.currentTarget.content.value,
       minBid: Number(minBid.replace(/,/g, "")),
+      weight: weight,
       startTime: startTime,
       auctionTags: [selectedGender, selectedSize],
-      sellerAddress: account
+      sellerAddress: account,
     };
 
     const formData = new FormData();
@@ -86,23 +89,26 @@ export default function AuctionRegisterPage() {
       formData.append("images", image);
     });
     formData.append(
-      'data',
-      new Blob([JSON.stringify(data)],{
-        type:'application/json'
+      "data",
+      new Blob([JSON.stringify(data)], {
+        type: "application/json",
       })
-    )
+    );
     console.log(data);
 
-    try{
-      await addAuctionItem(formData);
-      // 성공 처리
-      alert(`${state.name}(이)의 거래 등록이 완료되었습니다.`)
-      navigate("/mypage");
-    }catch(error){
+    try {
+      const result = await addAuctionItem(formData);
+      if (result.success) {
+        // 성공 처리
+        alert(`${state.name}(이)의 거래 등록이 완료되었습니다.`);
+        navigate("/mypage");
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
       console.error("Error adding transaction:", error);
       alert("새로운 경매 생성에 실패했습니다. 다시 시도해 주세요.");
     }
-    
   };
   return (
     <>
@@ -128,7 +134,12 @@ export default function AuctionRegisterPage() {
               {state.name}
             </div>
             <div className="text-gray-600 text-[18px] md:text-[21px]">
-            {state.gender == "FEMALE" ? "암컷" : (state.gender == "MALE" ? "수컷" : "미구분")} | {formatDate(state.birth)}생
+              {state.gender == "FEMALE"
+                ? "암컷"
+                : state.gender == "MALE"
+                ? "수컷"
+                : "미구분"}{" "}
+              | {formatDate(state.birth)}생
             </div>
           </div>
         </div>
@@ -178,12 +189,14 @@ export default function AuctionRegisterPage() {
               type="number"
               name="weight"
               required
+              value={weight}
+              onChange={(e) => setWeight(Number(e.target.value))}
               onInput={(e) => {
                 const target = e.target as HTMLInputElement;
                 target.value = target.value.replace(/[^0-9]/g, "");
               }}
             />
-            kg
+            g
           </div>
           {/* 제목은 30자 이내로만 입력 가능하게 하기 */}
           <div className="flex flex-row items-center">

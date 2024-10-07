@@ -19,4 +19,7 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
 
     @Query("select count(*) from Auction a where (a.auctionProgress = :progress1 or a.auctionProgress = :progress2) and a.turtleId = :turtleId")
     Long countInProgressAuctionByTurtleId(@Param("progress1") AuctionProgress progress1, @Param("progress2") AuctionProgress progress2, @Param("turtleId") Long turtleId);
+
+    @Query("SELECT t FROM Auction t WHERE t.buyerId = :id OR t.userId = :id")
+    List<Auction> findAllByUser(Long id);
 }

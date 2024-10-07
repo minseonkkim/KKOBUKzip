@@ -6,7 +6,6 @@ import {
   TransactionItemDataType,
   TransactionItemDetailType,
 } from "../types/transaction";
-import { AuctionResponseDummuy } from "../fixtures/auctionDummy";
 
 interface AuctionResponseData<T> {
   success: true;
@@ -42,8 +41,12 @@ const apiRequest = async <T>(
     let statusCode = 500; // internal server error
     if (axios.isAxiosError(error)) {
       // AxiosError 타입 확인 및 처리
-      errorMessage = error.response?.data?.msg || error.message;
-      error.response?.status;
+      errorMessage =
+        error.response?.data?.msg ||
+        error.response?.data?.message ||
+        error.message;
+      statusCode =
+        error.response?.data?.status || error.response?.status || 500;
     } else if (error instanceof Error) {
       // 일반 JavaScript Error 처리
       errorMessage = error.message;
@@ -102,40 +105,39 @@ export const getAuctionDatas = async ({
   progress?: number;
 }) => {
   // query setting
-  const pageQuery = page ? `page=${page}` : "page=0";
-  const genderQuery = gender ? `&gender=${gender}` : "";
+  const pageQuery = "";
+  const genderQuery = gender && gender !== "" ? `&gender=${gender}` : "";
   const sizeQuery =
     minWeight || maxWeight
-      ? `&size=${minWeight ? minWeight : "0"}between${
+      ? `&size=${minWeight ? minWeight : "0"}-${
           maxWeight ? maxWeight : "999999999999"
         }`
       : "";
+
+  const cleanedMinPrice = minPrice ? minPrice.replace(/,/g, "") : "0";
+  const cleanedMaxPrice = maxPrice
+    ? maxPrice.replace(/,/g, "")
+    : "999999999999";
   const priceQuery =
-    minPrice || maxPrice
-      ? `&price=${minPrice ? minPrice : "0"}between${
-          maxPrice ? maxPrice : "999999999999"
-        }`
-      : "";
+    minPrice || maxPrice ? `&price=${cleanedMinPrice}-${cleanedMaxPrice}` : "";
+
   const progressQuery = progress ? `&progress=${progress}` : "";
 
   const query =
     pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
   // request
   const response = guestAxios.get(`/auction?${query}`);
+  console.log(query);
+  console.log(response);
   return response;
 };
 
-// 경매 단일 상품 조회 search dummy
+// 경매 단일 상품 조회
 export const getAuctionDetailItemData = async (auctionID: number) => {
   const response = (await apiRequest)<{
     data: { auction: AuctionItemDataType };
   }>(() => guestAxios.get(`/auction/${auctionID}`));
   return response;
-
-  // return {
-  //   success: true,
-  //   data: { data: AuctionResponseDummuy.data },
-  // };
 };
 
 // 경매 등록
@@ -186,31 +188,34 @@ export const getTransactionData = async ({
   const genderQuery = gender && gender !== "" ? `&gender=${gender}` : "";
   const sizeQuery =
     minWeight || maxWeight
-      ? `&size=${minWeight ? minWeight : "0"}-${maxWeight ? maxWeight : "999999999999"}`
+      ? `&size=${minWeight ? minWeight : "0"}-${
+          maxWeight ? maxWeight : "999999999999"
+        }`
       : "";
-  
-  const cleanedMinPrice = minPrice ? minPrice.replace(/,/g, '') : "0";
-  const cleanedMaxPrice = maxPrice ? maxPrice.replace(/,/g, '') : "999999999999";
-  const priceQuery = minPrice || maxPrice ? `&price=${cleanedMinPrice}-${cleanedMaxPrice}` : "";
 
-  const progressQuery = progress ? `&progress=${progress}` : ""; 
+  const cleanedMinPrice = minPrice ? minPrice.replace(/,/g, "") : "0";
+  const cleanedMaxPrice = maxPrice
+    ? maxPrice.replace(/,/g, "")
+    : "999999999999";
+  const priceQuery =
+    minPrice || maxPrice ? `&price=${cleanedMinPrice}-${cleanedMaxPrice}` : "";
+
+  const progressQuery = progress ? `&progress=${progress}` : "";
 
   const query = `${pageQuery}${genderQuery}${sizeQuery}${priceQuery}${progressQuery}`;
 
   const response = await apiRequest<{ data: TransactionListData }>(() =>
     guestAxios.get(`/main/transaction/?${query}`)
   );
-  console.log(query);
-  console.log(response);
   return response;
 };
-
 
 interface TransactionItemDetailData {
   status: number;
   message: string;
   data: { turtle: TransactionItemDetailType };
 }
+
 // 거래 단일항목 상세조회
 export const getTransactionDetailItemData = (transactionId: string) => {
   return apiRequest<TransactionItemDetailData>(() =>

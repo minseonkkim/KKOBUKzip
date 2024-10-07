@@ -1,5 +1,6 @@
 package com.turtlecoin.auctionservice.domain.auction.controller;
 
+import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResultDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
@@ -11,6 +12,7 @@ import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.global.exception.*;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
+import com.turtlecoin.auctionservice.global.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpConnectException;
@@ -42,6 +44,7 @@ public class AuctionController {
     private final AuctionRepository auctionRepository;
     private final SchedulingService schedulingService;
     private final SseService sseService;
+    private final JWTUtil jwtUtil;
 
     // 테스트
     @GetMapping("/test")
@@ -117,5 +120,29 @@ public class AuctionController {
     public void test(@PathVariable Long auctionId) {
         bidService.startAuction(auctionId);
     }
+
+    @GetMapping("/my")
+    public ResponseEntity<?> getMyAuctions(@RequestHeader("Authorization") String token) {
+        try{
+            Long id = jwtUtil.getIdFromToken(token.split(" ")[1]);
+            System.out.println(id);
+            if(id == null) {
+                throw new UserNotFoundException("유효한 토큰 값이 아닙니다.");
+            }
+
+            List<AuctionResultDTO> data = auctionService.getMyAuctions(id);
+            System.out.println(data.toString());
+            return new ResponseEntity<>(ResponseVO.success("내 경매 조회에 성공하였습니다.", "data", data), HttpStatus.OK);
+        }catch (IOException e){
+            return new ResponseEntity<>(ResponseVO.failure("500", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch(UserNotFoundException e){
+            return new ResponseEntity<>(ResponseVO.failure("401", e.getMessage()), HttpStatus.UNAUTHORIZED);
+        }catch(Exception e){
+            return new ResponseEntity<>(ResponseVO.failure("500", "내 경매 조회 중 예상치 못한 에러가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+    }
+
 }
 
