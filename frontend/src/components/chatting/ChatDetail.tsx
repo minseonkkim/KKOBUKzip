@@ -1,13 +1,16 @@
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import TmpProfileImg from "../../assets/tmp_profile.gif";
-import { ChatData } from "../../types/chatting";
+import { ChatData, TextChat, ChatResponse } from "../../types/chatting";
 import { useEffect, useRef, useState } from "react";
 import OtherChatItem from "./OtherChatItem";
 import MyChatItem from "./MyChatItem";
 import ChatDayDivider from "./ChatDayDivider";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import formatDate from "../../utils/formatDate";
-import { fetchChatMessageData } from "../../apis/chatApi";
+import {
+  fetchChatMessageData,
+  fetchChatMessageDataFromTx,
+} from "../../apis/chatApi";
 import SystemMessageItem from "./SystemMessageItem";
 import { useUserStore } from "../../store/useUserStore";
 
@@ -16,6 +19,7 @@ interface ChatDetailProps {
   chattingId: number;
   toggleChat: () => void;
   chattingTitle: string;
+  openedFromTransaction: boolean;
 }
 
 // 확인해야 할 사항
@@ -37,6 +41,7 @@ export default function ChatDetail({
   chattingId,
   closeChatDetail,
   toggleChat,
+  openedFromTransaction,
 }: ChatDetailProps) {
   const [inputValue, setInputValue] = useState("");
   const stompClient = useRef<CompatClient | null>(null);
@@ -46,7 +51,6 @@ export default function ChatDetail({
   const { userInfo } = useUserStore();
   const [chatData, setChatData] = useState<ChatData[]>([]);
 
-  const myNickName = "판매자";
   const chatId =
     Math.min(userInfo?.userId!, chattingId) +
     "-" +
@@ -64,8 +68,14 @@ export default function ChatDetail({
 
   // 데이터 초기화 및 전처리
   const initData = async () => {
-    const { success, data } = await fetchChatMessageData(chattingId);
-    console.log(data);
+    let success: boolean;
+    let data: ChatData[] | undefined;
+
+    if (openedFromTransaction) {
+      ({ success, data } = await fetchChatMessageDataFromTx(chattingId));
+    } else {
+      ({ success, data } = await fetchChatMessageData(chattingId));
+    }
     if (success) {
       const chatMessages = data;
       if (Array.isArray(chatMessages)) {
@@ -75,26 +85,23 @@ export default function ChatDetail({
       }
     }
 
-    // if (success) {
-    //   setChatData(data!.reverse());
-    // }
-
     // 날짜별로 메시지 그룹화
     const groupedMessages: { date: string; messages: ChatData[] }[] = [];
-    console.log(data!);
-    data!.forEach((message) => {
-      const messageDate = formatDate(message.registTime);
+    if (data != undefined) {
+      data.forEach((message) => {
+        const lastGroup = groupedMessages[groupedMessages.length - 1];
+        const messageDate = formatDate(message.registTime);
 
-      const lastGroup = groupedMessages[groupedMessages.length - 1];
-
-      if (!lastGroup || lastGroup.date !== messageDate) {
-        groupedMessages.push({ date: messageDate, messages: [message] });
-      } else {
-        lastGroup.messages.push(message);
-      }
-    });
+        if (!lastGroup || lastGroup.date !== messageDate) {
+          groupedMessages.push({ date: messageDate, messages: [message] });
+        } else {
+          lastGroup.messages.push(message);
+        }
+      });
+    }
     console.log("groupedMessages", groupedMessages);
     setGroupedChat(groupedMessages);
+    console.log(groupedChat);
     // }
   };
 
@@ -110,12 +117,13 @@ export default function ChatDetail({
         stompClient.current!.subscribe(
           `/sub/main/${chatId}`,
           (message) => {
-            const newMessage: ChatData = JSON.parse(message.body);
+            const newMessage: TextChat = JSON.parse(message.body);
             const messageDate = formatDate(newMessage.registTime);
             const lastGroup = groupedChat[groupedChat.length - 1];
 
             console.log("Sender:", newMessage.userId);
             console.log("NickName:", newMessage.nickname);
+            console.log(groupedChat);
             console.log("Register Time:", newMessage.registTime);
             console.log("Message:", newMessage.message);
             console.log("ProfileImg:", newMessage.userProfile);
@@ -203,7 +211,7 @@ export default function ChatDetail({
                         image={message.image}
                       />
                     );
-                  } else if (myNickName === message.nickname) {
+                  } else if (userInfo?.userId === message.userId) {
                     // 보낸 메시지 처리
                     return <MyChatItem key={index} message={message.message} />;
                   } else {

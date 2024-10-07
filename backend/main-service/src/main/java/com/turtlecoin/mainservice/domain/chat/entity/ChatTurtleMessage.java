@@ -17,6 +17,7 @@ import lombok.Getter;
 public class ChatTurtleMessage implements ChatMessage{
 	@Id
 	private ObjectId id;
+	private String registTime;
 	private String title;
 	private Double price;
 	private String image;

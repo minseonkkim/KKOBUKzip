@@ -22,7 +22,7 @@ function TransactionDetailPage() {
   const [transactionData, setTransactionData] =
     useState<null | TransactionItemDetailType>(null);
   const { createTransaction } = useEscrowStore();
-  const { openChatDetail } = useChatStore();
+  const { openChatDetailFromTransaction } = useChatStore();
   const navigate = useNavigate();
   const params = useParams();
   const { isLogin, userInfo } = useUserStore();
@@ -89,7 +89,10 @@ function TransactionDetailPage() {
 
   const openChat = () => {
     if (isLogin && userInfo && transactionData) {
-      openChatDetail(userInfo.userId, transactionData.sellerName);
+      openChatDetailFromTransaction(
+        transactionData.sellerId,
+        transactionData.sellerName
+      );
     } else {
       alert("로그인해주세요!");
     }
