@@ -59,6 +59,7 @@ export interface TransactionItemDetailType {
   sellerUuid: string;
   sellerName: string;
   sellerAddress: string;
+  sellerNickname: string;
   sellerImageUrl: string;
   turtleId: number;
   turtleUuid: string;

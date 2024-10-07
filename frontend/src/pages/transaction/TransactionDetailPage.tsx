@@ -174,7 +174,7 @@ function TransactionDetailPage() {
                       alt="profile image"
                     />
                     <span className="text-[20px]">
-                      {transactionData.sellerName ?? "loading..."}
+                      {transactionData.sellerNickname ?? "loading..."}
                     </span>
                   </div>
                   <div
