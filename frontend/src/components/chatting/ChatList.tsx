@@ -25,6 +25,9 @@ export default function ChatList() {
     initChatRoomList,
     updateRoomList,
     chatRoomList,
+    openedFromTransaction,
+    totalUnreadCount,
+    addTotalUnreadCount,
   } = useChatStore();
   const { userInfo } = useUserStore();
   const accessToken = localStorage.getItem("accessToken");
@@ -61,18 +64,19 @@ export default function ChatList() {
         console.log("readyState:", eventSource.readyState);
       };
 
-      eventSource.onmessage = (event) => {
-        console.log("SSE가 도착한다!");
-        const newChat: ChatListItem = JSON.parse(event.data);
-        updateRoomList(newChat);
-      };
+      // eventSource.onmessage = (event) => {
+      //   console.log("SSE가 도착한다!");
+      //   const newChat: ChatListItem = JSON.parse(event.data);
+      //   updateRoomList(newChat);
+      // };
 
       eventSource.addEventListener("sse", (event) => {
         const messageEvent = event as MessageEvent; // Type Assertion
         console.log("SSE가 도착한다!!!!!");
-        console.log(messageEvent.data);
+        console.log(JSON.parse(messageEvent.data));
         const newChat: ChatListItem = JSON.parse(messageEvent.data);
         updateRoomList(newChat);
+        addTotalUnreadCount();
       });
 
       eventSource.onerror = (error) => {
@@ -147,9 +151,10 @@ export default function ChatList() {
             )}
 
             {!isOpen ? (
-              !isTablet && (
+              !isTablet &&
+              totalUnreadCount !== 0 && (
                 <div className="rounded-full bg-[#DE0000] w-[30px] h-[30px] flex justify-center items-center text-white font-bold text-[20px] animate-bounce">
-                  1
+                  {totalUnreadCount}
                 </div>
               )
             ) : (
@@ -167,6 +172,7 @@ export default function ChatList() {
                 chattingId={selectedChat}
                 closeChatDetail={closeChatDetail}
                 toggleChat={toggleChat}
+                openedFromTransaction={openedFromTransaction}
               />
             ) : (
               // 채팅 목록
