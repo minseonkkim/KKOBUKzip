@@ -72,6 +72,7 @@ public class ChatService {
 	public void addChatTurtleMessage(Long smallUserId, Long bigUserId, String title, Double price, String image) throws Exception{
 		ChatTurtleMessage chatTurtleMessage = ChatTurtleMessage.builder()
 			.id(new ObjectId())
+			.registTime(LocalDateTime.now().toString())
 			.title(title)
 			.price(price)
 			.image(image)
@@ -199,14 +200,14 @@ public class ChatService {
 		}
 		else{
 			Long left; Long right;
-			Long otherUserId; Integer opponentUnreadCount; ChatTextMessage chatTextMessage;
+			Long otherUserId; Integer unreadCount; ChatTextMessage chatTextMessage;
 
 			left = chat.getParticipants().get(0); right = chat.getParticipants().get(1);
 			otherUserId = left == userId ? right : left;
-			// 상대방에게 보내주는 목적이니까
-			// 상대방을 기준으로 읽었나 안읽었나 횟수가 기준이 됨
-			opponentUnreadCount = left == otherUserId ? chat.getUnreadCount().get(0) : chat.getUnreadCount().get(1);
+			// 내가 안읽은 횟수
+			unreadCount = left == userId ? chat.getUnreadCount().get(0) : chat.getUnreadCount().get(1);
 			chatTextMessage = chat.getRecentMessage();
+			// 보낸 상대방의 정보임
 			UserResponseDTO userResponseDTO = userService.getByUserId(otherUserId);
 
 			return ChatListDto.builder()
@@ -216,7 +217,7 @@ public class ChatService {
 				.otherUserProfileImage(userResponseDTO.getProfileImage())
 				.lastMessage(chatTextMessage.getText())
 				.lastMessageTime(chatTextMessage.getRegistTime())
-				.unreadCount(opponentUnreadCount)
+				.unreadCount(unreadCount)
 				.build();
 		}
 	}

@@ -139,7 +139,7 @@ const Wallet: React.FC = () => {
   };
 
   return (
-    <div className="bg-yellow-400 text-black p-6 rounded-[10px] w-full shadow-md">
+    <div className="bg-[#F6CA19] text-black p-6 rounded-[10px] w-full shadow-md">
       {/* 계정 정보 및 잔액 표시 */}
       <div className="mt-3 mb-4">
         <div className="truncate w-70">
