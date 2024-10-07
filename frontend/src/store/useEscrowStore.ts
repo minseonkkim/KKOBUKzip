@@ -41,7 +41,8 @@ export const useEscrowStore = create<EscrowState>((set) => ({
       await changeTransactionStateToStart(transactionId);
       set({ error: null });
       return true;
-    } catch {
+    } catch (error) {
+      console.log("error : ", error);
       set({ error: "Failed to create transaction" });
       return false;
     }
