@@ -1,5 +1,6 @@
 package com.turtlecoin.auctionservice.domain.auction.controller;
 
+import com.turtlecoin.auctionservice.domain.auction.dto.AuctionListResponseDto;
 import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResultDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
@@ -103,12 +104,10 @@ public class AuctionController {
     public ResponseEntity<?> getMyAuctions(@RequestHeader("Authorization") String token) {
         try{
             Long id = jwtUtil.getIdFromToken(token.split(" ")[1]);
-            System.out.println(id);
             if(id == null) {
                 throw new UserNotFoundException("유효한 토큰 값이 아닙니다.");
             }
-
-            List<AuctionResultDTO> data = auctionService.getMyAuctions(id);
+            List<AuctionListResponseDto> data = auctionService.getMyAuctions(id);
             System.out.println(data.toString());
             return new ResponseEntity<>(ResponseVO.success("내 경매 조회에 성공하였습니다.", "data", data), HttpStatus.OK);
         }catch (IOException e){

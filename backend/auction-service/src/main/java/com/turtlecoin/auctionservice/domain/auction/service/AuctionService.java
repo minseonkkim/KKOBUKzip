@@ -2,14 +2,8 @@ package com.turtlecoin.auctionservice.domain.auction.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.turtlecoin.auctionservice.domain.auction.dto.AuctionFilterResponseDTO;
-import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
-import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResultDTO;
-import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
-import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
-import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
-import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
-import com.turtlecoin.auctionservice.domain.auction.entity.QAuction;
+import com.turtlecoin.auctionservice.domain.auction.dto.*;
+import com.turtlecoin.auctionservice.domain.auction.entity.*;
 import com.turtlecoin.auctionservice.domain.auction.facade.RedissonLockFacade;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
@@ -39,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -239,7 +234,7 @@ public class AuctionService {
         }
     }
 
-    public List<AuctionResultDTO> getMyAuctions(Long userId) throws IOException {
+    public List<AuctionListResponseDto> getMyAuctions(Long userId) throws IOException {
 
         try{
             // Auction 엔티티 목록 가져오기
@@ -252,20 +247,22 @@ public class AuctionService {
                         String firstImageUrl = auction.getFirstImageUrl();
 
                         // AuctionResultDTO로 변환
-                        return AuctionResultDTO.builder()
+                        return AuctionListResponseDto.builder()
+
                                 .title(auction.getTitle())
                                 .content(auction.getContent())
-                                .winningBid(auction.getWinningBid())
                                 .weight(auction.getWeight())
                                 .turtleId(auction.getTurtleId())
-                                .auctionId(auction.getId())
+                                .id(auction.getId())
                                 .sellerAddress(auction.getSellerAddress())
                                 .auctionFlag(true)
                                 .progress(auction.getAuctionProgress())
                                 .buyerId(auction.getBuyerId())
                                 .sellerId(auction.getUserId())
-                                .imageAddress(firstImageUrl)
-                                .startTime(auction.getStartTime())
+                                .images(firstImageUrl)
+                                .tags(auction.getAuctionTags().stream()
+                                        .map(AuctionTag::getTag)
+                                        .collect(Collectors.toList())) // 태그 리스트
                                 .build();
                     })
                     .toList(); // 리스트로 수집

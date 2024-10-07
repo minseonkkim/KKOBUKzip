@@ -120,6 +120,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+        //얍
         return UserResponseDTO.builder()
                 .userId(user.getId())
                 .email(user.getEmail())

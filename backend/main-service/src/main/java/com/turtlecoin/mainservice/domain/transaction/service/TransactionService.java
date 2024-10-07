@@ -64,10 +64,8 @@ public class TransactionService {
             if(user.isEmpty()){
                 throw new UserNotFoundException("유효한 토큰이 아닙니다.");
             }
-            System.out.println("!!!");
-            System.out.println(dto.getTurtleId());
             Turtle turtle = turtleRepository.getReferenceById(dto.getTurtleId());
-            if(transactionRepository.findByTurtle(turtle)!=null&&transactionRepository.findByTurtle(turtle).getSellerAddress().equals(user.get().getAddress())){
+            if(transactionRepository.findByTurtle(turtle)!=null&&turtle.getUser().getId().equals(user.get().getId())){
                 throw new DuplicatedEnrollTransaction("이미 거래가 등록된 거북이 입니다.");
             }
             if(turtle.getUser().getUuid()!=user.get().getUuid()){
@@ -99,7 +97,7 @@ public class TransactionService {
             return new ResponseEntity<>(ResponseVO.failure("401",e.getMessage()), HttpStatus.UNAUTHORIZED);
         } catch(DuplicatedEnrollTransaction e){
             e.printStackTrace();
-            return new ResponseEntity<>(ResponseVO.failure("400",e.getMessage()), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(ResponseVO.failure("409",e.getMessage()), HttpStatus.CONFLICT);
         } catch (IOException e) {
             e.printStackTrace();
             return new ResponseEntity<>(ResponseVO.failure("400", "거래 등록 과정 중에 이미지 업로드 오류가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
