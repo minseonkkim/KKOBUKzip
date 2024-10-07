@@ -213,7 +213,13 @@ export default function ChatDetail({
                     );
                   } else if (userInfo?.userId === message.userId) {
                     // 보낸 메시지 처리
-                    return <MyChatItem key={index} message={message.message} />;
+                    return (
+                      <MyChatItem
+                        key={index}
+                        message={message.message}
+                        time={message.registTime}
+                      />
+                    );
                   } else {
                     // 받은 메시지 처리
                     return (

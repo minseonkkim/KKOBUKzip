@@ -21,6 +21,9 @@ export default function AuctionRegisterPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const userStore = localStorage.getItem("userStore");
+
+
+  
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length + images.length > 3) {
@@ -100,8 +103,8 @@ export default function AuctionRegisterPage() {
       const result = await addAuctionItem(formData);
       if (result.success) {
         // 성공 처리
-        alert(`${state.name}(이)의 거래 등록이 완료되었습니다.`);
-        navigate("/mypage");
+        alert(`${state.name}(이)의 경매 등록이 완료되었습니다.`);
+        navigate("/auction-list");
       } else {
         throw new Error(result.message);
       }
