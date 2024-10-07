@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense, memo } from "react";
 import useDeviceStore from "../../store/useDeviceStore";
 import usePriorityLoading from "../../hooks/usePriorityLoading";
 import LogoImg from "../../assets/logo.webp";
@@ -11,8 +11,21 @@ import { RiLogoutBoxLine } from "@react-icons/all-files/ri/RiLogoutBoxLine";
 import { logoutRequest } from "../../apis/userApi";
 import { useStore } from "zustand";
 
-// Wallet 컴포넌트를 lazy로 import
 const Wallet = lazy(() => import("./Wallet"));
+
+const Logo = memo(() => (
+  <div className="text-[32px] lg:text-[38px] font-dnf-bitbit flex flex-row items-center cursor-pointer">
+    <img
+      src={LogoImg}
+      className="w-[50px] lg:w-[60px] h-[50px] lg:h-[60px] mr-3 object-contain"
+      draggable="false"
+      alt="Logo Image"
+    />
+    <div className="whitespace-nowrap">
+      <span className="text-[#4B721F]">꼬북</span>ZIP
+    </div>
+  </div>
+));
 
 export default function Header() {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -32,6 +45,7 @@ export default function Header() {
     setLogout();
     navigate("/");
   };
+
   return (
     <header>
       <div
@@ -39,17 +53,7 @@ export default function Header() {
         style={{ backgroundColor: headerBackgroundColor }}
       >
         <Link to="/">
-          <div className="text-[32px] lg:text-[38px] font-dnf-bitbit flex flex-row items-center cursor-pointer">
-            <img
-              src={LogoImg}
-              className="w-[50px] lg:w-[60px] h-[50px] lg:h-[60px] mr-3 object-contain"
-              draggable="false"
-              alt="Logo Image"
-            />
-            <div className="whitespace-nowrap">
-              <span className="text-[#4B721F]">꼬북</span>ZIP
-            </div>
-          </div>
+          <Logo />
         </Link>
 
         <div className="flex flex-row items-center">

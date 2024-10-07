@@ -145,7 +145,7 @@ public class UserController {
     public ResponseEntity<?> myTransaction(@RequestHeader("Authorization") String token){
         Optional<User> user = jwtService.getUserByToken(token); // token 기준으로 User 객체 가져오기!
         if(user.isEmpty()){
-            return new ResponseEntity<>(ResponseVO.failure("404","유효한 token이 아닙니다."),HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(ResponseVO.failure("401","유효한 token이 아닙니다."),HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(ResponseVO.success("요청이 정상적으로 처리되었습니다.","transaction",transactionService.findAllTransactions(user.get()) ),HttpStatus.OK);
     }
@@ -174,7 +174,7 @@ public class UserController {
             userRepository.save(user.get());
             return new ResponseEntity<>(ResponseVO.success("이미지가 성공적으로 수정 되었습니다.","url",url),HttpStatus.OK);
         }catch(UserNotFoundException e){
-            return new ResponseEntity<>(ResponseVO.failure("404",e.getMessage()),HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(ResponseVO.failure("401",e.getMessage()),HttpStatus.UNAUTHORIZED);
 
         }catch (IOException e) {
             // 이미지 업로드 중 IO 예외 발생 시

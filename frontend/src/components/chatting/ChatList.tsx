@@ -4,14 +4,11 @@ import ChatCard from "./ChatCard";
 import ChatDetail from "./ChatDetail";
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import { AiOutlineMessage } from "@react-icons/all-files/ai/AiOutlineMessage";
-import { chatsData } from "../../fixtures/chatDummy";
 import { ChatListItem } from "../../types/chatting";
 import useChatStore from "../../store/useChatStore";
 import { fetchChatListData } from "../../apis/chatApi";
 import { useUserStore } from "../../store/useUserStore";
 import { EventSourcePolyfill } from "event-source-polyfill";
-
-const dummyData = chatsData;
 
 export default function ChatList() {
   const isTablet = useDeviceStore((state) => state.isTablet);
@@ -96,7 +93,6 @@ export default function ChatList() {
         eventSource.close(); // 컴포넌트 언마운트 시 연결 종료
       };
     };
-    //initChatRoomList(dummyData);
     fetchDataAndInitializeSSE();
   }, []);
 

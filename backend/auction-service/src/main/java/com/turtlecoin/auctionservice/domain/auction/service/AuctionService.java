@@ -4,6 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.turtlecoin.auctionservice.domain.auction.dto.AuctionFilterResponseDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
+import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResultDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
@@ -225,9 +226,7 @@ public class AuctionService {
                 nowBid = Double.parseDouble(bidAmountObj.toString());  // Object를 Double로 변환
                 log.info("redis에 입찰 가격이 있을 때");
             }
-
             log.info("RemainingTime : {}", remainingTime);
-
             AuctionResponseDTO data = AuctionResponseDTO.from(auction, turtle, user, remainingTime, nowBid);
             return new ResponseEntity<>(ResponseVO.success("경매가 정상적으로 조회되었습니다.", "auction", data), HttpStatus.OK);
         } catch (AuctionNotFoundException e) {
@@ -238,6 +237,42 @@ public class AuctionService {
         } catch(Exception e){
             return new ResponseEntity<>(ResponseVO.failure("500","경매 조회 과정 중에 서버 에러가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public List<AuctionResultDTO> getMyAuctions(Long userId) throws IOException {
+
+        try{
+            // Auction 엔티티 목록 가져오기
+            List<Auction> auctions = auctionRepository.findAllByUser(userId);
+
+            // Turtle 정보와 User 정보는 각 Auction과 관련된 데이터를 적절히 조회해서 전달해야 합니다.
+            return auctions.stream()
+                    .map(auction -> {
+                        // 첫 번째 이미지 주소 추출
+                        String firstImageUrl = auction.getFirstImageUrl();
+
+                        // AuctionResultDTO로 변환
+                        return AuctionResultDTO.builder()
+                                .title(auction.getTitle())
+                                .content(auction.getContent())
+                                .winningBid(auction.getWinningBid())
+                                .weight(auction.getWeight())
+                                .turtleId(auction.getTurtleId())
+                                .auctionId(auction.getId())
+                                .sellerAddress(auction.getSellerAddress())
+                                .auctionFlag(true)
+                                .progress(auction.getAuctionProgress())
+                                .buyerId(auction.getBuyerId())
+                                .sellerId(auction.getUserId())
+                                .imageAddress(firstImageUrl)
+                                .startTime(auction.getStartTime())
+                                .build();
+                    })
+                    .toList(); // 리스트로 수집
+        }catch(Exception e){
+            throw new IOException("내 경매 조회 중에 에러가 발생하였습니다.");
+        }
+
     }
 
     // 경매 필터링 후 조회

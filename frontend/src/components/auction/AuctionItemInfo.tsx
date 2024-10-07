@@ -29,8 +29,14 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
               alt="Turtle"
               draggable="false"
             />
-            <FaAngleLeft onClick={handlePrev} className="cursor-pointer absolute left-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"/>
-            <FaAngleRight onClick={handleNext} className="cursor-pointer absolute right-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"/>
+            <FaAngleLeft
+              onClick={handlePrev}
+              className="cursor-pointer absolute left-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"
+            />
+            <FaAngleRight
+              onClick={handleNext}
+              className="cursor-pointer absolute right-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"
+            />
             <div className="absolute bottom-3 right-3 bg-black/60 text-white px-4 py-2 rounded-[20px]">
               {currentIndex + 1} / {itemData.images.length}
             </div>
@@ -41,16 +47,16 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
 
         <div className="flex flex-row justify-between lg:justify-start xl:justify-between items-center mt-[5px] mb-[10px]">
           <div className="text-[#9A9A9A] text-[17px]">
-            {/* {itemData.turtleInfo.} */} | {itemData.turtleInfo.weight}kg
+            {itemData.turtleInfo.scientificName} | {itemData.turtleInfo.weight}g
             {/* 24년 8월 10일생 | 8kg */}
           </div>
-          <div className="flex flex-row space-x-2">
+          <div className="flex flex-row space-x-1">
             {itemData.tags.map((tag, index) => (
               <span
                 key={index}
-                className="whitespace-nowrap px-2 py-1 rounded-full text-[18px] bg-[#D5F0DD] text-[#065F46]"
+                className="whitespace-nowrap px-2 py-1 rounded-full text-[15px] bg-[#D5F0DD] text-[#065F46]"
               >
-                #{tag}
+                {tag}
               </span>
             ))}
           </div>

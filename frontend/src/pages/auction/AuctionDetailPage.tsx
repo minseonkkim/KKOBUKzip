@@ -7,8 +7,9 @@ import { getAuctionDetailItemData } from "../../apis/tradeApi";
 import AuctionItemInfo from "../../components/auction/AuctionItemInfo";
 import BeforeAuction from "../../components/auction/BeforeAuction";
 import DuringAuction from "../../components/auction/DuringAuction";
-import AfterAuction from "../../components/auction/AfterAuction";
 import AuctionItemInfoSkeleton from "../../components/skeleton/auction/AuctionItemInfoSkeleton";
+import SuccessfulBid from "../../components/auction/SuccessfulBid";
+import NoBid from "../../components/auction/NoBid";
 
 // flow
 // 1. 경매 시작 전 -> SSE 연결, get으로 가져옴
@@ -61,7 +62,6 @@ function AuctionDetailPage() {
   }, [auctionId]);
 
   const navigate = useNavigate();
-  
 
   useEffect(() => {
     if (!isValidId) {
@@ -77,6 +77,13 @@ function AuctionDetailPage() {
   const changeAuctionStatus = useCallback(() => {
     setAuctionStatus("DURING_AUCTION");
   }, []);
+
+  const changeAuctionStatusToComplete = useCallback(
+    (state: "NO_BID" | "SUCCESSFUL_BID") => {
+      setAuctionStatus(state);
+    },
+    []
+  );
 
   return (
     <>
@@ -140,10 +147,14 @@ function AuctionDetailPage() {
             <DuringAuction
               minBid={auctionItemData?.minBid!}
               channelId={String(auctionItemData?.id)}
+              nowBid={auctionItemData?.nowBid!}
+              remainingTime={auctionItemData?.remainingTime!}
             />
           )}
-          {(auctionStatus === "NO_BID" ||
-            auctionStatus === "SUCCESSFUL_BID") && <AfterAuction />}
+          {auctionStatus === "NO_BID" || <NoBid />}
+          {auctionStatus === "SUCCESSFUL_BID" && (
+            <SuccessfulBid nowBid={auctionItemData?.nowBid!} />
+          )}
         </div>
       </main>
     </>

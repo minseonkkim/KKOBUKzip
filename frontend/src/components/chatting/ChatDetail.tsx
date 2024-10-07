@@ -24,7 +24,7 @@ interface ChatDetailProps {
 
 // 확인해야 할 사항
 // 0. user의 nickname 가져오기
-// 1. 채팅 get fetch -> init Data에서 dummy 제거하기
+// 1. 채팅 get fetch -
 // 2. socket connet
 // 3. sockent send, sub
 // 4. sockent disconnet
