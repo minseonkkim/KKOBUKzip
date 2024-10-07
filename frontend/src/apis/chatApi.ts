@@ -30,12 +30,12 @@ export const fetchChatMessageData = async (memberId: number) => {
 // 거래내역에서 채팅창 이동
 export const fetchChatMessageDataFromTx = async (memberId: number) => {
   try {
-    const response = await authAxios<ChatData[]>(
+    const response = await authAxios<ChatResponse>(
       `${path}/detail?id=${memberId}&type=transaction`
     );
     return {
       success: true,
-      data: response.data,
+      data: response.data.data,
     };
   } catch (error) {
     let message = "Unknown Error";

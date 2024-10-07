@@ -22,7 +22,7 @@ function TransactionDetailPage() {
   const [transactionData, setTransactionData] =
     useState<null | TransactionItemDetailType>(null);
   const { createTransaction } = useEscrowStore();
-  const { openChatDetail } = useChatStore();
+  const { openChatDetailFromTransaction } = useChatStore();
   const navigate = useNavigate();
   const params = useParams();
   const { isLogin, userInfo } = useUserStore();
@@ -68,20 +68,31 @@ function TransactionDetailPage() {
   };
 
   const handleDeposit = async () => {
-    const result = await createTransaction(transactionData!.transactionId, transactionData!.sellerAddress, ~~(transactionData!.price), transactionData!.turtleUuid, userInfo!.uuid, transactionData!.sellerUuid);
-    
+    const result = await createTransaction(
+      transactionData!.transactionId,
+      transactionData!.sellerAddress,
+      ~~transactionData!.price,
+      transactionData!.turtleUuid,
+      userInfo!.uuid,
+      transactionData!.sellerUuid
+    );
+
     if (result) {
-      alert("거래 대금 송금이 완료되었습니다. 마이페이지로 이동하여 서류 작성을 진행해 주세요!");
+      alert(
+        "거래 대금 송금이 완료되었습니다. 마이페이지로 이동하여 서류 작성을 진행해 주세요!"
+      );
       navigate("/mypage");
     } else {
-      alert("거래 대금 송금이 실패했습니다. 다시 시도해 주세요.")
+      alert("거래 대금 송금이 실패했습니다. 다시 시도해 주세요.");
     }
-    
   };
 
   const openChat = () => {
     if (isLogin && userInfo && transactionData) {
-      openChatDetail(userInfo.userId, transactionData.sellerName);
+      openChatDetailFromTransaction(
+        transactionData.sellerId,
+        transactionData.sellerName
+      );
     } else {
       alert("로그인해주세요!");
     }
@@ -113,9 +124,14 @@ function TransactionDetailPage() {
                     draggable="false"
                   />
 
-                  <FaAngleLeft onClick={handlePrev} className="cursor-pointer absolute left-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"/>
-                  <FaAngleRight onClick={handleNext} className="cursor-pointer absolute right-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"/>
-
+                  <FaAngleLeft
+                    onClick={handlePrev}
+                    className="cursor-pointer absolute left-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"
+                  />
+                  <FaAngleRight
+                    onClick={handleNext}
+                    className="cursor-pointer absolute right-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"
+                  />
 
                   <div className="absolute bottom-3 right-3 bg-black/60 text-white px-4 py-2 rounded-[20px]">
                     {currentIndex + 1} /{" "}
@@ -129,7 +145,7 @@ function TransactionDetailPage() {
                   <div className="text-[#9A9A9A] text-[18px]">
                     {transactionData.scientificName} |{" "}
                     {formatDate(transactionData.createDate ?? "")} |{" "}
-                    {transactionData.weight}kg
+                    {transactionData.weight}g
                   </div>
                   <div className="flex flex-row space-x-1">
                     {transactionData.transactionTag.map((tag, index) => (
@@ -178,7 +194,7 @@ function TransactionDetailPage() {
                       </div>
                       <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
                         <div className="text-[31px] md:text-[39px]">
-                          {Math.floor(transactionData.price).toLocaleString()} 
+                          {Math.floor(transactionData.price).toLocaleString()}
                         </div>
                         <div className="text-[27px] md:text-[29px]">TURT</div>
                       </div>

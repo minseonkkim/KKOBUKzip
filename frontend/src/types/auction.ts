@@ -32,3 +32,29 @@ export interface AuctionData {
   turtleId: number;
   // images: File[];
 }
+
+export interface Tag{
+  tag: string;
+}
+
+export interface AuctionListDataType {
+  auctionPhotos: string[];
+  auctionProgress: string;
+  auctionTags: Tag[] | null;
+  buyerId: number | null;
+  content: string;
+  createDate: string | null;
+  endTime: string;
+  firstImageUrl: string;
+  id: number;
+  lastModifiedDate: string | null;
+  midBid: number;
+  nowBid: number;
+  sellerAddress: string;
+  startTime: number;
+  title: string;
+  turtleId: number;
+  userId: number;
+  weight: number;
+  winningBid: number | null;
+}
