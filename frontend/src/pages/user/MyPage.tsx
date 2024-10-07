@@ -10,6 +10,7 @@ import { FaRandom } from "@react-icons/all-files/fa/FaRandom";
 import {
   getMyTransaction,
   getMyTurtle,
+  getMyAuction,
   patchProfileImage,
 } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
@@ -21,14 +22,17 @@ function MyPage() {
   const [turtleData, setTurtleData] = useState<TurtleDataType[]>([]);
   const [selectedMenu, setSelectedMenu] = useState(1); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
-  const [myTransactions, setMyTransactions] = useState<TransactionItemDataType[]>([]);
+  const [myTransactions, setMyTransactions] = useState<
+    TransactionItemDataType[]
+  >([]);
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
-  const [myTurtlesUuid, setMyTurtlesUuid] = useState<{turtleName: string, turtleUuid: string, turtleGender: string}[]>([]);
+  const [myTurtlesUuid, setMyTurtlesUuid] = useState<
+    { turtleName: string; turtleUuid: string; turtleGender: string }[]
+  >([]);
 
   const userTransactions = useMemo(() => myTransactions, [myTransactions]);
   const userTurtles = useMemo(() => turtleData, [turtleData]);
-
 
   const openCustomModal = useCallback(() => setIsCustomModalOpen(true), []);
   const closeCustomModal = useCallback(() => setIsCustomModalOpen(false), []);
@@ -45,20 +49,30 @@ function MyPage() {
   useEffect(() => {
     const init = async () => {
       try {
-        const [transactionResponse, turtleResponse] = await Promise.all([
-          getMyTransaction(),
-          getMyTurtle(),
-        ]);
-        
-        if (transactionResponse.success) {
-          setMyTransactions(transactionResponse.data!.data.transaction);
-          console.log("거래내역 목록", transactionResponse.data!.data.transaction);
-        }
+        const [transactionResponse, turtleResponse, auctionResponse] =
+          await Promise.all([
+            getMyTransaction(),
+            getMyTurtle(),
+            getMyAuction(),
+          ]);
 
         if (transactionResponse.success) {
-          setMyTransactions(transactionResponse.data!.data.transaction);
+          console.log(
+            "거래내역 목록",
+            transactionResponse.data!.data.transaction
+          );
+          setMyTransactions((prevTransactions) => [
+            ...prevTransactions,
+            ...transactionResponse.data!.data.transaction,
+          ]);
         }
-
+        if (auctionResponse.success) {
+          console.log("경매내역 목록", auctionResponse.data!.data.transaction);
+          setMyTransactions((prevTransactions) => [
+            ...prevTransactions,
+            ...auctionResponse.data!.data.auction,
+          ]);
+        }
         if (turtleResponse.success) {
           setTurtleData(turtleResponse.data.data.data.data);
           console.log("거북이 목록", turtleResponse.data.data.data.data);
@@ -73,15 +87,15 @@ function MyPage() {
   useEffect(() => {
     const makemMTurtlesUuidArray = () => {
       const uuidArray = turtleData.map((turtle) => {
-        console.log(turtle)
-        return ({
+        console.log(turtle);
+        return {
           turtleName: turtle.name,
           turtleUuid: turtle.turtleUuid,
-          turtleGender: turtle.gender
-        })
+          turtleGender: turtle.gender,
+        };
       });
       setMyTurtlesUuid(uuidArray);
-    }
+    };
     makemMTurtlesUuidArray();
   }, [turtleData]);
 
@@ -168,7 +182,7 @@ function MyPage() {
         </div>
         <div className="w-full flex lg:flex-row flex-col justify-between items-center">
           <div className="lg:w-auto w-full mt-[25px] text-[21px] lg:text-[23px] flex flex-row cursor-pointer mb-[10px] font-stardust">
-              <div
+            <div
               className={`w-1/2 lg:w-[150px] h-[42px] border-b-[4px] text-center ${
                 selectedMenu === 1 && "border-[#4B721F] font-bold"
               }`}

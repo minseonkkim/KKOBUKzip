@@ -241,7 +241,7 @@ public class AuctionService {
         }
     }
 
-    public List<AuctionResultDTO> getMyAuctions(Long userId) throws IOException {
+    public List<AuctionListResponseDto> getMyAuctions(Long userId) throws IOException {
 
         try{
             // Auction 엔티티 목록 가져오기
@@ -254,20 +254,22 @@ public class AuctionService {
                         String firstImageUrl = auction.getFirstImageUrl();
 
                         // AuctionResultDTO로 변환
-                        return AuctionResultDTO.builder()
+                        return AuctionListResponseDto.builder()
+
                                 .title(auction.getTitle())
                                 .content(auction.getContent())
-                                .winningBid(auction.getWinningBid())
                                 .weight(auction.getWeight())
                                 .turtleId(auction.getTurtleId())
-                                .auctionId(auction.getId())
+                                .id(auction.getId())
                                 .sellerAddress(auction.getSellerAddress())
                                 .auctionFlag(true)
                                 .progress(auction.getAuctionProgress())
                                 .buyerId(auction.getBuyerId())
                                 .sellerId(auction.getUserId())
-                                .imageAddress(firstImageUrl)
-                                .startTime(auction.getStartTime())
+                                .images(firstImageUrl)
+                                .tags(auction.getAuctionTags().stream()
+                                        .map(AuctionTag::getTag)
+                                        .collect(Collectors.toList())) // 태그 리스트
                                 .build();
                     })
                     .toList(); // 리스트로 수집

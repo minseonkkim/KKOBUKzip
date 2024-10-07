@@ -70,6 +70,8 @@ public class JWTService {
             data.put("profileImage",user.get().getProfileImage());
             data.put("userId",user.get().getId());
             data.put("foreignFlag",user.get().getForeignFlag());
+            data.put("name",user.get().getName());
+            data.put("birth",user.get().getBirth());
             return data;
 
         }
