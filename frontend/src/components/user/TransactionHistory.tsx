@@ -125,13 +125,13 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
                 )}
                 {/* 예약 단계에 활성화 */}
                 {props.progress === "REVIEW_DOCUMENT" && (
-                  <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0] hidden" onClick={startPaperwork}>
-                    서류 작성
+                  <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0]" onClick={startPaperwork}>
+                    {userInfo!.userId !== props.sellerId ? "양수" : "양도"} 서류 작성
                   </button>
                 )}
                 {/* 서류 검토 */}
-                {(userInfo?.userId !== props.sellerId) && (props.progress === "REVIEW_DOCUMENT") && (
-                  <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0] hidden" onClick={finalizeTransaction}>
+                {(userInfo?.userId !== props.sellerId) && (props.progress === "APPROVED_DOCUMENT") && (
+                  <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0]" onClick={finalizeTransaction}>
                     구매 확정
                   </button>
                 )}
