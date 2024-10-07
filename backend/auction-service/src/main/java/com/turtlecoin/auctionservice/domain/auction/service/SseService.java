@@ -19,6 +19,7 @@ public class SseService {
 
     public SseEmitter subscribe(Long auctionId) {
         SseEmitter emitter = createEmitter(auctionId);
+        System.out.println("SSE 연결 완료");
         // sendToClient(auctionId, "EventStream Created. [auctionId=" + auctionId + "]");
         return emitter;
     }

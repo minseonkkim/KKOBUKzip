@@ -1,16 +1,16 @@
-package com.turtlecoin.mainservice.domain.turtle.dto;
+package com.turtlecoin.auctionservice.feign.dto;
 
-import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
+import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuctionTurtleInfoDTO {
+public class TurtleFilteredResponseDTO {
     private Long id;
     private Gender gender;
     private String scientificName;

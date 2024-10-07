@@ -13,6 +13,7 @@ public class TurtleResponseDTO {
     private Long id;
     private Gender gender;
     private int weight;
+    private String scientificName;
     private LocalDate birth;
     private Long userId;
 }

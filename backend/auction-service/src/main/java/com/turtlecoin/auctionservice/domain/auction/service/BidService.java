@@ -39,9 +39,17 @@ public class BidService {
     public void startAuction(Long auctionId) {
         Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다: " + auctionId));
 
-        setAuctionEndTime(auctionId, LocalDateTime.now().plusSeconds(30));
+        String key = AUCTION_END_KEY_PREFIX + auctionId;
+
+        redisTemplate.opsForValue().set(key, "ready");
+        System.out.println("redis expire key : "+key);
+        redisTemplate.expire(key, (long) (30.1*1000), TimeUnit.MILLISECONDS); // TTL 30초 설정
+
+        Long remainingTime = redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
+        System.out.println("startAuction에서 remainingTime: " + remainingTime);
+        System.out.println("여기까지는 찍혔음1");
         auction.updateStatus(AuctionProgress.DURING_AUCTION);
-        
+        System.out.println("여기까지는 찍혔음2");
         // sse로 경매 시작을 알림
         sseService.notify(auction.getId(), "Auction Started");
         
@@ -53,7 +61,7 @@ public class BidService {
     public void processBidWithRedis(Long auctionId, Long userId, Double bidAmount) {
         // 1. 경매 시작 및 상태 확인
         log.info("경매 시작 안했으면 강제로 시작, AuctionID : {}", auctionId);
-        startAuctionIfNotStarted(auctionId);
+//        startAuctionIfNotStarted(auctionId);
 
         // 2. 현재 경매와 입찰 정보를 확인하고 유효성을 검증
         Auction auction = getAuction(auctionId);
@@ -61,7 +69,7 @@ public class BidService {
         Double currentBid = getCurrentBidAmount(auctionId, auction);
 
 //        // 3. 입찰 검증 로직
-//        validateBid(auctionId, userId, bidAmount, currentUserId, currentBid);
+        validateBid(auctionId, userId, bidAmount, currentUserId, currentBid);
 
         // 4. 입찰 정보 갱신
         Double newBidAmount = updateBidInfo(auctionId, userId, bidAmount);
