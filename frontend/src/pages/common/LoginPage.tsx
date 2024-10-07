@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import useDeviceStore from "../../store/useDeviceStore";
@@ -11,30 +11,37 @@ import { FaRegEyeSlash } from "@react-icons/all-files/fa/FaRegEyeSlash";
 import { loginRequest } from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
 
-// 해야할 것 : api 요청 결과에 따라 분기처리
-// 히야할 것 : api 요청 직전에 입력값 확인
-// role 값에 따라서 처리할 것
-// 유저는 user 관리자는 admin
-
 function LoginPage() {
-  const isMobile = useDeviceStore((state) => state.isMobile);
+  // const isMobile = useDeviceStore((state) => state.isMobile);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [hide, setHide] = useState(true);
   const { setLogin } = useUserStore();
   const navigate = useNavigate();
+  const [failMessage, setFailMessage] = useState("");
+
+  const { isLogin } = useUserStore((state) => state);
+  useEffect(() => {
+    if (isLogin) {
+      navigate("/");
+    }
+  }, [isLogin]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { success, data, error } = await loginRequest(email, password);
     if (success) {
-      setLogin(data?.data!);
-      localStorage.setItem("accessToken", data?.data?.accessToken!);
-      localStorage.setItem("refreshToken", data?.data?.refreshToken!);
+      const userData = {
+        ...data?.data?.data!,
+      };
+
+      setLogin(userData);
+      localStorage.setItem("accessToken", userData.accessToken);
+      localStorage.setItem("refreshToken", userData.refreshToken);
       navigate("/");
     } else {
       console.log(error);
-      alert(error);
+      setFailMessage("이메일 또는 비밀번호를 올바르지 않습니다.");
     }
   };
 
@@ -95,7 +102,7 @@ function LoginPage() {
                     </div>
                   )}
                 </div>
-
+                <div className="text-red-700 text-center">{failMessage}</div>
                 <button className="w-full bg-[#4B721F] text-[22px] text-white py-3 rounded hover:bg-[#3E5A1E]">
                   로그인하기
                 </button>

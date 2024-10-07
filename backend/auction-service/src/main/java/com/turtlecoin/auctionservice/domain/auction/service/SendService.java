@@ -39,7 +39,9 @@ public class SendService {
     }
 
     public void sendMessage(AuctionResultDTO auctionResultDTO) {
+        log.info("경매 종료 후 데이터 전송 시도");
         rabbitTemplate.convertAndSend("auction.result.exchange", "auction.result.key", auctionResultDTO);
+        log.info("경매 종료 후 데이터 전송 완료");
     }
 
     // 경매 종료 알림, DB저장 로직
@@ -56,7 +58,7 @@ public class SendService {
 
             AuctionResultDTO auctionResultDTO = createAuctionResultDTO(auction, null, null);
 
-            response = ResponseVO.success("경매가 유찰됐습니다.");
+            response = ResponseVO.success("205","경매가 유찰됐습니다.");
             messagingTemplate.convertAndSend("/sub/auction/" + auctionId, response);
             // rabbitmq로 보내기
 //            sendMessage(auctionResultDTO);
@@ -69,7 +71,7 @@ public class SendService {
         Long winningUserId = Long.parseLong(bidData.get("userId").toString());
 
         AuctionResultDTO auctionResultDTO = createAuctionResultDTO(auction, winningBid, winningUserId);
-        response = ResponseVO.success("경매가 종료됐습니다.");
+        response = ResponseVO.success("201","경매가 종료됐습니다.");
 
         auction.updateStatus(AuctionProgress.SUCCESSFUL_BID);
         auction.updateAfterAuction(winningUserId, winningBid);

@@ -1,109 +1,151 @@
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
-// import TmpProfileImg from "../../assets/tmp_profile.gif";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import MyTurtle from "../../components/user/MyTurtle";
 import TransactionHistory from "../../components/user/TransactionHistory";
-// import NoImage from "../../assets/no_image.webp";
+import { TransactionItemDataType } from "../../types/transaction";
+import NoImage from "../../assets/no_image.webp";
 import { FaRandom } from "@react-icons/all-files/fa/FaRandom";
-import CustomProfile1 from "../../../public/custom_profile/profile1.gif";
-import CustomProfile2 from "../../../public/custom_profile/profile2.gif";
-import CustomProfile3 from "../../../public/custom_profile/profile3.gif";
-import CustomProfile4 from "../../../public/custom_profile/profile4.gif";
-import CustomProfile5 from "../../../public/custom_profile/profile5.gif";
-import CustomProfile6 from "../../../public/custom_profile/profile6.gif";
-import CustomProfile7 from "../../../public/custom_profile/profile7.gif";
-import CustomProfile8 from "../../../public/custom_profile/profile8.gif";
-import CustomProfile9 from "../../../public/custom_profile/profile9.gif";
-import CustomProfile10 from "../../../public/custom_profile/profile10.gif";
-import CustomProfile11 from "../../../public/custom_profile/profile11.gif";
-import CustomProfile12 from "../../../public/custom_profile/profile12.gif";
-import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
-import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 
-import { EscrowDummy } from "../../fixtures/escrowDummy";
-import { getMyTransaction, patchProfileImage } from "../../apis/userApi";
+import {
+  getMyTransaction,
+  getMyTurtle,
+  getMyAuction,
+  patchProfileImage,
+} from "../../apis/userApi";
 import { useUserStore } from "../../store/useUserStore";
+import { TurtleDataType } from "../../types/turtle";
+import { useNavigate } from "react-router-dom";
 
 function MyPage() {
-    const profileImages = [
-    CustomProfile1,
-    CustomProfile2,
-    CustomProfile3,
-    CustomProfile4,
-    CustomProfile5,
-    CustomProfile6,
-    CustomProfile7,
-    CustomProfile8,
-    CustomProfile9,
-    CustomProfile10,
-    CustomProfile11,
-    CustomProfile12,
-    CustomProfile13,
-    CustomProfile14,
-  ];
-  const [selectedMenu, setSelectedMenu] = useState(0); // 0은 거래 내역, 1은 나의 거북이
+  const navigate = useNavigate();
+  const [turtleData, setTurtleData] = useState<TurtleDataType[]>([]);
+  const [selectedMenu, setSelectedMenu] = useState(1); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const [myTransactions, setMyTransactions] = useState<
+    TransactionItemDataType[]
+  >([]);
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
-  const { transactionId, sellerName, sellerId, transactionTag, turtleId, sellerAddress, price } =
-    EscrowDummy.data.data.transactions[0];
+  const [myTurtlesUuid, setMyTurtlesUuid] = useState<
+    { turtleName: string; turtleUuid: string; turtleGender: string }[]
+  >([]);
+
+  const userTransactions = useMemo(() => myTransactions, [myTransactions]);
+  const userTurtles = useMemo(() => turtleData, [turtleData]);
+
+  const openCustomModal = useCallback(() => setIsCustomModalOpen(true), []);
+  const closeCustomModal = useCallback(() => setIsCustomModalOpen(false), []);
+
+  const handleCustomOverlayClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (e.target === e.currentTarget) {
+        closeCustomModal();
+      }
+    },
+    [closeCustomModal]
+  );
 
   useEffect(() => {
     const init = async () => {
-      (await getMyTransaction()).data?.data.transaction;
+      try {
+        const [transactionResponse, turtleResponse, auctionResponse] =
+          await Promise.all([
+            getMyTransaction(),
+            getMyTurtle(),
+            getMyAuction(),
+          ]);
+
+        if (transactionResponse.success) {
+          console.log(
+            "거래내역 목록",
+            transactionResponse.data!.data.transaction
+          );
+          setMyTransactions((prevTransactions) => [
+            ...prevTransactions,
+            ...transactionResponse.data!.data.transaction,
+          ]);
+        }
+        if (auctionResponse.success) {
+          console.log("경매내역 목록", auctionResponse.data!.data.transaction);
+          setMyTransactions((prevTransactions) => [
+            ...prevTransactions,
+            ...auctionResponse.data!.data.data,
+          ]);
+        }
+        if (turtleResponse.success) {
+          setTurtleData(turtleResponse.data.data.data.data);
+          console.log("거북이 목록", turtleResponse.data.data.data.data);
+        }
+      } catch (error) {
+        console.error("Error initializing data:", error);
+      }
     };
     init();
   }, []);
 
-  const openCustomModal = () => {
-    setIsCustomModalOpen(true);
-  };
+  useEffect(() => {
+    const makemMTurtlesUuidArray = () => {
+      const uuidArray = turtleData.map((turtle) => {
+        console.log(turtle);
+        return {
+          turtleName: turtle.name,
+          turtleUuid: turtle.turtleUuid,
+          turtleGender: turtle.gender,
+        };
+      });
+      setMyTurtlesUuid(uuidArray);
+    };
+    makemMTurtlesUuidArray();
+  }, [turtleData]);
 
-  const closeCustomModal = () => {
-    setIsCustomModalOpen(false);
-  };
-
-  const handleCustomOverlayClick = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
-    if (e.target === e.currentTarget) {
-      closeCustomModal();
-    }
-  };
+  // const handleCustomOverlayClick = (
+  //   e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  // ) => {
+  //   if (e.target === e.currentTarget) {
+  //     closeCustomModal();
+  //   }
+  // };
 
   const getRandomProfileImage = () => {
-    const randomNumber = Math.floor(Math.random() * profileImages.length);
-    setProfileImage(profileImages[randomNumber]);
+    const randomIndex = Math.floor(Math.random() * 14) + 1;
+    // const randomIndex = Math.floor(Math.random() * profileImages.length);
+    const selectedImagePath = `custom_profile/profile${randomIndex}.gif`; // public 폴더는 경로에서 제외
+    setProfileImage(selectedImagePath);
+    // setProfileImage(profileImages[randomIndex]);
   };
 
   const changeProfileImage = async () => {
-  if (!profileImage) {
-    console.error('Profile image is not defined');
-    return; 
-  }
+    if (!profileImage) {
+      console.error("Profile image is not defined");
+      return;
+    }
+    const response = await fetch(profileImage);
+    const blob = await response.blob();
+    const imageName = profileImage.split("/").pop() || "default.gif";
+    // blob의 MIME 타입을 명시적으로 image/gif로 변환
+    const gifBlob = blob.slice(0, blob.size, "image/gif");
+    const file = new File([gifBlob], imageName, { type: "image/gif" });
+    try {
+      const result = await patchProfileImage(file);
+      const newProfileImageUrl = result.data?.data.url;
 
-  const response = await fetch(profileImage);
-  const blob = await response.blob();
-  const imageName = profileImage.split('/').pop() || 'default.gif';
+      if (newProfileImageUrl) {
+        useUserStore.getState().setProfileImage(newProfileImageUrl);
+        // 모달 닫기
+        closeCustomModal();
+        console.log("프로필사진 업데이트 완료:", newProfileImageUrl);
+      } else {
+        console.error("No valid profile image URL found in response:", result);
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
+  };
 
-  // blob의 MIME 타입을 명시적으로 image/gif로 변환
-  const gifBlob = blob.slice(0, blob.size, 'image/gif');
-  const file = new File([gifBlob], imageName, { type: 'image/gif' });
-
-  // 서버에 POST 요청 전송
-  try {
-    const data = await patchProfileImage(file);
-    console.log('Upload successful:', file, data);
-    
-    // 모달 닫기
-    closeCustomModal();
-    console.log("프로필사진", userInfo?.profileImage);
-    
-  } catch (error) {
-    console.error('Error uploading image:', error);
-  }
-}
+  const goToBreedDocPage = () => {
+    navigate("/doc-form/breed", { state: myTurtlesUuid });
+  };
 
   return (
     <>
@@ -112,7 +154,7 @@ function MyPage() {
       </Helmet>
       <Header />
       <main className="flex flex-col h-[100vh] overflow-hidden px-4 lg:px-[250px] pt-[78px]">
-        <div className="flex flex-row justify-between items-center mt-0 lg:mt-[30px] px-[23px] py-[18px] bg-gradient-to-r from-[#e7f6d1] via-[#d5e5bd] to-[#e7f6d1] rounded-[20px]">
+        <div className="flex flex-row justify-between items-center mt-0 lg:mt-[20px] px-[23px] py-[18px] bg-gradient-to-r from-[#e7f6d1] via-[#d5e5bd] to-[#e7f6d1] rounded-[20px]">
           <div className="w-1/2">
             <div className="font-dnf-bitbit text-[#4B721F] text-[24px] md:text-[27px] mt-1 mb-2 md:mb-5">
               내 정보
@@ -138,79 +180,106 @@ function MyPage() {
             </button>
           </div>
         </div>
-
-        <div className="mt-[25px] text-[21px] lg:text-[23px] flex flex-row cursor-pointer mb-[10px] font-stardust">
-          <div
-            className={`w-1/2 lg:w-[130px] h-[42px] border-b-[4px] text-center ${
-              selectedMenu === 0 && "border-[#4B721F] font-bold"
-            }`}
-            onClick={() => setSelectedMenu(0)}
-          >
-            거래 내역
+        <div className="w-full flex lg:flex-row flex-col justify-between items-center">
+          <div className="lg:w-auto w-full mt-[25px] text-[21px] lg:text-[23px] flex flex-row cursor-pointer mb-[10px] font-stardust">
+            <div
+              className={`w-1/2 lg:w-[150px] h-[42px] border-b-[4px] text-center ${
+                selectedMenu === 1 && "border-[#4B721F] font-bold"
+              }`}
+              onClick={() => setSelectedMenu(1)}
+            >
+              나의 거북이
+            </div>
+            <div
+              className={`w-1/2 lg:w-[150px] h-[42px] border-b-[4px] text-center ${
+                selectedMenu === 0 && "border-[#4B721F] font-bold"
+              }`}
+              onClick={() => setSelectedMenu(0)}
+            >
+              거래 내역
+            </div>
           </div>
-          <div
-            className={`w-1/2 lg:w-[130px] h-[42px] border-b-[4px] text-center ${
-              selectedMenu === 1 && "border-[#4B721F] font-bold"
-            }`}
-            onClick={() => setSelectedMenu(1)}
-          >
-            나의 거북이
-          </div>
+          {selectedMenu === 1 && (
+            <button
+              className="text-[20px] rounded-[10px] bg-[#F5E0E4] h-[37px] px-3 border-2 border-dotted border-[#353535]"
+              onClick={goToBreedDocPage}
+            >
+              인공증식 등록
+            </button>
+          )}
         </div>
         <div className="overflow-y-auto flex-1 mb-4">
           {/* 거래내역 */}
-          {selectedMenu === 0 && (
+          {selectedMenu === 0 &&
             // 거래 내역이 있을 경우
-            <div className="flex flex-col space-y-3">
-              <TransactionHistory
-                turtleId={turtleId}
-                transactionId={transactionId}
-                sellerId={sellerId}
-                transactionTag={transactionTag}
-                sellerName={sellerName}
-                sellerAddress={sellerAddress}
-                amount={price}
-              />
-              <TransactionHistory
-                turtleId={turtleId}
-                transactionId={transactionId}
-                sellerId={sellerId}
-                transactionTag={transactionTag}
-                sellerName={sellerName}
-                sellerAddress={sellerAddress}
-                amount={price}
-              />
-              <TransactionHistory
-                turtleId={turtleId}
-                transactionId={transactionId}
-                sellerId={sellerId}
-                transactionTag={transactionTag}
-                sellerName={sellerName}
-                sellerAddress={sellerAddress}
-                amount={price}
-              />
-            </div>
-
-            // 거래내역이 없을 경우
-            // <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-20">
-            //   <img src={NoImage} className="w-[200px] mb-7" draggable="false" />
-            //   <div className="text-[25px] font-bold text-center font-stardust">거래 내역이 없어요.</div>
-            // </div>
-          )}
-
+            (myTransactions.length !== 0 ? (
+              <div className="flex flex-col space-y-4">
+                {myTransactions.map((item) => (
+                  <TransactionHistory
+                    key={item.transactionId}
+                    auctionFlag={item.auctionFlag}
+                    turtleId={item.turtleId}
+                    turtleUuid={item.turtleUuid}
+                    transactionId={item.transactionId}
+                    sellerId={item.sellerId}
+                    sellerUuid={item.sellerUuid}
+                    sellerName={item.sellerName}
+                    sellerAddress={item.sellerAddress}
+                    transactionTag={item.transactionTag}
+                    amount={item.price}
+                    transactionImage={item.transactionImage}
+                    progress={item.progress}
+                  />
+                ))}
+              </div>
+            ) : (
+              // 거래내역이 없을 경우
+              <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-28">
+                <img
+                  src={NoImage}
+                  alt="turtle image"
+                  className="w-[200px] mb-7"
+                  draggable="false"
+                />
+                <div className="text-[25px] font-bold text-center font-stardust">
+                  거래 내역이 없어요.
+                </div>
+              </div>
+            ))}
           {/* 나의 거북이 */}
-          {selectedMenu === 1 && (
-            // 나의 거북이가 있을 경우
-            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-              <MyTurtle />
-              <MyTurtle />
-              <MyTurtle />
-              <MyTurtle />
-            </div>
-          )}
+          {selectedMenu === 1 &&
+            (turtleData.length !== 0 ? (
+              // 나의 거북이가 있을 경우
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-5">
+                {turtleData.map((turtle) => (
+                  <MyTurtle
+                    key={turtle.id}
+                    turtleId={turtle.id}
+                    turtleUuid={turtle.turtleUuid}
+                    name={turtle.name}
+                    scientificName={turtle.scientificName}
+                    gender={turtle.gender}
+                    weight={turtle.weight}
+                    birth={turtle.birth}
+                    imageAddress={turtle.imageAddress!}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-28">
+                <img
+                  src={NoImage}
+                  alt="turtle image"
+                  className="w-[200px] mb-7"
+                  draggable="false"
+                />
+                <div className="text-[25px] font-bold text-center font-stardust">
+                  나의 거북이가 없어요.
+                </div>
+              </div>
+            ))}
         </div>
       </main>
-
       {isCustomModalOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100000]"
@@ -233,8 +302,10 @@ function MyPage() {
                   랜덤 뽑기
                 </div>
               </div>
-
-              <button className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white" onClick={changeProfileImage}>
+              <button
+                className="rounded-[5px] px-3 py-1 bg-[#4B721F] text-white"
+                onClick={changeProfileImage}
+              >
                 수정하기
               </button>
             </div>
@@ -244,5 +315,4 @@ function MyPage() {
     </>
   );
 }
-
 export default MyPage;

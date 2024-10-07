@@ -15,6 +15,8 @@ import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
 import com.turtlecoin.mainservice.domain.user.entity.User;
+import com.turtlecoin.mainservice.domain.user.exception.UserNotFoundException;
+import com.turtlecoin.mainservice.domain.user.service.JWTService;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.DataAccessException;
@@ -35,38 +37,55 @@ public class TransactionService {
     private final ImageUploadService imageUploadService;
     private final TurtleRepository turtleRepository;
     private final TransactionRepository transactionRepository;
+    private final JWTService jwtService;
 
     public Transaction findTransactionById(Long id) {
         return transactionRepository.findById(id).orElse(null);
     }
 
 
-    public TransactionService(ImageUploadService imageUploadService, TurtleRepository turtleRepository, TransactionRepository transactionRepository) {
+    public TransactionService(ImageUploadService imageUploadService, TurtleRepository turtleRepository, TransactionRepository transactionRepository, JWTService jwtService) {
         this.imageUploadService = imageUploadService;
         this.turtleRepository = turtleRepository;
         this.transactionRepository = transactionRepository;
+        this.jwtService = jwtService;
     }
 
     public List<DetailTransactionResponseDto> findAllTransactions(User user) {
-        return transactionRepository.findAllByUser(user).stream().map(Transaction::toResponseDTO).collect(Collectors.toList());
+        return transactionRepository.findAllByUser(user.getId()).stream().map(Transaction::toResponseDTO).collect(Collectors.toList());
     }
 
     // 거래 등록하는 서비스
     @Transactional
-    public ResponseEntity<?> enrollTransaction(TransactionRequestDto dto, List<MultipartFile> photos) {
+    public ResponseEntity<?> enrollTransaction(TransactionRequestDto dto, List<MultipartFile> photos, String token) {
         TransactionDto transaction = new TransactionDto();
-
-
         try{
-            Turtle turtle = turtleRepository.getReferenceById(dto.getTurtleId());
-            if(transactionRepository.findByTurtle(turtle).getSellerAddress().equals(dto.getSellerAddress())){
-                throw new DuplicatedEnrollTransaction("이미 거래가 등록된 거북이 입니다.");
+            Optional<User> user = jwtService.getUserByToken(token);
+            if(user.isEmpty()){
+                throw new UserNotFoundException("유효한 토큰이 아닙니다.");
             }
+            Turtle turtle = turtleRepository.getReferenceById(dto.getTurtleId());
+            Optional<Transaction> existingTransaction = transactionRepository.findTopByTurtleOrderByLastModifiedDateDesc(turtle);
 
+            if (existingTransaction != null) {
+                Long previousOwnerId = turtle.getUser().getId();
+                Long currentOwnerId = user.get().getId();
+
+                // 이전 거래 주인과 현재 거래 등록 주인이 동일한지 확인
+                if (Objects.equals(previousOwnerId, currentOwnerId)) {
+                    throw new DuplicatedEnrollTransaction("이미 거래가 등록된 거북이 입니다. 거래를 등록할 수 없습니다.");
+                } else {
+                    // 이전 주인과 다르다면 새로운 거래를 허용
+                    System.out.println("주인이 변경되었으므로 거래를 등록할 수 있습니다.");
+                }
+            } else {
+                // 해당 거북이에 대한 기존 거래가 없는 경우
+                System.out.println("거래가 없으므로 새로운 거래를 등록합니다.");
+            }
             transaction.setTitle(dto.getTitle());
             transaction.setContent(dto.getContent());
             transaction.setPrice(dto.getPrice());
-            transaction.setWeight(dto.getWeight());
+            transaction.setSellerAddress(dto.getSellerAddress());
             transaction.setTurtle(turtle);
             transaction.setTransactionPhotos(new ArrayList<>());
             transaction.setTransactionTags(new ArrayList<>());
@@ -84,16 +103,23 @@ public class TransactionService {
             // 저장된 거래 정보를 데이터베이스에 저장
             transactionRepository.save(savedTransaction);
 
-        }catch(DuplicatedEnrollTransaction e){
+        }catch(UserNotFoundException e){
             e.printStackTrace();
-            return new ResponseEntity<>(ResponseVO.failure("400",e.getMessage()), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(ResponseVO.failure("401",e.getMessage()), HttpStatus.UNAUTHORIZED);
+        } catch(DuplicatedEnrollTransaction e){
+            e.printStackTrace();
+            return new ResponseEntity<>(ResponseVO.failure("409",e.getMessage()), HttpStatus.CONFLICT);
         } catch (IOException e) {
             e.printStackTrace();
             return new ResponseEntity<>(ResponseVO.failure("400", "거래 등록 과정 중에 이미지 업로드 오류가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (DataAccessException e) {
             e.printStackTrace();
             return new ResponseEntity<>(ResponseVO.failure("500", "거래 등록 과정 중에 데이터베이스 오류가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
+        }catch(IllegalArgumentException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(ResponseVO.failure("400", e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(ResponseVO.failure("500", "거래 등록 과정 중에 예기치 않은 오류가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -153,7 +179,6 @@ public class TransactionService {
 
     // 상세 거래 조회
     public ResponseEntity<?> getTransactionByID(Long id){
-
         try{
             Optional<Transaction> transaction = transactionRepository.findOneById(id);
             if(transaction.isEmpty()){

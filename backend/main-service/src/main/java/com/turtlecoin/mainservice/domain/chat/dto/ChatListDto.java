@@ -6,12 +6,14 @@ import org.joda.time.DateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 
 @Data
 @AllArgsConstructor
+@ToString
 @Builder
 public class ChatListDto {
-	ObjectId chattingId;
+	String chattingId;
 	Long otherUserId;
 	String otherUserNickname;
 	String otherUserProfileImage;

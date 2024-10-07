@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
-import useDeviceStore from "../../store/useDeviceStore";
+// import useDeviceStore from "../../store/useDeviceStore";
 import ErrorMessage from "../../components/common/join/ErrorMessage";
 import { JoinDataType } from "../../types/join";
 import {
@@ -12,6 +12,7 @@ import {
 import Header from "../../components/common/Header";
 import StopTurtleImg from "../../assets/turtle_home_stop.png";
 import { useNavigate } from "react-router-dom";
+import Alert from "../../components/common/Alert";
 
 // 1. 인증하기를 누르고 인증이 된다-> 그냥 다음으로 보냄(step 3) 넘어가먼 못돌아옴
 // 2. 인증 직전까지는 -> 이전으로 가서 정보 수정 ok
@@ -30,7 +31,7 @@ interface ErrorStateType {
 }
 
 function JoinPage() {
-  const isMobile = useDeviceStore((state) => state.isMobile);
+  // const isMobile = useDeviceStore((state) => state.isMobile);
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
   const [step, setStep] = useState(1);
@@ -40,8 +41,8 @@ function JoinPage() {
     foreignFlag: false,
     name: "",
     nickname: "",
-    birthday: "",
-    phoneNumber: "",
+    birth: "",
+    phonenumber: "",
     address: "",
   });
   const [detailedAddress, setDetailAddress] = useState("");
@@ -82,13 +83,13 @@ function JoinPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (postcodeData?.jibunAddress) {
+    if (postcodeData?.roadAddress) {
       setData((prev) => ({
         ...prev,
-        address: postcodeData.jibunAddress,
+        address: postcodeData.roadAddress,
       }));
     }
-  }, [postcodeData?.jibunAddress]);
+  }, [postcodeData?.roadAddress]);
 
   const onChangeHandle =
     (key: keyof JoinDataType) => (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,6 +125,7 @@ function JoinPage() {
     (evt: React.ChangeEvent<HTMLInputElement>) => {
       const value = evt.target.value;
       setData((prev) => ({ ...prev, [type]: value }));
+      console.log(data);
     };
 
   const confirmPasswordChangeHandle = (
@@ -232,6 +234,11 @@ function JoinPage() {
     }
   };
 
+  const [isFinishAlertOpen, setIsFinishAlertOpen] = useState(false);
+
+  const openFinishAlert = () => setIsFinishAlertOpen(true);
+  const closeFinishAlert = () => setIsFinishAlertOpen(false);
+
   const handleJoinSubmit = async () => {
     let isValid = true;
     const newErrStat: ErrorStateType = {
@@ -312,7 +319,7 @@ function JoinPage() {
 
       const jsonData = {
         ...data,
-        birth: `${birth.y}-${birth.m}-${birth.d}`,
+        birth: `${birth.y}-${birth.m && ((birth.m)/10 >= 1) ? birth.m : `0${birth.m}`}-${birth.d}`,
         address: `${data.address} / ${detailedAddress}`,
         phonenumber: `${phoneNumber.first}-${phoneNumber.second}-${phoneNumber.third}`,
       };
@@ -322,10 +329,9 @@ function JoinPage() {
         type: "application/json",
       });
       formData.append("data", blob);
-      console.log(jsonData);
       const rst = await registerRequest(formData);
       if (rst.success) {
-        alert("회원가입 완료!");
+        <Alert isOpen={isFinishAlertOpen} message="회원가입이 완료되었습니다." onClose={closeFinishAlert} />
         navigate("/login");
       } else {
         console.log(rst.error);
@@ -383,9 +389,10 @@ function JoinPage() {
       <Header />
       <main>
         <div className="px-4 lg:px-[250px] flex justify-center items-center mt-[60px] h-[calc(100vh-60px)]">
-          <div className="relative w-full bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex h-[640px] md:h-[600px] flex-col md:flex-row">
+          <div className="relative w-full bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex h-[680px] md:h-[600px] flex-col md:flex-row">
+            
             {step === 1 && (
-              <section className="p-2.5 my-3 w-full md:w-1/2">
+              <section className="p-2.5 my-3 w-full md:w-1/2 h-[460px] md:h-full">
                 <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
                   <div className="w-4/5">
                     <h2 className="text-[35px] md:text-[38px] text-center mb-5 md:mb-8 font-dnf-bitbit">
@@ -506,7 +513,7 @@ function JoinPage() {
             )}
 
             {step === 2 && (
-              <section className="p-2.5 my-3 w-full md:w-1/2">
+              <section className="p-2.5 my-3 w-full md:w-1/2 h-[460px] md:h-full">
                 <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
                   <div className="w-4/5">
                     <h2 className="text-[38px] text-center mb-6 font-dnf-bitbit">
@@ -607,7 +614,7 @@ function JoinPage() {
             )}
 
             {step === 3 && (
-              <section className="p-2.5 my-3 w-full md:w-1/2">
+              <section className="p-2.5 my-3 w-full md:w-1/2 h-[460px] md:h-full">
                 <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
                   <div className="w-4/5">
                     <h2 className="text-[38px] text-center mb-6 font-dnf-bitbit">
@@ -833,10 +840,10 @@ function JoinPage() {
               </section>
             )}
 
-            <div className="w-full md:w-1/2 h-[190px] md:h-full">
+            <div className="w-full md:w-1/2 h-[220px] md:h-full">
               <img
                 src={StopTurtleImg}
-                className="w-full rounded-tr-none md:rounded-tr-[20px] rounded-bl-[20px] md:rounded-bl-none rounded-br-[20px] md:rounded-br-none md:rounded-br-[20px] h-full object-cover"
+                className="w-full rounded-tr-none md:rounded-tr-[20px] rounded-bl-[20px] md:rounded-bl-none rounded-br-[20px] h-full object-cover"
                 draggable="false"
               />
             </div>

@@ -64,6 +64,9 @@ contract TurtleDocumentation is Ownable {
         mapping(bytes32 => Death) deathDoc;
         bytes32 beforeDocumentHash;
         bytes32 currentDocumentHash;
+        bytes32 currentMultiplicationDocHash;
+        bytes32 currentTransferredDocHash;
+        bytes32 currentDeathDocHash;
         bytes32 turtleHash;
         bool exists;
     }
@@ -211,6 +214,8 @@ contract TurtleDocumentation is Ownable {
         turtles[_turtleId].deathDoc[_documentHash].deathImage = _deathImage;
         turtles[_turtleId].deathDoc[_documentHash].diagnosis = _diagnosis;
 
+        turtles[_turtleId].currentDeathDocHash = _documentHash;
+
         emit TurtleDeath(_turtleId, _applicant, _documentHash);
 
         return _documentHash;
@@ -256,6 +261,7 @@ contract TurtleDocumentation is Ownable {
     function approveMultiplicationDocByReviewer(string memory _turtleId, bytes32 _documentHash) public returns (bytes32) {
         turtles[_turtleId].beforeDocumentHash = _documentHash;
         turtles[_turtleId].currentDocumentHash = _documentHash;
+        turtles[_turtleId].currentMultiplicationDocHash = _documentHash;
 
         return _documentHash;
     }
@@ -264,6 +270,7 @@ contract TurtleDocumentation is Ownable {
     function approveTransferDocByReviewer(string memory _turtleId, bytes32 _documentHash) public returns (bytes32) {
         turtles[_turtleId].beforeDocumentHash = turtles[_turtleId].currentDocumentHash;
         turtles[_turtleId].currentDocumentHash = _documentHash;
+        turtles[_turtleId].currentTransferredDocHash = _documentHash;
 
         return _documentHash;
     }
@@ -271,6 +278,36 @@ contract TurtleDocumentation is Ownable {
     // 가장 최근 서류 조회(양도 및 양수 기록이 없는 경우에는 인공증식 서류 해시값 반환)
     function searchCurrentDocumentHash(string memory _turtleId) public view returns (bytes32) {
         return turtles[_turtleId].currentDocumentHash;
+    }
+
+    // 거북이 인공증식 서류 Hash값 조회
+    function searchCurrentMultiplicationDocumentHash(string memory _turtleId) public view returns (bool, bytes32) {
+        require(turtles[_turtleId].exists, "Turtle does not exist");
+
+        bytes32 documentHash = turtles[_turtleId].currentMultiplicationDocHash;
+        bool hasMultiplicationRecord = documentHash != bytes32(0);
+
+        return (hasMultiplicationRecord, documentHash);
+    }
+
+    // 거북이 양도양수 서류 Hash값 조회
+    function searchCurrentTransferredDocumentHash(string memory _turtleId) public view returns (bool, bytes32) {
+        require(turtles[_turtleId].exists, "Turtle does not exist");
+
+        bytes32 documentHash = turtles[_turtleId].currentTransferredDocHash;
+        bool hasTransferRecord = documentHash != bytes32(0);
+
+        return (hasTransferRecord, documentHash);
+    }
+
+    // 거북이 폐사 서류 Hash값 조회
+    function searchCurrentDeathDocumentHash(string memory _turtleId) public view returns (bool, bytes32) {
+        require(turtles[_turtleId].exists, "Turtle does not exist");
+
+        bytes32 documentHash = turtles[_turtleId].currentDeathDocHash;
+        bool hasDeathRecord = documentHash != bytes32(0);
+
+        return (hasDeathRecord, documentHash);
     }
 
     // 거북이 검증

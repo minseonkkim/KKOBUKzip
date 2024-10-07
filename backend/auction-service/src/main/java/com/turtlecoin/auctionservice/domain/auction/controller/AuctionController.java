@@ -1,7 +1,7 @@
 package com.turtlecoin.auctionservice.domain.auction.controller;
 
-import com.turtlecoin.auctionservice.domain.auction.dto.AuctionFilterResponseDTO;
-import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
+import com.turtlecoin.auctionservice.domain.auction.dto.AuctionListResponseDto;
+import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResultDTO;
 import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
@@ -13,6 +13,7 @@ import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.global.exception.*;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
+import com.turtlecoin.auctionservice.global.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpConnectException;
@@ -44,6 +45,7 @@ public class AuctionController {
     private final AuctionRepository auctionRepository;
     private final SchedulingService schedulingService;
     private final SseService sseService;
+    private final JWTUtil jwtUtil;
 
     // 테스트
     @GetMapping("/test")
@@ -67,7 +69,7 @@ public class AuctionController {
     }
 
     // 경매 등록
-    @PostMapping
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> registerAuction(
             @RequestPart("data") RegisterAuctionDTO registerAuctionDTO,
             @RequestPart(value = "images", required = false) List<MultipartFile> multipartFiles) {
@@ -78,15 +80,45 @@ public class AuctionController {
     @GetMapping
     public ResponseEntity<?> getAuctions(
             @RequestParam(value = "gender", required = false) Gender gender,
-            @RequestParam(value = "minSize", required = false) Double minSize,
-            @RequestParam(value = "maxSize", required = false) Double maxSize,
-            @RequestParam(value = "minPrice", required = false) Double minPrice,
-            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "size", required = false) String size,
+            @RequestParam(value = "price", required = false) String price,
             @RequestParam(value = "progress", required = false) AuctionProgress progress,
             @RequestParam(value = "page", defaultValue = "0") int page
     ) {
+
+        log.info("Gender : {}, Size : {}, Price : {}", gender, size, price, progress);
+        // size 파라미터 변환 처리 (AbetweenB -> A-B)
+        Double minSize = null;
+        Double maxSize = null;
+        if (size != null && size.contains("-")) {
+            String[] sizeRange = size.split("-");
+            System.out.println("길이"+ sizeRange.length);
+            if (sizeRange.length == 2) {
+                log.info(sizeRange[0]);
+                log.info(sizeRange[1]);
+                minSize = Double.parseDouble(sizeRange[0]);
+                maxSize = Double.parseDouble(sizeRange[1]);
+            }
+        }
+
+        // price 파라미터 변환 처리 (AbetweenB -> A-B)
+        Double minPrice = null;
+        Double maxPrice = null;
+        if (price != null && price.contains("-")) {
+            String[] priceRange = price.split("-");
+            System.out.println("길이"+ priceRange.length);
+            if (priceRange.length == 2) {
+                log.info(priceRange[0]);
+                log.info(priceRange[1]);
+                minPrice = Double.parseDouble(priceRange[0]);
+                maxPrice = Double.parseDouble(priceRange[1]);
+            }
+        }
+        log.info("Gender : {}, minSize : {}, maxSize : {}, minPrice : {}, maxPrice: {}", gender, minSize, maxSize, minPrice, maxPrice);
+        // 기존 서비스 메서드를 호출
         return auctionService.getFilteredAuctions(gender, minSize, maxSize, minPrice, maxPrice, progress, page);
     }
+
 
     @GetMapping("/{auctionId}")
     public ResponseEntity<?> getAuctionById(@PathVariable Long auctionId) {
@@ -97,5 +129,27 @@ public class AuctionController {
     public void test(@PathVariable Long auctionId) {
         bidService.startAuction(auctionId);
     }
+
+    @GetMapping("/my")
+    public ResponseEntity<?> getMyAuctions(@RequestHeader("Authorization") String token) {
+        try{
+            Long id = jwtUtil.getIdFromToken(token.split(" ")[1]);
+            if(id == null) {
+                throw new UserNotFoundException("유효한 토큰 값이 아닙니다.");
+            }
+            List<AuctionListResponseDto> data = auctionService.getMyAuctions(id);
+            System.out.println(data.toString());
+            return new ResponseEntity<>(ResponseVO.success("내 경매 조회에 성공하였습니다.", "data", data), HttpStatus.OK);
+        }catch (IOException e){
+            return new ResponseEntity<>(ResponseVO.failure("500", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch(UserNotFoundException e){
+            return new ResponseEntity<>(ResponseVO.failure("401", e.getMessage()), HttpStatus.UNAUTHORIZED);
+        }catch(Exception e){
+            return new ResponseEntity<>(ResponseVO.failure("500", "내 경매 조회 중 예상치 못한 에러가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+    }
+
 }
 

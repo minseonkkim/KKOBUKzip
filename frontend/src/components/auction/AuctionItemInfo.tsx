@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { AuctionItemDataType } from "../../types/auction";
+import { FaAngleLeft } from "@react-icons/all-files/fa/FaAngleLeft";
+import { FaAngleRight } from "@react-icons/all-files/fa/FaAngleRight";
 // import useChatStore from "../../store/useChatStore";
 
 function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
@@ -27,18 +29,14 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
               alt="Turtle"
               draggable="false"
             />
-            <button
+            <FaAngleLeft
               onClick={handlePrev}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white text-[27px] p-2 rounded-full font-bold"
-            >
-              &lt;
-            </button>
-            <button
+              className="cursor-pointer absolute left-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"
+            />
+            <FaAngleRight
               onClick={handleNext}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white text-[27px] p-2 rounded-full font-bold"
-            >
-              &gt;
-            </button>
+              className="cursor-pointer absolute right-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"
+            />
             <div className="absolute bottom-3 right-3 bg-black/60 text-white px-4 py-2 rounded-[20px]">
               {currentIndex + 1} / {itemData.images.length}
             </div>
@@ -49,14 +47,14 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
 
         <div className="flex flex-row justify-between lg:justify-start xl:justify-between items-center mt-[5px] mb-[10px]">
           <div className="text-[#9A9A9A] text-[17px]">
-            {/* {itemData.turtleInfo.} */} | {itemData.turtleInfo.weight}kg
+            {itemData.turtleInfo.scientificName} | {itemData.turtleInfo.weight}g
             {/* 24년 8월 10일생 | 8kg */}
           </div>
-          <div className="flex flex-row space-x-2">
+          <div className="flex flex-row space-x-1">
             {itemData.tags.map((tag, index) => (
               <span
                 key={index}
-                className="whitespace-nowrap px-2 py-1 rounded-full text-[18px] bg-[#D5F0DD] text-[#065F46]"
+                className="whitespace-nowrap px-2 py-1 rounded-full text-[15px] bg-[#D5F0DD] text-[#065F46]"
               >
                 #{tag}
               </span>
@@ -72,13 +70,12 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
         <div className="bg-[#F2F2F2] h-[60px] rounded-[10px] flex flex-row justify-between items-center px-2 py-1">
           <div className="flex flex-row items-center">
             <img
-              //   src={tmpProfileImg}
-              // 데이터에 판매자 프사가 없음...
+              src={itemData.userInfo.profileImage}
               className="rounded-full w-[43px] h-[43px] mr-3"
               draggable="false"
               alt="profile image"
             />
-            <span className="text-[20px]">꼬북맘</span>
+            <span className="text-[20px]">{itemData.userInfo.nickname}</span>
           </div>
           {/* <div
             onClick={() => openChatDetail(itemData.sellerId, "꼬북맘")}

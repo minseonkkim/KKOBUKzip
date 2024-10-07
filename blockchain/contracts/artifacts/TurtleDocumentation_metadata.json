@@ -541,8 +541,80 @@
 						"type": "string"
 					}
 				],
+				"name": "searchCurrentDeathDocumentHash",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					}
+				],
 				"name": "searchCurrentDocumentHash",
 				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					}
+				],
+				"name": "searchCurrentMultiplicationDocumentHash",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_turtleId",
+						"type": "string"
+					}
+				],
+				"name": "searchCurrentTransferredDocumentHash",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					},
 					{
 						"internalType": "bytes32",
 						"name": "",
@@ -878,11 +950,11 @@
 			]
 		},
 		"contracts/TurtleDocumentation.sol": {
-			"keccak256": "0x8b9a0e006ac8c58ceacc1066e231e6c4e611c246be2d81f73a6deda2aa972d14",
+			"keccak256": "0x44f729dcd831d04f8f4a66351b40e66b9af77c6fa3d0432da17a5d7179c55126",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://72233cf3c016056309342abfdddc5df726fa4ee843876a73b0eafeca8d8e4182",
-				"dweb:/ipfs/QmenwnJi1CjVonuemDfHJDK1pkVQhmBKxD5qUEehiK4WJD"
+				"bzz-raw://4b228307c086e98e5c4027e6bd6bb4ffbaeaed45f8db84f1b283ce3759db4677",
+				"dweb:/ipfs/QmbyFFZyf4ucxsJRwi7ksqLPwv3oxZ2WQHoxd71KrQTee6"
 			]
 		}
 	},

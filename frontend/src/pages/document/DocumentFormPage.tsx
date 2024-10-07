@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { useUserStore } from "../../store/useUserStore";
 import useDeviceStore from "../../store/useDeviceStore";
 import MyDocumentDataForm from "../../components/document/MyDocumentDataForm";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "../../components/common/Header";
-import { applicant } from "../../fixtures/docsDummy";
+
 type TabName = "인공증식" | "양도" | "양수" | "폐사/질병" | ""; // 필요한 탭 이름들을 여기에 추가
 
 // 각 컴포넌트의 구비서류 부분 정비할것!!!
 
 function DocumentFormPage() {
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const { userInfo } = useUserStore();
   const [activeTab, setActiveTab] = useState<TabName>("");
   const [tabNameList, setTabNameList] = useState<TabName[]>([]);
   const location = useLocation();
@@ -23,6 +25,16 @@ function DocumentFormPage() {
     script.async = true;
     document.head.appendChild(script);
   }, []);
+
+  const applicant = {
+    name: userInfo!.name,
+    birth: userInfo!.birth,
+    phonenumber: userInfo!.phoneNumber,
+    email: userInfo!.email,
+    foreignFlag: userInfo!.foreignFlag,
+    address: userInfo!.address.split(" / ")[0]?.trim(),
+    detailedAddress: userInfo!.address.split(" / ")[1]?.trim(),
+  };
 
   useEffect(() => {
     loadDaumPostcodeScript();
@@ -89,10 +101,16 @@ function DocumentFormPage() {
         {/* 선택 탭 끝 */}
 
         {/* 신청인 정보 -데이터 연동되면 할당할 것 */}
-        {/* search keyword : dummy */}
         <MyDocumentDataForm info={applicant} />
 
-        <Outlet context={{ applicantName: applicant.name , applicantPhoneNumber: applicant.phonenumber , applicantAddress: applicant.address }} />
+        <Outlet
+          context={{
+            applicantName: applicant.name,
+            applicantPhoneNumber: applicant.phonenumber,
+            applicantAddress: applicant.address,
+            applicantDetailAddress: applicant.detailedAddress,
+          }}
+        />
       </div>
     </>
   );

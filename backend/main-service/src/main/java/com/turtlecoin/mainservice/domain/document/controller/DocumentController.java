@@ -126,7 +126,7 @@ public class DocumentController {
 		}
 		catch(Exception e){
 			// 로직중 에러가 발생하면 모두 처음으로 복구시킨다.
-			e.printStackTrace();
+			// e.printStackTrace();
 			return new ResponseEntity<>(ResponseVO.failure("500", "데이터 저장 중 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		// S3에 이미지를 업로드

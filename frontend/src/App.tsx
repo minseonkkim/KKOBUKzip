@@ -102,7 +102,7 @@ function App() {
               element={<AuctionDetailPage />}
             />
             <Route path="/auction-list" element={<AuctionListPage />} />
-            <Route path="/auction-success" element={<AuctionSuccessPage />} />
+            {/* <Route path="/auction-success" element={<AuctionSuccessPage />} /> */}
             <Route path="/auction-register" element={<AuctionRegisterPage />} />
 
             {/* Transaction Domain - 거래 */}

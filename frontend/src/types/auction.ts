@@ -11,12 +11,21 @@ export interface AuctionItemDataType {
   endTime: Date | null;
   content: string;
   progress: "BEFORE_AUCTION" | "DURING_AUCTION" | "NO_BID" | "SUCCESSFUL_BID"; // 1: 경매전 2: 경매중, 유찰, 낙찰
+  remainingTime: number;
   tags: string[];
   images: string[];
   turtleInfo: {
     id: number;
     gender: string;
     weight: number;
+    userId: number;
+    scientificName: string;
+  };
+  userInfo: {
+    email: string;
+    name: string;
+    nickname: string;
+    profileImage: string;
     userId: number;
   };
 }
@@ -29,4 +38,30 @@ export interface AuctionData {
   userId: number;
   turtleId: number;
   // images: File[];
+}
+
+export interface Tag{
+  tag: string;
+}
+
+export interface AuctionListDataType {
+  auctionPhotos: string[];
+  auctionProgress: string;
+  auctionTags: Tag[] | null;
+  buyerId: number | null;
+  content: string;
+  createDate: string | null;
+  endTime: string;
+  firstImageUrl: string;
+  auctionId: number;
+  lastModifiedDate: string | null;
+  midBid: number;
+  nowBid: number;
+  sellerAddress: string;
+  startTime: number;
+  title: string;
+  turtleId: number;
+  userId: number;
+  weight: number;
+  winningBid: number | null;
 }

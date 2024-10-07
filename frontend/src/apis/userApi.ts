@@ -1,3 +1,4 @@
+import { UserInfo } from "./../types/user";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import guestAxios from "./http-commons/guestAxios";
 import { JoinDataType } from "../types/join";
@@ -59,7 +60,8 @@ const logoutRequest = async (): Promise<{
       {},
       {
         headers: {
-          "Refresh-Token": localStorage.getItem("refreshToken") || "",
+          "Refresh-Token":
+            "Bearer " + localStorage.getItem("refreshToken") || "",
         },
       }
     )
@@ -125,21 +127,17 @@ const createEmailRequest = async (
   );
 };
 
+interface UserState extends UserInfo {
+  accessToken: string;
+  refreshToken: string;
+}
 // 응답 데이터 타입 정의
 interface LoginResponseData {
   // 로그인 성공 시 반환되는 데이터 타입을 정의합니다.
   status: number;
   message: string;
   data: {
-    accessToken: string;
-    refreshToken: string;
-    role: string; // 유저는 user 관리자는 admin
-    userId: number;
-    email: string;
-    address: string;
-    phoneNumber: string;
-    nickname: string;
-    profileImage: string;
+    data: UserState;
   };
 }
 
@@ -173,7 +171,37 @@ interface CreateEmailRequestResponseData {
 //---------------------------
 
 // 내 거북이들 확인하기
+export const getMyTurtle = async () => {
+  return apiRequest(() =>
+    authAxios.get("/main/user/turtle", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      timeout: 10000,
+    })
+  );
+};
 
+//내 경매 내역 조회
+export const getMyAuction = async () => {
+  return apiRequest(() =>
+    authAxios.get("/auction/my", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      timeout: 10000,
+    })
+  );
+};
+
+// 내 거래 내역 조회
+const getMyTransaction = async () => {
+  return apiRequest<getMyTransactionRequestResponseData>(() =>
+    authAxios.get("/main/user/transaction")
+  );
+};
 // 내 거북이 상세 조회
 
 interface getMyTransactionRequestResponseData {
@@ -182,24 +210,22 @@ interface getMyTransactionRequestResponseData {
   data: { transaction: TransactionItemDataType[] };
   message: string;
 }
-// 내 거래 내역 조회
-const getMyTransaction = async () => {
-  return apiRequest<getMyTransactionRequestResponseData>(() =>
-    authAxios.get("/main/user/transaction")
-  );
-};
 
 // 내 거래 내역 상세 조회
 
-
-
-
 // 프로필사진 수정
+interface Data {
+  url: string;
+}
 export const patchProfileImage = async (profileImg: File) => {
   const formData = new FormData();
   formData.append("profileImage", profileImg);
 
-  const response = await apiRequest<{ status: number; message: string }>(() =>
+  const response = await apiRequest<{
+    status: number;
+    data: Data;
+    message: string;
+  }>(() =>
     authAxios.patch("/main/user/image", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -210,8 +236,6 @@ export const patchProfileImage = async (profileImg: File) => {
   );
   return response;
 };
-
-
 
 export {
   registerRequest,

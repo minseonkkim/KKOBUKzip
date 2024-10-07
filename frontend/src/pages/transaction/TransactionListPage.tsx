@@ -6,33 +6,49 @@ import { TransactionItemDataType } from "../../types/transaction";
 
 const TransactionListPage = () => {
   const [TransactionItems, setTransactionItems] = useState<JSX.Element[]>([]);
-  const [ProgressTransactionItems, setProgressTransactionItems] = useState<
-    JSX.Element[]
-  >([]);
+  const [ProgressTransactionItems, setProgressTransactionItems] = useState<JSX.Element[]>([]);
   const [isProgressItem, setIsProgressItem] = useState(false);
+  const [pages, setPages] = useState(0); 
+  const [filters, setFilters] = useState<object>({});
 
-  const fetchData = useCallback(async (page: number, filters: object) => {
-    const result = await getTransactionData({ page, ...filters });
-    if (result.success) {
-      const progressItems: JSX.Element[] = [];
-      const transactionItems = result.data.data.data.transactions.map(
-        (item: TransactionItemDataType) => {
-          if (item.progress === "SAIL")
-            progressItems.push(
-              <TransactionTurtle key={item.transactionId} item={item} />
-            );
+  const fetchData = useCallback(
+    async (page: number, filters: object, isSearch?: boolean): Promise<void> => {
+      const result = await getTransactionData({ page, ...filters });
 
-          return <TransactionTurtle key={item.transactionId} item={item} />;
+      if (result?.success) {
+        const progressItems: JSX.Element[] = [];
+        const transactionItems = result.data.data.data.transactions.map(
+          (item: TransactionItemDataType) => {
+            if (item.progress === "SAIL")
+              progressItems.push(
+                <TransactionTurtle key={item.transactionId} item={item} />
+              );
+
+            return <TransactionTurtle key={item.transactionId} item={item} />;
+          }
+        );
+
+        if (isSearch) {
+          setTransactionItems(transactionItems);
+          setProgressTransactionItems(progressItems);
+        } else {
+          setTransactionItems((prev) => [...prev, ...transactionItems]);
+          setProgressTransactionItems((prev) => [...prev, ...progressItems]);
         }
-      );
-      setTransactionItems((prev) => [...prev, ...transactionItems]);
-      setProgressTransactionItems((prev) => [...prev, ...progressItems]);
-      return result;
-    }
-  }, []);
+      }
+    },
+    []
+  );
 
   const progressFilter = () => {
     setIsProgressItem(!isProgressItem);
+  };
+
+  const resetFilters = () => {
+    setFilters({}); 
+    setPages(0); 
+    fetchData(0, {}, true);
+    console.log("필터 초기화");
   };
 
   return (
@@ -42,6 +58,7 @@ const TransactionListPage = () => {
       fetchData={fetchData}
       isProgressItemChecked={isProgressItem}
       setIsProgressItemChecked={progressFilter}
+      resetFilters={resetFilters} 
     />
   );
 };

@@ -17,8 +17,11 @@ public class AuctionResultDTO {
     private Long turtleId;
     private Long auctionId;
     private String sellerAddress;
+    private AuctionProgress progress;
     private boolean auctionFlag;
     private Long buyerId;
     private Long sellerId;
     private String imageAddress;
+    private LocalDateTime startTime;
+
 }

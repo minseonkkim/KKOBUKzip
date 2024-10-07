@@ -1,18 +1,13 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation, useParams } from "react-router-dom";
-import {
-  adminBreedResultdata,
-  adminAssignGrantData,
-  adminDeathData,
-} from "../../../fixtures/docsDummy";
+
 import {
   AdminAssignDocumentDataType,
   AdminBreedDocumentDataType,
   AdminDeathDocumentDataType,
 } from "../../../types/document";
 
-// 더미데이터
 import AdminBreedDocsCheck from "../../../components/user/admin/AdminBreedDocsCheck";
 import AdminAssignGrantDocsCheck from "../../../components/user/admin/AdminAssignGrantDocsCheck";
 import AdminDeathDocsCheck from "../../../components/user/admin/AdminDeathDocsCheck";
@@ -20,12 +15,7 @@ import {
   approveDocumentRequest,
   getDetailDocumentData,
 } from "../../../apis/documentApis";
-const fetchedData = {
-  인공증식증명서: adminBreedResultdata as AdminBreedDocumentDataType,
-  양도양수확인서: adminAssignGrantData as AdminAssignDocumentDataType,
-  폐사질병신고서: adminDeathData as AdminDeathDocumentDataType,
-};
-// 더미데이터 끝
+
 type AdminDocType = "인공증식증명서" | "양도양수확인서" | "폐사질병신고서";
 type dataType =
   | AdminBreedDocumentDataType
@@ -77,16 +67,6 @@ function AdminDocsDetailPage() {
       // 실패했을 시에 실패 알림 추가할 것
     };
     getData();
-    // 네트워크 붙이고 dummy 정리할 것
-    // search keyword : dummy
-    if (
-      ["인공증식증명서", "양도양수확인서", "폐사질병신고서"].includes(
-        documentType
-      )
-    ) {
-      setData(fetchedData[documentType]);
-      setLayout(documentType);
-    }
   }, []);
 
   const handleAcceptSubmit = (turtleUUID: string, documentHash: string) => {
@@ -102,7 +82,7 @@ function AdminDocsDetailPage() {
       </Helmet>
 
       {/* 테스트 드라이버 */}
-      <div className="space-x-3 text-center">
+      {/* <div className="space-x-3 text-center">
         <button
           onClick={() => {
             setLayout("인공증식증명서");
@@ -128,7 +108,7 @@ function AdminDocsDetailPage() {
         >
           폐사
         </button>
-      </div>
+      </div> */}
       {/* 테스트 드라이버 끝 */}
 
       <>

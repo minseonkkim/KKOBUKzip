@@ -28,6 +28,10 @@ public class ResponseVO<T> {
         return new ResponseVO<>("200", message, null);
     }
 
+    public static <T> ResponseVO<T> success(String status, String message) {
+        return new ResponseVO<>(status, message, null);
+    }
+
     public static <T> ResponseVO<T> success(String message, String name, T data) {
         Map<String, T> dataMap = new HashMap<>();
         dataMap.put(name, data);

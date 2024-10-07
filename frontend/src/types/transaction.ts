@@ -15,11 +15,14 @@
 // }
 
 export interface TransactionItemDataType {
+  auctionFlag: boolean;
   title: string;
   transactionId: number;
   sellerId: number;
+  sellerUuid: string;
   sellerName: string;
   turtleId: number;
+  turtleUuid: string;
   scientificName: string;
   sellerAddress: string;
   price: number;
@@ -53,9 +56,12 @@ export interface TransactionItemDetailType {
   title: string;
   transactionId: number;
   sellerId: number;
+  sellerUuid: string;
   sellerName: string;
+  sellerAddress: string;
   sellerImageUrl: string;
   turtleId: number;
+  turtleUuid: string;
   scientificName: string;
   price: number;
   createDate: string;

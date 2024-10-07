@@ -35,27 +35,31 @@ export default function TransactionTurtle({
           />
         </div>
         <div className="px-3 py-2">
-          <div className="w-full overflow-hidden text-[20px] mb-4 text-gray-900 whitespace-nowrap text-ellipsis">
+          <div className="w-full overflow-hidden text-[20px] mb-2 text-gray-900 whitespace-nowrap text-ellipsis">
             {item.title}
           </div>
 
-          <div className="flex flex-wrap justify-between items-center">
+          <div className="flex flex-row flex-wrap justify-between items-center mb-1">
             <div className="text-[15px] xl:text-[17px] whitespace-normal text-[#9A9A9A]">
               {item.scientificName}
             </div>
-            <div className="text-[15px] text-gray-700 flex flex-wrap space-x-1.5">
+            <div className="text-[14px] text-gray-700 flex flex-wrap space-x-1">
               {item.transactionTag.map((tag, index) => (
                 <span
                   key={index}
                   className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full"
                 >
-                  #{tag}
+                  {tag}
                 </span>
               ))}
             </div>
           </div>
-          <div className="whitespace-nowrap font-extrabold text-[28px] text-[#4B721F] font-stardust">
-            {item.price.toLocaleString("ko-KR")} TURT
+
+          <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
+            <div className="text-[28px] md:text-[32px]">
+              {Math.floor(item.price).toLocaleString()} 
+            </div>
+            <div className="text-[18px] md:text-[22px]">TURT</div>
           </div>
         </div>
       </div>

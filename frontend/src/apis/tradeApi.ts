@@ -6,7 +6,6 @@ import {
   TransactionItemDataType,
   TransactionItemDetailType,
 } from "../types/transaction";
-import { AuctionResponseDummuy } from "../fixtures/auctionDummy";
 
 interface AuctionResponseData<T> {
   success: true;
@@ -42,8 +41,12 @@ const apiRequest = async <T>(
     let statusCode = 500; // internal server error
     if (axios.isAxiosError(error)) {
       // AxiosError 타입 확인 및 처리
-      errorMessage = error.response?.data?.msg || error.message;
-      error.response?.status;
+      errorMessage =
+        error.response?.data?.msg ||
+        error.response?.data?.message ||
+        error.message;
+      statusCode =
+        error.response?.data?.status || error.response?.status || 500;
     } else if (error instanceof Error) {
       // 일반 JavaScript Error 처리
       errorMessage = error.message;
@@ -102,42 +105,39 @@ export const getAuctionDatas = async ({
   progress?: number;
 }) => {
   // query setting
-  const pageQuery = page ? `page=${page}` : "page=0";
-  const genderQuery = gender ? `&gender=${gender}` : "";
+  const pageQuery = "";
+  const genderQuery = gender && gender !== "" ? `&gender=${gender}` : "";
   const sizeQuery =
     minWeight || maxWeight
-      ? `&size=${minWeight ? minWeight : "0"}between${
+      ? `&size=${minWeight ? minWeight : "0"}-${
           maxWeight ? maxWeight : "999999999999"
         }`
       : "";
+
+  const cleanedMinPrice = minPrice ? minPrice.replace(/,/g, "") : "0";
+  const cleanedMaxPrice = maxPrice
+    ? maxPrice.replace(/,/g, "")
+    : "999999999999";
   const priceQuery =
-    minPrice || maxPrice
-      ? `&price=${minPrice ? minPrice : "0"}between${
-          maxPrice ? maxPrice : "999999999999"
-        }`
-      : "";
+    minPrice || maxPrice ? `&price=${cleanedMinPrice}-${cleanedMaxPrice}` : "";
+
   const progressQuery = progress ? `&progress=${progress}` : "";
 
   const query =
     pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
   // request
-  const response = await apiRequest<AuctionListData>(() =>
-    guestAxios.get(`/auction?${query}`)
-  );
+  const response = await guestAxios.get(`/auction?${query}`);
+  console.log(query);
+  console.log(response);
   return response;
 };
 
-// 경매 단일 상품 조회 search dummy
+// 경매 단일 상품 조회
 export const getAuctionDetailItemData = async (auctionID: number) => {
   const response = (await apiRequest)<{
     data: { auction: AuctionItemDataType };
   }>(() => guestAxios.get(`/auction/${auctionID}`));
-  // return response;
-
-  return {
-    success: true,
-    data: { data: AuctionResponseDummuy.data },
-  };
+  return response;
 };
 
 // 경매 등록
@@ -181,26 +181,28 @@ export const getTransactionData = async ({
   maxWeight?: string;
   minPrice?: string;
   maxPrice?: string;
-  progress?: number;
+  progress?: string;
 }) => {
-  const pageQuery = page ? `page=${page}` : "page=0";
-  const genderQuery = gender ? `&gender=${gender}` : "";
+  // const pageQuery = `page=${page ? page : 0}`;
+  const pageQuery = "";
+  const genderQuery = gender && gender !== "" ? `&gender=${gender}` : "";
   const sizeQuery =
     minWeight || maxWeight
-      ? `&size=${minWeight ? minWeight : "0"}between${
+      ? `&size=${minWeight ? minWeight : "0"}-${
           maxWeight ? maxWeight : "999999999999"
         }`
       : "";
+
+  const cleanedMinPrice = minPrice ? minPrice.replace(/,/g, "") : "0";
+  const cleanedMaxPrice = maxPrice
+    ? maxPrice.replace(/,/g, "")
+    : "999999999999";
   const priceQuery =
-    minPrice || maxPrice
-      ? `&price=${minPrice ? minPrice : "0"}between${
-          maxPrice ? maxPrice : "999999999999"
-        }`
-      : "";
+    minPrice || maxPrice ? `&price=${cleanedMinPrice}-${cleanedMaxPrice}` : "";
+
   const progressQuery = progress ? `&progress=${progress}` : "";
 
-  const query =
-    pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
+  const query = `${pageQuery}${genderQuery}${sizeQuery}${priceQuery}${progressQuery}`;
 
   const response = await apiRequest<{ data: TransactionListData }>(() =>
     guestAxios.get(`/main/transaction/?${query}`)
@@ -213,6 +215,7 @@ interface TransactionItemDetailData {
   message: string;
   data: { turtle: TransactionItemDetailType };
 }
+
 // 거래 단일항목 상세조회
 export const getTransactionDetailItemData = (transactionId: string) => {
   return apiRequest<TransactionItemDetailData>(() =>
@@ -223,13 +226,47 @@ export const getTransactionDetailItemData = (transactionId: string) => {
 // 거래 등록
 export const addTransactionItem = async (transactionData: FormData) => {
   const response = await apiRequest<{ status: number; message: string }>(() =>
-    authAxios.post("/main/transaction", transactionData, {
+    authAxios.post("/main/transaction/", transactionData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
       timeout: 10000,
     })
+  );
+  return response;
+};
+
+// 거래 상태 변경 (SALE -> 서류 검토)
+export const changeTransactionStateToStart = async (transactionId: number) => {
+  const response = await apiRequest<{ status: number; message: string }>(() =>
+    authAxios.patch(
+      `/main/transaction/start/${transactionId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        timeout: 10000,
+      }
+    )
+  );
+  return response;
+};
+
+// 거래 상태 변경 (구매 확정 -> 거래 완료)
+export const changeTransactionStateToEnd = async (transactionId: number) => {
+  const response = await apiRequest<{ status: number; message: string }>(() =>
+    authAxios.patch(
+      `/main/transaction/end/${transactionId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        timeout: 10000,
+      }
+    )
   );
   return response;
 };

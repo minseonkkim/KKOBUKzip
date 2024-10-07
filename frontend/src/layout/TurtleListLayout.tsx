@@ -1,22 +1,27 @@
-// TurtleListLayout.tsx
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Header from "../components/common/Header";
 import { GrPowerReset } from "@react-icons/all-files/gr/GrPowerReset";
 import { FaCheck } from "@react-icons/all-files/fa/FaCheck";
 import { IoIosSearch } from "@react-icons/all-files/io/IoIosSearch";
 import { IoFilterOutline } from "@react-icons/all-files/io5/IoFilterOutline";
-import { useEffect, useState } from "react";
-import OptionFilter from "../components/common/OptionFilter";
 import { useInView } from "react-intersection-observer";
 import useTradeFilter from "../hooks/useTradeFilter";
 import AuctionTurtleSkeleton from "../components/skeleton/auction/AuctionTurtleSkeleton";
+import OptionFilter from "../components/common/OptionFilter";
+import NoImage from "../assets/no_image.webp";
 
 interface TurtleListLayoutProps {
   title: string;
   items: JSX.Element[];
-  fetchData: (page: number, filters: object) => Promise<any>;
+  fetchData: (
+    page: number,
+    filters: object,
+    isSearch?: boolean
+  ) => Promise<any>;
   isProgressItemChecked: boolean;
   setIsProgressItemChecked: () => void;
+  resetFilters: () => void;
 }
 
 const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
@@ -25,23 +30,33 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   fetchData,
   isProgressItemChecked,
   setIsProgressItemChecked,
+  resetFilters,
 }) => {
-  // const [isChecked, setIsChecked] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [itemLoading, setItemLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
-  const [pages, setPages] = useState(0); // next page, 0부터~
+  const [pages, setPages] = useState(0);
   const [maxPage, setMaxPage] = useState(-1);
+  const [selectedFiltersText, setSelectedFiltersText] = useState("필터");
 
   const [ref, inView] = useInView({ threshold: 1 });
   const { filters, filterResetHandle, updateFilter } = useTradeFilter();
+
+  const resetFilterState = () => {
+    updateFilter("gender", "");
+    updateFilter("minWeight", "");
+    updateFilter("maxWeight", "");
+    updateFilter("minPrice", "");
+    updateFilter("maxPrice", "");
+  };
 
   useEffect(() => {
     const getData = async () => {
       setItemLoading(true);
       try {
         const response = await fetchData(pages, filters);
-        if (response.success) {
+        console.log(response)
+        if (response?.status == 200) {
           setMaxPage(response.data.data.data.total_pages);
         }
         setPages(1);
@@ -55,10 +70,10 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
 
   const loadMore = async () => {
     if (itemLoading || pages >= maxPage) return;
-    console.log(pages >= maxPage);
     setItemLoading(true);
     try {
       const response = await fetchData(pages, filters);
+
       if (response.success) {
         setMaxPage(response.data.data.data.total_pages - 1);
         setPages((prev) => prev + 1);
@@ -73,14 +88,37 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
   }, [inView]);
 
   const toggleFilterDiv = () => {
+    if (isFilterOpen) {
+      // 필터를 닫을 때 필터 초기화
+      filterResetHandle();
+    } else {
+      // 필터를 다시 열 때 필터 초기화
+      resetFilterState();
+    }
     setIsFilterOpen(!isFilterOpen);
   };
 
   const searchHandle = async () => {
     setPages(0);
-    await fetchData(0, filters);
-    // console.log(filters);
+    await fetchData(0, filters, true);
+    setIsFilterOpen(false);
+    updateSelectedFiltersText();
   };
+
+  const updateSelectedFiltersText = () => {
+    const filterTexts: string[] = [];
+    if (filters.gender)
+      filterTexts.push(filters.gender === "FEMALE" ? "암컷" : "수컷");
+    if (filters.minWeight && filters.maxWeight)
+      filterTexts.push(`${filters.minWeight}~${filters.maxWeight}g`);
+    if (filters.minPrice && filters.maxPrice)
+      filterTexts.push(`${filters.minPrice}~${filters.maxPrice}TURT`);
+
+    setSelectedFiltersText(
+      filterTexts.length > 0 ? filterTexts.join(", ") : "필터"
+    );
+  };
+
   return (
     <>
       <Helmet>
@@ -120,33 +158,41 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
           </div>
 
           <div className="flex flex-row items-center space-x-3">
-            <div className="flex items-center xl:w-[320px] lg:w-[190px] md:w-[300px] h-[38px] bg-[#f2f2f2] rounded-[10px] p-1">
-              <IoIosSearch className="text-gray-400 mx-2 text-[20px] md:text-[30px]" />
-              <input
-                type="text"
-                placeholder="종을 검색하세요"
-                className="w-full h-full bg-[#f2f2f2] text-[16px] md:text-[19px] focus:outline-none p-1"
-              />
-            </div>
-
             <div
-              className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[30px] w-[80px] md:w-[90px] h-[42px] cursor-pointer hover:text-[#4B721F]"
+              className={`flex justify-center items-center border-[2px] rounded-[30px] px-3 h-[42px] cursor-pointer hover:text-[#4B721F] hover:border-[#4B721F] ${
+                selectedFiltersText !== "필터"
+                  ? "text-[#4B721F] bg-[#E0F3C9] border-[#4B721F]"
+                  : "border-[#DADADA]"
+              }`}
               onClick={toggleFilterDiv}
             >
-              <IoFilterOutline className="text-[18px] md:text-[22px] mr-2" />
-              <span className="text-[16px] md:text-[18px]">필터</span>
+              <IoFilterOutline
+                className={`text-[18px] md:text-[22px] mr-2 ${
+                  selectedFiltersText !== "필터"
+                    ? "text-[#4B721F] font-bold"
+                    : ""
+                }`}
+              />
+              <span className="text-[16px] md:text-[18px]">
+                {selectedFiltersText}
+              </span>
             </div>
             <div
-              onClick={filterResetHandle}
-              className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[360px] w-[38px] md:w-[42px] h-[38px] md:h-[42px] cursor-pointer font-bold hover:text-[#4B721F]"
+              onClick={async () => {
+                resetFilters();
+                await fetchData(0, {}, true);
+                setIsFilterOpen(false);
+                setSelectedFiltersText("필터");
+              }}
+              className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[360px] w-[38px] md:w-[42px] h-[38px] md:h-[42px] cursor-pointer font-bold hover:text-[#4B721F] hover:border-[#4B721F]"
             >
-              <GrPowerReset className="text-[18px] md:text-[20px]" />
+              <GrPowerReset className="text-[18px] md:text-[20px] " />
             </div>
           </div>
         </div>
 
         <div
-          className={`transition-all duration-300 ease-in-out transform ${
+          className={`transition-all duration-300 ease-in-out transform  ${
             isFilterOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
           } overflow-hidden`}
         >
@@ -159,25 +205,31 @@ const TurtleListLayout: React.FC<TurtleListLayoutProps> = ({
           )}
         </div>
 
-        <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
-          {/* {skeletonComponent} */}
-          {!initialLoad && items}
-          {initialLoad ||
-            (itemLoading && (
-              <>
-                <div className="hidden md:block col-span-1">
-                  <AuctionTurtleSkeleton />
-                </div>
-                <div className="hidden xl:block col-span-1">
-                  <AuctionTurtleSkeleton />
-                </div>
-                <div className="block col-span-1">
-                  <AuctionTurtleSkeleton />
-                </div>
-              </>
-            ))}
-          <div ref={ref} className="w-full h-[1px] col-span-full" />
-        </div>
+        {itemLoading ? (
+          <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
+            {Array(6)
+              .fill(null)
+              .map((_, index) => (
+                <AuctionTurtleSkeleton key={index} />
+              ))}
+          </div>
+        ) : items.length === 0 ? (
+          <div className="w-full h-auto flex flex-col items-center justify-center space-y-5 bg-[#f4f4f4] rounded-[20px] py-20">
+            <img
+              src={NoImage}
+              className="w-[220px] h-[220px] object-cover"
+              draggable="false"
+              alt="turtle image"
+            />
+            <div className="text-[28px] font-bold font-stardust">
+              거북이가 없어요
+            </div>
+          </div>
+        ) : (
+          <div className="md:mx-0 mx-auto grid flex-1 overflow-y-auto grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-[30px] mt-[10px]">
+            {items}
+          </div>
+        )}
       </main>
     </>
   );

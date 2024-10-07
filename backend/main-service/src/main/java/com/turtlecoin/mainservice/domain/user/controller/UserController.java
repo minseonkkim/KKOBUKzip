@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 @RequestMapping("/main/user")
@@ -101,11 +102,27 @@ public class UserController {
         User user = jwtService.getUserByToken(token).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
         return new UserResponseDTO(
                 user.getId(),
+                user.getUuid(),
                 user.getNickname(),
-                user.getName(),
                 user.getEmail(),
+                user.getName(),
+                user.getAddress(),
+                user.getBirth(),
                 user.getProfileImage()
         );
+    }
+
+    @GetMapping("/{userId}")
+    // 유저 없을 때 에러 던져주기
+    public UserResponseDTO getUserById(@PathVariable("userId") Long userId) {
+        return userService.getByUserId(userId);
+    }
+
+    @GetMapping("/{userId}/turtle")
+    // 유저 없을 때 에러 던져주기
+    public List<FeignTurtleResponseDTO> getTurtlesByUserId(@PathVariable("userId") Long userId) {
+        // 유저 없을 때 에러 던져주기
+        return userService.getTurtlesdtoByUserId(userId);
     }
 
     @GetMapping("/nickname")
@@ -128,7 +145,7 @@ public class UserController {
     public ResponseEntity<?> myTransaction(@RequestHeader("Authorization") String token){
         Optional<User> user = jwtService.getUserByToken(token); // token 기준으로 User 객체 가져오기!
         if(user.isEmpty()){
-            return new ResponseEntity<>(ResponseVO.failure("404","유효한 token이 아닙니다."),HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(ResponseVO.failure("401","유효한 token이 아닙니다."),HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(ResponseVO.success("요청이 정상적으로 처리되었습니다.","transaction",transactionService.findAllTransactions(user.get()) ),HttpStatus.OK);
     }
@@ -151,13 +168,13 @@ public class UserController {
                     throw new Exception("이미지 삭제 실패");
                 }
             }
-            
+
             String url = imageUploadService.upload(image,"user");
             user.get().modifyProfileImage(url);
             userRepository.save(user.get());
             return new ResponseEntity<>(ResponseVO.success("이미지가 성공적으로 수정 되었습니다.","url",url),HttpStatus.OK);
         }catch(UserNotFoundException e){
-            return new ResponseEntity<>(ResponseVO.failure("404",e.getMessage()),HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(ResponseVO.failure("401",e.getMessage()),HttpStatus.UNAUTHORIZED);
 
         }catch (IOException e) {
             // 이미지 업로드 중 IO 예외 발생 시
@@ -168,4 +185,11 @@ public class UserController {
             return new ResponseEntity<>(ResponseVO.failure("500", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/{userId}/nickname")
+    public String getUserNicknameById (@PathVariable("userId") Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
+        return user.getNickname();
+    }
+
 }

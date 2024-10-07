@@ -1,15 +1,29 @@
+import {useLocation, useNavigate} from "react-router-dom"
+import { ChangeEvent, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
 import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
-import { ChangeEvent, useState } from "react";
-import { registerRequest } from "../../apis/userApi";
+import { addTransactionItem } from "../../apis/tradeApi";
+import formatDate from "../../utils/formatDate";
+import { useWeb3Store } from "../../store/useWeb3Store";
+
 
 export default function TransactionRegisterPage() {
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  const { account } = useWeb3Store();
   const [images, setImages] = useState<File[]>([]);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+
+  const [transactionData, setTransactionData] = useState({
+    weight: "",
+    title: "",
+    content: "",
+  });
+  const [price, setPrice] = useState("");
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []); // 파일 리스트를 배열로 변환
@@ -42,13 +56,72 @@ export default function TransactionRegisterPage() {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.target.value = formatNumberWithCommas(e.target.value);
+    setPrice(e.target.value);
   };
 
-  const submitHandle = (e: React.FormEvent<HTMLFormElement>) => {
-    alert("submit");
+  const changeHandle = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setTransactionData({ ...transactionData, [name]: value });
+  };
+
+  // 소수점 표기를 위한 새로운 유틸리티 함수
+  const formatDecimal = (value: number): string => {
+    if (isNaN(value) || value === 0) return "0";
+    const fixed = value.toFixed(8);
+    return fixed.replace(/\.?0+$/, "");
+  };
+  
+  const calculateEthPrice = (turtPrice: string): string => {
+    const numericPrice = parseFloat(turtPrice.replace(/,/g, ""));
+    if (isNaN(numericPrice) || numericPrice === 0) return "0";
+    return formatDecimal(numericPrice / 5000000);
+  };
+
+  const submitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!account) {
+      alert("메타마스크 계정이 연결되지 않았습니다. 연결 확인 후 다시 시도해 주세요.");
+      return;
+    }
+
     const formData = new FormData();
-    registerRequest(formData);
+    
+    const newTransactionData = {
+      title: transactionData.title,
+      content: transactionData.content,
+      price: parseFloat(price),
+      turtleId: state.turtleId,
+      sellerAddress: account,
+      transactionTags: [selectedGender, selectedSize],
+    }
+    const blob = new Blob([JSON.stringify(newTransactionData)], {
+      type: "application/json",
+    });
+
+    formData.append("data", blob);
+    images.forEach((image) => {
+      formData.append(`transactionPhotos`, image);
+    });
+
+    try {
+      const response = await addTransactionItem(formData);
+      console.log("Transaction added successfully:", response);
+      
+      // 성공 처리
+      alert(`${state.name}(이)의 거래 등록이 완료되었습니다.`)
+      navigate("/transaction-list");
+    } catch (error) {
+      console.error("Error adding transaction:", error);
+      alert("새로운 거래 생성에 실패했습니다. 다시 시도해 주세요.");
+    }
+  };
+  const gender = {
+    MALE: "수컷",
+    FEMALE: "암컷",
+    NONE: "미분류",
   };
   return (
     <>
@@ -62,17 +135,18 @@ export default function TransactionRegisterPage() {
         </div>
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">
           <img
-            src={TmpTurtleImg}
+            src={state.imageAddress ? state.imageAddress : TmpTurtleImg}
             draggable="false"
             className="w-[150px] md:w-[170px] h-full object-cover rounded-[10px] mr-4 md:mr-8"
             alt="turtle image"
           />
           <div className="flex flex-col">
             <div className="text-[24px] md:text-[26px] font-bold mb-2">
-              꼬부기
+              {state.name}
             </div>
             <div className="text-gray-600 text-[18px] md:text-[21px]">
-              수컷 | 18년 3월 2일생
+              {gender[state.gender as "MALE" | "FEMALE" | "NONE"]} |{" "}
+              {formatDate(state.birth)}생
             </div>
           </div>
         </div>
@@ -80,16 +154,22 @@ export default function TransactionRegisterPage() {
           onSubmit={submitHandle}
           className="text-[19px] md:text-[21px] flex flex-col gap-4"
         >
-          <div className="flex flex-row items-center">
-            <label className="w-[108px] md:w-[120px]">판매가</label>
-            <input
-              className="mr-1 w-[250px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
-              type="text"
-              name="bid"
-              onInput={handleInputChange}
-              required
-            />
-            TURT
+          <div className="flex flex-row items-center gap-4">
+            <div className="flex flex-row items-center">
+              <label className="w-[108px] md:w-[120px]">판매가</label>
+              <input
+                className="mr-1 w-[250px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
+                type="text"
+                name="bid"
+                onInput={handleInputChange}
+                value={price}
+                placeholder="판매가를 입력해주세요"
+                maxLength={15}
+                required
+              />
+              TURT
+            </div>
+            <div className="text-sm text-gray-400">/ {calculateEthPrice(price)} ETH</div>
           </div>
           <div className="flex flex-row items-center">
             <label className="w-[108px] md:w-[120px]">체중</label>
@@ -98,12 +178,17 @@ export default function TransactionRegisterPage() {
               type="number"
               name="weight"
               required
+              value={transactionData.weight}
+              placeholder="체중을 입력해주세요"
+              maxLength={8}
+              pattern="[0-9]*"
+              onChange={changeHandle}
               onInput={(e) => {
                 const target = e.target as HTMLInputElement;
                 target.value = target.value.replace(/[^0-9]/g, "");
               }}
             />
-            kg
+            g
           </div>
 
           {/* 제목 30자 이내로만 입력할 수 있게 하기 */}
@@ -112,13 +197,21 @@ export default function TransactionRegisterPage() {
             <input
               className="md:w-[540px] w-[270px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
               type="text"
+              onChange={changeHandle}
               name="title"
+              maxLength={30}
+              placeholder="제목을 입력해주세요"
+              value={transactionData.title}
               required
             />
           </div>
           <div className="flex flex-row items-start">
             <label className="w-[108px] md:w-[120px]">상세 설명</label>
             <textarea
+              onChange={changeHandle}
+              name="content"
+              value={transactionData.content}
+              placeholder="상세 설명을 입력해주세요"
               rows={3}
               className="flex-grow text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
             ></textarea>
@@ -185,6 +278,16 @@ export default function TransactionRegisterPage() {
                   onClick={() => handleGenderClick("#수컷")}
                 >
                   #수컷
+                </span>
+                <span
+                  className={`whitespace-nowrap px-2 py-1 rounded-full cursor-pointer text-[17px] ${
+                    selectedGender === "#미분류"
+                      ? "bg-[#D5F0DD] text-[#065F46]"
+                      : "bg-gray-300 text-gray-600"
+                  }`}
+                  onClick={() => handleGenderClick("#미분류")}
+                >
+                  #미분류
                 </span>
               </div>
               <div className="flex flex-row items-center space-x-2">

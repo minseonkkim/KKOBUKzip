@@ -48,10 +48,15 @@ public class ContractService {
 		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
 		byte[] byteArray = hexStringToByte32("0x" + documentHash);
 
+		// 거북이 정보 해시함수 처리
+		String turtleInfo = birth.toString() + weight + gender;
+		System.out.println(turtleInfo);
+		byte[] turtleHash = hexStringToByte32("0x" + keccak256(turtleInfo.getBytes()));
+
 		turtleDocumentation.registerTurtleMultiplicationDocument(
 			turtleUUID, applicant, byteArray, count, area, purpose, location, fatherUUID, motherUUID,
 			birth.toString(), name, BigInteger.valueOf(weight), gender.toString(),
-			locationSpecification, multiplicationMethod, shelterSpecification
+			locationSpecification, multiplicationMethod, shelterSpecification, turtleHash
 		).sendAsync();
 	}
 
@@ -65,10 +70,15 @@ public class ContractService {
 		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
 		// byte로 변환
 		byte[] byteArray = hexStringToByte32("0x" + documentHash);
+		
+		// 거북이 정보 해시함수 처리
+		String turtleInfo = birth.toString() + weight + gender;
+		byte[] turtleHash = hexStringToByte32("0x" + keccak256(turtleInfo.getBytes()));
+		
 		TransactionReceipt receipt =  turtleDocumentation.registerTurtleMultiplicationDocument(
 			turtleUUID, applicant, byteArray, count, area, purpose, location, fatherUUID, motherUUID,
 			birth.toString(), name, BigInteger.valueOf(weight), gender.toString(),
-			locationSpecification, multiplicationMethod, shelterSpecification
+			locationSpecification, multiplicationMethod, shelterSpecification, turtleHash
 		).send();
 
 		// 이벤트 호출

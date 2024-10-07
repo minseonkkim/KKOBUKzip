@@ -62,12 +62,16 @@ public class JWTService {
             data.put("accessToken", access);
             data.put("refreshToken", refresh);
             data.put("role", role);
+            data.put("uuid",user.get().getUuid());
             data.put("nickname", user.get().getNickname());
             data.put("email", user.get().getEmail());
             data.put("address",user.get().getAddress());
             data.put("phoneNumber",user.get().getPhonenumber());
             data.put("profileImage",user.get().getProfileImage());
             data.put("userId",user.get().getId());
+            data.put("foreignFlag",user.get().getForeignFlag());
+            data.put("name",user.get().getName());
+            data.put("birth",user.get().getBirth());
             return data;
 
         }
@@ -138,5 +142,11 @@ public class JWTService {
         responseBody.put("data", data);
 
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+    public Long getIdFromToken(String token) {
+        return jwtUtil.getIdFromToken(token);
+    }
+    public String getUUIDFromToken(String token) {
+        return jwtUtil.getUuidFromToken(token);
     }
 }

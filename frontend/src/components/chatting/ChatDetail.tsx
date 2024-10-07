@@ -1,89 +1,34 @@
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import TmpProfileImg from "../../assets/tmp_profile.gif";
-import { ChatData } from "../../types/chatting";
+import { ChatData, TextChat, ChatResponse } from "../../types/chatting";
 import { useEffect, useRef, useState } from "react";
 import OtherChatItem from "./OtherChatItem";
 import MyChatItem from "./MyChatItem";
 import ChatDayDivider from "./ChatDayDivider";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import formatDate from "../../utils/formatDate";
-import { fetchChatMessageData } from "../../apis/chatApi";
+import {
+  fetchChatMessageData,
+  fetchChatMessageDataFromTx,
+} from "../../apis/chatApi";
 import SystemMessageItem from "./SystemMessageItem";
+import { useUserStore } from "../../store/useUserStore";
 
 interface ChatDetailProps {
   closeChatDetail: () => void;
   chattingId: number;
   toggleChat: () => void;
   chattingTitle: string;
+  openedFromTransaction: boolean;
 }
 
 // 확인해야 할 사항
 // 0. user의 nickname 가져오기
-// 1. 채팅 get fetch -> init Data에서 dummy 제거하기
+// 1. 채팅 get fetch -
 // 2. socket connet
 // 3. sockent send, sub
 // 4. sockent disconnet
 // 5. 컴포넌트 이동 시에 소켓 확인
-
-const data: ChatData[] = [
-  {
-    userId: 1,
-    nickname: "구매자",
-    message: "거북이 키우고 싶어요",
-    registTime: "2024-09-09T10:15:30",
-
-    userProfile: TmpProfileImg,
-  },
-  {
-    userId: 3,
-    nickname: "판매자",
-    message: "거북거북",
-    registTime: "2024-09-10T10:15:30",
-    userProfile: TmpProfileImg,
-  },
-  {
-    userId: 1,
-    nickname: "구매자",
-    message: "구북이 키우고싶어요",
-    registTime: "2024-09-13T10:15:30",
-    userProfile: TmpProfileImg,
-  },
-  {
-    userId: 3,
-    nickname: "판매자",
-    message: "입금해주세요1",
-    registTime: "2024-09-15T10:15:30",
-    userProfile: TmpProfileImg,
-  },
-  {
-    userId: 3,
-    nickname: "판매자",
-    message: "입금해주세요2",
-    registTime: "2024-09-22T10:15:30",
-    userProfile: TmpProfileImg,
-  },
-  {
-    userId: 3,
-    nickname: "판매자",
-    message: "입금해주세요3",
-    registTime: "2024-09-22T10:15:30",
-    userProfile: TmpProfileImg,
-  },
-  {
-    userId: 3,
-    nickname: "판매자",
-    message: "입금해주세요4",
-    registTime: "2024-09-22T10:15:30",
-    userProfile: TmpProfileImg,
-  },
-  {
-    userId: 3,
-    nickname: "판매자",
-    message: "입금해주세요5",
-    registTime: "2024-09-23T10:15:30",
-    userProfile: TmpProfileImg,
-  },
-];
 
 interface SystemMessageType {
   title: string;
@@ -96,15 +41,20 @@ export default function ChatDetail({
   chattingId,
   closeChatDetail,
   toggleChat,
+  openedFromTransaction,
 }: ChatDetailProps) {
   const [inputValue, setInputValue] = useState("");
   const stompClient = useRef<CompatClient | null>(null);
   const [groupedChat, setGroupedChat] = useState<
     { date: string; messages: (ChatData | SystemMessageType)[] }[]
   >([]);
+  const { userInfo } = useUserStore();
+  const [chatData, setChatData] = useState<ChatData[]>([]);
 
-  const myNickName = "판매자";
-  const chatId = Math.min(1, chattingId) + "-" + Math.max(1, chattingId);
+  const chatId =
+    Math.min(userInfo?.userId!, chattingId) +
+    "-" +
+    Math.max(userInfo?.userId!, chattingId);
   useEffect(() => {
     const getChatData = async () => {
       await initData();
@@ -118,24 +68,40 @@ export default function ChatDetail({
 
   // 데이터 초기화 및 전처리
   const initData = async () => {
-    // const { success, data } = await fetchChatMessageData(1, chattingId);
-    // if (success) {
+    let success: boolean;
+    let data: ChatData[] | undefined;
+
+    if (openedFromTransaction) {
+      ({ success, data } = await fetchChatMessageDataFromTx(chattingId));
+    } else {
+      ({ success, data } = await fetchChatMessageData(chattingId));
+    }
+    if (success) {
+      const chatMessages = data;
+      if (Array.isArray(chatMessages)) {
+        setChatData(chatMessages.reverse());
+      } else {
+        console.error("Expected an array, but got:", chatMessages);
+      }
+    }
 
     // 날짜별로 메시지 그룹화
     const groupedMessages: { date: string; messages: ChatData[] }[] = [];
-    data!.forEach((message) => {
-      const messageDate = formatDate(message.registTime);
+    if (data != undefined) {
+      data.forEach((message) => {
+        const lastGroup = groupedMessages[groupedMessages.length - 1];
+        const messageDate = formatDate(message.registTime);
 
-      const lastGroup = groupedMessages[groupedMessages.length - 1];
-
-      if (!lastGroup || lastGroup.date !== messageDate) {
-        groupedMessages.push({ date: messageDate, messages: [message] });
-      } else {
-        lastGroup.messages.push(message);
-      }
-    });
+        if (!lastGroup || lastGroup.date !== messageDate) {
+          groupedMessages.push({ date: messageDate, messages: [message] });
+        } else {
+          lastGroup.messages.push(message);
+        }
+      });
+    }
     console.log("groupedMessages", groupedMessages);
     setGroupedChat(groupedMessages);
+    console.log(groupedChat);
     // }
   };
 
@@ -151,12 +117,13 @@ export default function ChatDetail({
         stompClient.current!.subscribe(
           `/sub/main/${chatId}`,
           (message) => {
-            const newMessage: ChatData = JSON.parse(message.body);
+            const newMessage: TextChat = JSON.parse(message.body);
             const messageDate = formatDate(newMessage.registTime);
             const lastGroup = groupedChat[groupedChat.length - 1];
 
             console.log("Sender:", newMessage.userId);
             console.log("NickName:", newMessage.nickname);
+            console.log(groupedChat);
             console.log("Register Time:", newMessage.registTime);
             console.log("Message:", newMessage.message);
             console.log("ProfileImg:", newMessage.userProfile);
@@ -196,7 +163,7 @@ export default function ChatDetail({
   const sendMessage = () => {
     if (inputValue.trim() !== "" && stompClient.current) {
       const message = {
-        userId: 1,
+        userId: userInfo?.userId,
         message: inputValue,
         // 뭘보내야할까요...
         // 이거 2개만 보내시면 됩니다.. 시간같은건 백에서 체크할게요
@@ -244,15 +211,22 @@ export default function ChatDetail({
                         image={message.image}
                       />
                     );
-                  } else if (myNickName === message.nickname) {
+                  } else if (userInfo?.userId === message.userId) {
                     // 보낸 메시지 처리
-                    return <MyChatItem key={index} message={message.message} />;
+                    return (
+                      <MyChatItem
+                        key={index}
+                        message={message.message}
+                        time={message.registTime}
+                      />
+                    );
                   } else {
                     // 받은 메시지 처리
                     return (
                       <OtherChatItem
                         key={index}
                         message={message.message}
+                        time={message.registTime}
                         profileImg={message.userProfile}
                       />
                     );

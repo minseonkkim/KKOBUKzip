@@ -5,10 +5,7 @@ import com.turtlecoin.auctionservice.domain.auction.service.BidService;
 import com.turtlecoin.auctionservice.domain.websocket.dto.BidMessage;
 import com.turtlecoin.auctionservice.feign.MainClient;
 import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
-import com.turtlecoin.auctionservice.global.exception.AuctionAlreadyFinishedException;
-import com.turtlecoin.auctionservice.global.exception.AuctionNotFoundException;
-import com.turtlecoin.auctionservice.global.exception.SameUserBidException;
-import com.turtlecoin.auctionservice.global.exception.WrongBidAmountException;
+import com.turtlecoin.auctionservice.global.exception.*;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,31 +29,47 @@ public class AuctionWebSocketController {
     public void handleBid(@DestinationVariable Long auctionId, BidMessage bidMessage) {
         Long userId = bidMessage.getUserId();
         Double bidAmount = bidMessage.getBidAmount();
+        log.info("Bid Amount: {}", bidAmount);
         Double nextBid = bidMessage.getNextBid();
 
         try {
             redissonLockFacade.updateBidWithLock(auctionId, userId, bidAmount);
             log.info("입찰이 성공적으로 처리되었습니다: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount);
+        } catch (BidConcurrencyException e) {
+            log.error("경매를 찾을 수 없습니다: auctionId = {}, userId = {}", auctionId, userId, e);
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
+                    ResponseVO.failure("409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요."));
         } catch (AuctionNotFoundException e) {
             log.error("경매를 찾을 수 없습니다: auctionId = {}, userId = {}", auctionId, userId, e);
-            messagingTemplate.convertAndSend("/sub/auction/" + auctionId,
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
                     ResponseVO.failure("404", "해당 경매를 찾을 수 없습니다."));
         } catch (SameUserBidException e) {
             log.error("동일 사용자의 재입찰 시도: auctionId = {}, userId = {}", auctionId, userId, e);
-            messagingTemplate.convertAndSend("/sub/auction/" + auctionId,
-                    ResponseVO.failure("400", e.getMessage()));
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
+                    ResponseVO.failure("400", "자신의 입찰에 재입찰 할 수 없습니다."));
+        } catch (AuctionTimeNotValidException e) {
+          log.error("경매 시간이 아님. auctionId = {}, userId = {}", auctionId, userId, e);
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
+                    ResponseVO.failure("422", "입찰 가능한 시간이 아닙니다."));
         } catch (AuctionAlreadyFinishedException e) {
             log.error("이미 종료된 경매: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount, e);
-            messagingTemplate.convertAndSend("/sub/auction/" + auctionId,
-                    ResponseVO.failure("400", e.getMessage()));
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
+                    ResponseVO.failure("400", "이미 종료된 경매입니다."));
         } catch (WrongBidAmountException e) {
             log.error("잘못된 입찰 금액: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount, e);
-            messagingTemplate.convertAndSend("/sub/auction/" + auctionId,
-                    ResponseVO.failure("400", e.getMessage()));
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
+                    ResponseVO.failure("400", "현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다."));
         } catch (Exception e) {
             log.error("입찰 처리 중 예상치 못한 오류 발생: auctionId = {}, userId = {}", auctionId, userId, e);
-            messagingTemplate.convertAndSend("/sub/auction/" + auctionId,
-                    ResponseVO.failure("500", "입찰 처리 중 오류가 발생했습니다."));
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
+                    ResponseVO.failure("500", e.getMessage()));
         }
     }
 

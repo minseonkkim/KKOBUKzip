@@ -2,9 +2,12 @@ package com.turtlecoin.auctionservice.domain.auction.dto;
 
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
+import com.turtlecoin.auctionservice.domain.auction.entity.AuctionTag;
+import com.turtlecoin.auctionservice.feign.dto.TurtleFilteredResponseDTO;
 import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
 import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Slf4j
 public class AuctionResponseDTO {
     private Long id;
     private Long turtleId;
@@ -28,21 +32,24 @@ public class AuctionResponseDTO {
     private LocalDateTime endTime;
     private String content;
     private String progress;
-    private List<AuctionTagDTO> tags;
+    private Long remainingTime;
+    private String scientificName;
+    private List<String> tags;
 
     // 이미지 주소 리스트로 변경
     private List<String> images;
 
-    private TurtleResponseDTO turtleInfo;
+    private TurtleFilteredResponseDTO turtleInfo;
     private UserResponseDTO userInfo;
 
-    public static AuctionResponseDTO from(Auction auction, TurtleResponseDTO turtleInfo, UserResponseDTO userInfo) {
+    public static AuctionResponseDTO from(Auction auction, TurtleFilteredResponseDTO turtleInfo, UserResponseDTO userInfo, Long remainingTime, Double nowBid) {
+        log.info("Auction Tags: {}", auction.getAuctionTags());
         return AuctionResponseDTO.builder()
                 .id(auction.getId())
                 .turtleId(auction.getTurtleId())
                 .title(auction.getTitle())
                 .minBid(auction.getMinBid())
-                .nowBid(auction.getNowBid())
+                .nowBid(nowBid)
                 .winningBid(auction.getWinningBid())
                 .buyerId(auction.getBuyerId())
                 .sellerId(auction.getUserId())
@@ -50,10 +57,12 @@ public class AuctionResponseDTO {
                 .endTime(LocalDateTime.now())
                 .content(auction.getContent())
                 .sellerAddress(auction.getSellerAddress())
+                .remainingTime(remainingTime)
+                .scientificName("임시학명 거북이!!!")
                 .progress(auction.getAuctionProgress().toString())
                 .tags(auction.getAuctionTags().stream()
-                        .map(AuctionTagDTO::from)
-                        .toList())
+                        .map(AuctionTag::getTag)
+                        .collect(Collectors.toList())) // 태그 리스트
                 .images(auction.getAuctionPhotos().stream()  // 이미지 주소만 추출
                         .map(AuctionPhoto::getImageAddress)
                         .toList())

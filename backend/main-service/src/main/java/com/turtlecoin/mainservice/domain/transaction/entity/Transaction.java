@@ -2,6 +2,7 @@ package com.turtlecoin.mainservice.domain.transaction.entity;
 
 import com.turtlecoin.mainservice.domain.transaction.dto.DetailTransactionResponseDto;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
+import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
@@ -52,8 +53,11 @@ public class Transaction extends BaseEntity {
     private Boolean auctionFlag;
 
     // 구매자 아이디 추가(조회를 위해서)
-    @Column(name = "buyer_id")
+    @Column(name = "buyer_id", nullable = true)
     private Long buyerId;
+
+    @Column(name="buyer_uuid", nullable = true)
+    private String buyerUuid;
 
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     @Column(name = "transaction_photos")
@@ -66,7 +70,9 @@ public class Transaction extends BaseEntity {
 
 
     @Transactional
-    public void changeStatusToReviewDocument() {
+    public void changeStatusToReviewDocument(Long id, String uuid) {
+        this.buyerId = id;
+        this.buyerUuid = uuid;
         this.progress = TransactionProgress.REVIEW_DOCUMENT;
     }
 
@@ -80,13 +86,16 @@ public class Transaction extends BaseEntity {
 
         return DetailTransactionResponseDto.builder()
                 .transactionId(this.id)
+                .buyerId(this.getBuyerId())
+                .buyerUuid(this.getBuyerUuid())
+                .sellerUuid(this.turtle.getUser().getUuid())
                 .sellerId(this.turtle.getUser().getId()) // Seller ID
                 .sellerName(this.turtle.getUser().getName()) // Seller Name
                 .turtleId(this.turtle.getId()) // Turtle ID
                 .scientificName(this.turtle.getScientificName()) // Scientific Name
                 .price(this.price) // 가격
                 .createDate(this.getCreateDate().toString()) // 생성일자 (BaseEntity에서 상속된 필드)
-                .weight(this.turtle.getWeight()) // 거북이 무게
+                .weight(this.getWeight()) // 거북이 무게
                 .content(this.content) // 거래 내용
                 .transactionTag(this.tags.stream()
                         .map(TransactionTag::getTag)
@@ -97,6 +106,10 @@ public class Transaction extends BaseEntity {
                 .progress(this.progress.name()) // Enum 값 (거래 진행 상황)
                 .sellerImageUrl(this.turtle.getUser().getProfileImage())
                 .title(this.title)
+                .sellerAddress(this.sellerAddress)
+                .turtleUuid(this.turtle.getUuid())
+                .documentHash(this.documentHash)
+                .sellerNickname(this.getTurtle().getUser().getNickname())
                 .build();
     }
 }

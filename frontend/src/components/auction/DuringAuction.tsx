@@ -13,8 +13,8 @@ interface StompFrame {
 interface MessageType {
   auctionId: string;
   userId: string;
-  bidAmount: string;
-  nextBid: string;
+  bidAmount: number;
+  nextBid: number;
   nickname: string;
 }
 
@@ -30,13 +30,18 @@ interface BidRecordData {
   bidRecord: MessageType;
 }
 
-// const auctionId = 3;
 function DuringAuction({
   channelId,
   minBid,
+  // 남은시간, 현재 입찰가 추가
+  // 남은시간이 -2이면 경매시간이 아니라는 뜻
+  remainingTime,
+  nowBid
 }: {
   channelId: string;
   minBid: number;
+  remainingTime: number;
+  nowBid: number;
 }) {
   const auctionStompClient = useRef<CompatClient | null>(null);
 
@@ -46,65 +51,40 @@ function DuringAuction({
   const [nextBid, setNextBid] = useState(minBid);
   const { userInfo } = useUserStore();
 
+  // const [remainingTime, setRemainingTime] = useState(30);
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      // 소켓 설정
-      const socketAddress = import.meta.env.VITE_SOCKET_AUCTION_URL;
-      console.log(socketAddress);
+      const token = localStorage.getItem("accessToken");
+
+      // WebSocket 주소에 token과 auctionId를 쿼리 파라미터로 추가
+      const socketAddress = `${import.meta.env.VITE_SOCKET_AUCTION_URL}?token=${token}&auctionId=${auctionId}`;
       const socket = new WebSocket(socketAddress);
+
       auctionStompClient.current = Stomp.over(socket);
 
-      // 메세지 수신
       auctionStompClient.current.connect(
         {
-          //  Authorization:
+          // Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`
         },
         (frame: StompFrame) => {
           console.log("Connected: " + frame);
           auctionStompClient.current!.subscribe(
             `/sub/auction/${auctionId}`,
             (message) => {
-              console.log("Received message:", message.body);
               const newMessage: WsResponseType = JSON.parse(message.body);
-              // 다음 가격 수신
-              const newNextBid = Number(newMessage.data.data.bidRecord.nextBid);
-              setBidPrice(newNextBid);
-              setNextBid(newNextBid);
-              setBidHistory((prev) => {
-                const newHistory = [
-                  {
-                    bidder: newMessage.data.data.bidRecord.nickname,
-                    price: Number(newMessage.data.data.bidRecord.bidAmount),
-                  },
-                  ...prev,
-                ];
-                return newHistory.slice(0, 8);
-              });
-              // 여기까지 기존 거래 반영
-              // 하단은 UI효과
-              setTimeLeft(30);
-              setProgress(100); // 입찰 시 progress 값 초기화
-              setShowEmoji(true);
-              emojiApi.start({
-                from: { opacity: 0, transform: "translateY(50px)" },
-                to: { opacity: 1, transform: "translateY(0px)" },
-                onRest: () => {
-                  emojiApi.start({
-                    opacity: 0,
-                    transform: "translateY(-50px)",
-                  });
-                },
-              });
-              console.log("새로운 Message :", newMessage);
-            },
-            { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+              console.log("Received message:", newMessage);
+              setBidPrice(newMessage.data.data.bidRecord.nextBid);
+              // 다음 가격 수신 처리
+            }
           );
         },
         (error: unknown) => {
           console.error("Connection error: ", error);
         }
       );
+      setLoading(false);
     };
     init();
 
@@ -115,26 +95,36 @@ function DuringAuction({
     };
   }, [channelId]);
 
-  const sendBidRequest = () => {
-    const data = {
-      auctionId,
-      userId: userInfo?.userId, // store에서 가져올 것
-      bidAmount: bidPrice, // 현재입찰가
-    };
+  // 입찰 요청 보내기
+  const sendBidRequest = async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const data = {
+        auctionId,
+        userId: userInfo?.userId, // store에서 가져올 것
+        bidAmount: bidPrice, // 현재입찰가
+        remainingTime: remainingTime, // 남은 시간
+        nowBid: nowBid // 현재 입찰가
+      };
 
-    if (auctionStompClient.current && auctionStompClient.current.connected)
-      auctionStompClient.current.send(
-        `/pub/auction/${auctionId}/bid`,
-        {
-          //  Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`
-        },
-        JSON.stringify(data)
-      );
-    console.log("메세지BidRequest 테스트", data);
-    // 이곳에서 디바운싱 적용할 것
+      if (auctionStompClient.current && auctionStompClient.current.connected)
+        auctionStompClient.current.send(
+          `/pub/auction/${auctionId}/bid`,
+          {
+            //  Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`
+          },
+          JSON.stringify(data)
+        );
+      console.log("메세지BidRequest 테스트", data);
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 200);
+    }
   };
 
-  const [bidPrice, setBidPrice] = useState(minBid); // 입찰가
+  const [bidPrice, setBidPrice] = useState(nowBid); // 입찰가
   const [bidHistory, setBidHistory] = useState<
     { bidder: string; price: number }[]
   >([
@@ -151,7 +141,7 @@ function DuringAuction({
     to: { opacity: 0, transform: "translateY(50px)" },
   }));
 
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(~~(remainingTime/10)); // 남은시간으로 변경
   const [auctionEnded, setAuctionEnded] = useState(false);
 
   // **Progress bar 애니메이션 설정**
@@ -198,32 +188,6 @@ function DuringAuction({
   }, [timeLeft]);
   // ------------------여기까지 작성했음--------------
 
-  // const handleBid = () => {
-  //   if (!auctionEnded) {
-  //     const newPrice = bidPrice + 100000;
-  //     setBidPrice(newPrice);
-  //     setTimeLeft(30);
-  //     setProgress(100); // 입찰 시 progress 값 초기화
-
-  //     setBidHistory((prevHistory) => {
-  //       const newHistory = [
-  //         { bidder: "꼬북맘", price: newPrice },
-  //         ...prevHistory,
-  //       ];
-  //       return newHistory.slice(0, 8);
-  //     });
-
-  //     setShowEmoji(true);
-  //     emojiApi.start({
-  //       from: { opacity: 0, transform: "translateY(50px)" },
-  //       to: { opacity: 1, transform: "translateY(0px)" },
-  //       onRest: () => {
-  //         emojiApi.start({ opacity: 0, transform: "translateY(-50px)" });
-  //       },
-  //     });
-  //   }
-  // };
-
   useEffect(() => {
     api.start({ price: bidPrice });
   }, [bidPrice, api]);
@@ -260,38 +224,36 @@ function DuringAuction({
         <div className="w-full px-[40px]">
           <div className="flex flex-col justify-center items-center mb-4">
             <div className="flex flex-row items-center">
-              <div className="font-bold text-[27px]">
+              <div className="font-bold text-[20px] md:text-[25px]">
                 {minBid === bidPrice ? "최소 입찰가" : "현재 입찰가"}
                 &nbsp;&nbsp;
               </div>
-              <animated.div className="font-bold text-[39px] text-[#4B721F] font-stardust">
+              <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
+
+                <animated.div className="text-[31px] md:text-[39px]">
                 {springProps.price.to(
-                  (price) => `${Math.floor(price).toLocaleString()}원`
+                  (price) => `${Math.floor(price).toLocaleString()}`
                 )}
-              </animated.div>
+                </animated.div>
+                <div className="text-[27px] md:text-[29px]">TURT</div>
+              </div>
             </div>
             <button
               onClick={() => {
                 // handleBid();
                 sendBidRequest();
               }}
-              className="mt-5 cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] active:scale-90 text-[30px] font-dnf-bitbit"
+              className="mt-4 cursor-pointer bg-[#4B721F] text-white py-3 px-7 rounded-[10px] active:scale-90 text-[30px] font-dnf-bitbit"
               disabled={auctionEnded}
             >
-              {auctionEnded ? "낙찰 완료" : "👋🏻 입찰하기"}
+              {loading ? (
+                <div className="w-9 h-8 mx-16 my-2 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+              ) : auctionEnded ? (
+                "낙찰 완료"
+              ) : (
+                "👋🏻 입찰하기"
+              )}
             </button>
-
-            <div className="flex flex-col w-full text-[23px] mt-[80px]">
-              {bidHistory.map((bid, index) => (
-                <div
-                  key={index}
-                  className="flex flex-row justify-between leading-9"
-                >
-                  <span>{bid.bidder}</span>
-                  <span>{`${bid.price.toLocaleString()}원`}</span>
-                </div>
-              ))}
-            </div>
 
             {showEmoji && (
               <animated.div

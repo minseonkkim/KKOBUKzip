@@ -16,6 +16,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @Table(name = "user")
+@Builder
 public class User extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
@@ -66,6 +67,7 @@ public class User extends BaseEntity {
     }
 
     @Transactional
+
     public void modifyProfileImage(String imageURL){
         this.profileImage = imageURL;
     }
