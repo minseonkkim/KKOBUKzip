@@ -65,11 +65,22 @@ public class TransactionService {
                 throw new UserNotFoundException("유효한 토큰이 아닙니다.");
             }
             Turtle turtle = turtleRepository.getReferenceById(dto.getTurtleId());
-            if(transactionRepository.findByTurtle(turtle)!=null&&turtle.getUser().getId().equals(user.get().getId())){
-                throw new DuplicatedEnrollTransaction("이미 거래가 등록된 거북이 입니다.");
-            }
-            if(turtle.getUser().getUuid()!=user.get().getUuid()){
-                throw new IllegalAccessException("잘못된 접근 입니다.");
+            Optional<Transaction> existingTransaction = transactionRepository.findTopByTurtleOrderByLastModifiedDateDesc(turtle);
+
+            if (existingTransaction != null) {
+                Long previousOwnerId = turtle.getUser().getId();
+                Long currentOwnerId = user.get().getId();
+
+                // 이전 거래 주인과 현재 거래 등록 주인이 동일한지 확인
+                if (Objects.equals(previousOwnerId, currentOwnerId)) {
+                    throw new DuplicatedEnrollTransaction("이미 거래가 등록된 거북이 입니다. 거래를 등록할 수 없습니다.");
+                } else {
+                    // 이전 주인과 다르다면 새로운 거래를 허용
+                    System.out.println("주인이 변경되었으므로 거래를 등록할 수 있습니다.");
+                }
+            } else {
+                // 해당 거북이에 대한 기존 거래가 없는 경우
+                System.out.println("거래가 없으므로 새로운 거래를 등록합니다.");
             }
             transaction.setTitle(dto.getTitle());
             transaction.setContent(dto.getContent());

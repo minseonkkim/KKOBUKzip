@@ -46,4 +46,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findAllByUser(Long id);
 
     Transaction findByTurtle(Turtle turtle);
+
+    Optional<Transaction> findTopByTurtleOrderByLastModifiedDateDesc(Turtle turtle);
 }
