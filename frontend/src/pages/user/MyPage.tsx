@@ -1,25 +1,11 @@
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import MyTurtle from "../../components/user/MyTurtle";
 import TransactionHistory from "../../components/user/TransactionHistory";
 import { TransactionItemDataType } from "../../types/transaction";
 import NoImage from "../../assets/no_image.webp";
 import { FaRandom } from "@react-icons/all-files/fa/FaRandom";
-// import CustomProfile1 from "../../../public/custom_profile/profile1.gif";
-// import CustomProfile2 from "../../../public/custom_profile/profile2.gif";
-// import CustomProfile3 from "../../../public/custom_profile/profile3.gif";
-// import CustomProfile4 from "../../../public/custom_profile/profile4.gif";
-// import CustomProfile5 from "../../../public/custom_profile/profile5.gif";
-// import CustomProfile6 from "../../../public/custom_profile/profile6.gif";
-// import CustomProfile7 from "../../../public/custom_profile/profile7.gif";
-// import CustomProfile8 from "../../../public/custom_profile/profile8.gif";
-// import CustomProfile9 from "../../../public/custom_profile/profile9.gif";
-// import CustomProfile10 from "../../../public/custom_profile/profile10.gif";
-// import CustomProfile11 from "../../../public/custom_profile/profile11.gif";
-// import CustomProfile12 from "../../../public/custom_profile/profile12.gif";
-// import CustomProfile13 from "../../../public/custom_profile/profile13.gif";
-// import CustomProfile14 from "../../../public/custom_profile/profile14.gif";
 
 import {
   getMyTransaction,
@@ -32,28 +18,28 @@ import { useNavigate } from "react-router-dom";
 
 function MyPage() {
   const navigate = useNavigate();
-  // const profileImages = [
-  //   CustomProfile1,
-  //   CustomProfile2,
-  //   CustomProfile3,
-  //   CustomProfile4,
-  //   CustomProfile5,
-  //   CustomProfile6,
-  //   CustomProfile7,
-  //   CustomProfile8,
-  //   CustomProfile9,
-  //   CustomProfile10,
-  //   CustomProfile11,
-  //   CustomProfile12,
-  //   CustomProfile13,
-  //   CustomProfile14,
-  // ];
   const [turtleData, setTurtleData] = useState<TurtleDataType[]>([]);
   const [selectedMenu, setSelectedMenu] = useState(1); // 0은 거래 내역, 1은 나의 거북이
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [myTransactions, setMyTransactions] = useState<TransactionItemDataType[]>([]);
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
+
+  // useMemo를 사용하여 불필요한 리렌더링 방지
+  const userTransactions = useMemo(() => myTransactions, [myTransactions]);
+  const userTurtles = useMemo(() => turtleData, [turtleData]);
+
+  // useCallback을 사용하여 함수의 재생성 방지
+  const openCustomModal = useCallback(() => setIsCustomModalOpen(true), []);
+  const closeCustomModal = useCallback(() => setIsCustomModalOpen(false), []);
+  const handleCustomOverlayClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (e.target === e.currentTarget) {
+        closeCustomModal();
+      }
+    },
+    [closeCustomModal]
+  );
 
   useEffect(() => {
   const init = async () => {
@@ -83,20 +69,20 @@ function MyPage() {
     init();
   }, []);
 
-  const openCustomModal = () => {
-    setIsCustomModalOpen(true);
-  };
-  const closeCustomModal = () => {
-    setIsCustomModalOpen(false);
-  };
+  // const openCustomModal = () => {
+  //   setIsCustomModalOpen(true);
+  // };
+  // const closeCustomModal = () => {
+  //   setIsCustomModalOpen(false);
+  // };
 
-  const handleCustomOverlayClick = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
-    if (e.target === e.currentTarget) {
-      closeCustomModal();
-    }
-  };
+  // const handleCustomOverlayClick = (
+  //   e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  // ) => {
+  //   if (e.target === e.currentTarget) {
+  //     closeCustomModal();
+  //   }
+  // };
 
   const getRandomProfileImage = () => {
     const randomIndex = Math.floor(Math.random() * 14) + 1;
