@@ -129,7 +129,7 @@ function TransactionDetailPage() {
                   <div className="text-[#9A9A9A] text-[18px]">
                     {transactionData.scientificName} |{" "}
                     {formatDate(transactionData.createDate ?? "")} |{" "}
-                    {transactionData.weight}kg
+                    {transactionData.weight}g
                   </div>
                   <div className="flex flex-row space-x-1">
                     {transactionData.transactionTag.map((tag, index) => (
