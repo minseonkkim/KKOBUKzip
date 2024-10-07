@@ -11,8 +11,8 @@ function OtherChatItem({
   const date = new Date(time);
 
   // 시간만 추출 (HH:MM:SS 형식)
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
 
   return (
     <>
