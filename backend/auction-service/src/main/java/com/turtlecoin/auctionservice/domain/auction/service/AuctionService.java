@@ -208,10 +208,15 @@ public class AuctionService {
             // null값일 때 어떻게 하지?
             Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX + auctionId, TimeUnit.MILLISECONDS);
 
-            // 종료됐거나, 시작하지 않았을 때
-            if (remainingTime == -2) {
-                remainingTime = 50L;
-            }
+//            // 종료됐거나, 시작하지 않았을 때
+//            if (remainingTime == -2) {
+//                if (auction.getEndTime().isAfter(LocalDateTime.now())) {
+//                    remainingTime = 0L;
+//                } else {
+//                    // 아직 시작 안한 경매
+//                    remainingTime = 0L;
+//                }
+//            }
 
             Object bidAmountObj = redisTemplate.opsForHash().get(key, "bidAmount");
 
