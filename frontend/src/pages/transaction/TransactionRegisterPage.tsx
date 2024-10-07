@@ -160,6 +160,7 @@ export default function TransactionRegisterPage() {
           onSubmit={submitHandle}
           className="text-[19px] md:text-[21px] flex flex-col gap-4"
         >
+          <div className="text-sm text-gray-400">판매자 메타마스크 지갑 주소 | {account ? account : "지갑을 연결해 주세요!"}</div>
           <div className="flex flex-row items-center gap-4">
             <div className="flex flex-row items-center">
               <label className="w-[108px] md:w-[120px]">판매가</label>

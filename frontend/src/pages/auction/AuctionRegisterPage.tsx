@@ -163,6 +163,7 @@ export default function AuctionRegisterPage() {
           onSubmit={submitHandle}
           className="text-[19px] md:text-[21px] flex flex-col gap-4"
         >
+          <div className="text-sm text-gray-400">판매자 메타마스크 지갑 주소 | {account ? account : "지갑을 연결해 주세요!"}</div>
           <div className="flex xl:flex-row flex-col items-start xl:items-center gap-4">
             <div className="flex flex-row items-center w-full xl:w-[50%] ">
               <label className="w-[108px] md:w-[120px]">시작일</label>
