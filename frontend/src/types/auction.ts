@@ -46,7 +46,7 @@ export interface AuctionListDataType {
   createDate: string | null;
   endTime: string;
   firstImageUrl: string;
-  id: number;
+  auctionId: number;
   lastModifiedDate: string | null;
   midBid: number;
   nowBid: number;
