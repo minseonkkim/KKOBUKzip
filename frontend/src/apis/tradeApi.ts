@@ -200,8 +200,6 @@ export const getTransactionData = async ({
   const response = await apiRequest<{ data: TransactionListData }>(() =>
     guestAxios.get(`/main/transaction/?${query}`)
   );
-  console.log(query);
-  console.log(response);
   return response;
 };
 
