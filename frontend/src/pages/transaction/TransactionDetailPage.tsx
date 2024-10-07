@@ -68,15 +68,23 @@ function TransactionDetailPage() {
   };
 
   const handleDeposit = async () => {
-    const result = await createTransaction(transactionData!.transactionId, transactionData!.sellerAddress, ~~(transactionData!.price), transactionData!.turtleUuid, userInfo!.uuid, transactionData!.sellerUuid);
-    
+    const result = await createTransaction(
+      transactionData!.transactionId,
+      transactionData!.sellerAddress,
+      ~~transactionData!.price,
+      transactionData!.turtleUuid,
+      userInfo!.uuid,
+      transactionData!.sellerUuid
+    );
+
     if (result) {
-      alert("거래 대금 송금이 완료되었습니다. 마이페이지로 이동하여 서류 작성을 진행해 주세요!");
+      alert(
+        "거래 대금 송금이 완료되었습니다. 마이페이지로 이동하여 서류 작성을 진행해 주세요!"
+      );
       navigate("/mypage");
     } else {
-      alert("거래 대금 송금이 실패했습니다. 다시 시도해 주세요.")
+      alert("거래 대금 송금이 실패했습니다. 다시 시도해 주세요.");
     }
-    
   };
 
   const openChat = () => {
@@ -113,9 +121,14 @@ function TransactionDetailPage() {
                     draggable="false"
                   />
 
-                  <FaAngleLeft onClick={handlePrev} className="cursor-pointer absolute left-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"/>
-                  <FaAngleRight onClick={handleNext} className="cursor-pointer absolute right-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"/>
-
+                  <FaAngleLeft
+                    onClick={handlePrev}
+                    className="cursor-pointer absolute left-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"
+                  />
+                  <FaAngleRight
+                    onClick={handleNext}
+                    className="cursor-pointer absolute right-1 top-1/2 transform -translate-y-1/2 text-white/50 text-[80px] p-2 font-bold"
+                  />
 
                   <div className="absolute bottom-3 right-3 bg-black/60 text-white px-4 py-2 rounded-[20px]">
                     {currentIndex + 1} /{" "}
@@ -137,7 +150,7 @@ function TransactionDetailPage() {
                         key={index}
                         className="whitespace-nowrap px-2 py-1 rounded-full text-[15px] bg-[#D5F0DD] text-[#065F46]"
                       >
-                        #{tag}
+                        {tag}
                       </span>
                     ))}
                   </div>
@@ -178,7 +191,7 @@ function TransactionDetailPage() {
                       </div>
                       <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
                         <div className="text-[31px] md:text-[39px]">
-                          {Math.floor(transactionData.price).toLocaleString()} 
+                          {Math.floor(transactionData.price).toLocaleString()}
                         </div>
                         <div className="text-[27px] md:text-[29px]">TURT</div>
                       </div>

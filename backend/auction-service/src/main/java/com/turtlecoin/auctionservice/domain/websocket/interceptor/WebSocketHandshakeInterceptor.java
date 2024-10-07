@@ -31,29 +31,28 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-        // JWT 토큰 검증 추가
-        String authHeader = request.getHeaders().getFirst("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            log.warn("Authorization 헤더가 없습니다.");
-            response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            return false;
-        }
+        // 쿼리에서 토큰 추출
+        String query = request.getURI().getQuery();
+        String token = extractTokenFromQuery(query);
 
-        String token = authHeader.substring(7);
-        if (!jwtUtil.validateAccessToken(token)) {
+        log.info("Token from query: {}", token);
+
+        if (token == null || !jwtUtil.validateAccessToken(token)) {
             log.warn("JWT 토큰이 유효하지 않습니다.");
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return false;
         }
 
-        // JWT에서 사용자 정보 추출
         Long userId = jwtUtil.getIdFromToken(token);
-        String nickname = jwtUtil.getUsernameFromToken(token);
+//        String nickname = jwtUtil.getUsernameFromToken(token);
 
-        // 메인 서비스에서 추가 사용자 정보 가져오기
+//        log.info("nickname: {}", nickname);
+        log.info("userId: {}", userId);
+
         UserResponseDTO user = mainClient.getUserById(userId);
         if (user != null) {
-            attributes.put("nickname", nickname);  // WebSocket 세션에 사용자 닉네임 저장
+            String nickname = user.getNickname();
+            attributes.put("nickname", nickname);
             log.info("유저 nickname 캐싱: {}", nickname);
         } else {
             log.warn("유저 정보를 찾을 수 없습니다.");
@@ -64,32 +63,42 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
 
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
-        // URI에서 경매 ID와 userId 추출
-        String query = request.getURI().getQuery();
-        String auctionId = extractAuctionId(query);
-        Long userId = extractUserId(query);  // 사용자 ID 추출 로직 추가
-
-        // Redis에서 경매 남은 시간 가져오기
-        Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX + auctionId, TimeUnit.MILLISECONDS);
-
-        if (remainingTime != null && remainingTime > 0) {
-            // 추출한 경매 ID와 남은 시간, 사용자 ID로 남은 시간을 전송
-
-//            messagingService.sendRemainingTimeToUser(userId, auctionId, remainingTime);
-        }
+//        // URI에서 경매 ID와 userId 추출
+//        String uri = request.getURI().toString();
+//        log.info("uri: {}", uri);
+//        String query = request.getURI().getQuery();
+//        String auctionId = extractAuctionId(query);
+////        Long userId = extractUserId(query);  // 사용자 ID 추출 로직 추가
+//
+//        // Redis에서 경매 남은 시간 가져오기
+//        Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX + auctionId, TimeUnit.MILLISECONDS);
+//
+//        if (remainingTime != null && remainingTime > 0) {
+//            // 추출한 경매 ID와 남은 시간, 사용자 ID로 남은 시간을 전송
+//
+////            messagingService.sendRemainingTimeToUser(userId, auctionId, remainingTime);
+//        }
     }
 
     private String extractAuctionId(String query) {
-        // 실제로 URI 쿼리에서 안전하게 auctionId를 추출하는 로직 필요
-        // 예시: "auctionId=1234"에서 1234 추출
+        if (query == null) {
+            throw new IllegalArgumentException("쿼리 문자열이 비어 있습니다.");
+        }
+        log.info("query: {}", query);
         String[] queryParams = query.split("&");
         for (String param : queryParams) {
             if (param.startsWith("auctionId=")) {
-                return param.split("=")[1];
+                String[] auctionParam = param.split("=");
+                if (auctionParam.length == 2) {
+                    return auctionParam[1];
+                } else {
+                    throw new IllegalArgumentException("경매 ID가 올바르지 않습니다.");
+                }
             }
         }
         throw new IllegalArgumentException("경매 ID를 찾을 수 없습니다.");
     }
+
 
     private Long extractUserId(String query) {
         // URI 쿼리에서 안전하게 userId 추출
@@ -100,5 +109,19 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
             }
         }
         throw new IllegalArgumentException("사용자 ID를 찾을 수 없습니다.");
+    }
+
+    private String extractTokenFromQuery(String query) {
+        if (query == null) {
+            return null;
+        }
+
+        String[] queryParams = query.split("&");
+        for (String param : queryParams) {
+            if (param.startsWith("token=")) {
+                return param.split("=")[1];
+            }
+        }
+        return null;
     }
 }

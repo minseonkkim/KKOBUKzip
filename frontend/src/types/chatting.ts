@@ -1,5 +1,5 @@
 export interface ChatListItem {
-  chattingId: number;
+  chattingId: string;
   otherUserId: number;
   otherUserNickname: string;
   otherUserProfileImage: string;

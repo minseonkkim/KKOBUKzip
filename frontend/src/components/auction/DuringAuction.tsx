@@ -33,9 +33,15 @@ interface BidRecordData {
 function DuringAuction({
   channelId,
   minBid,
+  // 남은시간, 현재 입찰가 추가
+  // 남은시간이 -2이면 경매시간이 아니라는 뜻
+  remainingTime,
+  nowBid
 }: {
   channelId: string;
   minBid: number;
+  remainingTime: number;
+  nowBid: number;
 }) {
   const auctionStompClient = useRef<CompatClient | null>(null);
 
@@ -45,22 +51,21 @@ function DuringAuction({
   const [nextBid, setNextBid] = useState(minBid);
   const { userInfo } = useUserStore();
 
+  // const [remainingTime, setRemainingTime] = useState(30);
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      // 소켓 설정
-      const socketAddress = import.meta.env.VITE_SOCKET_AUCTION_URL;
-      console.log(socketAddress);
+      const token = localStorage.getItem("accessToken");
+
+      // WebSocket 주소에 token과 auctionId를 쿼리 파라미터로 추가
+      const socketAddress = `${import.meta.env.VITE_SOCKET_AUCTION_URL}?token=${token}&auctionId=${auctionId}`;
       const socket = new WebSocket(socketAddress);
+
       auctionStompClient.current = Stomp.over(socket);
 
-      const token = localStorage.getItem("accessToken");
-      console.log("token", token)
-      // 메세지 수신
       auctionStompClient.current.connect(
-        {
-          Authorization: `Bearer ${token}`,
-        },
+        {},
         (frame: StompFrame) => {
           console.log("Connected: " + frame);
           auctionStompClient.current!.subscribe(
@@ -68,38 +73,8 @@ function DuringAuction({
             (message) => {
               const newMessage: WsResponseType = JSON.parse(message.body);
               console.log("Received message:", newMessage);
-              // 다음 가격 수신
-              const newNextBid = Number(newMessage.data.data.bidRecord.nextBid);
-              setBidPrice(newNextBid);
-              setNextBid(newNextBid);
-              setBidHistory((prev) => {
-                const newHistory = [
-                  {
-                    bidder: newMessage.data.data.bidRecord.nickname,
-                    price: Number(newMessage.data.data.bidRecord.bidAmount),
-                  },
-                  ...prev,
-                ];
-                return newHistory.slice(0, 8);
-              });
-              // 여기까지 거래 로직
-              // 하단은 UI효과
-              setTimeLeft(30);
-              setProgress(100); // 입찰 시 progress 값 초기화
-              setShowEmoji(true);
-              emojiApi.start({
-                from: { opacity: 0, transform: "translateY(50px)" },
-                to: { opacity: 1, transform: "translateY(0px)" },
-                onRest: () => {
-                  emojiApi.start({
-                    opacity: 0,
-                    transform: "translateY(-50px)",
-                  });
-                },
-              });
-              console.log("새로운 Message :", newMessage);
-            },
-            { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+              // 다음 가격 수신 처리
+            }
           );
         },
         (error: unknown) => {
@@ -126,6 +101,8 @@ function DuringAuction({
         auctionId,
         userId: userInfo?.userId, // store에서 가져올 것
         bidAmount: bidPrice, // 현재입찰가
+        remainingTime: remainingTime, // 남은 시간
+        nowBid: nowBid // 현재 입찰가
       };
 
       if (auctionStompClient.current && auctionStompClient.current.connected)
@@ -144,7 +121,7 @@ function DuringAuction({
     }
   };
 
-  const [bidPrice, setBidPrice] = useState(minBid); // 입찰가
+  const [bidPrice, setBidPrice] = useState(nowBid); // 입찰가
   const [bidHistory, setBidHistory] = useState<
     { bidder: string; price: number }[]
   >([
@@ -161,7 +138,7 @@ function DuringAuction({
     to: { opacity: 0, transform: "translateY(50px)" },
   }));
 
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(remainingTime); // 남은시간으로 변경
   const [auctionEnded, setAuctionEnded] = useState(false);
 
   // **Progress bar 애니메이션 설정**

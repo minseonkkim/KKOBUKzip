@@ -2,7 +2,7 @@ import TurtleListLayout from "../../layout/TurtleListLayout";
 import AuctionTurtle from "../../components/auction/AuctionTurtle";
 import { getAuctionDatas } from "../../apis/tradeApi";
 import { useCallback, useState } from "react";
-import { AuctionItemDataType } from "../../types/auction";
+import { AuctionItemDataType, AuctionListDataType } from "../../types/auction";
 
 const AuctionListPage = () => {
 
@@ -17,13 +17,13 @@ const AuctionListPage = () => {
   const fetchData = useCallback(
     async (page: number, filters: object, isSearch?: boolean): Promise<void> => {
       const result = await getAuctionDatas({ page, ...filters });
-      console.log(result);
 
-      if (result.status === 200) {
+      if (result?.status == 200) {
         const progressItems: JSX.Element[] = [];
         const auctionItems = result.data.data.data.auctions.map(
-          (item: AuctionItemDataType) => {
-            if (item.progress === "DURING_AUCTION") {
+          (item: AuctionListDataType) => {
+            console.log(item.auctionProgress);
+            if (item.auctionProgress === "DURING_AUCTION") {
               progressItems.push(<AuctionTurtle key={item.id} data={item} />);
             }
             return <AuctionTurtle key={item.id} data={item} />;

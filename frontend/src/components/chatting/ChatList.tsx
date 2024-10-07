@@ -4,14 +4,11 @@ import ChatCard from "./ChatCard";
 import ChatDetail from "./ChatDetail";
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import { AiOutlineMessage } from "@react-icons/all-files/ai/AiOutlineMessage";
-import { chatsData } from "../../fixtures/chatDummy";
 import { ChatListItem } from "../../types/chatting";
 import useChatStore from "../../store/useChatStore";
 import { fetchChatListData } from "../../apis/chatApi";
 import { useUserStore } from "../../store/useUserStore";
 import { EventSourcePolyfill } from "event-source-polyfill";
-
-const dummyData = chatsData;
 
 export default function ChatList() {
   const isTablet = useDeviceStore((state) => state.isTablet);
@@ -45,9 +42,7 @@ export default function ChatList() {
     const initializeSSE = () => {
       console.log("sse 연결 시도");
       const SSE_URL =
-        import.meta.env.VITE_SSE_MAIN_URL +
-        "/"+
-        Number(userInfo?.userId)
+        import.meta.env.VITE_SSE_MAIN_URL + "/" + Number(userInfo?.userId);
       // const eventSource = new EventSource(SSE_URL);
       // EventSourcePolyfill 사용
       const eventSource = new EventSourcePolyfill(SSE_URL, {
@@ -57,7 +52,7 @@ export default function ChatList() {
         },
         heartbeatTimeout: 7200 * 1000,
       });
-      
+
       eventSource.onopen = () => {
         console.log("!SSE 연결 성공!");
         console.log("readyState:", eventSource.readyState);
@@ -68,6 +63,14 @@ export default function ChatList() {
         const newChat: ChatListItem = JSON.parse(event.data);
         updateRoomList(newChat);
       };
+
+      eventSource.addEventListener("sse", (event) => {
+        const messageEvent = event as MessageEvent; // Type Assertion
+        console.log("SSE가 도착한다!!!!!");
+        console.log(messageEvent.data);
+        const newChat: ChatListItem = JSON.parse(messageEvent.data);
+        updateRoomList(newChat);
+      });
 
       eventSource.onerror = (error) => {
         console.error("SSE 에러 발생:", error);
@@ -86,7 +89,6 @@ export default function ChatList() {
         eventSource.close(); // 컴포넌트 언마운트 시 연결 종료
       };
     };
-    //initChatRoomList(dummyData);
     fetchDataAndInitializeSSE();
   }, []);
 

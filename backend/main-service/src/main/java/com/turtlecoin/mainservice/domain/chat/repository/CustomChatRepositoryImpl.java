@@ -101,4 +101,11 @@ public class CustomChatRepositoryImpl implements CustomChatRepository {
 			}
 		}
 	}
+
+	@Override
+	public Chat getSingleChatById(Long smallUserId, Long bigUserId) {
+		Query query = new Query(Criteria.where("participants").is(Arrays.asList(smallUserId, bigUserId)));
+		Chat result = mongoTemplate.findOne(query, Chat.class);
+		return result;
+	}
 }
