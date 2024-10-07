@@ -65,8 +65,21 @@ export default function TransactionRegisterPage() {
     const { name, value } = e.target;
     setTransactionData({ ...transactionData, [name]: value });
   };
+
+  // 소수점 표기를 위한 새로운 유틸리티 함수
+  const formatDecimal = (value: number): string => {
+    if (isNaN(value) || value === 0) return "0";
+    const fixed = value.toFixed(8);
+    return fixed.replace(/\.?0+$/, "");
+  };
+  
+  const calculateEthPrice = (turtPrice: string): string => {
+    const numericPrice = parseFloat(turtPrice.replace(/,/g, ""));
+    if (isNaN(numericPrice) || numericPrice === 0) return "0";
+    return formatDecimal(numericPrice / 5000000);
+  };
+
   const submitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
-    alert("submit");
     e.preventDefault();
 
     if (!account) {
@@ -141,19 +154,22 @@ export default function TransactionRegisterPage() {
           onSubmit={submitHandle}
           className="text-[19px] md:text-[21px] flex flex-col gap-4"
         >
-          <div className="flex flex-row items-center">
-            <label className="w-[108px] md:w-[120px]">판매가</label>
-            <input
-              className="mr-1 w-[250px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
-              type="text"
-              name="bid"
-              onInput={handleInputChange}
-              value={price}
-              placeholder="판매가를 입력해주세요"
-              maxLength={15}
-              required
-            />
-            TURT
+          <div className="flex flex-row items-center gap-4">
+            <div className="flex flex-row items-center">
+              <label className="w-[108px] md:w-[120px]">판매가</label>
+              <input
+                className="mr-1 w-[250px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
+                type="text"
+                name="bid"
+                onInput={handleInputChange}
+                value={price}
+                placeholder="판매가를 입력해주세요"
+                maxLength={15}
+                required
+              />
+              TURT
+            </div>
+            <div className="text-sm text-gray-400">/ {calculateEthPrice(price)} ETH</div>
           </div>
           <div className="flex flex-row items-center">
             <label className="w-[108px] md:w-[120px]">체중</label>
