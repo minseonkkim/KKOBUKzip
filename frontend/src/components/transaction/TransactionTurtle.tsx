@@ -49,7 +49,7 @@ export default function TransactionTurtle({
                   key={index}
                   className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full"
                 >
-                  #{tag}
+                  {tag}
                 </span>
               ))}
             </div>

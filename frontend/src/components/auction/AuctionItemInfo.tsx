@@ -44,13 +44,13 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
             {/* {itemData.turtleInfo.} */} | {itemData.turtleInfo.weight}kg
             {/* 24년 8월 10일생 | 8kg */}
           </div>
-          <div className="flex flex-row space-x-2">
+          <div className="flex flex-row space-x-1">
             {itemData.tags.map((tag, index) => (
               <span
                 key={index}
-                className="whitespace-nowrap px-2 py-1 rounded-full text-[18px] bg-[#D5F0DD] text-[#065F46]"
+                className="whitespace-nowrap px-2 py-1 rounded-full text-[15px] bg-[#D5F0DD] text-[#065F46]"
               >
-                #{tag}
+                {tag}
               </span>
             ))}
           </div>

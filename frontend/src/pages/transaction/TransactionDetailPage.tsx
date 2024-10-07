@@ -137,7 +137,7 @@ function TransactionDetailPage() {
                         key={index}
                         className="whitespace-nowrap px-2 py-1 rounded-full text-[15px] bg-[#D5F0DD] text-[#065F46]"
                       >
-                        #{tag}
+                        {tag}
                       </span>
                     ))}
                   </div>

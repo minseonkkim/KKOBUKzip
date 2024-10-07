@@ -118,7 +118,7 @@ interface MyTurtleProps{
   imageAddress: string;
 }
 
-export default function MyTurtle({turtleId, turtleUuid, name, scientificName, gender, weight, birth, imageAddress}:MyTurtleProps) {
+function MyTurtle({turtleId, turtleUuid, name, scientificName, gender, weight, birth, imageAddress}:MyTurtleProps) {
   const navigate = useNavigate();
   const { documentContract } = useWeb3Store();
   const [selectedMenu, setSelectedMenu] = useState(0);  // 0은 인공증식, 1은 양도양수, 2는 폐사
@@ -362,19 +362,19 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
 
                 {/* 인공증식 */}
                 {selectedMenu === 0 &&
-                <div className="md:h-[510px] h-[390px] overflow-y-auto md:p-12 p-3">
+                <div className="md:h-[460px] h-[390px] overflow-y-auto md:p-12 p-3">
                     <CompleteBreedDocument data={breedDocumentData}/>
                 </div>}
 
                 {/* 양도양수 */}
                 {selectedMenu === 1 &&
-                <div className="md:h-[510px] h-[390px] overflow-y-auto md:p-12 p-3">
+                <div className="md:h-[460px] h-[390px] overflow-y-auto md:p-12 p-3">
                     <CompleteAssignGrantDocument data={transferDocumentData}/>
                 </div>}
 
                 {/* 폐사 */}
                 {selectedMenu === 2 &&
-                <div className="md:h-[510px] h-[390px] overflow-y-auto md:p-12 p-3">
+                <div className="md:h-[460px] h-[390px] overflow-y-auto md:p-12 p-3">
                     <CompleteDeathDocument data={deathDocumentData}/>
                 </div>}
 
@@ -384,3 +384,5 @@ export default function MyTurtle({turtleId, turtleUuid, name, scientificName, ge
     </>
   );
 }
+
+export default MyTurtle;
