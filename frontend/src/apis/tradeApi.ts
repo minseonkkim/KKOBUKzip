@@ -6,7 +6,6 @@ import {
   TransactionItemDataType,
   TransactionItemDetailType,
 } from "../types/transaction";
-import { AuctionResponseDummuy } from "../fixtures/auctionDummy";
 
 interface AuctionResponseData<T> {
   success: true;
@@ -125,17 +124,12 @@ export const getAuctionDatas = async ({
   return response;
 };
 
-// 경매 단일 상품 조회 search dummy
+// 경매 단일 상품 조회
 export const getAuctionDetailItemData = async (auctionID: number) => {
   const response = (await apiRequest)<{
     data: { auction: AuctionItemDataType };
   }>(() => guestAxios.get(`/auction/${auctionID}`));
   return response;
-
-  // return {
-  //   success: true,
-  //   data: { data: AuctionResponseDummuy.data },
-  // };
 };
 
 // 경매 등록
@@ -186,14 +180,19 @@ export const getTransactionData = async ({
   const genderQuery = gender && gender !== "" ? `&gender=${gender}` : "";
   const sizeQuery =
     minWeight || maxWeight
-      ? `&size=${minWeight ? minWeight : "0"}-${maxWeight ? maxWeight : "999999999999"}`
+      ? `&size=${minWeight ? minWeight : "0"}-${
+          maxWeight ? maxWeight : "999999999999"
+        }`
       : "";
-  
-  const cleanedMinPrice = minPrice ? minPrice.replace(/,/g, '') : "0";
-  const cleanedMaxPrice = maxPrice ? maxPrice.replace(/,/g, '') : "999999999999";
-  const priceQuery = minPrice || maxPrice ? `&price=${cleanedMinPrice}-${cleanedMaxPrice}` : "";
 
-  const progressQuery = progress ? `&progress=${progress}` : ""; 
+  const cleanedMinPrice = minPrice ? minPrice.replace(/,/g, "") : "0";
+  const cleanedMaxPrice = maxPrice
+    ? maxPrice.replace(/,/g, "")
+    : "999999999999";
+  const priceQuery =
+    minPrice || maxPrice ? `&price=${cleanedMinPrice}-${cleanedMaxPrice}` : "";
+
+  const progressQuery = progress ? `&progress=${progress}` : "";
 
   const query = `${pageQuery}${genderQuery}${sizeQuery}${priceQuery}${progressQuery}`;
 
@@ -204,7 +203,6 @@ export const getTransactionData = async ({
   console.log(response);
   return response;
 };
-
 
 interface TransactionItemDetailData {
   status: number;

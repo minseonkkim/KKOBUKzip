@@ -1,19 +1,14 @@
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
-import { generateRandomData } from "../../../fixtures/docsDummy";
 import { useEffect, useState } from "react";
 import { getAllDocumentDataForAdmin } from "../../../apis/documentApis";
 import { AdminDocsListDataType } from "../../../types/document";
-
-// 테스트용 더미 데이터
-const dummyData = generateRandomData(100);
 
 function AdminDocsListPage() {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<AdminDocsListDataType[]>([]);
 
   // 네트워크 붙이고 더미 치울것
-  // search : dummy
   useEffect(() => {
     const getData = async () => {
       const { success, data, error } = await getAllDocumentDataForAdmin();
@@ -21,7 +16,6 @@ function AdminDocsListPage() {
       if (success && data?.length! > 0) {
         setDocuments(data!);
       } else {
-        setDocuments(dummyData as AdminDocsListDataType[]);
         alert(data?.length === 0 ? "데이터가 없습니다!" : error);
       }
     };
