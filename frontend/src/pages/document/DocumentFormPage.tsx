@@ -26,16 +26,14 @@ function DocumentFormPage() {
     document.head.appendChild(script);
   }, []);
 
-  
-
   const applicant = {
     name: userInfo!.name,
     birth: userInfo!.birth,
     phonenumber: userInfo!.phoneNumber,
     email: userInfo!.email,
     foreignFlag: userInfo!.foreignFlag,
-    address: userInfo!.address.split(' / ')[0]?.trim(),
-    detailedAddress: userInfo!.address.split(' / ')[1]?.trim(),
+    address: userInfo!.address.split(" / ")[0]?.trim(),
+    detailedAddress: userInfo!.address.split(" / ")[1]?.trim(),
   };
 
   useEffect(() => {
@@ -103,10 +101,16 @@ function DocumentFormPage() {
         {/* 선택 탭 끝 */}
 
         {/* 신청인 정보 -데이터 연동되면 할당할 것 */}
-        {/* search keyword : dummy */}
         <MyDocumentDataForm info={applicant} />
 
-        <Outlet context={{ applicantName: applicant.name , applicantPhoneNumber: applicant.phonenumber , applicantAddress: applicant.address, applicantDetailAddress: applicant.detailedAddress }} />
+        <Outlet
+          context={{
+            applicantName: applicant.name,
+            applicantPhoneNumber: applicant.phonenumber,
+            applicantAddress: applicant.address,
+            applicantDetailAddress: applicant.detailedAddress,
+          }}
+        />
       </div>
     </>
   );
