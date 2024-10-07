@@ -66,7 +66,7 @@ export default function TransactionRegisterPage() {
     setTransactionData({ ...transactionData, [name]: value });
   };
 
-  // 소수점 표기를 위한 새로운 유틸리티 함수
+  // 소수점 표기를 위한 유틸리티 함수
   const formatDecimal = (value: number): string => {
     if (isNaN(value) || value === 0) return "0";
     const fixed = value.toFixed(8);
