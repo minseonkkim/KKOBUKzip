@@ -15,7 +15,7 @@ export interface ChattingStore {
   closeChatDetail: () => void;
   initChatRoomList: (initData: ChatListItem[]) => void;
   updateRoomList: (newChat: ChatListItem) => void;
-  addTotalUnreadCount: () => void;
+  addTotalUnreadCount: (count: number) => void;
   subTotalUnreadCount: (count: number) => void;
 }
 
@@ -143,9 +143,9 @@ const useChatStore = create<ChattingStore>((set) => ({
       return { chatRoomList: [newChat, ...updatedChats] }; // 새 채팅을 최상단에 추가
     }),
 
-  addTotalUnreadCount: () => {
+  addTotalUnreadCount: (count: number) => {
     set((state) => ({
-      totalUnreadCount: state.totalUnreadCount + 1,
+      totalUnreadCount: state.totalUnreadCount + count,
     }));
   },
 
