@@ -84,12 +84,17 @@ public class AuctionController {
             @RequestParam(value = "progress", required = false) AuctionProgress progress,
             @RequestParam(value = "page", defaultValue = "0") int page
     ) {
+
+        log.info("Gender : {}, Size : {}, Price : {}", gender, size, price, progress);
         // size 파라미터 변환 처리 (AbetweenB -> A-B)
         Double minSize = null;
         Double maxSize = null;
-        if (size != null && size.contains("between")) {
-            String[] sizeRange = size.replace("between", "-").split("-");
+        if (size != null && size.contains("-")) {
+            String[] sizeRange = size.split("-");
+            System.out.println("길이"+ sizeRange.length);
             if (sizeRange.length == 2) {
+                log.info(sizeRange[0]);
+                log.info(sizeRange[1]);
                 minSize = Double.parseDouble(sizeRange[0]);
                 maxSize = Double.parseDouble(sizeRange[1]);
             }
@@ -98,9 +103,12 @@ public class AuctionController {
         // price 파라미터 변환 처리 (AbetweenB -> A-B)
         Double minPrice = null;
         Double maxPrice = null;
-        if (price != null && price.contains("between")) {
-            String[] priceRange = price.replace("between", "-").split("-");
+        if (price != null && price.contains("-")) {
+            String[] priceRange = price.split("-");
+            System.out.println("길이"+ priceRange.length);
             if (priceRange.length == 2) {
+                log.info(priceRange[0]);
+                log.info(priceRange[1]);
                 minPrice = Double.parseDouble(priceRange[0]);
                 maxPrice = Double.parseDouble(priceRange[1]);
             }

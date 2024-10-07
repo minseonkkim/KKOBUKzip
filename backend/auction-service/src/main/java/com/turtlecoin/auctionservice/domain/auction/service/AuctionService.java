@@ -2,14 +2,8 @@ package com.turtlecoin.auctionservice.domain.auction.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.turtlecoin.auctionservice.domain.auction.dto.AuctionFilterResponseDTO;
-import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResponseDTO;
-import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResultDTO;
-import com.turtlecoin.auctionservice.domain.auction.dto.RegisterAuctionDTO;
-import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
-import com.turtlecoin.auctionservice.domain.auction.entity.AuctionPhoto;
-import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
-import com.turtlecoin.auctionservice.domain.auction.entity.QAuction;
+import com.turtlecoin.auctionservice.domain.auction.dto.*;
+import com.turtlecoin.auctionservice.domain.auction.entity.*;
 import com.turtlecoin.auctionservice.domain.auction.facade.RedissonLockFacade;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
@@ -40,6 +34,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -305,39 +300,59 @@ public class AuctionService {
 
             List<TurtleFilteredResponseDTO> filteredTurtles = mainClient.getFilteredTurtles(gender, minSize, maxSize);
 
-            System.out.println("가져오는 거북이 정보 갯수"+filteredTurtles.size());
-            System.out.println("학명 가져오기"+filteredTurtles.get(0).getScientificName());
-            System.out.println("생일 가져오기"+filteredTurtles.get(0).getBirth());
-            System.out.println("성별 가져오기"+filteredTurtles.get(0).getGender());
-            log.info("구문: {}", whereClause.toString());
+            // filteredTurtles 리스트를 Map으로 변환 (turtleId를 키로 사용)
+            Map<Long, TurtleFilteredResponseDTO> turtleMap = filteredTurtles.stream()
+                    .collect(Collectors.toMap(TurtleFilteredResponseDTO::getId, turtle -> turtle));
+
             long totalAuctions = queryFactory.selectFrom(auction)
-                    .where(whereClause.and(auction.turtleId.in(
-                            filteredTurtles.stream().map(TurtleFilteredResponseDTO::getId).toList())))
+                    .where(whereClause.and(auction.turtleId.in(turtleMap.keySet())))
                     .fetch()
                     .size();
 
             List<Auction> auctions = queryFactory.selectFrom(auction)
-                    .where(whereClause.and(auction.turtleId.in(
-                            filteredTurtles.stream().map(TurtleFilteredResponseDTO::getId).toList())))
+                    .where(whereClause.and(auction.turtleId.in(turtleMap.keySet())))
                     .offset(page * 20L)
                     .limit(20)
                     .fetch();
 
+            // DetailAuctionResponseDTO 리스트 생성
+            List<DetailAuctionResponseDTO> dtos = auctions.stream()
+                    .map(a -> {
+                        UserResponseDTO userInfo = mainClient.getUserById(a.getUserId());
+                        TurtleFilteredResponseDTO turtleInfo = turtleMap.get(a.getTurtleId());
+                        return DetailAuctionResponseDTO.builder()
+                                .auctionId(a.getId())
+                                .sellerId(a.getUserId())
+                                .sellerName(userInfo.getName())
+                                .turtleId(a.getTurtleId())
+                                .scientificName("임시 거북이 학명!")
+                                .title(a.getTitle())
+                                .price(a.getNowBid())
+                                .weight(a.getWeight())
+                                .content(a.getContent())
+                                .sellerImageUrl(userInfo.getProfileImage())
+                                .sellerAddress(a.getSellerAddress())
+                                .buyerId(a.getBuyerId())
+                                .progress(a.getAuctionProgress().toString())
+                                .auctionTag(a.getAuctionTags().stream().map(AuctionTag::getTag).collect(Collectors.toList()))
+                                .auctionImage(a.getAuctionPhotos().stream().map(AuctionPhoto::getImageUrl).collect(Collectors.toList()))
+                                .build();
+                    })
+                    .toList();
+
             int totalPages = (int) Math.ceil((double) totalAuctions / 20);
 
             Map<String, Object> data = new HashMap<>();
-            data.put("auctions", auctions);
+            data.put("auctions", dtos);
             data.put("total_pages", totalPages);
-
+            log.info("dtos : {}", dtos);
             return new ResponseEntity<>(ResponseVO.success("경매가 성공적으로 조회 되었습니다.", "data", data), HttpStatus.OK);
         } catch (NumberFormatException e) {
             // 숫자 형식이 잘못된 경우 예외 처리
             return new ResponseEntity<>(ResponseVO.failure("400", "잘못된 형식의 입력값이 있습니다."), HttpStatus.BAD_REQUEST);
-
         } catch (IllegalArgumentException e) {
             // 기타 잘못된 인자 처리
             return new ResponseEntity<>(ResponseVO.failure("400", "잘못된 파라미터입니다."), HttpStatus.BAD_REQUEST);
-
         } catch (Exception e) {
             // 기타 예외 처리 (서버 오류)
             e.printStackTrace();  // 로그 출력
