@@ -141,6 +141,7 @@ function AuctionDetailPage() {
               changeAuctionStatus={changeAuctionStatus}
               startTime={auctionItemData?.startTime!}
               minBid={auctionItemData?.minBid!}
+              auctionId={auctionId}
             />
           )}
           {auctionStatus === "DURING_AUCTION" && (

@@ -104,7 +104,7 @@ function DuringAuction({
         auctionId,
         userId: userInfo?.userId, // store에서 가져올 것
         bidAmount: bidPrice, // 현재입찰가
-        remainingTime: remainingTime/1000, // 남은 시간
+        remainingTime: remainingTime, // 남은 시간
         nowBid: nowBid // 현재 입찰가
       };
 
@@ -141,7 +141,7 @@ function DuringAuction({
     to: { opacity: 0, transform: "translateY(50px)" },
   }));
 
-  const [timeLeft, setTimeLeft] = useState(~~(remainingTime/1000)); // 남은시간으로 변경
+  const [timeLeft, setTimeLeft] = useState(~~(remainingTime/10)); // 남은시간으로 변경
   const [auctionEnded, setAuctionEnded] = useState(false);
 
   // **Progress bar 애니메이션 설정**

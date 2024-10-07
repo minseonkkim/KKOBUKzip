@@ -203,8 +203,8 @@ public class AuctionService {
             }
             log.info("UserID: {}",user.getUserId());
 
-            String key = AUCTION_BID_KEY+auction;
-
+            String key = AUCTION_END_KEY_PREFIX+auction;
+            System.out.println("get요청 보낼 때 key : "+ key);
             // null값일 때 어떻게 하지?
             Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX + auctionId, TimeUnit.MILLISECONDS);
 

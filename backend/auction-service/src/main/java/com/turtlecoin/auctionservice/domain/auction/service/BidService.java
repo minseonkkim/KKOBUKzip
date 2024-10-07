@@ -39,11 +39,17 @@ public class BidService {
     public void startAuction(Long auctionId) {
         Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다: " + auctionId));
 
-        String key = AUCTION_BID_KEY + auctionId;
+        String key = AUCTION_END_KEY_PREFIX + auctionId;
+
+        redisTemplate.opsForValue().set(key, "ready");
+        System.out.println("redis expire key : "+key);
         redisTemplate.expire(key, (long) (30.1*1000), TimeUnit.MILLISECONDS); // TTL 30초 설정
 
+        Long remainingTime = redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
+        System.out.println("startAuction에서 remainingTime: " + remainingTime);
+        System.out.println("여기까지는 찍혔음1");
         auction.updateStatus(AuctionProgress.DURING_AUCTION);
-        
+        System.out.println("여기까지는 찍혔음2");
         // sse로 경매 시작을 알림
         sseService.notify(auction.getId(), "Auction Started");
         
