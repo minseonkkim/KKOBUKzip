@@ -24,6 +24,7 @@ function MyPage() {
   const [myTransactions, setMyTransactions] = useState<TransactionItemDataType[]>([]);
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
+  const [myTurtlesUuid, setMyTurtlesUuid] = useState<{turtleName: string, turtleUuid: string, turtleGender: string}[]>([]);
 
   // useMemo를 사용하여 불필요한 리렌더링 방지
   const userTransactions = useMemo(() => myTransactions, [myTransactions]);
@@ -42,17 +43,17 @@ function MyPage() {
   );
 
   useEffect(() => {
-  const init = async () => {
-    try {
-      const [transactionResponse, turtleResponse] = await Promise.all([
-        getMyTransaction(),
-        getMyTurtle(),
-      ]);
-      
-      if (transactionResponse.success) {
-        setMyTransactions(transactionResponse.data!.data.transaction);
-        console.log("거래내역 목록", transactionResponse.data!.data.transaction);
-      }
+    const init = async () => {
+      try {
+        const [transactionResponse, turtleResponse] = await Promise.all([
+          getMyTransaction(),
+          getMyTurtle(),
+        ]);
+        
+        if (transactionResponse.success) {
+          setMyTransactions(transactionResponse.data!.data.transaction);
+          console.log("거래내역 목록", transactionResponse.data!.data.transaction);
+        }
 
         if (transactionResponse.success) {
           setMyTransactions(transactionResponse.data!.data.transaction);
@@ -69,12 +70,27 @@ function MyPage() {
     init();
   }, []);
 
-  // const openCustomModal = () => {
-  //   setIsCustomModalOpen(true);
-  // };
-  // const closeCustomModal = () => {
-  //   setIsCustomModalOpen(false);
-  // };
+  useEffect(() => {
+    const makemMTurtlesUuidArray = () => {
+      const uuidArray = turtleData.map((turtle) => {
+        console.log(turtle)
+        return ({
+          turtleName: turtle.name,
+          turtleUuid: turtle.turtleUuid,
+          turtleGender: turtle.gender
+        })
+      });
+      setMyTurtlesUuid(uuidArray);
+    }
+    makemMTurtlesUuidArray();
+  }, [turtleData]);
+
+  const openCustomModal = () => {
+    setIsCustomModalOpen(true);
+  };
+  const closeCustomModal = () => {
+    setIsCustomModalOpen(false);
+  };
 
   // const handleCustomOverlayClick = (
   //   e: React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -121,7 +137,7 @@ function MyPage() {
   };
 
   const goToBreedDocPage = () => {
-    navigate("/doc-form/breed");
+    navigate("/doc-form/breed", { state: myTurtlesUuid });
   };
 
   return (
