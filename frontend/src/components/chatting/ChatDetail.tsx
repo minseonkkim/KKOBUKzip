@@ -208,8 +208,8 @@ export default function ChatDetail({
             />
           </div>
           <div className="p-[10px] mt-[49px] mb-[42px] flex flex-col">
-            {groupedChat.map((group, index) => (
-              <div key={index}>
+            {groupedChat.map((group) => (
+              <div key={group.date}>
                 {/* 날짜 */}
 
                 <ChatDayDivider date={group.date} />
