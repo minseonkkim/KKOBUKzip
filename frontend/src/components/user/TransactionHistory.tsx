@@ -18,7 +18,7 @@ interface TransactionHistoryProps {
   sellerAddress: string;
   transactionTag: string[];
   transactionImage: string[];
-  documentHash: string;
+  documentHash: string | null;
   amount: number;
   progress: string;
   myTurtlesUuid: MyTurtleInfo[];
@@ -36,6 +36,10 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
   const { openChatDetail } = useChatStore();
   const { createTransaction, releaseFunds } = useEscrowStore();
   const { account } = useWeb3Store();
+
+  // "서류 작성 단계"에서 구매자/판매자 구분 boolean
+  const isBuyer = userInfo?.userId !== props.sellerId && props.documentHash === null;
+  const isSeller = userInfo?.userId === props.sellerId && props.documentHash !== null;
 
   const handleDeposit = async () => {
     if (account && props.transactionId !== undefined && props.sellerAddress && props.amount !== undefined) {
@@ -96,8 +100,6 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
           <img src={props.transactionImage ? props.transactionImage[0] : NoTurtleImg} loading="lazy" className="w-[130px] lg:w-[200px] h-[130px] lg:h-[150px] rounded-[10px] object-cover" draggable="false" alt="turtle image" />
           <div className="flex flex-col justify-between w-[300px] ml-[15px]">
             <div>
-              {/* <div>{props.sellerName}</div> */}
-
               <div className="mb-1 whitespace-nowrap flex flex-row items-end font-bold font-stardust text-[#4B721F]">
                 <div className="text-[27px] md:text-[29px]">{props.amount?.toLocaleString("ko-KR")}</div>
                 <div className="text-[20px] md:text-[21px]">TURT</div>
@@ -132,7 +134,7 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
                   </button>
                 )}
                 {/* 예약 단계에 활성화 */}
-                {props.progress === "REVIEW_DOCUMENT" && (
+                {(props.progress === "REVIEW_DOCUMENT" && (isBuyer || isSeller)) && (
                   <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0]" onClick={startPaperwork}>
                     {userInfo!.userId !== props.sellerId ? "양수" : "양도"} 서류 작성
                   </button>
