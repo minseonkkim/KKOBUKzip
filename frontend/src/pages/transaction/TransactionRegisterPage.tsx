@@ -8,6 +8,7 @@ import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
 import { addTransactionItem } from "../../apis/tradeApi";
 import formatDate from "../../utils/formatDate";
 import { useWeb3Store } from "../../store/useWeb3Store";
+import Loading from "../../components/common/Loading";
 
 
 export default function TransactionRegisterPage() {
@@ -17,6 +18,7 @@ export default function TransactionRegisterPage() {
   const [images, setImages] = useState<File[]>([]);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const [transactionData, setTransactionData] = useState({
     weight: "",
@@ -81,9 +83,11 @@ export default function TransactionRegisterPage() {
 
   const submitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     if (!account) {
       alert("메타마스크 계정이 연결되지 않았습니다. 연결 확인 후 다시 시도해 주세요.");
+      setLoading(false);
       return;
     }
 
@@ -114,14 +118,16 @@ export default function TransactionRegisterPage() {
         throw Error(response.message);
       }
 
-      console.log("Transaction added successfully:", response);
+      if(window.confirm(`${state.name}(이)의 판매 등록이 완료되었습니다.`)){
+        console.log("Transaction added successfully:", response);
+        navigate("/transaction-list");
+      }
       
-      // 성공 처리
-      alert(`${state.name}(이)의 거래 등록이 완료되었습니다.`)
-      navigate("/transaction-list");
     } catch (error) {
       console.error("Error adding transaction:", error);
-      alert("새로운 거래 생성에 실패했습니다. 다시 시도해 주세요.");
+      alert("새로운 판매 생성에 실패했습니다. 다시 시도해 주세요.");
+    } finally{
+      setLoading(false);
     }
   };
   const gender = {
@@ -135,6 +141,8 @@ export default function TransactionRegisterPage() {
         <title>판매 등록하기</title>
       </Helmet>
       <Header />
+
+      {loading ? <Loading/> : 
       <div className="px-4 lg:px-[250px] mt-[72px]">
         <div className="text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-0 lg:pt-[32px] pb-[13px]">
           판매 등록하기
@@ -324,7 +332,7 @@ export default function TransactionRegisterPage() {
             </button>
           </div>
         </form>
-      </div>
+      </div>}
     </>
   );
 }
