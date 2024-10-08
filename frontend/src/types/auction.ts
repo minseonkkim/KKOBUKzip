@@ -43,7 +43,7 @@ export interface AuctionData {
 
 export interface AuctionListDataType {
   auctionPhotos: string[];
-  auctionProgress: string;
+  progress: string;
   auctionTag: string[] | null;
   buyerId: number | null;
   content: string;
