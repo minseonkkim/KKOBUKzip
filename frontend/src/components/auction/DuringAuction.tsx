@@ -49,7 +49,7 @@ function DuringAuction({
   const auctionId = Number(channelId);
   const [loading, setLoading] = useState(true);
   // const [isBidStarted, setIsBidStarted] = useState(false);
-  const [nowBid, setNowBid] = useState(initialBid);
+  // const [nowBid, setNowBid] = useState(initialBid);
   const [nextBid, setNextBid] = useState(minBid);
   const { userInfo } = useUserStore();
 
@@ -163,7 +163,7 @@ function DuringAuction({
     }
   };
 
-  const [bidPrice, setBidPrice] = useState(nowBid); // 입찰가
+  const [bidPrice, setBidPrice] = useState(initialBid); // 입찰가
   const [bidHistory, setBidHistory] = useState<
     { bidder: string; price: number }[]
   >([

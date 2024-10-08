@@ -8,7 +8,6 @@ function AdminDocsListPage() {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<AdminDocsListDataType[]>([]);
 
-  // 네트워크 붙이고 더미 치울것
   useEffect(() => {
     const getData = async () => {
       const { success, data, error } = await getAllDocumentDataForAdmin();
