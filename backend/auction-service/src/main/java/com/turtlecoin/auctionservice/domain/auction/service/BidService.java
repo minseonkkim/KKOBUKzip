@@ -60,7 +60,6 @@ public class BidService {
     @Transactional
     public void processBidWithRedis(Long auctionId, Long userId, Double bidAmount) {
         // 1. 경매 시작 및 상태 확인
-        log.info("경매 시작 안했으면 강제로 시작, AuctionID : {}", auctionId);
 //        startAuctionIfNotStarted(auctionId);
 
         // 2. 현재 경매와 입찰 정보를 확인하고 유효성을 검증
@@ -108,7 +107,7 @@ public class BidService {
     private Double getCurrentBidAmount(Long auctionId, Auction auction) {
         String redisKey = AUCTION_BID_KEY + auctionId;
         Map<Object, Object> currentBidData = redisTemplate.opsForHash().entries(redisKey);
-        Double currentBid = auction.getMinBid(); // 기본값은 경매 최소 입찰가
+        Double currentBid = 0D; // 기본값은 0원
         if (!currentBidData.isEmpty()) {
             System.out.println("최근 입찰 데이터가 있는 경우의 currentBid : "+currentBid);
             return parseBidAmount(currentBidData.get("bidAmount"));
@@ -176,15 +175,11 @@ public class BidService {
     }
 
     private void notifyClientWithBidInfo(Long auctionId, Long userId, Double bidAmount, Double newBidAmount) {
-        log.info("유저 닉네임 가져오기 시도");
         String userNickname = userService.getUserNicknameById(userId);
-        log.info("userNickname: {}", userNickname);
-
-        log.info("잔여시간 가져오기");
+        log.info("입찰한 userNickname: {}", userNickname);
 
         String key = AUCTION_END_KEY_PREFIX + auctionId;
-        System.out.println("key : "+key);
-        log.info("key : {}", key);
+
         Double remainingTime = (double) redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
         log.info("remaining time : {}", remainingTime);
 
@@ -197,9 +192,9 @@ public class BidService {
                 .nextBid(newBidAmount)
                 .remainingTime(remainingTime)
                 .build();
-        log.info("BidRecord : {}", bidRecord);
+
         notifyClient(auctionId, bidRecord, false, null);
-        System.out.println("전송까지 완료");
+        log.info("클라이언트들에게 전송 완료");
     }
 
 //    private void updateAuctionEndTime(Long auctionId, LocalDateTime localDateTime) {
@@ -245,7 +240,7 @@ public class BidService {
             System.out.println("===");
             System.out.println(data.get("bidRecord").toString());
             System.out.println("===");
-            response = ResponseVO.success("Bid","data", data);
+            response = ResponseVO.bidSuccess("Bid","data", data);
         }
 
         // 클라이언트에게 ResponseVO 객체를 전송
