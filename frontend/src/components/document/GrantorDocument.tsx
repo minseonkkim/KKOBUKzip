@@ -7,33 +7,39 @@ import {
   AssignDocumentDataType as GrantorDocumentDataType,
   GrantorFetchData,
 } from "../../types/document";
-import { createGrantDocumentRequest, getDetailDocumentData } from "../../apis/documentApis";
+import {
+  createGrantDocumentRequest,
+  getDetailDocumentData,
+} from "../../apis/documentApis";
 import { grantDoc } from "../../utils/grantDriverObject";
+import { useUserStore } from "../../store/useUserStore";
 
 interface ApplicantInfoContext {
-  applicantName: string,
-  applicantPhoneNumber: string,
-  applicantAddress: string,
+  applicantName: string;
+  applicantPhoneNumber: string;
+  applicantAddress: string;
 }
 
 interface MyTurtleInfo {
-  turtleName: string,
-  turtleUuid: string,
-  turtleGender: string
+  turtleName: string;
+  turtleUuid: string;
+  turtleGender: string;
 }
 
 // 양도 서류 컴포넌트
 function GrantorDocument() {
   const { state } = useLocation();
-  const { applicantName, applicantPhoneNumber, applicantAddress } = useOutletContext<ApplicantInfoContext>();
+  const { applicantName, applicantPhoneNumber, applicantAddress } =
+    useOutletContext<ApplicantInfoContext>();
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
+  const { userInfo } = useUserStore();
 
   const [assignee, setAssignee] = useState<GrantorDocumentDataType>({
     name: "",
     phoneNumber: "",
-    address: ""
-  })
+    address: "",
+  });
 
   const [grantor, setGrantor] = useState<GrantorDocumentDataType>({
     name: "",
@@ -42,18 +48,18 @@ function GrantorDocument() {
   });
 
   const [detailByAssignee, setDetailByAssignee] = useState<{
-    turtleUUID: string,
-    count: number,
-    transferReason: string,
+    turtleUUID: string;
+    count: number;
+    transferReason: string;
   }>({
     turtleUUID: "",
     count: 0,
     transferReason: "",
-  })
+  });
 
   const [uuidData, setUuidData] = useState<{
-    motherUUID: string,
-    fatherUUID: string,
+    motherUUID: string;
+    fatherUUID: string;
   }>({
     motherUUID: "",
     fatherUUID: "",
@@ -71,28 +77,30 @@ function GrantorDocument() {
 
   useEffect(() => {
     // 기존 작성된 양수 서류 데이터 불러오기
-      getDetailDocumentData(state.turtleUuid, state.documentHash).then((response) => {
+    getDetailDocumentData(state.turtleUuid, state.documentHash).then(
+      (response) => {
         const data = response.data as AdminAssignDocumentDataType;
         setAssignee({
           name: data.assignee.name,
           phoneNumber: data.assignee.phoneNumber,
           address: data.assignee.address,
-        })
+        });
 
         setDetailByAssignee({
           turtleUUID: state.turtleUuid,
           count: data.detail.count,
           transferReason: data.detail.transferReason,
-        })
-      })
-  }, [state.documentHash, state.turtleUuid])
+        });
+      }
+    );
+  }, [state.documentHash, state.turtleUuid]);
 
   const loadUserData = () => {
     setGrantor({
       name: applicantName,
       phoneNumber: applicantPhoneNumber,
       address: applicantAddress,
-    })
+    });
     console.log("loadUserData");
   };
 
@@ -118,7 +126,7 @@ function GrantorDocument() {
 
     const docs: GrantorFetchData = {
       docType: "양도신청서",
-      applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d", // storage에서 가져올 것
+      applicant: userInfo!.uuid, // storage에서 가져올 것
       detail: {
         granter: {
           ...grantor,
@@ -126,10 +134,11 @@ function GrantorDocument() {
         },
 
         // UUID 부분 데이터 들어오면 할당할 것
-        turtleUUID: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-        aquisition: "0x1238801732341294",
-        motherUUID: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-        fatherUUID: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        turtleUUID: detailByAssignee.turtleUUID,
+        aquisition:
+          "?????????????????????????????????????ㅇㅇㅇ 제가뭘 할 수 있?????죠???????",
+        motherUUID: uuidData.motherUUID,
+        fatherUUID: uuidData.fatherUUID,
       },
     };
     const { success } = await createGrantDocumentRequest(docs);
@@ -154,7 +163,7 @@ function GrantorDocument() {
 
   const handleGuide = () => {
     grantDoc.drive();
-  }
+  };
 
   return (
     <>
@@ -163,7 +172,12 @@ function GrantorDocument() {
       </Helmet>
 
       <div className="flex justify-end">
-        <button onClick={handleGuide} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">가이드 시작</button>
+        <button
+          onClick={handleGuide}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          가이드 시작
+        </button>
       </div>
 
       <div id="grantContainer">
@@ -291,11 +305,15 @@ function GrantorDocument() {
             </div>
             <div className="flex items-center">
               <span className="w-1/3 font-medium">양수사유</span>
-              <span className="w-2/3 px-3 py-2">{detailByAssignee.transferReason}</span>
+              <span className="w-2/3 px-3 py-2">
+                {detailByAssignee.transferReason}
+              </span>
             </div>
             <div className="flex items-center">
               <label className="w-1/3 font-medium">개체식별번호</label>
-              <span className="w-2/3 px-3 py-2">{detailByAssignee.turtleUUID}</span>
+              <span className="w-2/3 px-3 py-2">
+                {detailByAssignee.turtleUUID}
+              </span>
             </div>
           </div>
         </div>
@@ -336,12 +354,22 @@ function GrantorDocument() {
                   onChange={(evt) => changeUuidData("fatherUUID", evt)}
                   value={uuidData.fatherUUID}
                 >
-                  <option value="" disabled>부 개체 고유번호</option>
-                  {state.myTurtlesUuid.map((turtle: MyTurtleInfo) => (
-                    turtle.turtleGender === "MALE" && <option key={turtle.turtleUuid} value={turtle.turtleUuid}>
-                      {turtle.turtleName} / {turtle.turtleGender === "MALE" ? "수컷" : "암컷"} ({turtle.turtleUuid})
-                    </option>
-                  ))}
+                  <option value="" disabled>
+                    부 개체 고유번호
+                  </option>
+                  {state.myTurtlesUuid.map(
+                    (turtle: MyTurtleInfo) =>
+                      turtle.turtleGender === "MALE" && (
+                        <option
+                          key={turtle.turtleUuid}
+                          value={turtle.turtleUuid}
+                        >
+                          {turtle.turtleName} /{" "}
+                          {turtle.turtleGender === "MALE" ? "수컷" : "암컷"} (
+                          {turtle.turtleUuid})
+                        </option>
+                      )
+                  )}
                 </select>
               </div>
               <div>
@@ -350,12 +378,22 @@ function GrantorDocument() {
                   onChange={(evt) => changeUuidData("motherUUID", evt)}
                   value={uuidData.motherUUID}
                 >
-                  <option value="" disabled>모 개체 고유번호</option>
-                  {state.myTurtlesUuid.map((turtle: MyTurtleInfo) => (
-                    turtle.turtleGender === "FEMALE" && <option key={turtle.turtleUuid} value={turtle.turtleUuid}>
-                      {turtle.turtleName} / {turtle.turtleGender === "FEMALE" ? "암컷" : "수컷"} ({turtle.turtleUuid})
-                    </option>
-                  ))}
+                  <option value="" disabled>
+                    모 개체 고유번호
+                  </option>
+                  {state.myTurtlesUuid.map(
+                    (turtle: MyTurtleInfo) =>
+                      turtle.turtleGender === "FEMALE" && (
+                        <option
+                          key={turtle.turtleUuid}
+                          value={turtle.turtleUuid}
+                        >
+                          {turtle.turtleName} /{" "}
+                          {turtle.turtleGender === "FEMALE" ? "암컷" : "수컷"} (
+                          {turtle.turtleUuid})
+                        </option>
+                      )
+                  )}
                 </select>
               </div>
             </div>

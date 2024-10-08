@@ -19,11 +19,17 @@ public class ResponseVO<T> {
     public ResponseVO() {
     }
 
+    public ResponseVO(String status, Map<String, T> data) {
+        this.status = status;
+        this.data = data;
+    }
+
     public ResponseVO(String status, String message, Map<String, T> data) {
         this.status = status;
         this.message = message;
         this.data = data;
     }
+
     public ResponseVO(String type, String status, String message, Map<String, T> data) {
         this.type = type;
         this.status = status;
@@ -40,8 +46,10 @@ public class ResponseVO<T> {
         return new ResponseVO<>(status, message, null);
     }
 
-    public static <T> ResponseVO<T> success(String type, String status, String message) {
-        return new ResponseVO<>(status, message, null);
+    public static <T> ResponseVO<T> bidSuccess(String type, String status, T data) {
+        Map<String, T> dataMap = new HashMap<>();
+        dataMap.put(type, data);
+        return new ResponseVO<>(status, dataMap);
     }
 
     public static <T> ResponseVO<T> success(String message, String name, T data) {
@@ -60,7 +68,7 @@ public class ResponseVO<T> {
         return new ResponseVO<>(status, message, null);
     }
 
-    public static <T> ResponseVO<T> failure(String type, String status,String message) {
+    public static <T> ResponseVO<T> failure(String type, String status, String message) {
         return new ResponseVO<>(type, status, message, null);
     }
 }
