@@ -2,6 +2,7 @@ package com.turtlecoin.auctionservice.domain.websocket.interceptor;
 
 import com.turtlecoin.auctionservice.feign.MainClient;
 import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
+import com.turtlecoin.auctionservice.global.config.StompPrincipal;
 import com.turtlecoin.auctionservice.global.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+import java.security.Principal;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -58,11 +60,16 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
             log.warn("유저 정보를 찾을 수 없습니다.");
         }
 
+        Principal userPrincipal = new StompPrincipal(userId.toString());
+        attributes.put("principal", userPrincipal);
+
+        System.out.println("beforeHandShake True!!");
         return true;
     }
 
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
+        System.out.println("afterHandShake True!!");
 //        // URI에서 경매 ID와 userId 추출
 //        String uri = request.getURI().toString();
 //        log.info("uri: {}", uri);
