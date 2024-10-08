@@ -80,7 +80,7 @@ function AuctionDetailPage() {
         return { ...prev, remainingTime: 30000 };
       }
       return prev;
-    })
+    });
     setAuctionStatus("DURING_AUCTION");
   }, []);
 
@@ -150,18 +150,20 @@ function AuctionDetailPage() {
               auctionId={Number(auctionId)}
             />
           )}
-          {auctionStatus === "DURING_AUCTION" && auctionItemData!.nowBid !== null && (
-            <DuringAuction
-              minBid={auctionItemData!.minBid}
-              channelId={String(auctionItemData?.id)}
-              initialBid={auctionItemData!.nowBid}
-              initTime={auctionItemData!.remainingTime}
-            />
-          )}
-          {auctionStatus === "NO_BID" || <NoBid />}
-          {auctionStatus === "SUCCESSFUL_BID" && auctionItemData!.nowBid !== null && (
-            <SuccessfulBid nowBid={auctionItemData!.nowBid} />
-          )}
+          {auctionStatus === "DURING_AUCTION" &&
+            auctionItemData!.nowBid !== null && (
+              <DuringAuction
+                minBid={auctionItemData!.minBid}
+                channelId={String(auctionItemData?.id)}
+                initialBid={auctionItemData!.nowBid}
+                initTime={auctionItemData!.remainingTime}
+              />
+            )}
+          {auctionStatus === "NO_BID" && <NoBid />}
+          {auctionStatus === "SUCCESSFUL_BID" &&
+            auctionItemData!.nowBid !== null && (
+              <SuccessfulBid nowBid={auctionItemData!.nowBid} />
+            )}
         </div>
       </main>
     </>
