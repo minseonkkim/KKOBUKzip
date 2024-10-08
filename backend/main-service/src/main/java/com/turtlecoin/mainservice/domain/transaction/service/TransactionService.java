@@ -67,10 +67,10 @@ public class TransactionService {
             Optional<Turtle> turtle = turtleRepository.findById(dto.getTurtleId());
             Optional<Transaction> existingTransaction = transactionRepository.findTopByTurtleOrderByLastModifiedDateDesc(turtle.orElse(null));
 
-            if (existingTransaction != null) {
-                Long previousOwnerId = turtle.get().getUser().getId();
+            if (existingTransaction.isPresent()) {
+                Long previousOwnerId = existingTransaction.get().getTurtle().getUser().getId();
                 Long currentOwnerId = user.get().getId();
-
+                System.out.println(previousOwnerId +" "+currentOwnerId);
                 // 이전 거래 주인과 현재 거래 등록 주인이 동일한지 확인
                 if (Objects.equals(previousOwnerId, currentOwnerId)) {
                     throw new DuplicatedEnrollTransaction("이미 거래가 등록된 거북이 입니다. 거래를 등록할 수 없습니다.");
