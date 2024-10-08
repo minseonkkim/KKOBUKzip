@@ -88,7 +88,7 @@ public class ChatController {
 			return new ResponseEntity<>(ResponseVO.failure("404", e.getMessage()), HttpStatus.NOT_FOUND);
 		}
 		catch(Exception e){
-			return new ResponseEntity<>(ResponseVO.failure("500", "조회 중 문제가 발생했습니다."), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ResponseVO.failure("500", e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(ResponseSingle.success("채팅 기록 조회에 성공했습니다.", list), HttpStatus.OK);
 	}
@@ -123,7 +123,7 @@ public class ChatController {
 		}
 		catch(Exception e){
 			//e.printStackTrace();
-			return new ResponseEntity<>(ResponseVO.failure("500", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(ResponseVO.failure("500", "조회 중 문제가 발생했습니다."), HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(ResponseSingle.success("채팅방 목록 조회에 성공했습니다.", list), HttpStatus.OK);
 	}
