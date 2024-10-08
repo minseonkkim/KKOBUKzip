@@ -25,8 +25,8 @@ public class SseService {
     public SseEmitter subscribe(Long auctionId) throws IOException {
         SseEmitter emitter = createEmitter(auctionId);
         log.info(auctionId + "에 대하여 SSE 연결 완료");
-        String jsonData = objectMapper.writeValueAsString("SSE Connected");
-        emitter.send(SseEmitter.event().id(String.valueOf(auctionId)).name("sse").data(jsonData));
+//        String jsonData = objectMapper.writeValueAsString("SSE Connected");
+//        emitter.send(SseEmitter.event().id(String.valueOf(auctionId)).name("sse").data(jsonData));
         return emitter;
     }
 
