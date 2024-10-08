@@ -46,13 +46,13 @@ function CompleteBreedDocument({ data }: { data: AdminBreedDocumentDataType | nu
           <div className="flex items-center">
             <label className="w-1/4 font-medium">모 개체</label>
             <span className="w-3/4 px-3 py-2">
-              {data!.detail.motherAquisition} <br />
+              {data!.detail.motherUUID} <br />
             </span>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-medium">부 개체</label>
             <span className="w-3/4 px-3 py-2">
-              {data!.detail.fatherAquisition} <br />
+              {data!.detail.fatherUUID} <br />
             </span>
           </div>
           <div className="flex items-center">
