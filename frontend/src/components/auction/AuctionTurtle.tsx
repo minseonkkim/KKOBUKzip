@@ -30,11 +30,11 @@ export default function AuctionTurtle({
         <div className="absolute top-4 right-4">
           <AuctionStatusTag
             progress={
-              data?.auctionProgress === "BEFORE_AUCTION"
+              data?.progress === "BEFORE_AUCTION"
                 ? "경매전"
-                : data?.auctionProgress === "DURING_AUCTION"
+                : data?.progress === "DURING_AUCTION"
                 ? "경매중"
-                : data?.auctionProgress === "NO_BID"
+                : data?.progress === "NO_BID"
                 ? "유찰"
                 : "낙찰"
             }
