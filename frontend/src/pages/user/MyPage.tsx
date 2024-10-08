@@ -245,7 +245,7 @@ function MyPage() {
       
     ) : (
       <>
-       <div className="flex flex-col space-y-4">
+       <div className="flex flex-col space-y-4 mb-4">
         {myAuctions.map((item) => (
           <AuctionHistory
             key={item.transactionId}
@@ -263,7 +263,7 @@ function MyPage() {
           />
         ))}
       </div>
-      <div className="flex flex-col space-y-4 mb-4">
+      <div className="flex flex-col space-y-4">
         {myTransactions.map((item) => (
           <TransactionHistory
             key={item.transactionId}
