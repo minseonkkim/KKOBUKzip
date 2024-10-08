@@ -69,11 +69,11 @@ public class AuctionWebSocketController {
 
 
             messagingTemplate.convertAndSendToUser(userId.toString(), destination,
-                    ResponseVO.success("Join", "200", "HIHI!!"));
+                    ResponseVO.bidSuccess("Join", "200", "HIHI!!"));
 
         // /user/{userId}/queue/auction/{auctionId}/init
             messagingTemplate.convertAndSendToUser(userId.toString(), destination,
-                    ResponseVO.success("Join", "200", initialData));
+                    ResponseVO.bidSuccess("Join", "200", initialData));
 
             log.info("기본값을 사용하여 유저에게 데이터 전송 완료: userId={}, auctionId={}", userId, auctionId);
         } else {
@@ -91,7 +91,7 @@ public class AuctionWebSocketController {
             // 클라이언트에게 데이터 전송
             String destination = "/queue/auction/" + auctionId + "/init";
             messagingTemplate.convertAndSendToUser(principal.getName(), destination,
-                    ResponseVO.success("Join", "200", initialData));
+                    ResponseVO.bidSuccess("Join", "200", initialData));
 
             log.info("유저에게 데이터 전송 완료: userId={}, auctionId={}", userId, auctionId);
         }
@@ -112,37 +112,37 @@ public class AuctionWebSocketController {
             log.error("경매를 찾을 수 없습니다: auctionId = {}, userId = {}", auctionId, userId, e);
             String destination = "/user/" + userId + "/queue/auction";
             messagingTemplate.convertAndSendToUser(userId.toString(), destination,
-                    ResponseVO.failure("409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요."));
+                    ResponseVO.failure("Bid","409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요."));
         } catch (AuctionNotFoundException e) {
             log.error("경매를 찾을 수 없습니다: auctionId = {}, userId = {}", auctionId, userId, e);
             String destination = "/user/" + userId + "/queue/auction";
             messagingTemplate.convertAndSendToUser(userId.toString(), destination,
-                    ResponseVO.failure("404", "해당 경매를 찾을 수 없습니다."));
+                    ResponseVO.failure("Bid", "404", "해당 경매를 찾을 수 없습니다."));
         } catch (SameUserBidException e) {
             log.error("동일 사용자의 재입찰 시도: auctionId = {}, userId = {}", auctionId, userId, e);
             String destination = "/user/" + userId + "/queue/auction";
             messagingTemplate.convertAndSendToUser(userId.toString(), destination,
-                    ResponseVO.failure("400", "자신의 입찰에 재입찰 할 수 없습니다."));
+                    ResponseVO.failure("Bid", "400", "자신의 입찰에 재입찰 할 수 없습니다."));
         } catch (AuctionTimeNotValidException e) {
           log.error("경매 시간이 아님. auctionId = {}, userId = {}", auctionId, userId, e);
             String destination = "/user/" + userId + "/queue/auction";
             messagingTemplate.convertAndSendToUser(userId.toString(), destination,
-                    ResponseVO.failure("422", "입찰 가능한 시간이 아닙니다."));
+                    ResponseVO.failure("Bid", "422", "입찰 가능한 시간이 아닙니다."));
         } catch (AuctionAlreadyFinishedException e) {
             log.error("이미 종료된 경매: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount, e);
             String destination = "/user/" + userId + "/queue/auction";
             messagingTemplate.convertAndSendToUser(userId.toString(), destination,
-                    ResponseVO.failure("400", "이미 종료된 경매입니다."));
+                    ResponseVO.failure("Bid", "400", "이미 종료된 경매입니다."));
         } catch (WrongBidAmountException e) {
             log.error("잘못된 입찰 금액: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount, e);
             String destination = "/user/" + userId + "/queue/auction";
             messagingTemplate.convertAndSendToUser(userId.toString(), destination,
-                    ResponseVO.failure("400", "현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다."));
+                    ResponseVO.failure("Bid", "400", "현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다."));
         } catch (Exception e) {
             log.error("입찰 처리 중 예상치 못한 오류 발생: auctionId = {}, userId = {}", auctionId, userId, e);
             String destination = "/user/" + userId + "/queue/auction";
             messagingTemplate.convertAndSendToUser(userId.toString(), destination,
-                    ResponseVO.failure("500", e.getMessage()));
+                    ResponseVO.failure("Bid", "500", e.getMessage()));
         }
     }
 

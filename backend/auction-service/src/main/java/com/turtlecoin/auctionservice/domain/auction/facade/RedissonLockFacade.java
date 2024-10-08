@@ -20,16 +20,15 @@ public class RedissonLockFacade {
 
     public void updateBidWithLock(Long auctionId, Long userId, Double bidAmount) {
         RLock lock = redissonClient.getLock(auctionId.toString());
-        log.info("redisson으로 락 걸기 시도");
-        System.out.println("redisson 락 걸기");
+        log.info("Redis를 이용한 락 실행");
         try {
             boolean available = lock.tryLock(5, 2, TimeUnit.SECONDS);
 
             if (!available) {
-                log.info("redisson으로 락 걸기 실패");
+                log.info("Lock 실패");
                 throw new BidConcurrencyException("다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요.");
             }
-            log.info("processBidWithRedis 진입");
+            log.info("Lock 성공");
             bidService.processBidWithRedis(auctionId, userId, bidAmount);  // BidService로 분리된 로직 호출
 
         } catch (InterruptedException e) {
