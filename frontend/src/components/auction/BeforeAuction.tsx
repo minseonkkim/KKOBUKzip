@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 
-
 function BeforeAuction({
   startTime,
   minBid,
@@ -13,8 +12,8 @@ function BeforeAuction({
   auctionId: number;
 }) {
   useEffect(() => {
-    const SSE_URL = import.meta.env.VITE_SSE_AUCTION_URL;
-    const eventSource = new EventSource(SSE_URL + "/" + auctionId);
+    const SSE_URL = import.meta.env.VITE_SSE_AUCTION_URL + "/" + auctionId;
+    const eventSource = new EventSource(SSE_URL);
     // 여기에서 SSE 연결하기
     // eventSource.onmessage = (event) => {
     //   console.log(event.data);
@@ -24,7 +23,7 @@ function BeforeAuction({
     eventSource.addEventListener("sse", (event) => {
       const messageEvent = event as MessageEvent; // Type Assertion
       console.log("SSE가 도착한다!!!!!");
-      // console.log(JSON.parse(messageEvent.data));
+      console.log(JSON.parse(messageEvent.data));
       changeAuctionStatus();
     });
 

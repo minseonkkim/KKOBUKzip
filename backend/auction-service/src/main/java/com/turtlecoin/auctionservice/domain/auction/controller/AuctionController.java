@@ -59,7 +59,12 @@ public class AuctionController {
     // SSE 연결
     @GetMapping(value = "/sse/subscribe/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(@PathVariable Long id) {
-        return sseService.subscribe(id);
+        try{
+            log.info(id + "로 SSE요청이 들어왔음");
+            return sseService.subscribe(id);
+        }catch (Exception e) {
+            return null;
+        }
     }
 
     // SSE 보내기 테스트

@@ -19,7 +19,8 @@ public class SseService {
 
 	public SseEmitter subscribe(Long userId) throws Exception{
 		SseEmitter emitter = createEmitter(userId);
-		// emitter.send(SseEmitter.event().id(String.valueOf(userId)).name("sse").data("SSE Connected"));
+		String jsonData = objectMapper.writeValueAsString("SSE Connected");
+		emitter.send(SseEmitter.event().id(String.valueOf(userId)).name("sse").data(jsonData));
 		return emitter;
 	}
 
