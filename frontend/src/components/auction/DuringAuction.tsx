@@ -37,7 +37,7 @@ function DuringAuction({
   // 남은시간, 현재 입찰가 추가
   // 남은시간이 -2이면 경매시간이 아니라는 뜻
   initTime,
-  initialBid
+  initialBid,
 }: {
   channelId: string;
   minBid: number;
@@ -61,7 +61,9 @@ function DuringAuction({
       const token = localStorage.getItem("accessToken");
 
       // WebSocket 주소에 token과 auctionId를 쿼리 파라미터로 추가
-      const socketAddress = `${import.meta.env.VITE_SOCKET_AUCTION_URL}?token=${token}&auctionId=${auctionId}`;
+      const socketAddress = `${
+        import.meta.env.VITE_SOCKET_AUCTION_URL
+      }?token=${token}&auctionId=${auctionId}`;
       const socket = new WebSocket(socketAddress);
 
       auctionStompClient.current = Stomp.over(socket);
@@ -72,7 +74,7 @@ function DuringAuction({
         },
         (frame: StompFrame) => {
           console.log("Connected: " + frame);
-          console.log("userID : ",userInfo!.userId)
+          console.log("userID : ", userInfo!.userId);
           auctionStompClient.current!.subscribe(
             `/user/queue/auction/${auctionId}/init`,
             (message) => {
@@ -88,15 +90,33 @@ function DuringAuction({
               const newMessage: WsResponseType = JSON.parse(message.body);
               console.log("Received message at auction:", newMessage);
               setBidPrice(newMessage.data.data.bidRecord.nextBid);
-              setRemainingTime(newMessage.data.data.bidRecord.remainingTime/1000)
-              
+              setRemainingTime(
+                newMessage.data.data.bidRecord.remainingTime / 1000
+              );
+
               setNextBid(newMessage.data.data.bidRecord.nextBid);
+
+              setBidHistory((prev) => {
+                const newHistory = [
+                  ...prev,
+
+                  {
+                    bidder: newMessage.data.data.bidRecord.nickname,
+                    price: Number(newMessage.data.data.bidRecord.bidAmount),
+                  },
+                ];
+                return newHistory.slice(0, 8);
+              });
               // 다음 가격 수신 처리
             }
           );
 
-          auctionStompClient.current!.send(`/pub/auction/${auctionId}/init`, {}, JSON.stringify({}));
-          console.log("빈값으로 보내기")
+          auctionStompClient.current!.send(
+            `/pub/auction/${auctionId}/init`,
+            {},
+            JSON.stringify({})
+          );
+          console.log("빈값으로 보내기");
         },
         (error: unknown) => {
           console.error("Connection error: ", error);
@@ -121,11 +141,11 @@ function DuringAuction({
       const data = {
         auctionId,
         userId: userInfo?.userId,
-        nickname: userInfo?.nickname,  // 추가
+        nickname: userInfo?.nickname, // 추가
         bidAmount: bidPrice,
-        nextBid: nextBid,              // 추가
+        nextBid: nextBid, // 추가
         remainingTime: remainingTime,
-    };
+      };
 
       if (auctionStompClient.current && auctionStompClient.current.connected)
         auctionStompClient.current.send(
@@ -160,7 +180,7 @@ function DuringAuction({
     to: { opacity: 0, transform: "translateY(50px)" },
   }));
 
-  const [timeLeft, setTimeLeft] = useState(~~(remainingTime/1000)); // 남은시간으로 변경
+  const [timeLeft, setTimeLeft] = useState(~~(remainingTime / 1000)); // 남은시간으로 변경
   const [auctionEnded, setAuctionEnded] = useState(false);
 
   // **Progress bar 애니메이션 설정**
@@ -248,11 +268,10 @@ function DuringAuction({
                 &nbsp;&nbsp;
               </div>
               <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
-
                 <animated.div className="text-[31px] md:text-[39px]">
-                {springProps.price.to(
-                  (price) => `${Math.floor(price).toLocaleString()}`
-                )}
+                  {springProps.price.to(
+                    (price) => `${Math.floor(price).toLocaleString()}`
+                  )}
                 </animated.div>
                 <div className="text-[27px] md:text-[29px]">TURT</div>
               </div>
@@ -273,7 +292,26 @@ function DuringAuction({
                 "👋🏻 입찰하기"
               )}
             </button>
+            <div>다음입찰가:{nextBid}</div>
 
+            <div>
+              {bidHistory.map((el, index) => {
+                return (
+                  <div key={index}>
+                    {index === 0 ? (
+                      <span style={{ fontSize: "1.5em", fontWeight: "bold" }}>
+                        {el.bidder} : {el.price}
+                      </span>
+                    ) : (
+                      <span>
+                        {el.bidder} : {el.price}
+                      </span>
+                    )}
+                    <br />
+                  </div>
+                );
+              })}
+            </div>
             {showEmoji && (
               <animated.div
                 style={emojiSpring}
