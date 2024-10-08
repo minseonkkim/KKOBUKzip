@@ -21,6 +21,7 @@ import com.turtlecoin.mainservice.domain.document.entity.Document;
 import com.turtlecoin.mainservice.domain.document.entity.Progress;
 import com.turtlecoin.mainservice.domain.document.entity.contract.TurtleDocumentation;
 import com.turtlecoin.mainservice.domain.document.repository.DocumentRepository;
+import com.turtlecoin.mainservice.domain.transaction.service.TransactionService;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
@@ -47,6 +48,7 @@ public class DocumentService {
 	private final TurtleRepository turtleRepository;
 	private final UserRepository userRepository;
 	private final TurtleService turtleService;
+	private final TransactionService transactionService;
 
 	// 서류 저장
 	@Transactional
