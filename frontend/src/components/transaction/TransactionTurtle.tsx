@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import TransactionStatusTag from "./TransactionStatusTag";
 import { TransactionItemDataType } from "../../types/transaction";
+import NoTurtleImg from "../../assets/NoTurtleImg.webp";
 
 export default function TransactionTurtle({
   item,
@@ -21,7 +22,7 @@ export default function TransactionTurtle({
       >
         <div className="overflow-hidden rounded-t-2xl relative">
           <img
-            src={item.transactionImage[0]}
+            src={item.transactionImage.length === 0 ? NoTurtleImg : item.transactionImage[0]}
             className={`w-full h-[200px] object-cover transition-transform duration-300 hover:scale-110 ${
               item.progress !== "SAIL" ? "filter brightness-50" : ""
             }`}
