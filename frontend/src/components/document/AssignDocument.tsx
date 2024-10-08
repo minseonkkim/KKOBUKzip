@@ -42,13 +42,14 @@ function AssignDocument() {
   const [detailLocation, setDetailLocation] = useState<string>("");
 
   useEffect(() => {
-    if (postcodeData?.jibunAddress) {
+    if (postcodeData?.roadAddress) {
       setAssignee((prev) => ({
         ...prev,
-        address: postcodeData.jibunAddress,
+        address: postcodeData.roadAddress,
       }));
     }
-  }, [postcodeData?.jibunAddress]);
+    console.log(assignee)
+  }, [postcodeData?.roadAddress]);
 
   // 유저데이터 로드하는 함수
   const loadUserData = () => {
