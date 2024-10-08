@@ -11,6 +11,7 @@ import java.util.Map;
 @Getter
 @Setter
 public class ResponseVO<T> {
+    private String type;
     private String status;
     private Map<String, T> data;
     private String message;
@@ -23,12 +24,23 @@ public class ResponseVO<T> {
         this.message = message;
         this.data = data;
     }
+    public ResponseVO(String type, String status, String message, Map<String, T> data) {
+        this.type = type;
+        this.status = status;
+        this.message = message;
+        this.data = data;
+    }
+
 
     public static <T> ResponseVO<T> success(String message) {
         return new ResponseVO<>("200", message, null);
     }
 
     public static <T> ResponseVO<T> success(String status, String message) {
+        return new ResponseVO<>(status, message, null);
+    }
+
+    public static <T> ResponseVO<T> success(String type, String status, String message) {
         return new ResponseVO<>(status, message, null);
     }
 
@@ -46,5 +58,9 @@ public class ResponseVO<T> {
 
     public static <T> ResponseVO<T> failure(String status,String message) {
         return new ResponseVO<>(status, message, null);
+    }
+
+    public static <T> ResponseVO<T> failure(String type, String status,String message) {
+        return new ResponseVO<>(type, status, message, null);
     }
 }

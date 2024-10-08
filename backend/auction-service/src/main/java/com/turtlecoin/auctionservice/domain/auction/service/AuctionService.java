@@ -58,9 +58,6 @@ public class AuctionService {
     public ResponseEntity<?> registerAuction(RegisterAuctionDTO registerAuctionDTO, List<MultipartFile> images) {
         List<AuctionPhoto> uploadedPhotos = new ArrayList<>();
         try {
-            log.info("경매 등록 시작 - 사용자 ID: {}, 거북이 ID: {}", registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
-
-            // 필수 입력 값 누락 시 에러 던져주기
             if (registerAuctionDTO.getTurtleId() == null || registerAuctionDTO.getSellerAddress() == null || registerAuctionDTO.getTitle() == null || registerAuctionDTO.getMinBid() == null) {
                 throw new IllegalArgumentException("필수 필드가 누락됐습니다.");
             }
@@ -69,6 +66,15 @@ public class AuctionService {
             log.info("두번째 검증");
             validateTurtleNotAlreadyRegistered(registerAuctionDTO.getTurtleId());
             log.info("검증 끝");
+
+            // 이미지가 없으면 예외 던지기
+            if (images == null || images.isEmpty()) {
+                throw new PhotoNotUploadedException("사진이 등록되지 않았습니다.");
+            }
+
+            uploadedPhotos = uploadImages(images, null);  // 경매와 아직 연결되지 않은 상태에서 업로드
+            log.info("이미지 업로드 완료");
+
             // 경매 저장
             Auction auction = auctionRepository.save(registerAuctionDTO.toEntity());
             log.info("경매 저장");
@@ -206,7 +212,7 @@ public class AuctionService {
             String key = AUCTION_END_KEY_PREFIX+auction;
             System.out.println("get요청 보낼 때 key : "+ key);
             // null값일 때 어떻게 하지?
-            Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX + auctionId, TimeUnit.MILLISECONDS);
+            Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX+auctionId, TimeUnit.MILLISECONDS);
 
 //            // 종료됐거나, 시작하지 않았을 때
 //            if (remainingTime == -2) {
