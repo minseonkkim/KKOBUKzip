@@ -9,6 +9,7 @@ export interface AuctionItemDataType {
   buyerId: number | null; //현재 입찰 회원
   startTime: Date;
   endTime: Date | null;
+  scientificName: string;
   content: string;
   progress: "BEFORE_AUCTION" | "DURING_AUCTION" | "NO_BID" | "SUCCESSFUL_BID"; // 1: 경매전 2: 경매중, 유찰, 낙찰
   remainingTime: number;
@@ -40,14 +41,10 @@ export interface AuctionData {
   // images: File[];
 }
 
-export interface Tag{
-  tag: string;
-}
-
 export interface AuctionListDataType {
   auctionPhotos: string[];
   auctionProgress: string;
-  auctionTags: Tag[] | null;
+  auctionTag: string[] | null;
   buyerId: number | null;
   content: string;
   createDate: string | null;
