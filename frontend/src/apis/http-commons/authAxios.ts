@@ -47,7 +47,10 @@ authAxios.interceptors.response.use(
       _retry?: boolean;
     };
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      (error.response?.status === 401 || error.response?.status === 500) &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
 
       try {
@@ -60,6 +63,10 @@ authAxios.interceptors.response.use(
         // 리프레시 토큰 실패 처리
         console.error("Failed to refresh token:", refreshError);
         // 로그아웃 처리나 리다이렉트 등 추가적인 처리를 여기에 구현
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("userStore");
+        window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }
