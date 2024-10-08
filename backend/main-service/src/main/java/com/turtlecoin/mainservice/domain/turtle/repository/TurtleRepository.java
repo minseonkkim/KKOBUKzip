@@ -11,4 +11,6 @@ import org.springframework.data.repository.query.Param;
 public interface TurtleRepository extends JpaRepository<Turtle, Long>, QuerydslPredicateExecutor<Turtle> {
 	@Query("select t from Turtle t where t.uuid = :uuid")
 	Optional<Turtle> findByUUID(@Param("uuid") String uuid);
+
+	Turtle findById(long id);
 }
