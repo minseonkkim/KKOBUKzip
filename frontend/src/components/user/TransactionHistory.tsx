@@ -5,7 +5,7 @@ import { useEscrowStore } from "../../store/useEscrowStore";
 import { useWeb3Store } from "../../store/useWeb3Store";
 import { useUserStore } from "../../store/useUserStore";
 import useChatStore from "../../store/useChatStore";
-import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
+import NoTurtleImg from "../../assets/NoTurtleImg.webp"
 
 interface TransactionHistoryProps {
   auctionFlag: boolean;
@@ -85,7 +85,7 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
     <>
       <div className="w-full border-[2px] rounded-[20px] p-[15px] bg-[#f8f8f8] flex flex-col justify-between md:flex-row lg:flex-col xl:flex-row">
         <div className="flex flex-row">
-          <img src={props.transactionImage ? props.transactionImage[0] : TmpTurtleImg} loading="lazy" className="w-[130px] lg:w-[200px] h-[130px] lg:h-[150px] rounded-[10px] object-cover" draggable="false" alt="turtle image" />
+          <img src={props.transactionImage ? props.transactionImage[0] : NoTurtleImg} loading="lazy" className="w-[130px] lg:w-[200px] h-[130px] lg:h-[150px] rounded-[10px] object-cover" draggable="false" alt="turtle image" />
           <div className="flex flex-col justify-between w-[300px] ml-[15px]">
             <div>
               {/* <div>{props.sellerName}</div> */}
