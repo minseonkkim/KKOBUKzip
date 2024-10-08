@@ -18,6 +18,7 @@ export interface TransactionItemDataType {
   auctionFlag: boolean;
   title: string;
   transactionId: number;
+  documentHash: string | null;
   sellerId: number;
   sellerUuid: string;
   sellerName: string;
