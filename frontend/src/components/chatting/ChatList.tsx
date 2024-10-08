@@ -54,7 +54,7 @@ export default function ChatList() {
           Authorization: `Bearer ${accessToken}`,
           Accept: "text/event-stream",
         },
-        heartbeatTimeout: 7200 * 1000,
+        heartbeatTimeout: 60 * 1000,
       });
 
       eventSource.onopen = () => {

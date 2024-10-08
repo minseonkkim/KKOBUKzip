@@ -20,7 +20,9 @@ import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/main/notifications")
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class SseController {
 			Long userId = jwtUtil.getIdFromToken(token.substring(7));
 
 			if(id.equals(userId)) {
+				log.info(userId + "가 SSE 연결을 시도했습니다!");
 				return sseService.subscribe(id);
 			}
 			else{
