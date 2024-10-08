@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AssignDocumentRequest {
+	private Long transactionId;
 	private String docType;
 	private String applicant;
 	private Detail detail;
