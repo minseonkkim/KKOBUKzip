@@ -16,8 +16,8 @@ import {
 import { useUserStore } from "../../store/useUserStore";
 import { TurtleDataType } from "../../types/turtle";
 import { useNavigate } from "react-router-dom";
-import { AuctionItemDataType } from "../../types/auction";
 import AuctionHistory from "../../components/user/AuctionHistory";
+import NoTurtleImg from "../../assets/NoTurtleImg.webp";
 
 interface AuctionItemType {
   buyerId: number | null;

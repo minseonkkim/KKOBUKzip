@@ -52,7 +52,7 @@ export interface AuctionListDataType {
   content: string;
   createDate: string | null;
   endTime: string;
-  firstImageUrl: string;
+  auctionImage: string[];
   auctionId: number;
   lastModifiedDate: string | null;
   midBid: number;
@@ -63,5 +63,6 @@ export interface AuctionListDataType {
   turtleId: number;
   userId: number;
   weight: number;
+  scientificName: string;
   winningBid: number | null;
 }
