@@ -120,11 +120,14 @@ export default function AuctionHistory(props: AuctionHistoryProps | Partial<Auct
 
             </div>
             <div className="flex flex-row">
+              <button onClick={openChat} className="mr-3 whitespace-nowrap text-[18px] font-bold w-auto px-3 h-10 bg-[#D7E7F7] rounded-[10px] hover:bg-[#C9DBED]">
+                채팅하기
+              </button>
               {/* 아래 버튼은 거래 진행 상황에 따라 on/off하기! */}
               <div className="text-[18px] font-bold">
                 {/* 경매 거래인 경우에만 활성화 해당(입금 대기 상태일 때) */}
                 {(userInfo?.userId !== props.sellerId) && (props.progress === "SAIL") && (
-                  <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0]" 
+                  <button className="whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0]" 
                   // onClick={handleDeposit}
                   >
                     입금하기
@@ -132,22 +135,20 @@ export default function AuctionHistory(props: AuctionHistoryProps | Partial<Auct
                 )}
                 {/* 예약 단계에 활성화 */}
                 {props.progress === "REVIEW_DOCUMENT" && (
-                  <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0] hidden" onClick={startPaperwork}>
+                  <button className="whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0] hidden" onClick={startPaperwork}>
                     서류 작성
                   </button>
                 )}
                 {/* 서류 검토 */}
                 {(userInfo?.userId !== props.sellerId) && (props.progress === "REVIEW_DOCUMENT") && (
-                  <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0] hidden" 
+                  <button className="whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0] hidden" 
                   // onClick={finalizeTransaction}
                   >
                     구매 확정
                   </button>
                 )}
               </div>
-              <button onClick={openChat} className="whitespace-nowrap text-[18px] font-bold w-auto px-3 h-10 bg-[#D7E7F7] rounded-[10px] hover:bg-[#C9DBED]">
-                채팅하기
-              </button>
+              
             </div>
           </div>
         </div>

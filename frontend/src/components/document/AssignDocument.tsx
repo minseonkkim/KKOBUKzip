@@ -9,6 +9,7 @@ import {
 } from "../../types/document";
 import { createAssignDocumentRequest } from "../../apis/documentApis";
 import { assignDoc } from "../../utils/assignDriverObject";
+import { useUserStore } from "../../store/useUserStore";
 
 interface ApplicantInfoContext {
   applicantName: string,
@@ -18,7 +19,8 @@ interface ApplicantInfoContext {
 
 // 양수 서류 컴포넌트
 function AssignDocument() {
-  const location = useLocation();
+  const { state } = useLocation();
+  const { userInfo } = useUserStore();
   const { applicantName, applicantPhoneNumber, applicantAddress } = useOutletContext<ApplicantInfoContext>();
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -66,8 +68,9 @@ function AssignDocument() {
     }
 
     const docs: AssigneeFetchData = {
+      transactionId: state.transactionId,
       docType: "양수신청서",
-      applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d",
+      applicant: userInfo!.uuid,
       detail: {
         assignee: {
           ...assignee,

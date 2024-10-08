@@ -16,8 +16,8 @@ import {
 import { useUserStore } from "../../store/useUserStore";
 import { TurtleDataType } from "../../types/turtle";
 import { useNavigate } from "react-router-dom";
-import { AuctionItemDataType } from "../../types/auction";
 import AuctionHistory from "../../components/user/AuctionHistory";
+import NoTurtleImg from "../../assets/NoTurtleImg.webp";
 
 interface AuctionItemType {
   buyerId: number | null;
@@ -245,7 +245,7 @@ function MyPage() {
       
     ) : (
       <>
-       <div className="flex flex-col space-y-4">
+       <div className="flex flex-col space-y-4 mb-4">
         {myAuctions.map((item) => (
           <AuctionHistory
             key={item.transactionId}
@@ -263,7 +263,7 @@ function MyPage() {
           />
         ))}
       </div>
-      <div className="flex flex-col space-y-4 mb-4">
+      <div className="flex flex-col space-y-4">
         {myTransactions.map((item) => (
           <TransactionHistory
             key={item.transactionId}

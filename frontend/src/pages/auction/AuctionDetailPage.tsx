@@ -49,7 +49,7 @@ function AuctionDetailPage() {
       }
       const response = await getAuctionDetailItemData(auctionId);
       if (response.success) {
-        console.log(response);
+        console.log("경매 상세", response);
         setAuctionStatus(response.data.data.auction.progress);
         setAuctionItemData(response.data.data.auction);
       } else {
