@@ -57,13 +57,13 @@ function CompleteAssignGrantDocument({
           <div className="flex items-center">
             <label className="w-1/4 font-medium">모 개체</label>
             <span className="w-3/4 px-3 py-2">
-              {data!.detail.motherAquisition}
+              {data!.detail.motherUUID}
             </span>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-medium">부 개체</label>
             <span className="w-3/4 px-3 py-2">
-              {data!.detail.fatherAquisition}
+              {data!.detail.fatherUUID}
             </span>
           </div>
         </div>
