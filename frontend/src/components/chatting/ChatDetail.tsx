@@ -17,7 +17,8 @@ import useChatStore from "../../store/useChatStore";
 
 interface ChatDetailProps {
   closeChatDetail: () => void;
-  chattingId: number;
+  otherUserId: number;
+  transactionId: number | null;
   toggleChat: () => void;
   chattingTitle: string;
   openedFromTransaction: boolean;
@@ -39,7 +40,8 @@ interface SystemMessageType {
 
 export default function ChatDetail({
   chattingTitle,
-  chattingId,
+  otherUserId,
+  transactionId,
   closeChatDetail,
   toggleChat,
   openedFromTransaction,
@@ -57,29 +59,29 @@ export default function ChatDetail({
   );
 
   const chatId =
-    Math.min(userInfo?.userId!, chattingId) +
+    Math.min(userInfo?.userId!, otherUserId) +
     "-" +
-    Math.max(userInfo?.userId!, chattingId);
+    Math.max(userInfo?.userId!, otherUserId);
   useEffect(() => {
     const getChatData = async () => {
       await initData();
-      console.log("chattingId", chatId);
+      console.log("otherUserId", chatId);
     };
     getChatData();
     connect();
 
     return () => disconnect();
-  }, [chattingId]);
+  }, [otherUserId]);
 
   // 데이터 초기화 및 전처리
   const initData = async () => {
     let success: boolean;
     let data: ChatData[] | undefined;
 
-    if (openedFromTransaction) {
-      ({ success, data } = await fetchChatMessageDataFromTx(chattingId));
+    if (openedFromTransaction && transactionId) {
+      ({ success, data } = await fetchChatMessageDataFromTx(transactionId));
     } else {
-      ({ success, data } = await fetchChatMessageData(chattingId));
+      ({ success, data } = await fetchChatMessageData(otherUserId));
     }
     if (success) {
       const chatMessages = data;
