@@ -16,6 +16,7 @@ interface MessageType {
   bidAmount: number;
   nextBid: number;
   nickname: string;
+  remainingTime: number;
 }
 
 interface WsResponseType {
@@ -35,23 +36,24 @@ function DuringAuction({
   minBid,
   // 남은시간, 현재 입찰가 추가
   // 남은시간이 -2이면 경매시간이 아니라는 뜻
-  remainingTime,
-  nowBid
+  initTime,
+  initialBid
 }: {
   channelId: string;
   minBid: number;
-  remainingTime: number;
-  nowBid: number;
+  initTime: number;
+  initialBid: number;
 }) {
   const auctionStompClient = useRef<CompatClient | null>(null);
 
   const auctionId = Number(channelId);
   const [loading, setLoading] = useState(true);
   // const [isBidStarted, setIsBidStarted] = useState(false);
+  const [nowBid, setNowBid] = useState(initialBid);
   const [nextBid, setNextBid] = useState(minBid);
   const { userInfo } = useUserStore();
 
-  // const [remainingTime, setRemainingTime] = useState(30);
+  const [remainingTime, setRemainingTime] = useState(initTime);
 
   useEffect(() => {
     const init = async () => {
@@ -70,15 +72,31 @@ function DuringAuction({
         },
         (frame: StompFrame) => {
           console.log("Connected: " + frame);
+          console.log("userID : ",userInfo!.userId)
+          auctionStompClient.current!.subscribe(
+            `/user/queue/auction/${auctionId}/init`,
+            (message) => {
+              const newMessage: WsResponseType = JSON.parse(message.body);
+              console.log("Received init message at auction:", newMessage);
+              // 다음 가격 수신 처리
+            }
+          );
+
           auctionStompClient.current!.subscribe(
             `/sub/auction/${auctionId}`,
             (message) => {
               const newMessage: WsResponseType = JSON.parse(message.body);
-              console.log("Received message:", newMessage);
+              console.log("Received message at auction:", newMessage);
               setBidPrice(newMessage.data.data.bidRecord.nextBid);
+              setRemainingTime(newMessage.data.data.bidRecord.remainingTime/1000)
+              
+              setNextBid(newMessage.data.data.bidRecord.nextBid);
               // 다음 가격 수신 처리
             }
           );
+
+          auctionStompClient.current!.send(`/pub/auction/${auctionId}/init`, {}, JSON.stringify({}));
+          console.log("빈값으로 보내기")
         },
         (error: unknown) => {
           console.error("Connection error: ", error);
@@ -102,11 +120,12 @@ function DuringAuction({
     try {
       const data = {
         auctionId,
-        userId: userInfo?.userId, // store에서 가져올 것
-        bidAmount: bidPrice, // 현재입찰가
-        remainingTime: remainingTime, // 남은 시간
-        nowBid: nowBid // 현재 입찰가
-      };
+        userId: userInfo?.userId,
+        nickname: userInfo?.nickname,  // 추가
+        bidAmount: bidPrice,
+        nextBid: nextBid,              // 추가
+        remainingTime: remainingTime,
+    };
 
       if (auctionStompClient.current && auctionStompClient.current.connected)
         auctionStompClient.current.send(
@@ -141,7 +160,7 @@ function DuringAuction({
     to: { opacity: 0, transform: "translateY(50px)" },
   }));
 
-  const [timeLeft, setTimeLeft] = useState(~~(remainingTime/10)); // 남은시간으로 변경
+  const [timeLeft, setTimeLeft] = useState(~~(remainingTime/1000)); // 남은시간으로 변경
   const [auctionEnded, setAuctionEnded] = useState(false);
 
   // **Progress bar 애니메이션 설정**

@@ -40,13 +40,15 @@ public class AuctionWebSocketController {
 //    private final BidService bidService;
 
     @MessageMapping("/auction/{auctionId}/init")
-    public void sendInitialData(@DestinationVariable Long auctionId, @Payload Map<String, Object> payload, Principal principal) {
+    public void sendInitialData(@DestinationVariable Long auctionId, Principal principal) {
         System.out.println("Initial Data 진입");
         Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매가 존재하지 않습니다."));
         String bidKey = AUCTION_BID_KEY+auctionId;
         String endKey = AUCTION_END_KEY_PREFIX+auctionId;
 
         Long userId = Long.valueOf(principal.getName());
+
+        System.out.println("Principal에서 userId : "+userId);
 
         if (!redisTemplate.hasKey(bidKey)) {
             log.warn("Redis에 키가 존재하지 않습니다. 기본값을 사용합니다.");
@@ -69,15 +71,15 @@ public class AuctionWebSocketController {
             messagingTemplate.convertAndSendToUser(userId.toString(), destination,
                     ResponseVO.success("Join", "200", "HIHI!!"));
 
-
-            messagingTemplate.convertAndSendToUser(principal.getName(), destination,
+        // /user/{userId}/queue/auction/{auctionId}/init
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
                     ResponseVO.success("Join", "200", initialData));
 
             log.info("기본값을 사용하여 유저에게 데이터 전송 완료: userId={}, auctionId={}", userId, auctionId);
         } else {
             // 키가 있는 경우, Redis에서 값을 가져옵니다.
             Object bidAmountObj = redisTemplate.opsForHash().get(bidKey, "bidAmount");
-            Double nowBid = (bidAmountObj != null) ? Double.parseDouble(bidAmountObj.toString()) : auction.getMinBid();
+            Double nowBid = (bidAmountObj != null) ? Double.parseDouble(bidAmountObj.toString()) : 0L;
             Long remainingTime = redisTemplate.getExpire(endKey, TimeUnit.MILLISECONDS);
 
             // 필요한 데이터 조회 및 응답 처리
