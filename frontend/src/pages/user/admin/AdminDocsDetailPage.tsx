@@ -30,7 +30,6 @@ function AdminDocsDetailPage() {
   const [data, setData] = useState<dataType | null>(null);
 
   useEffect(() => {
-    // get uuid and hash from params and data fetch
     // console.log(params?.turtleUUID, params?.documentHash);
     const documentType: AdminDocType = location.state?.documentType ?? null;
 
@@ -44,7 +43,7 @@ function AdminDocsDetailPage() {
         params?.documentHash
       );
       if (!success || !data) {
-        // console.error(message, error);
+        console.error(message, error);
         return false;
       }
       setData(data);

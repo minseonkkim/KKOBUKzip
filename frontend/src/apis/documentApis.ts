@@ -1,5 +1,4 @@
-import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import guestAxios from "./http-commons/guestAxios";
+import { AxiosError, AxiosResponse } from "axios";
 import authAxios from "./http-commons/authAxios";
 import {
   AdminAssignDocumentDataType,
