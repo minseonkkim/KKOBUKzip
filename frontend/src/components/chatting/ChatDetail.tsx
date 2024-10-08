@@ -52,7 +52,9 @@ export default function ChatDetail({
   const { userInfo } = useUserStore();
   const [chatData, setChatData] = useState<ChatData[]>([]);
   const recentChattingTime = useChatStore((state) => state.recentChattingTime);
-  const setRecentChattingTime = useChatStore((state) => state.setRecentChattingTime);
+  const setRecentChattingTime = useChatStore(
+    (state) => state.setRecentChattingTime
+  );
 
   const chatId =
     Math.min(userInfo?.userId!, chattingId) +
@@ -104,7 +106,7 @@ export default function ChatDetail({
     }
     console.log("groupedMessages", groupedMessages);
     setGroupedChat(groupedMessages);
-    if(groupedMessages){
+    if (groupedMessages) {
       setRecentChattingTime(groupedMessages[groupedMessages.length - 1].date);
       console.log(groupedMessages[groupedMessages.length - 1].date);
       console.log(recentChattingTime);
@@ -150,6 +152,8 @@ export default function ChatDetail({
                 return updatedGroups;
               });
             }
+
+            setRecentChattingTime(messageDate);
           },
           { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
         );
@@ -162,6 +166,7 @@ export default function ChatDetail({
   const disconnect = () => {
     if (stompClient.current) {
       stompClient.current.disconnect();
+      setRecentChattingTime(null);
     }
   };
 

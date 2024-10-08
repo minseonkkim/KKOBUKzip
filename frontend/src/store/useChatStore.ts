@@ -18,7 +18,7 @@ export interface ChattingStore {
   updateRoomList: (newChat: ChatListItem) => void;
   addTotalUnreadCount: (count: number) => void;
   subTotalUnreadCount: (count: number) => void;
-  setRecentChattingTime: (time: string) => void;
+  setRecentChattingTime: (time: string | null) => void;
 }
 
 // 채팅 주소 구조 -> 상대 아이디, 내 아이디를 '-' 로 연결(작은쪽이 앞에)
@@ -158,11 +158,10 @@ const useChatStore = create<ChattingStore>((set) => ({
     }));
   },
 
-  setRecentChattingTime: (time: string) => {
+  setRecentChattingTime: (time: string | null) => {
     set({
       recentChattingTime: time,
     });
-    console.log(time);
   },
 }));
 
