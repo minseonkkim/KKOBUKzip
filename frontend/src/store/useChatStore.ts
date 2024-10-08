@@ -4,6 +4,7 @@ import { ChatListItem } from "../types/chatting";
 export interface ChattingStore {
   isChattingOpen: boolean;
   selectedChat: null | number;
+  selectedTransaction: null | number;
   selectedChatTitle: null | string;
   openedFromTransaction: boolean;
   totalUnreadCount: number;
@@ -12,7 +13,11 @@ export interface ChattingStore {
   chatRoomList: ChatListItem[];
   toggleChat: () => void;
   openChatDetail: (id: number, nickname: string) => void;
-  openChatDetailFromTransaction: (id: number, nickname: string) => void;
+  openChatDetailFromTransaction: (
+    otherUserId: number,
+    transactionId: number,
+    nickname: string
+  ) => void;
   closeChatDetail: () => void;
   initChatRoomList: (initData: ChatListItem[]) => void;
   updateRoomList: (newChat: ChatListItem) => void;
@@ -25,6 +30,7 @@ export interface ChattingStore {
 const useChatStore = create<ChattingStore>((set) => ({
   isChattingOpen: false,
   selectedChat: null, // 상대방 아이디가 들어감
+  selectedTransaction: null,
   selectedChatTitle: null,
   openedFromTransaction: false,
   chatRoomList: [],
@@ -79,11 +85,17 @@ const useChatStore = create<ChattingStore>((set) => ({
       };
     }),
 
-  openChatDetailFromTransaction: (id: number, nickname: string) =>
+  openChatDetailFromTransaction: (
+    otherUserId: number,
+    transactionId: number,
+    nickname: string
+  ) =>
     set((state) => {
+      // id는 transactionId 이기 때문에 transaction
+
       // chatRoomList에서 otherUserId가 id인 항목을 찾음
       const chatRoom = state.chatRoomList.find(
-        (room) => room.otherUserId === id
+        (room) => room.otherUserId === otherUserId
       );
 
       // 해당 항목이 존재하는 경우
@@ -92,12 +104,13 @@ const useChatStore = create<ChattingStore>((set) => ({
 
         // chatRoomList에서 unreadCount를 0으로 설정
         const updatedChatRoomList = state.chatRoomList.map((room) =>
-          room.otherUserId === id ? { ...room, unreadCount: 0 } : room
+          room.otherUserId === otherUserId ? { ...room, unreadCount: 0 } : room
         );
 
         return {
           isChattingOpen: true,
-          selectedChat: id,
+          selectedChat: otherUserId,
+          selectedTransaction: transactionId,
           selectedChatTitle: nickname,
           totalUnreadCount: state.totalUnreadCount - unreadCount, // totalUnreadCount에서 unreadCount를 뺌
           chatRoomList: updatedChatRoomList, // 업데이트된 chatRoomList 설정
@@ -107,7 +120,8 @@ const useChatStore = create<ChattingStore>((set) => ({
       // 만약 해당 chatRoom을 찾지 못했다면, 상태만 업데이트
       return {
         isChattingOpen: true,
-        selectedChat: id,
+        selectedChat: otherUserId,
+        selectedTransaction: transactionId,
         selectedChatTitle: nickname,
         openedFromTransaction: true,
       };
@@ -118,6 +132,7 @@ const useChatStore = create<ChattingStore>((set) => ({
       // isChattingOpen: true,
       selectedChat: null,
       selectedChatTitle: null,
+      selectedTransaction: null,
       openedFromTransaction: false,
     }),
 
