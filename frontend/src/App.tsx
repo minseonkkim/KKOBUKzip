@@ -10,9 +10,9 @@ const JoinPage = React.lazy(() => import("./pages/common/JoinPage"));
 const DocumentFormPage = React.lazy(
   () => import("./pages/document/DocumentFormPage")
 );
-const DocumentListPage = React.lazy(
-  () => import("./pages/document/DocumentListPage")
-);
+// const DocumentListPage = React.lazy(
+//   () => import("./pages/document/DocumentListPage")
+// );
 
 // 하단 5개 컴포넌트는 개별 최적화 -> socket, sse 연결이 우선적으로 적용되어야 함.(레이아웃 공유라서 거래 포함)
 import TransactionDetailPage from "./pages/transaction/TransactionDetailPage";
@@ -21,6 +21,7 @@ import AuctionDetailPage from "./pages/auction/AuctionDetailPage";
 import AuctionListPage from "./pages/auction/AuctionListPage";
 import ChatList from "./components/chatting/ChatList";
 import { useUserStore } from "./store/useUserStore";
+import LoginAccessRestrict from "./components/common/LoginAccessRestrict";
 
 const MyPage = React.lazy(() => import("./pages/user/MyPage"));
 
@@ -42,9 +43,9 @@ const GrantorDocument = React.lazy(
 const DeathDocument = React.lazy(
   () => import("./components/document/DeathDocument")
 );
-const AuctionSuccessPage = React.lazy(
-  () => import("./pages/auction/AuctionSuccessPage")
-);
+// const AuctionSuccessPage = React.lazy(
+//   () => import("./pages/auction/AuctionSuccessPage")
+// );
 const AuctionRegisterPage = React.lazy(
   () => import("./pages/auction/AuctionRegisterPage")
 );
@@ -88,13 +89,16 @@ function App() {
             <Route path="/join" element={<JoinPage />} />
 
             {/* Document Domain */}
-            <Route path="/doc-form" element={<DocumentFormPage />}>
+            <Route
+              path="/doc-form"
+              element={<LoginAccessRestrict element={<DocumentFormPage />} />}
+            >
               <Route path="/doc-form/breed" element={<BreedDocument />} />
               <Route path="/doc-form/assign" element={<AssignDocument />} />
               <Route path="/doc-form/grant" element={<GrantorDocument />} />
               <Route path="/doc-form/death" element={<DeathDocument />} />
             </Route>
-            <Route path="/doc-list" element={<DocumentListPage />} />
+            {/* <Route path="/doc-list" element={<DocumentListPage />} /> */}
 
             {/* Auction Domain - 경매 */}
             <Route
@@ -117,16 +121,21 @@ function App() {
             />
 
             {/* User Domain - 유저 */}
-            <Route path="/mypage" element={<MyPage />} />
+            <Route
+              path="/mypage"
+              element={<LoginAccessRestrict element={<MyPage />} />}
+            />
 
             {/* Admin */}
             <Route
               path="/admin/document/list"
-              element={<AdminDocsListPage />}
+              element={<LoginAccessRestrict element={<AdminDocsListPage />} />}
             />
             <Route
               path="/admin/:turtleUUID/:documentHash"
-              element={<AdminDocsDetailPage />}
+              element={
+                <LoginAccessRestrict element={<AdminDocsDetailPage />} />
+              }
             />
 
             {/* Not Found */}
