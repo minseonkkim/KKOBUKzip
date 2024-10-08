@@ -26,9 +26,11 @@ export interface AssigneeFetchData {
 // 양도인 문서
 export interface GrantorFetchData {
   docType: "양도신청서";
+  documentHash: string;
+  turtleUUID: string;
   applicant: string;
   detail: {
-    granter: AssignDocumentDataType; // 동일 형식
+    grantor: AssignDocumentDataType; // 동일 형식
     turtleUUID: string;
     aquisition: string;
     motherUUID: string;

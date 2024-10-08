@@ -62,7 +62,7 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
       console.log("Navigate to seller paperwork page");
     } else {
       navigate("/doc-form/assign", {
-        state: { turtleId: props.turtleId, transactionId: props.transactionId },
+        state: { turtleId: props.turtleId, turtleUuid: props.turtleUuid, transactionId: props.transactionId },
       });
       console.log("Navigate to buyer paperwork page");
     }

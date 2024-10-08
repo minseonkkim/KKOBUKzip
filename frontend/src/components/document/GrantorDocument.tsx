@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useOutletContext } from "react-router-dom";
+import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import {
@@ -13,6 +13,7 @@ import {
 } from "../../apis/documentApis";
 import { grantDoc } from "../../utils/grantDriverObject";
 import { useUserStore } from "../../store/useUserStore";
+import { useWeb3Store } from "../../store/useWeb3Store";
 
 interface ApplicantInfoContext {
   applicantName: string;
@@ -29,11 +30,14 @@ interface MyTurtleInfo {
 // 양도 서류 컴포넌트
 function GrantorDocument() {
   const { state } = useLocation();
-  const { applicantName, applicantPhoneNumber, applicantAddress } =
-    useOutletContext<ApplicantInfoContext>();
+  const navigate = useNavigate();
+  const { applicantName, applicantPhoneNumber, applicantAddress } = useOutletContext<ApplicantInfoContext>();
+  const { documentContract } = useWeb3Store();
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
   const { userInfo } = useUserStore();
+
+  const [aquisition, setAquisition] = useState<string | null>(null);
 
   const [assignee, setAssignee] = useState<GrantorDocumentDataType>({
     name: "",
@@ -95,6 +99,22 @@ function GrantorDocument() {
     );
   }, [state.documentHash, state.turtleUuid]);
 
+  useEffect(() => {
+    if (documentContract === null) {
+      alert("블록체인 지갑에 연결되어 있지 않습니다. 연결 완료 후 다시 접속해 주세요.");
+      navigate(-1);
+      return
+    }
+
+    documentContract!.methods.searchCurrentDocumentHash(state.turtleUuid).call().then((response) => {
+      setAquisition(response as unknown as string);
+    }).catch((error) => {
+      console.error(error);
+      alert("블록체인 지갑의 연결 상태를 확인해 주세요.")
+      return
+    })
+  }, [])
+
   const loadUserData = () => {
     setGrantor({
       name: applicantName,
@@ -118,25 +138,23 @@ function GrantorDocument() {
 
   const sendGrantorDocRequest = async () => {
     // grantor status check logic
-    console.log(grantor.address);
     if (!grantor.name || !grantor.phoneNumber || !grantor.address) {
       alert("양도인 정보를 모두 입력해주세요.");
       return;
     }
-
+    
     const docs: GrantorFetchData = {
       docType: "양도신청서",
+      documentHash: state.documentHash,
+      turtleUUID: detailByAssignee.turtleUUID,
       applicant: userInfo!.uuid, // storage에서 가져올 것
       detail: {
-        granter: {
+        grantor: {
           ...grantor,
           address: postcodeData?.roadAddress + " / " + detailLocation,
         },
-
-        // UUID 부분 데이터 들어오면 할당할 것
         turtleUUID: detailByAssignee.turtleUUID,
-        aquisition:
-          "?????????????????????????????????????ㅇㅇㅇ 제가뭘 할 수 있?????죠???????",
+        aquisition: aquisition!,
         motherUUID: uuidData.motherUUID,
         fatherUUID: uuidData.fatherUUID,
       },
