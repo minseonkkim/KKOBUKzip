@@ -22,11 +22,13 @@ const AuctionListPage = () => {
         const progressItems: JSX.Element[] = [];
         const auctionItems = result.data.data.data.auctions.map(
           (item: AuctionListDataType) => {
-            console.log(item.auctionProgress);
-            if (item.auctionProgress === "DURING_AUCTION") {
-              progressItems.push(<AuctionTurtle key={item.id} data={item} />);
+            console.log(item.progress);
+            if (item.progress === "DURING_AUCTION") {
+              // auctionId로 변경
+              progressItems.push(<AuctionTurtle key={item.auctionId!} data={item} />);
             }
-            return <AuctionTurtle key={item.id} data={item} />;
+            // auctionId로 변경
+            return <AuctionTurtle key={item.auctionId} data={item} />;
           }
         );
 

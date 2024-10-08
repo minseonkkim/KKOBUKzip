@@ -10,6 +10,7 @@ import { useUserStore } from "../../store/useUserStore";
 // import tmpProfileImg from "../../assets/tmp_profile.gif";
 import { FaAngleLeft } from "@react-icons/all-files/fa/FaAngleLeft";
 import { FaAngleRight } from "@react-icons/all-files/fa/FaAngleRight";
+import NoTurtleImg from "../../assets/NoTurtleImg.webp";
 
 // Lazy load components
 const Header = lazy(() => import("../../components/common/Header"));
@@ -36,6 +37,7 @@ function TransactionDetailPage() {
       const id = params.id;
       if (id) {
         const result = await getTransactionDetailItemData(id);
+        console.log(result);
         if (result.success) {
           setTransactionData(result.data.data.turtle);
         }
@@ -88,9 +90,11 @@ function TransactionDetailPage() {
   };
 
   const openChat = () => {
-    if (isLogin && userInfo && transactionData) {
+    if (userInfo?.userId === transactionData?.sellerId) {
+      alert("자기 자신과의 채팅방은 생성할 수 없습니다.");
+    } else if (isLogin && userInfo && transactionData) {
       openChatDetailFromTransaction(
-        transactionData.sellerId,
+        transactionData.transactionId,
         transactionData.sellerName
       );
     } else {
@@ -118,7 +122,11 @@ function TransactionDetailPage() {
               <div className="flex flex-col w-full md:w-[48%] rounded-[20px] relative">
                 <div className="relative w-full flex-grow md:flex-1 h-[240px] md:h-auto rounded-[20px] overflow-hidden">
                   <img
-                    src={transactionData.transactionImage[currentIndex]}
+                    src={
+                      transactionData.transactionImage.length == 0
+                        ? NoTurtleImg
+                        : transactionData.transactionImage[currentIndex]
+                    }
                     className="w-full h-[380px] object-cover rounded-[20px]"
                     alt="Turtle"
                     draggable="false"
@@ -173,7 +181,7 @@ function TransactionDetailPage() {
                       alt="profile image"
                     />
                     <span className="text-[20px]">
-                      {transactionData.sellerName ?? "loading..."}
+                      {transactionData.sellerNickname ?? "loading..."}
                     </span>
                   </div>
                   <div

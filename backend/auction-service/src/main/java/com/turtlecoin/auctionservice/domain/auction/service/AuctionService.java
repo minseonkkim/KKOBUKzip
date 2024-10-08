@@ -7,6 +7,7 @@ import com.turtlecoin.auctionservice.domain.auction.entity.*;
 import com.turtlecoin.auctionservice.domain.auction.facade.RedissonLockFacade;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.s3.service.ImageUploadService;
+import com.turtlecoin.auctionservice.feign.dto.TurtleFilteredResponseDTO;
 import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.feign.MainClient;
@@ -57,9 +58,6 @@ public class AuctionService {
     public ResponseEntity<?> registerAuction(RegisterAuctionDTO registerAuctionDTO, List<MultipartFile> images) {
         List<AuctionPhoto> uploadedPhotos = new ArrayList<>();
         try {
-            log.info("경매 등록 시작 - 사용자 ID: {}, 거북이 ID: {}", registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
-
-            // 필수 입력 값 누락 시 에러 던져주기
             if (registerAuctionDTO.getTurtleId() == null || registerAuctionDTO.getSellerAddress() == null || registerAuctionDTO.getTitle() == null || registerAuctionDTO.getMinBid() == null) {
                 throw new IllegalArgumentException("필수 필드가 누락됐습니다.");
             }
@@ -68,6 +66,15 @@ public class AuctionService {
             log.info("두번째 검증");
             validateTurtleNotAlreadyRegistered(registerAuctionDTO.getTurtleId());
             log.info("검증 끝");
+
+            // 이미지가 없으면 예외 던지기
+            if (images == null || images.isEmpty()) {
+                throw new PhotoNotUploadedException("사진이 등록되지 않았습니다.");
+            }
+
+            uploadedPhotos = uploadImages(images, null);  // 경매와 아직 연결되지 않은 상태에서 업로드
+            log.info("이미지 업로드 완료");
+
             // 경매 저장
             Auction auction = auctionRepository.save(registerAuctionDTO.toEntity());
             log.info("경매 저장");
@@ -83,6 +90,7 @@ public class AuctionService {
                 throw new PhotoNotUploadedException("사진이 등록되지 않았습니다.");
             }
             log.info("이미지 업로드 완료");
+            System.out.println("거북이 무게 : "+auction.getWeight());
 
             return new ResponseEntity<>(ResponseVO.success("경매가 성공적으로 등록됐습니다."), HttpStatus.OK);
 
@@ -152,7 +160,7 @@ public class AuctionService {
 
     // 거북이 정보를 가져와서 RegisterAuctionDTO에 설정하는 메서드
     private RegisterAuctionDTO updateAuctionWithTurtleInfo(RegisterAuctionDTO registerAuctionDTO) {
-        TurtleResponseDTO turtleInfo = mainClient.getTurtle(registerAuctionDTO.getTurtleId());
+        TurtleFilteredResponseDTO turtleInfo = mainClient.getTurtle(registerAuctionDTO.getTurtleId());
 
         return RegisterAuctionDTO.builder()
                 .turtleId(registerAuctionDTO.getTurtleId())
@@ -187,7 +195,7 @@ public class AuctionService {
             Auction auction = auctionRepository.findById(auctionId)
                     .orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다: " + auctionId));
 
-            TurtleResponseDTO turtle = mainClient.getTurtle(auction.getTurtleId());
+            TurtleFilteredResponseDTO turtle = mainClient.getTurtle(auction.getTurtleId());
 
             if (turtle == null) {
                 log.warn("거북이 정보를 찾을 수 없습니다: turtleId={}", auction.getTurtleId());
@@ -201,15 +209,20 @@ public class AuctionService {
             }
             log.info("UserID: {}",user.getUserId());
 
-            String key = AUCTION_BID_KEY+auction;
-
+            String key = AUCTION_END_KEY_PREFIX+auction;
+            System.out.println("get요청 보낼 때 key : "+ key);
             // null값일 때 어떻게 하지?
-            Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX + auctionId, TimeUnit.MILLISECONDS);
+            Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX+auctionId, TimeUnit.MILLISECONDS);
 
-            // 종료됐거나, 시작하지 않았을 때
-            if (remainingTime == -2) {
-
-            }
+//            // 종료됐거나, 시작하지 않았을 때
+//            if (remainingTime == -2) {
+//                if (auction.getEndTime().isAfter(LocalDateTime.now())) {
+//                    remainingTime = 0L;
+//                } else {
+//                    // 아직 시작 안한 경매
+//                    remainingTime = 0L;
+//                }
+//            }
 
             Object bidAmountObj = redisTemplate.opsForHash().get(key, "bidAmount");
 
@@ -296,36 +309,63 @@ public class AuctionService {
             }
 
             // main-service에서 필터링 엔드포인트 열어둘 것
-            List<TurtleResponseDTO> filteredTurtles = mainClient.getFilteredTurtles(gender, minSize, maxSize);
+            // 무게로 거북이 필터링
+
+            List<TurtleFilteredResponseDTO> filteredTurtles = mainClient.getFilteredTurtles(gender, minSize, maxSize);
+
+            // filteredTurtles 리스트를 Map으로 변환 (turtleId를 키로 사용)
+            Map<Long, TurtleFilteredResponseDTO> turtleMap = filteredTurtles.stream()
+                    .collect(Collectors.toMap(TurtleFilteredResponseDTO::getId, turtle -> turtle));
 
             long totalAuctions = queryFactory.selectFrom(auction)
-                    .where(whereClause.and(auction.turtleId.in(
-                            filteredTurtles.stream().map(TurtleResponseDTO::getId).toList())))
+                    .where(whereClause.and(auction.turtleId.in(turtleMap.keySet())))
                     .fetch()
                     .size();
 
             List<Auction> auctions = queryFactory.selectFrom(auction)
-                    .where(whereClause.and(auction.turtleId.in(
-                            filteredTurtles.stream().map(TurtleResponseDTO::getId).toList())))
+                    .where(whereClause.and(auction.turtleId.in(turtleMap.keySet())))
                     .offset(page * 20L)
                     .limit(20)
                     .fetch();
 
+            // DetailAuctionResponseDTO 리스트 생성
+            List<DetailAuctionResponseDTO> dtos = auctions.stream()
+                    .map(a -> {
+                        UserResponseDTO userInfo = mainClient.getUserById(a.getUserId());
+                        TurtleFilteredResponseDTO turtleInfo = turtleMap.get(a.getTurtleId());
+                        return DetailAuctionResponseDTO.builder()
+                                .auctionId(a.getId())
+                                .sellerId(a.getUserId())
+                                .sellerName(userInfo.getName())
+                                .turtleId(a.getTurtleId())
+                                .scientificName("임시 거북이 학명!")
+                                .title(a.getTitle())
+                                .price(a.getNowBid())
+                                .weight(a.getWeight())
+                                .content(a.getContent())
+                                .sellerImageUrl(userInfo.getProfileImage())
+                                .sellerAddress(a.getSellerAddress())
+                                .buyerId(a.getBuyerId())
+                                .progress(a.getAuctionProgress().toString())
+                                .auctionTag(a.getAuctionTags().stream().map(AuctionTag::getTag).collect(Collectors.toList()))
+                                .auctionImage(a.getAuctionPhotos().stream().map(AuctionPhoto::getImageUrl).collect(Collectors.toList()))
+                                .build();
+                    })
+                    .toList();
+
             int totalPages = (int) Math.ceil((double) totalAuctions / 20);
 
             Map<String, Object> data = new HashMap<>();
-            data.put("auctions", auctions);
+            data.put("auctions", dtos);
             data.put("total_pages", totalPages);
-
+            log.info("dtos : {}", dtos);
             return new ResponseEntity<>(ResponseVO.success("경매가 성공적으로 조회 되었습니다.", "data", data), HttpStatus.OK);
         } catch (NumberFormatException e) {
             // 숫자 형식이 잘못된 경우 예외 처리
             return new ResponseEntity<>(ResponseVO.failure("400", "잘못된 형식의 입력값이 있습니다."), HttpStatus.BAD_REQUEST);
-
         } catch (IllegalArgumentException e) {
             // 기타 잘못된 인자 처리
             return new ResponseEntity<>(ResponseVO.failure("400", "잘못된 파라미터입니다."), HttpStatus.BAD_REQUEST);
-
         } catch (Exception e) {
             // 기타 예외 처리 (서버 오류)
             e.printStackTrace();  // 로그 출력

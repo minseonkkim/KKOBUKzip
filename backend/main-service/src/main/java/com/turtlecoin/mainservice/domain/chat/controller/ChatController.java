@@ -22,6 +22,7 @@ import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
 import com.turtlecoin.mainservice.domain.transaction.exception.TransactionNotFoundException;
 import com.turtlecoin.mainservice.global.exception.ChatNotFoundException;
+import com.turtlecoin.mainservice.global.exception.SelfChatRoomCreationException;
 import com.turtlecoin.mainservice.global.response.ResponseSingle;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
 import com.turtlecoin.mainservice.global.util.WebSocketUtil;
@@ -87,7 +88,7 @@ public class ChatController {
 			return new ResponseEntity<>(ResponseVO.failure("404", e.getMessage()), HttpStatus.NOT_FOUND);
 		}
 		catch(Exception e){
-			return new ResponseEntity<>(ResponseVO.failure("500", "조회 중 문제가 발생했습니다."), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ResponseVO.failure("500", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<>(ResponseSingle.success("채팅 기록 조회에 성공했습니다.", list), HttpStatus.OK);
 	}
@@ -117,9 +118,12 @@ public class ChatController {
 		catch(IllegalArgumentException | TransactionNotFoundException | ChatNotFoundException e){
 			return new ResponseEntity<>(ResponseVO.failure("404", e.getMessage()), HttpStatus.NOT_FOUND);
 		}
+		catch(SelfChatRoomCreationException e){
+			return new ResponseEntity<>(ResponseVO.failure("400", e.getMessage()), HttpStatus.BAD_REQUEST);
+		}
 		catch(Exception e){
 			//e.printStackTrace();
-			return new ResponseEntity<>(ResponseVO.failure("500", "조회 중 문제가 발생했습니다."), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ResponseVO.failure("500", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<>(ResponseSingle.success("채팅방 목록 조회에 성공했습니다.", list), HttpStatus.OK);
 	}

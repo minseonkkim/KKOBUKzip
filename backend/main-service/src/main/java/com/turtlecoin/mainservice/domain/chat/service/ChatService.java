@@ -27,6 +27,7 @@ import com.turtlecoin.mainservice.domain.user.service.UserService;
 import com.turtlecoin.mainservice.domain.transaction.exception.TransactionNotFoundException;
 import com.turtlecoin.mainservice.global.exception.InvalidChattingException;
 import com.turtlecoin.mainservice.global.exception.ChatNotFoundException;
+import com.turtlecoin.mainservice.global.exception.SelfChatRoomCreationException;
 import com.turtlecoin.mainservice.global.util.WebSocketUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -128,6 +129,10 @@ public class ChatService {
 		Long left = Math.min(opponentId, userId);
 		Long right = Math.max(opponentId, userId);
 
+		if(left.equals(right)){
+			throw new SelfChatRoomCreationException("자기 자신과의 채팅방은 생성할 수 없습니다.");
+		}
+
 		Chat chat = chatRepository.getChat(left, right);
 		if(chat == null){
 			createChat(left, right);
@@ -175,7 +180,7 @@ public class ChatService {
 				chatTextMessage = chat.getRecentMessage();
 			}
 			catch(Exception e){
-				throw new InvalidChattingException("저장된 채팅 데이터에 문제가 있습니다.");
+				throw new InvalidChattingException(e.getMessage());
 			}
 
 			UserResponseDTO userResponseDTO = userService.getByUserId(otherUserId);

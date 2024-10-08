@@ -1,22 +1,32 @@
 import { useEffect } from "react";
 
+
 function BeforeAuction({
   startTime,
   minBid,
   changeAuctionStatus,
+  auctionId,
 }: {
   startTime: Date;
   minBid: number;
   changeAuctionStatus: () => void;
+  auctionId: number;
 }) {
   useEffect(() => {
     const SSE_URL = import.meta.env.VITE_SSE_AUCTION_URL;
-    const eventSource = new EventSource(SSE_URL);
+    const eventSource = new EventSource(SSE_URL + "/" + auctionId);
     // 여기에서 SSE 연결하기
-    eventSource.onmessage = (event) => {
-      console.log(event.data);
+    // eventSource.onmessage = (event) => {
+    //   console.log(event.data);
+    //   changeAuctionStatus();
+    // };
+
+    eventSource.addEventListener("sse", (event) => {
+      const messageEvent = event as MessageEvent; // Type Assertion
+      console.log("SSE가 도착한다!!!!!");
+      // console.log(JSON.parse(messageEvent.data));
       changeAuctionStatus();
-    };
+    });
 
     // 컴포넌트 언마운트 시 연결 종료
     return () => {

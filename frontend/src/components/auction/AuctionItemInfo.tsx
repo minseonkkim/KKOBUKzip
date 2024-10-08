@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AuctionItemDataType } from "../../types/auction";
 import { FaAngleLeft } from "@react-icons/all-files/fa/FaAngleLeft";
 import { FaAngleRight } from "@react-icons/all-files/fa/FaAngleRight";
-// import useChatStore from "../../store/useChatStore";
+import NoTurtleImg from "../../assets/NoTurtleImg.webp"
 
 function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -24,7 +24,7 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
         <figure>
           <div className="relative w-full flex-grow md:flex-1 h-[240px] md:h-auto rounded-[20px] overflow-hidden">
             <img
-              src={itemData.images[currentIndex]}
+              src={itemData.images.length == 0 ? NoTurtleImg : itemData.images[currentIndex]}
               className="w-full h-[380px] object-cover rounded-[20px]"
               alt="Turtle"
               draggable="false"
@@ -47,7 +47,7 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
 
         <div className="flex flex-row justify-between lg:justify-start xl:justify-between items-center mt-[5px] mb-[10px]">
           <div className="text-[#9A9A9A] text-[17px]">
-            {itemData.turtleInfo.scientificName} | {itemData.turtleInfo.weight}g
+            {itemData.scientificName} | {itemData.turtleInfo.weight}g
             {/* 24년 8월 10일생 | 8kg */}
           </div>
           <div className="flex flex-row space-x-1">
@@ -56,7 +56,7 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
                 key={index}
                 className="whitespace-nowrap px-2 py-1 rounded-full text-[15px] bg-[#D5F0DD] text-[#065F46]"
               >
-                {tag}
+                #{tag}
               </span>
             ))}
           </div>
@@ -70,13 +70,12 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
         <div className="bg-[#F2F2F2] h-[60px] rounded-[10px] flex flex-row justify-between items-center px-2 py-1">
           <div className="flex flex-row items-center">
             <img
-              //   src={tmpProfileImg}
-              // 데이터에 판매자 프사가 없음...
+              src={itemData.userInfo.profileImage}
               className="rounded-full w-[43px] h-[43px] mr-3"
               draggable="false"
               alt="profile image"
             />
-            <span className="text-[20px]">꼬북맘</span>
+            <span className="text-[20px]">{itemData.userInfo.nickname}</span>
           </div>
           {/* <div
             onClick={() => openChatDetail(itemData.sellerId, "꼬북맘")}

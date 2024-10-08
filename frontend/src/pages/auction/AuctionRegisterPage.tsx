@@ -1,13 +1,15 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
-import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
 import { ChangeEvent, useState } from "react";
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import { addAuctionItem } from "../../apis/tradeApi";
 import formatDate from "../../utils/formatDate";
 import { useWeb3Store } from "../../store/useWeb3Store";
+import Loading from "../../components/common/Loading";
+import NoTurtleImg from "../../assets/NoTurtleImg.webp";
+
 
 export default function AuctionRegisterPage() {
   const { account } = useWeb3Store();
@@ -21,6 +23,8 @@ export default function AuctionRegisterPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const userStore = localStorage.getItem("userStore");
+  const [loading, setLoading] = useState(false); 
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length + images.length > 3) {
@@ -60,13 +64,27 @@ export default function AuctionRegisterPage() {
     setSelectedSize(selectedSize === tag ? null : tag);
   };
 
+  const formatDecimal = (value: number): string => {
+    if (isNaN(value) || value === 0) return "0";
+    const fixed = value.toFixed(8);
+    return fixed.replace(/\.?0+$/, "");
+  };
+
+  const calculateEthPrice = (turtPrice: string): string => {
+    const numericPrice = parseFloat(turtPrice.replace(/,/g, ""));
+    if (isNaN(numericPrice) || numericPrice === 0) return "0";
+    return formatDecimal(numericPrice / 5000000);
+  };
+
   const submitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true); 
 
     if (!account) {
       alert(
         "메타마스크 계정이 연결되지 않았습니다. 연결 확인 후 다시 시도해 주세요."
       );
+      setLoading(false); 
       return;
     }
 
@@ -99,17 +117,20 @@ export default function AuctionRegisterPage() {
     try {
       const result = await addAuctionItem(formData);
       if (result.success) {
-        // 성공 처리
-        alert(`${state.name}(이)의 거래 등록이 완료되었습니다.`);
-        navigate("/mypage");
+        if (window.confirm(`${state.name}(이)의 경매 등록이 완료되었습니다. 리스트 페이지로 이동하시겠습니까?`)) {
+          navigate("/auction-list");
+        }
       } else {
         throw new Error(result.message);
       }
     } catch (error) {
       console.error("Error adding transaction:", error);
       alert("새로운 경매 생성에 실패했습니다. 다시 시도해 주세요.");
+    } finally {
+      setLoading(false); 
     }
   };
+
   return (
     <>
       <Helmet>
@@ -118,13 +139,14 @@ export default function AuctionRegisterPage() {
 
       <Header />
 
+      {loading ? <Loading /> : 
       <main className="px-4 lg:px-[250px] mt-[72px]">
         <h1 className="text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-0 lg:pt-[32px] pb-[13px]">
           경매 등록하기
         </h1>
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">
           <img
-            src={state.imageAddress ? state.imageAddress : TmpTurtleImg}
+            src={state.imageAddress ? state.imageAddress : NoTurtleImg}
             alt="turtle image"
             draggable="false"
             className="w-[150px] md:w-[170px] h-full object-cover rounded-[10px] mr-4 md:mr-8"
@@ -143,10 +165,12 @@ export default function AuctionRegisterPage() {
             </div>
           </div>
         </div>
+
         <form
           onSubmit={submitHandle}
           className="text-[19px] md:text-[21px] flex flex-col gap-4"
         >
+          <div className="text-sm text-gray-400">판매자 메타마스크 지갑 주소 | {account ? account : "지갑을 연결해 주세요!"}</div>
           <div className="flex xl:flex-row flex-col items-start xl:items-center gap-4">
             <div className="flex flex-row items-center w-full xl:w-[50%] ">
               <label className="w-[108px] md:w-[120px]">시작일</label>
@@ -168,18 +192,22 @@ export default function AuctionRegisterPage() {
                 required
               />
             </div> */}
-            <div className="flex flex-row items-center">
-              <label className="w-[108px] md:w-[120px]">시작 가격</label>
-              <input
-                className="mr-1 w-[250px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
-                type="text"
-                name="min_bid"
-                value={minBid}
-                onInput={handleInputChange}
-                required
-              />
-              TURT
+            <div className="flex flex-row items-center gap-4">
+              <div className="flex flex-row items-center">
+                <label className="w-[108px] md:w-[120px]">시작 가격</label>
+                <input
+                  className="mr-1 w-[250px] text-[19px] border-[1px] border-[#9B9B9B] focus:outline-none px-3 py-2 rounded-[10px]"
+                  type="text"
+                  name="min_bid"
+                  value={minBid}
+                  onInput={handleInputChange}
+                  required
+                />
+                TURT
+              </div>
+              <div className="text-sm text-gray-400">/ {calculateEthPrice(minBid)} ETH</div>
             </div>
+            
           </div>
 
           <div className="flex flex-row items-center">
@@ -308,7 +336,11 @@ export default function AuctionRegisterPage() {
             </button>
           </div>
         </form>
+
       </main>
+      } 
+
+      
     </>
   );
 }

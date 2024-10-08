@@ -13,6 +13,7 @@ import {
 } from "../../apis/chatApi";
 import SystemMessageItem from "./SystemMessageItem";
 import { useUserStore } from "../../store/useUserStore";
+import useChatStore from "../../store/useChatStore";
 
 interface ChatDetailProps {
   closeChatDetail: () => void;
@@ -50,6 +51,10 @@ export default function ChatDetail({
   >([]);
   const { userInfo } = useUserStore();
   const [chatData, setChatData] = useState<ChatData[]>([]);
+  const recentChattingTime = useChatStore((state) => state.recentChattingTime);
+  const setRecentChattingTime = useChatStore(
+    (state) => state.setRecentChattingTime
+  );
 
   const chatId =
     Math.min(userInfo?.userId!, chattingId) +
@@ -101,7 +106,11 @@ export default function ChatDetail({
     }
     console.log("groupedMessages", groupedMessages);
     setGroupedChat(groupedMessages);
-    console.log(groupedChat);
+    if (groupedMessages) {
+      setRecentChattingTime(groupedMessages[groupedMessages.length - 1].date);
+      console.log(groupedMessages[groupedMessages.length - 1].date);
+      console.log(recentChattingTime);
+    }
     // }
   };
 
@@ -119,17 +128,17 @@ export default function ChatDetail({
           (message) => {
             const newMessage: TextChat = JSON.parse(message.body);
             const messageDate = formatDate(newMessage.registTime);
-            const lastGroup = groupedChat[groupedChat.length - 1];
+            //const lastGroup = groupedChatRef.current[groupedChat.length - 1];
+            const lastGroup = useChatStore.getState().recentChattingTime;
 
             console.log("Sender:", newMessage.userId);
             console.log("NickName:", newMessage.nickname);
-            console.log(groupedChat);
             console.log("Register Time:", newMessage.registTime);
             console.log("Message:", newMessage.message);
             console.log("ProfileImg:", newMessage.userProfile);
-
+            console.log(lastGroup);
             // 날짜별로 분류
-            if (!lastGroup || lastGroup.date !== messageDate) {
+            if (!lastGroup || lastGroup !== messageDate) {
               setGroupedChat((prevMessages) => [
                 ...prevMessages,
                 { date: messageDate, messages: [newMessage] },
@@ -143,6 +152,8 @@ export default function ChatDetail({
                 return updatedGroups;
               });
             }
+
+            setRecentChattingTime(messageDate);
           },
           { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
         );
@@ -155,6 +166,7 @@ export default function ChatDetail({
   const disconnect = () => {
     if (stompClient.current) {
       stompClient.current.disconnect();
+      setRecentChattingTime(null);
     }
   };
 
@@ -204,16 +216,24 @@ export default function ChatDetail({
                   if ("title" in message) {
                     // 시스템 메시지 처리
                     return (
-                      <SystemMessageItem
-                        key={index}
-                        title={message.title}
-                        price={message.price}
-                        image={message.image}
-                      />
+                      <div className="flex items-center justify-center my-2">
+                        <SystemMessageItem
+                          key={index}
+                          title={message.title}
+                          price={message.price}
+                          image={message.image}
+                        />
+                      </div>
                     );
                   } else if (userInfo?.userId === message.userId) {
                     // 보낸 메시지 처리
-                    return <MyChatItem key={index} message={message.message} />;
+                    return (
+                      <MyChatItem
+                        key={index}
+                        message={message.message}
+                        time={message.registTime}
+                      />
+                    );
                   } else {
                     // 받은 메시지 처리
                     return (

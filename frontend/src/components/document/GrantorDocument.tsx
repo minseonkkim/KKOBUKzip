@@ -3,10 +3,11 @@ import { useLocation, useOutletContext } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import {
+  AdminAssignDocumentDataType,
   AssignDocumentDataType as GrantorDocumentDataType,
   GrantorFetchData,
 } from "../../types/document";
-import { createGrantDocumentRequest } from "../../apis/documentApis";
+import { createGrantDocumentRequest, getDetailDocumentData } from "../../apis/documentApis";
 import { grantDoc } from "../../utils/grantDriverObject";
 
 interface ApplicantInfoContext {
@@ -15,17 +16,47 @@ interface ApplicantInfoContext {
   applicantAddress: string,
 }
 
+interface MyTurtleInfo {
+  turtleName: string,
+  turtleUuid: string,
+  turtleGender: string
+}
+
 // 양도 서류 컴포넌트
 function GrantorDocument() {
-  const location = useLocation();
+  const { state } = useLocation();
   const { applicantName, applicantPhoneNumber, applicantAddress } = useOutletContext<ApplicantInfoContext>();
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
+
+  const [assignee, setAssignee] = useState<GrantorDocumentDataType>({
+    name: "",
+    phoneNumber: "",
+    address: ""
+  })
 
   const [grantor, setGrantor] = useState<GrantorDocumentDataType>({
     name: "",
     phoneNumber: "",
     address: "",
+  });
+
+  const [detailByAssignee, setDetailByAssignee] = useState<{
+    turtleUUID: string,
+    count: number,
+    transferReason: string,
+  }>({
+    turtleUUID: "",
+    count: 0,
+    transferReason: "",
+  })
+
+  const [uuidData, setUuidData] = useState<{
+    motherUUID: string,
+    fatherUUID: string,
+  }>({
+    motherUUID: "",
+    fatherUUID: "",
   });
 
   const [detailLocation, setDetailLocation] = useState<string>("");
@@ -38,6 +69,24 @@ function GrantorDocument() {
     }
   }, [postcodeData?.jibunAddress]);
 
+  useEffect(() => {
+    // 기존 작성된 양수 서류 데이터 불러오기
+      getDetailDocumentData(state.turtleUuid, state.documentHash).then((response) => {
+        const data = response.data as AdminAssignDocumentDataType;
+        setAssignee({
+          name: data.assignee.name,
+          phoneNumber: data.assignee.phoneNumber,
+          address: data.assignee.address,
+        })
+
+        setDetailByAssignee({
+          turtleUUID: state.turtleUuid,
+          count: data.detail.count,
+          transferReason: data.detail.transferReason,
+        })
+      })
+  }, [state.documentHash, state.turtleUuid])
+
   const loadUserData = () => {
     setGrantor({
       name: applicantName,
@@ -45,6 +94,18 @@ function GrantorDocument() {
       address: applicantAddress,
     })
     console.log("loadUserData");
+  };
+
+  const changeUuidData = (
+    type: "fatherUUID" | "motherUUID",
+    evt:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setUuidData((prevData) => ({
+      ...prevData,
+      [type]: evt.target.value,
+    }));
   };
 
   const sendGrantorDocRequest = async () => {
@@ -101,9 +162,11 @@ function GrantorDocument() {
         <title>양도서류작성</title>
       </Helmet>
 
-      <button onClick={handleGuide} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">가이드 시작</button>
+      <div className="flex justify-end">
+        <button onClick={handleGuide} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">가이드 시작</button>
+      </div>
 
-      <div id="container">
+      <div id="grantContainer">
         <div className="mb-8">
           <div className="w-full flex mb-4">
             <span className="text-xl font-semibold flex-1">양도인</span>
@@ -183,16 +246,16 @@ function GrantorDocument() {
           <div className="grid grid-cols-1 gap-y-4 md:grid-cols-2 md:gap-x-8 md:gap-y-2">
             <div className="flex">
               <span className="w-1/3 font-medium">성명</span>
-              <span className="w-2/3">사전에 설정된 양수인 정보 불러올 것</span>
+              <span className="w-2/3">{assignee.name}</span>
             </div>
             <div className="flex">
               <span className="w-1/3 font-medium">전화번호</span>
-              <span className="w-2/3">010-3333-3333</span>
+              <span className="w-2/3">{assignee.phoneNumber}</span>
             </div>
 
             <div className="flex">
               <span className="w-1/3 font-medium">주소</span>
-              <span className="w-2/3">광주광역시 하남산단6번로 107</span>
+              <span className="w-2/3">{assignee.address}</span>
             </div>
           </div>
         </div>
@@ -216,7 +279,7 @@ function GrantorDocument() {
             </div>
             <div className="flex items-center">
               <label className="w-1/3 font-medium">수량</label>
-              <span className="w-2/3 px-3 py-2">1</span>
+              <span className="w-2/3 px-3 py-2">{detailByAssignee.count}</span>
             </div>
             <div className="flex items-center">
               <span className="w-1/3 font-medium">형태</span>
@@ -224,15 +287,15 @@ function GrantorDocument() {
             </div>
             <div className="flex items-center">
               <label className="w-1/3 font-medium">용도</label>
-              <span className="w-2/3 px-3 py-2">양수인 입력 값</span>
+              <span className="w-2/3 px-3 py-2">-</span>
             </div>
             <div className="flex items-center">
               <span className="w-1/3 font-medium">양수사유</span>
-              <span className="w-2/3 px-3 py-2">양수인 입력 값</span>
+              <span className="w-2/3 px-3 py-2">{detailByAssignee.transferReason}</span>
             </div>
             <div className="flex items-center">
               <label className="w-1/3 font-medium">개체식별번호</label>
-              <span className="w-2/3 px-3 py-2">양수인 입력 값</span>
+              <span className="w-2/3 px-3 py-2">{detailByAssignee.turtleUUID}</span>
             </div>
           </div>
         </div>
@@ -260,20 +323,40 @@ function GrantorDocument() {
               <label className="block font-semibold mb-1 break-keep">
                 양도한 국제적 멸종위기종의 부모 개체의 고유번호
               </label>
-              <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center mb-2">
+              {/* <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center mb-2">
                 <span className="text-gray-500 flex-grow">부 개체 번호</span>
                 <input type="file" className="hidden" id="file1" />
                 <label htmlFor="file1" className="cursor-pointer flex-shrink">
                   개체 찾기
                 </label>
+              </div> */}
+              <div>
+                <select
+                  className="w-full px-3 py-2 mb-2 border rounded bg-gray-50 flex items-center"
+                  onChange={(evt) => changeUuidData("fatherUUID", evt)}
+                  value={uuidData.fatherUUID}
+                >
+                  <option value="" disabled>부 개체 고유번호</option>
+                  {state.myTurtlesUuid.map((turtle: MyTurtleInfo) => (
+                    turtle.turtleGender === "MALE" && <option key={turtle.turtleUuid} value={turtle.turtleUuid}>
+                      {turtle.turtleName} / {turtle.turtleGender === "MALE" ? "수컷" : "암컷"} ({turtle.turtleUuid})
+                    </option>
+                  ))}
+                </select>
               </div>
-
-              <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center">
-                <span className="text-gray-500 flex-grow">모 개체 번호</span>
-                <input type="file" className="hidden" id="file1" />
-                <label htmlFor="file1" className="cursor-pointer flex-shrink">
-                  개체 찾기
-                </label>
+              <div>
+                <select
+                  className="w-full px-3 py-2 mb-2 border rounded bg-gray-50 flex items-center"
+                  onChange={(evt) => changeUuidData("motherUUID", evt)}
+                  value={uuidData.motherUUID}
+                >
+                  <option value="" disabled>모 개체 고유번호</option>
+                  {state.myTurtlesUuid.map((turtle: MyTurtleInfo) => (
+                    turtle.turtleGender === "FEMALE" && <option key={turtle.turtleUuid} value={turtle.turtleUuid}>
+                      {turtle.turtleName} / {turtle.turtleGender === "FEMALE" ? "암컷" : "수컷"} ({turtle.turtleUuid})
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>

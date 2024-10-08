@@ -7,6 +7,7 @@ import com.turtlecoin.auctionservice.domain.auction.entity.AuctionTag;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -32,6 +33,7 @@ public class RegisterAuctionDTO {
     private Gender gender;   // 거북이 성별 추가
     private List<String> auctionTags;
 
+    @Transactional
     public Auction toEntity() {
         Auction auction = Auction.builder()
                 .turtleId(turtleId)

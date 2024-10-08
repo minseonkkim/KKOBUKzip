@@ -60,36 +60,6 @@ public class ContractService {
 		).sendAsync();
 	}
 
-	// 인공증식서류 등록
-	public String registerTurtleMultiplicationDocument(
-		String turtleUUID, String applicant, String documentHash, BigInteger count, String area,
-		String purpose,	String location, String fatherUUID, String motherUUID,
-		LocalDate birth, String name, int weight, Gender gender,
-		String locationSpecification, String multiplicationMethod, String shelterSpecification) throws Exception {
-
-		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
-		// byte로 변환
-		byte[] byteArray = hexStringToByte32("0x" + documentHash);
-		
-		// 거북이 정보 해시함수 처리
-		String turtleInfo = birth.toString() + weight + gender;
-		byte[] turtleHash = hexStringToByte32("0x" + keccak256(turtleInfo.getBytes()));
-		
-		TransactionReceipt receipt =  turtleDocumentation.registerTurtleMultiplicationDocument(
-			turtleUUID, applicant, byteArray, count, area, purpose, location, fatherUUID, motherUUID,
-			birth.toString(), name, BigInteger.valueOf(weight), gender.toString(),
-			locationSpecification, multiplicationMethod, shelterSpecification, turtleHash
-		).send();
-
-		// 이벤트 호출
-		List<TurtleDocumentation.TurtleMultiplicationEventResponse> events = TurtleDocumentation.getTurtleMultiplicationEvents(receipt);
-
-		byte[] returnDocumentHash = null;
-		returnDocumentHash = events.get(0).documentHash;
-
-		return byteToString(returnDocumentHash);
-	}
-
 	// 인공증식서류 조회
 	public TurtleDocumentation.Multiplication searchTurtleMultiplicationDocument(String turtleUUID, String documentHash) throws Exception {
 		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
@@ -97,27 +67,6 @@ public class ContractService {
 		byte[] byteArray = hexStringToByte32("0x" + documentHash);
 
 		return turtleDocumentation.searchTurtleMultiplicationDocument(turtleUUID, byteArray).send();
-	}
-
-	// 양수서류 등록
-	public String registerTurtleAssigneeDocument(
-		String turtleUUID, String applicant, String documentHash, String assigneeID,
-		BigInteger count, String transferReason, String purpose
-	) throws Exception {
-		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
-		// byte로 변환
-		byte[] byteArray = hexStringToByte32("0x" + documentHash);
-		TransactionReceipt receipt = turtleDocumentation.registerTurtleAssigneeDocument(
-			turtleUUID, applicant, byteArray, assigneeID, count, transferReason, purpose
-		).send();
-
-		// 이벤트 호출
-		List<TurtleDocumentation.TurtleTransferredEventResponse> events = TurtleDocumentation.getTurtleTransferredEvents(receipt);
-
-		byte[] returnDocumentHash = null;
-		returnDocumentHash = events.get(0).documentHash;
-
-		return byteToString(returnDocumentHash);
 	}
 
 	// 양수 서류 비동기 등록
@@ -131,27 +80,6 @@ public class ContractService {
 		turtleDocumentation.registerTurtleAssigneeDocument(
 			turtleUUID, applicant, byteArray, assigneeID, count, transferReason, purpose
 		).sendAsync();
-	}
-
-	// 양도서류 등록
-	public String registerTurtleGrantorDocument(
-		String turtleUUID, String applicant, String documentHash, String grantorID,
-		String aquisition, String fatherUUID, String motherUUID
-	) throws Exception {
-		// byte로 변환
-		byte[] byteArray = hexStringToByte32("0x" + documentHash);
-		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
-		TransactionReceipt receipt = turtleDocumentation.registerTurtleGrantorDocument(
-			turtleUUID, applicant, byteArray, grantorID, aquisition, fatherUUID, motherUUID
-		).send();
-
-		// 이벤트 호출
-		List<TurtleDocumentation.TurtleTransferredEventResponse> events = TurtleDocumentation.getTurtleTransferredEvents(receipt);
-
-		byte[] returnDocumentHash = null;
-		returnDocumentHash = events.get(0).documentHash;
-
-		return byteToString(returnDocumentHash);
 	}
 
 	// 양도 서류 비동기 등록
@@ -172,27 +100,6 @@ public class ContractService {
 		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
 		byte[] byteArray = hexStringToByte32("0x" + documentHash);
 		return turtleDocumentation.searchTurtleTransferDocument(turtleUUID, byteArray).send();
-	}
-
-	// 폐사질병서류 등록
-	public String registerTurtleDeathDocument(
-		String turtleUUID, String applicant, String documentHash, String shelter,BigInteger count,
-		String deathReason, String plan, String deathImage, String diagnosis
-	) throws Exception {
-		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
-		// byte로 변환
-		byte[] byteArray = hexStringToByte32("0x" + documentHash);
-		TransactionReceipt receipt = turtleDocumentation.registerTurtleDeathDocument(
-			turtleUUID, applicant, byteArray, shelter, count, deathReason, plan, deathImage, diagnosis
-		).send();
-
-		// 이벤트 호출
-		List<TurtleDocumentation.TurtleDeathEventResponse> events = TurtleDocumentation.getTurtleDeathEvents(receipt);
-
-		byte[] returnDocumentHash = null;
-		returnDocumentHash = events.get(0).documentHash;
-
-		return byteToString(returnDocumentHash);
 	}
 
 	// 폐사질병서류 비동기 등록

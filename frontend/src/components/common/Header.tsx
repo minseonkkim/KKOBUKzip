@@ -1,5 +1,6 @@
 import { useState, lazy, Suspense, memo } from "react";
 import useDeviceStore from "../../store/useDeviceStore";
+import { useWeb3Store } from "../../store/useWeb3Store";
 import usePriorityLoading from "../../hooks/usePriorityLoading";
 import LogoImg from "../../assets/logo.webp";
 import CoinImg from "../../assets/Coin.webp";
@@ -30,6 +31,7 @@ const Logo = memo(() => (
 export default function Header() {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { isLogin, userInfo, setLogout } = useUserStore();
+  const { account } = useWeb3Store();
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const location = useLocation();
   const shouldLoadWallet = usePriorityLoading(1);
@@ -92,7 +94,7 @@ export default function Header() {
               <div
                 className={`${
                   isMobile ? "rounded-full px-1.5" : "rounded-[10px] px-2"
-                } py-1.5 mr-3 bg-[#F6CA19] hover:bg-[#DFB509] shadow-[3px_3px_0px_#C49B07] hover:shadow-[3px_3px_0px_#CAA612] flex flex-row items-center gap-1 cursor-pointer font-dnf-bitbit active:scale-95`}
+                } py-1.5 mr-3 bg-[#F6CA19] hover:bg-[#DFB509] shadow-[3px_3px_0px_#C49B07] hover:shadow-[3px_3px_0px_#CAA612] flex flex-row items-center gap-1 cursor-pointer font-dnf-bitbit active:scale-95 ${account === "" && "motion-safe:animate-pulse"}`}
                 onClick={toggleWallet}
               >
                 <img

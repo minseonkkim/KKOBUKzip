@@ -87,6 +87,11 @@ const Wallet: React.FC = () => {
       return;
     }
 
+    if (fromAmount === "0" || fromAmount === "") {
+      setError("기준 금액 입력값이 0입니다");
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -114,6 +119,11 @@ const Wallet: React.FC = () => {
   const handleSellTurt = async () => {
     if (!web3 || !tokenContract || !account) {
       setError("Web3 또는 계정이 초기화되지 않았습니다");
+      return;
+    }
+
+    if (fromAmount === "0" || fromAmount === "") {
+      setError("기준 금액 입력값이 0입니다");
       return;
     }
 

@@ -49,7 +49,7 @@ function AuctionDetailPage() {
       }
       const response = await getAuctionDetailItemData(auctionId);
       if (response.success) {
-        console.log(response);
+        console.log("경매 상세", response);
         setAuctionStatus(response.data.data.auction.progress);
         setAuctionItemData(response.data.data.auction);
       } else {
@@ -75,6 +75,12 @@ function AuctionDetailPage() {
 
   // 옥션 전-> 옥션 진행
   const changeAuctionStatus = useCallback(() => {
+    setAuctionItemData((prev) => {
+      if (prev) {
+        return { ...prev, remainingTime: 30000 };
+      }
+      return prev;
+    });
     setAuctionStatus("DURING_AUCTION");
   }, []);
 
@@ -139,22 +145,25 @@ function AuctionDetailPage() {
           {auctionStatus === "BEFORE_AUCTION" && (
             <BeforeAuction
               changeAuctionStatus={changeAuctionStatus}
-              startTime={auctionItemData?.startTime!}
-              minBid={auctionItemData?.minBid!}
+              startTime={auctionItemData!.startTime}
+              minBid={auctionItemData!.minBid}
+              auctionId={Number(auctionId)}
             />
           )}
-          {auctionStatus === "DURING_AUCTION" && (
-            <DuringAuction
-              minBid={auctionItemData?.minBid!}
-              channelId={String(auctionItemData?.id)}
-              nowBid={auctionItemData?.nowBid!}
-              remainingTime={auctionItemData?.remainingTime!}
-            />
-          )}
-          {auctionStatus === "NO_BID" || <NoBid />}
-          {auctionStatus === "SUCCESSFUL_BID" && (
-            <SuccessfulBid nowBid={auctionItemData?.nowBid!} />
-          )}
+          {auctionStatus === "DURING_AUCTION" &&
+            auctionItemData!.nowBid !== null && (
+              <DuringAuction
+                minBid={auctionItemData!.minBid}
+                channelId={String(auctionItemData?.id)}
+                initialBid={auctionItemData!.nowBid}
+                initTime={auctionItemData!.remainingTime}
+              />
+            )}
+          {auctionStatus === "NO_BID" && <NoBid />}
+          {auctionStatus === "SUCCESSFUL_BID" &&
+            auctionItemData!.nowBid !== null && (
+              <SuccessfulBid nowBid={auctionItemData!.nowBid} />
+            )}
         </div>
       </main>
     </>

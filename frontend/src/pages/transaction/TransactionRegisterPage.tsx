@@ -2,12 +2,13 @@ import {useLocation, useNavigate} from "react-router-dom"
 import { ChangeEvent, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
-import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
+import NoTurtleImg from "../../assets/NoTurtleImg.webp";
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
 import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
 import { addTransactionItem } from "../../apis/tradeApi";
 import formatDate from "../../utils/formatDate";
 import { useWeb3Store } from "../../store/useWeb3Store";
+import Loading from "../../components/common/Loading";
 
 
 export default function TransactionRegisterPage() {
@@ -17,6 +18,7 @@ export default function TransactionRegisterPage() {
   const [images, setImages] = useState<File[]>([]);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const [transactionData, setTransactionData] = useState({
     weight: "",
@@ -66,7 +68,7 @@ export default function TransactionRegisterPage() {
     setTransactionData({ ...transactionData, [name]: value });
   };
 
-  // 소수점 표기를 위한 새로운 유틸리티 함수
+  // 소수점 표기를 위한 유틸리티 함수
   const formatDecimal = (value: number): string => {
     if (isNaN(value) || value === 0) return "0";
     const fixed = value.toFixed(8);
@@ -81,9 +83,11 @@ export default function TransactionRegisterPage() {
 
   const submitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     if (!account) {
       alert("메타마스크 계정이 연결되지 않았습니다. 연결 확인 후 다시 시도해 주세요.");
+      setLoading(false);
       return;
     }
 
@@ -105,17 +109,25 @@ export default function TransactionRegisterPage() {
     images.forEach((image) => {
       formData.append(`transactionPhotos`, image);
     });
+    console.log(newTransactionData)
 
     try {
       const response = await addTransactionItem(formData);
-      console.log("Transaction added successfully:", response);
+
+      if (response.success === false) {
+        throw Error(response.message);
+      }
+
+      if(window.confirm(`${state.name}(이)의 판매 등록이 완료되었습니다.`)){
+        console.log("Transaction added successfully:", response);
+        navigate("/transaction-list");
+      }
       
-      // 성공 처리
-      alert(`${state.name}(이)의 거래 등록이 완료되었습니다.`)
-      navigate("/transaction-list");
     } catch (error) {
       console.error("Error adding transaction:", error);
-      alert("새로운 거래 생성에 실패했습니다. 다시 시도해 주세요.");
+      alert("새로운 판매 생성에 실패했습니다. 다시 시도해 주세요.");
+    } finally{
+      setLoading(false);
     }
   };
   const gender = {
@@ -129,13 +141,15 @@ export default function TransactionRegisterPage() {
         <title>판매 등록하기</title>
       </Helmet>
       <Header />
+
+      {loading ? <Loading/> : 
       <div className="px-4 lg:px-[250px] mt-[72px]">
         <div className="text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit mr-3 pt-0 lg:pt-[32px] pb-[13px]">
           판매 등록하기
         </div>
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">
           <img
-            src={state.imageAddress ? state.imageAddress : TmpTurtleImg}
+            src={state.imageAddress ? state.imageAddress : NoTurtleImg}
             draggable="false"
             className="w-[150px] md:w-[170px] h-full object-cover rounded-[10px] mr-4 md:mr-8"
             alt="turtle image"
@@ -154,6 +168,7 @@ export default function TransactionRegisterPage() {
           onSubmit={submitHandle}
           className="text-[19px] md:text-[21px] flex flex-col gap-4"
         >
+          <div className="text-sm text-gray-400">판매자 메타마스크 지갑 주소 | {account ? account : "지갑을 연결해 주세요!"}</div>
           <div className="flex flex-row items-center gap-4">
             <div className="flex flex-row items-center">
               <label className="w-[108px] md:w-[120px]">판매가</label>
@@ -317,7 +332,7 @@ export default function TransactionRegisterPage() {
             </button>
           </div>
         </form>
-      </div>
+      </div>}
     </>
   );
 }
