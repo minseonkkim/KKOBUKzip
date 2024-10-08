@@ -22,6 +22,7 @@ interface AuctionItemType {
   buyerId: number | null;
   buyerUuid: string | null;
   createDate: string | null;
+  documentHash: string | null;
   images: string;
   price: number | null;
   progress: string;
@@ -250,7 +251,8 @@ function MyPage() {
             key={item.transactionId}
             turtleId={item.turtleId}
             turtleUuid={item.turtleUuid}
-            transactionId={item.transactionId}
+            documentHash={item.documentHash!}
+            transactionId={item.transactionId!}
             sellerId={item.sellerId}
             sellerUuid={item.sellerUuid}
             sellerName={item.sellerName}
@@ -267,7 +269,7 @@ function MyPage() {
           <TransactionHistory
             key={item.transactionId}
             auctionFlag={item.auctionFlag}
-            documentHash={item.documentHash!}
+            documentHash={item.documentHash}
             turtleId={item.turtleId}
             turtleUuid={item.turtleUuid}
             transactionId={item.transactionId}

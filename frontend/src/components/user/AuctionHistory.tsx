@@ -21,10 +21,18 @@ interface AuctionHistoryProps {
   sellerUuid: string | null;
   tags: string[];
   title: string;
-  transactionId: number | null;
+  transactionId: number;
   turtleId: number | null;
   turtleUuid: string;
   weight: number;
+  documentHash: string | null;
+  myTurtlesUuid: MyTurtleInfo[];
+}
+
+interface MyTurtleInfo {
+  turtleName: string,
+  turtleUuid: string,
+  turtleGender: string
 }
 
 export default function AuctionHistory(props: AuctionHistoryProps | Partial<AuctionHistoryProps>) {
@@ -34,23 +42,27 @@ export default function AuctionHistory(props: AuctionHistoryProps | Partial<Auct
   const { createTransaction, releaseFunds } = useEscrowStore();
   const { account } = useWeb3Store();
 
-  // const handleDeposit = async () => {
-  //   if (account && props.transactionId !== undefined && props.sellerAddress && props.amount !== undefined) {
-  //     const isFinish = await createTransaction(props.transactionId, props.sellerAddress, ~~props.amount, props.turtleUuid!, userInfo!.uuid, props.sellerUuid!);
-  //     if (isFinish) {
-  //       alert("거래 대금 송금이 완료되었습니다. 서류 작성을 진행해 주세요.");
-  //     } else {
-  //       alert("거래 대금 송금이 실패했습니다. 다시 시도해 주세요.");
-  //     }
-  //   } else {
-  //     console.error("Missing required props for createTransaction");
-  //   }
-  // };
+  // "서류 작성 단계"에서 구매자/판매자 구분 boolean
+  const isBuyer = userInfo?.userId !== props.sellerId && props.documentHash === null;
+  const isSeller = userInfo?.userId === props.sellerId && props.documentHash !== null;
+
+  const handleDeposit = async () => {
+    if (account && props.transactionId !== undefined && props.sellerAddress && props.price !== undefined) {
+      const isFinish = await createTransaction(props.transactionId, props.sellerAddress, ~~props.price!, props.turtleUuid!, userInfo!.uuid, props.sellerUuid!);
+      if (isFinish) {
+        alert("거래 대금 송금이 완료되었습니다. 서류 작성을 진행해 주세요.");
+      } else {
+        alert("거래 대금 송금이 실패했습니다. 다시 시도해 주세요.");
+      }
+    } else {
+      console.error("Missing required props for createTransaction");
+    }
+  };
 
   const startPaperwork = () => {
     if (userInfo?.userId === props.sellerId) {
       navigate("/doc-form/grant", {
-        state: { turtleId: props.turtleId, transactionId: props.transactionId },
+        state: { turtleId: props.turtleId, turtleUuid: props.turtleUuid, transactionId: props.transactionId, documentHash: props.documentHash, myTurtlesUuid: props.myTurtlesUuid },
       });
       console.log("Navigate to seller paperwork page");
     } else {
@@ -61,18 +73,18 @@ export default function AuctionHistory(props: AuctionHistoryProps | Partial<Auct
     }
   };
 
-  // const finalizeTransaction = async () => {
-  //   if (props.transactionId !== undefined) {
-  //     const isFinish = await releaseFunds(props.transactionId);
-  //     if (isFinish) {
-  //       alert("구매가 확정되어 거래가 완료되었습니다.");
-  //     } else {
-  //       alert("구매 확정에 실패했습니다. 다시 시도해 주세요.");
-  //     }
-  //   } else {
-  //     console.error("TransactionId is undefined");
-  //   }
-  // };
+  const finalizeTransaction = async () => {
+    if (props.transactionId !== undefined) {
+      const isFinish = await releaseFunds(props.transactionId);
+      if (isFinish) {
+        alert("구매가 확정되어 거래가 완료되었습니다.");
+      } else {
+        alert("구매 확정에 실패했습니다. 다시 시도해 주세요.");
+      }
+    } else {
+      console.error("TransactionId is undefined");
+    }
+  };
 
   const openChat = () => {
     if (isLogin && userInfo) {
@@ -93,8 +105,6 @@ export default function AuctionHistory(props: AuctionHistoryProps | Partial<Auct
           <img src={props.images !== null ? props.images : TmpTurtleImg} loading="lazy" className="w-[130px] lg:w-[200px] h-[130px] lg:h-[150px] rounded-[10px] object-cover" draggable="false" alt="turtle image" />
           <div className="flex flex-col justify-between w-[300px] ml-[15px]">
             <div>
-              {/* <div>{props.sellerName}</div> */}
-
               <div className="mb-1 whitespace-nowrap flex flex-row items-end font-bold font-stardust text-[#4B721F]">
                 <div className="text-[27px] md:text-[29px]">{props.price?.toLocaleString("ko-KR") || 0}</div>
                 <div className="text-[20px] md:text-[21px]">TURT</div>
@@ -125,21 +135,21 @@ export default function AuctionHistory(props: AuctionHistoryProps | Partial<Auct
                 {/* 경매 거래인 경우에만 활성화 해당(입금 대기 상태일 때) */}
                 {(userInfo?.userId !== props.sellerId) && (props.progress === "SAIL") && (
                   <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0]" 
-                  // onClick={handleDeposit}
+                  onClick={handleDeposit}
                   >
                     입금하기
                   </button>
                 )}
                 {/* 예약 단계에 활성화 */}
-                {props.progress === "REVIEW_DOCUMENT" && (
-                  <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0] hidden" onClick={startPaperwork}>
-                    서류 작성
+                {(props.progress === "REVIEW_DOCUMENT" && (isBuyer || isSeller)) && (
+                  <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0]" onClick={startPaperwork}>
+                    {userInfo!.userId !== props.sellerId ? "양수" : "양도"} 서류 작성
                   </button>
                 )}
                 {/* 서류 검토 */}
-                {(userInfo?.userId !== props.sellerId) && (props.progress === "REVIEW_DOCUMENT") && (
-                  <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0] hidden" 
-                  // onClick={finalizeTransaction}
+                {(userInfo?.userId !== props.sellerId) && (props.progress === "APPROVED_DOCUMENT") && (
+                  <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0]" 
+                  onClick={finalizeTransaction}
                   >
                     구매 확정
                   </button>
