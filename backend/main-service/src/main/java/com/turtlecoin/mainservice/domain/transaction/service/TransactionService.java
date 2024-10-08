@@ -86,6 +86,7 @@ public class TransactionService {
             transaction.setContent(dto.getContent());
             transaction.setPrice(dto.getPrice());
             transaction.setSellerAddress(dto.getSellerAddress());
+            transaction.setWeight(dto.getWeight());
             transaction.setTurtle(turtle.get());
             transaction.setTransactionPhotos(new ArrayList<>());
             transaction.setTransactionTags(new ArrayList<>());

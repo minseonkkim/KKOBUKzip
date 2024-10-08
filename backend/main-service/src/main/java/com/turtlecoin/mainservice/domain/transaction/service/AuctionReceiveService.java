@@ -8,13 +8,17 @@ import com.turtlecoin.mainservice.domain.transaction.entity.TransactionProgress;
 import com.turtlecoin.mainservice.domain.transaction.repository.TransactionRepository;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
+import com.turtlecoin.mainservice.domain.user.entity.User;
+import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import com.turtlecoin.mainservice.global.exception.TurtleNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -24,7 +28,9 @@ public class AuctionReceiveService {
     private final TransactionService transactionService;
     private final TransactionRepository transactionRepository;
     private final TurtleRepository turtleRepository;
+    private final UserRepository userRepository;
 
+    @Transactional
     @RabbitListener(queues = "auction.result.queue")
     public void receiveMessage(AuctionResultDTO auctionResultDTO) {
         log.info("Received AuctionResultDTO: {}", auctionResultDTO);
@@ -37,7 +43,7 @@ public class AuctionReceiveService {
         log.info("Received message with price " + auctionResultDTO.getWinningBid());
         Turtle turtle = turtleRepository.findById(auctionResultDTO.getTurtleId()).get();
         String imageAddress = auctionResultDTO.getImageAddress();
-
+        Optional<User> user = userRepository.findById(auctionResultDTO.getBuyerId());
         Transaction transaction = Transaction.builder()
                 .title(auctionResultDTO.getTitle())
                 .content(auctionResultDTO.getContent())
@@ -49,6 +55,7 @@ public class AuctionReceiveService {
                 .turtle(turtle)
                 .auctionFlag(true)
                 .buyerId(auctionResultDTO.getBuyerId())
+                .buyerUuid(user.get().getUuid())
                 .build();
 
         if (imageAddress != null) {

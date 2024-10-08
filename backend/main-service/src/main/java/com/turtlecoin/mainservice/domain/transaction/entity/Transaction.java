@@ -2,7 +2,6 @@ package com.turtlecoin.mainservice.domain.transaction.entity;
 
 import com.turtlecoin.mainservice.domain.transaction.dto.DetailTransactionResponseDto;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
-import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
