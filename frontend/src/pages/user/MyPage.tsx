@@ -16,6 +16,28 @@ import {
 import { useUserStore } from "../../store/useUserStore";
 import { TurtleDataType } from "../../types/turtle";
 import { useNavigate } from "react-router-dom";
+import { AuctionItemDataType } from "../../types/auction";
+import AuctionHistory from "../../components/user/AuctionHistory";
+
+interface AuctionItemType {
+  buyerId: number | null;
+  buyerUuid: string | null;
+  createDate: string | null;
+  images: string;
+  price: number | null;
+  progress: string;
+  scientificName: string | null;
+  sellerAddress: string;
+  sellerId: number;
+  sellerName: string;
+  sellerUuid: string | null;
+  tags: string[];
+  title: string;
+  transactionId: number | null;
+  turtleId: number | null;
+  turtleUuid: string;
+  weight: number;
+}
 
 function MyPage() {
   const navigate = useNavigate();
@@ -25,6 +47,8 @@ function MyPage() {
   const [myTransactions, setMyTransactions] = useState<
     TransactionItemDataType[]
   >([]);
+  const [myAuctions, setMyAuctions] = useState<AuctionItemType[]>([]);
+
   const { userInfo } = useUserStore();
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage);
   const [myTurtlesUuid, setMyTurtlesUuid] = useState<
@@ -61,18 +85,12 @@ function MyPage() {
             "거래내역 목록",
             transactionResponse.data!.data.transaction
           );
-          setMyTransactions((prevTransactions) => [
-            ...prevTransactions,
-            ...transactionResponse.data!.data.transaction,
-          ]);
+          setMyTransactions(transactionResponse.data!.data.transaction);
         }
-        // if (auctionResponse.success) {
-        //   console.log("경매내역 목록", auctionResponse.data!.data.transaction);
-        //   setMyTransactions((prevTransactions) => [
-        //     ...prevTransactions,
-        //     ...auctionResponse.data!.data.data,
-        //   ]);
-        // }
+        if (auctionResponse.success) {
+          console.log("경매내역 목록", auctionResponse.data!.data.data);
+          setMyAuctions(auctionResponse.data.data.data);
+        }
         if (turtleResponse.success) {
           setTurtleData(turtleResponse.data.data.data.data);
           console.log("거북이 목록", turtleResponse.data.data.data.data);
@@ -210,42 +228,66 @@ function MyPage() {
         </div>
         <div className="overflow-y-auto flex-1 mb-4">
           {/* 거래내역 */}
-          {selectedMenu === 0 &&
-            // 거래 내역이 있을 경우
-            (myTransactions.length !== 0 ? (
-              <div className="flex flex-col space-y-4">
-                {myTransactions.map((item) => (
-                  <TransactionHistory
-                    key={item.transactionId}
-                    auctionFlag={item.auctionFlag}
-                    turtleId={item.turtleId}
-                    turtleUuid={item.turtleUuid}
-                    transactionId={item.transactionId}
-                    sellerId={item.sellerId}
-                    sellerUuid={item.sellerUuid}
-                    sellerName={item.sellerName}
-                    sellerAddress={item.sellerAddress}
-                    transactionTag={item.transactionTag}
-                    amount={item.price}
-                    transactionImage={item.transactionImage}
-                    progress={item.progress}
-                  />
-                ))}
-              </div>
-            ) : (
-              // 거래내역이 없을 경우
-              <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-28">
-                <img
-                  src={NoImage}
-                  alt="turtle image"
-                  className="w-[200px] mb-7"
-                  draggable="false"
-                />
-                <div className="text-[25px] font-bold text-center font-stardust">
-                  거래 내역이 없어요.
-                </div>
-              </div>
-            ))}
+          {selectedMenu === 0 && (
+  <>
+    {myTransactions.length == 0 && myAuctions.length == 0 ? (
+      <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-28">
+        <img
+          src={NoImage}
+          alt="turtle image"
+          className="w-[200px] mb-7"
+          draggable="false"
+        />
+        <div className="text-[25px] font-bold text-center font-stardust">
+          거래 내역이 없어요.
+        </div>
+      </div>
+      
+    ) : (
+      <>
+       <div className="flex flex-col space-y-4">
+        {myAuctions.map((item) => (
+          <AuctionHistory
+            key={item.transactionId}
+            turtleId={item.turtleId}
+            turtleUuid={item.turtleUuid}
+            transactionId={item.transactionId}
+            sellerId={item.sellerId}
+            sellerUuid={item.sellerUuid}
+            sellerName={item.sellerName}
+            sellerAddress={item.sellerAddress}
+            tags={item.tags}
+            price={item.price}
+            images={item.images}
+            progress={item.progress}
+          />
+        ))}
+      </div>
+      <div className="flex flex-col space-y-4 mb-4">
+        {myTransactions.map((item) => (
+          <TransactionHistory
+            key={item.transactionId}
+            auctionFlag={item.auctionFlag}
+            turtleId={item.turtleId}
+            turtleUuid={item.turtleUuid}
+            transactionId={item.transactionId}
+            sellerId={item.sellerId}
+            sellerUuid={item.sellerUuid}
+            sellerName={item.sellerName}
+            sellerAddress={item.sellerAddress}
+            transactionTag={item.transactionTag}
+            amount={item.price}
+            transactionImage={item.transactionImage}
+            progress={item.progress}
+          />
+        ))}
+      </div>
+     
+      </>
+        )}
+      </>
+    )}
+
           {/* 나의 거북이 */}
           {selectedMenu === 1 &&
             (turtleData.length !== 0 ? (
