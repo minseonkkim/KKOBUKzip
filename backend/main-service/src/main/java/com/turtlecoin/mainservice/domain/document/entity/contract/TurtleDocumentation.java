@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 import org.web3j.abi.EventEncoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;
@@ -26,6 +27,7 @@ import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.BaseEventResponse;
 import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tx.Contract;
 import org.web3j.tx.TransactionManager;
 import org.web3j.tx.gas.ContractGasProvider;
@@ -65,7 +67,13 @@ public class TurtleDocumentation extends Contract {
 
     public static final String FUNC_OWNER = "owner";
 
+    public static final String FUNC_SEARCHCURRENTDEATHDOCUMENTHASH = "searchCurrentDeathDocumentHash";
+
     public static final String FUNC_SEARCHCURRENTDOCUMENTHASH = "searchCurrentDocumentHash";
+
+    public static final String FUNC_SEARCHCURRENTMULTIPLICATIONDOCUMENTHASH = "searchCurrentMultiplicationDocumentHash";
+
+    public static final String FUNC_SEARCHCURRENTTRANSFERREDDOCUMENTHASH = "searchCurrentTransferredDocumentHash";
 
     public static final String FUNC_SEARCHTURTLEDEATHDOCUMENT = "searchTurtleDeathDocument";
 
@@ -227,11 +235,12 @@ public class TurtleDocumentation extends Contract {
     }
 
     public RemoteFunctionCall<TransactionReceipt> registerTurtle(String _turtleId,
-            String _applicant) {
+            String _applicant, byte[] _turtleHash) {
         final Function function = new Function(
                 FUNC_REGISTERTURTLE, 
                 Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
-                new org.web3j.abi.datatypes.Utf8String(_applicant)), 
+                new org.web3j.abi.datatypes.Utf8String(_applicant), 
+                new org.web3j.abi.datatypes.generated.Bytes32(_turtleHash)), 
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
@@ -521,11 +530,62 @@ public class TurtleDocumentation extends Contract {
         return executeRemoteCallSingleValueReturn(function, String.class);
     }
 
+    public RemoteFunctionCall<Tuple2<Boolean, byte[]>> searchCurrentDeathDocumentHash(
+            String _turtleId) {
+        final Function function = new Function(FUNC_SEARCHCURRENTDEATHDOCUMENTHASH, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {}, new TypeReference<Bytes32>() {}));
+        return new RemoteFunctionCall<Tuple2<Boolean, byte[]>>(function,
+                new Callable<Tuple2<Boolean, byte[]>>() {
+                    @Override
+                    public Tuple2<Boolean, byte[]> call() throws Exception {
+                        List<Type> results = executeCallMultipleValueReturn(function);
+                        return new Tuple2<Boolean, byte[]>(
+                                (Boolean) results.get(0).getValue(), 
+                                (byte[]) results.get(1).getValue());
+                    }
+                });
+    }
+
     public RemoteFunctionCall<byte[]> searchCurrentDocumentHash(String _turtleId) {
         final Function function = new Function(FUNC_SEARCHCURRENTDOCUMENTHASH, 
                 Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId)), 
                 Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
         return executeRemoteCallSingleValueReturn(function, byte[].class);
+    }
+
+    public RemoteFunctionCall<Tuple2<Boolean, byte[]>> searchCurrentMultiplicationDocumentHash(
+            String _turtleId) {
+        final Function function = new Function(FUNC_SEARCHCURRENTMULTIPLICATIONDOCUMENTHASH, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {}, new TypeReference<Bytes32>() {}));
+        return new RemoteFunctionCall<Tuple2<Boolean, byte[]>>(function,
+                new Callable<Tuple2<Boolean, byte[]>>() {
+                    @Override
+                    public Tuple2<Boolean, byte[]> call() throws Exception {
+                        List<Type> results = executeCallMultipleValueReturn(function);
+                        return new Tuple2<Boolean, byte[]>(
+                                (Boolean) results.get(0).getValue(), 
+                                (byte[]) results.get(1).getValue());
+                    }
+                });
+    }
+
+    public RemoteFunctionCall<Tuple2<Boolean, byte[]>> searchCurrentTransferredDocumentHash(
+            String _turtleId) {
+        final Function function = new Function(FUNC_SEARCHCURRENTTRANSFERREDDOCUMENTHASH, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {}, new TypeReference<Bytes32>() {}));
+        return new RemoteFunctionCall<Tuple2<Boolean, byte[]>>(function,
+                new Callable<Tuple2<Boolean, byte[]>>() {
+                    @Override
+                    public Tuple2<Boolean, byte[]> call() throws Exception {
+                        List<Type> results = executeCallMultipleValueReturn(function);
+                        return new Tuple2<Boolean, byte[]>(
+                                (Boolean) results.get(0).getValue(), 
+                                (byte[]) results.get(1).getValue());
+                    }
+                });
     }
 
     public RemoteFunctionCall<Death> searchTurtleDeathDocument(String _turtleId,
