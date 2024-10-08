@@ -17,6 +17,7 @@ export interface AssigneeDocDataType extends TurtleData {
 }
 
 export interface AssigneeFetchData {
+  transactionId: number;
   docType: "양수신청서";
   applicant: string;
   detail: AssigneeDocDataType;
