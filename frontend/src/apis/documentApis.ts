@@ -45,7 +45,7 @@ export const apiHelper = async <T>(
     let errorCode = 0;
     if (error instanceof AxiosError) {
       errorMessage = error.response?.data.message || error.message;
-      errorCode = ~~error?.code!;
+      errorCode = ~~error.code!;
     }
     console.error(`Document API Request: ${errorCode} - ${errorMessage}`);
     return {
@@ -117,7 +117,7 @@ export const createBreedDocumentRequest = async (data: FormData) => {
 // assign(양수) 서류 등록
 export const createAssignDocumentRequest = async (data: AssigneeFetchData) => {
   const response = await apiHelper<boolean>(() =>
-    authAxios.post(path + `/register/assign`, { data })
+    authAxios.post(path + `/register/assign`, data)
   );
   return response;
 };
@@ -125,7 +125,7 @@ export const createAssignDocumentRequest = async (data: AssigneeFetchData) => {
 // grant(양도) 서류 등록
 export const createGrantDocumentRequest = async (data: GrantorFetchData) => {
   const response = await apiHelper<boolean>(() =>
-    authAxios.post(path + `/register/grant`, { data })
+    authAxios.post(path + `/register/grant`, data)
   );
   return response;
 };
