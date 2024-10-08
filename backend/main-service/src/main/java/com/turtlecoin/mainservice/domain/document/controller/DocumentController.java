@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,10 +34,15 @@ import com.turtlecoin.mainservice.domain.document.repository.DocumentRepository;
 import com.turtlecoin.mainservice.domain.document.service.ContractService;
 import com.turtlecoin.mainservice.domain.document.service.DocumentService;
 import com.turtlecoin.mainservice.domain.s3.service.ImageUploadService;
+import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
+import com.turtlecoin.mainservice.domain.transaction.exception.TransactionNotFoundException;
+import com.turtlecoin.mainservice.domain.transaction.service.TransactionService;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import com.turtlecoin.mainservice.domain.turtle.service.TurtleService;
+import com.turtlecoin.mainservice.domain.user.entity.Role;
 import com.turtlecoin.mainservice.domain.user.entity.User;
 import com.turtlecoin.mainservice.domain.user.service.UserService;
+import com.turtlecoin.mainservice.domain.user.util.JWTUtil;
 import com.turtlecoin.mainservice.global.exception.DocumentNotFoundException;
 import com.turtlecoin.mainservice.global.exception.DocumentProgressException;
 import com.turtlecoin.mainservice.global.exception.NotTransferDocumentException;
@@ -57,6 +64,8 @@ public class DocumentController {
 	private final UserService userService;
 	private final TurtleService turtleService;
 	private final DocumentRepository documentRepository;
+	private final JWTUtil jwtUtil;
+	private final TransactionService transactionService;
 
 	// 인공증식서류 등록
 	@PostMapping(value = "/register/breed", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -198,6 +207,7 @@ public class DocumentController {
 				throw new TurtleDeadException("개체가 이미 폐사한 상태입니다.");
 			}
 
+
 			String currentVariable = requestData.getApplicant() + turtleUUID + Long.toString(System.currentTimeMillis());
 			documentHash = contractService.keccak256(currentVariable.getBytes());
 			// 이름 전화번호로 사용자 검색하고 없으면 에러
@@ -206,8 +216,10 @@ public class DocumentController {
 				throw new UserNotFoundException("양수인 정보와 일치하는 회원이 존재하지 않습니다.");
 			}
 			assigneeUUID = assignee.getUuid();
+			// 거래에 서류 정보를 할당하기
+			transactionService.setDocumentHash(requestData.getTransactionId(), documentHash);
 		}
-		catch(UserNotFoundException | TurtleNotFoundException e){
+		catch(UserNotFoundException | TransactionNotFoundException | TurtleNotFoundException e){
 			return new ResponseEntity<>(ResponseVO.failure("404", e.getMessage()), HttpStatus.NOT_FOUND);
 		}
 		catch(TurtleDeadException e){
@@ -409,12 +421,20 @@ public class DocumentController {
 		return new ResponseEntity<>(ResponseVO.success("서류 등록에 성공했습니다."), HttpStatus.OK);
 	}
 
+	// 관리자용 메뉴이므로 인증 해줘야함
 	// 전체 서류 조회
 	@GetMapping("/list")
-	public ResponseEntity<?> listDocuments(Pageable pageable) {
+	public ResponseEntity<?> listDocuments(@RequestHeader HttpHeaders header, Pageable pageable) {
 		List<DocumentListDto> documentList;
 
 		try{
+			String accessToken = header.getFirst("Authorization").split("Bearer ")[1].split(" ")[0];
+			Role role = Role.valueOf(jwtUtil.getRoleFromToken(accessToken));
+
+			if(role != Role.ROLE_ADMIN){
+				return new ResponseEntity<>(ResponseVO.failure("401", "관리자만 접근 가능합니다."), HttpStatus.UNAUTHORIZED);
+			}
+
 			// 관리자가 확인 중인 서류를 모두 조회
 			documentList = documentService.getDocumentList(pageable);
 		}catch(Exception e){
@@ -451,9 +471,16 @@ public class DocumentController {
 
 	// 서류 승인 또는 반려
 	@PostMapping("/approve")
-	public ResponseEntity<?> approveDocument(@RequestBody DocumentApprovalRequestDto documentApprovalRequestDto) {
+	public ResponseEntity<?> approveDocument(@RequestHeader HttpHeaders header,  @RequestBody DocumentApprovalRequestDto documentApprovalRequestDto) {
 		DocumentResponseDto documentResponseDto;
 		try{
+			String accessToken = header.getFirst("Authorization").split("Bearer ")[1].split(" ")[0];
+			Role role = Role.valueOf(jwtUtil.getRoleFromToken(accessToken));
+
+			if(role != Role.ROLE_ADMIN){
+				return new ResponseEntity<>(ResponseVO.failure("401", "관리자만 접근 가능합니다."), HttpStatus.UNAUTHORIZED);
+			}
+
 			documentResponseDto = documentService.responseDocument(documentApprovalRequestDto.getDocumentHash(), documentApprovalRequestDto.getTurtleUUID());
 			if(documentResponseDto == null){
 				throw new DocumentNotFoundException("입력한 정보와 일치하는 서류가 존재하지 않습니다.");

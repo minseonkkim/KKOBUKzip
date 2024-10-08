@@ -5,22 +5,27 @@ import { useEscrowStore } from "../../store/useEscrowStore";
 import { useWeb3Store } from "../../store/useWeb3Store";
 import { useUserStore } from "../../store/useUserStore";
 import useChatStore from "../../store/useChatStore";
-import NoTurtleImg from "../../assets/NoTurtleImg.webp"
+import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 
-interface TransactionHistoryProps {
-  auctionFlag: boolean;
-  turtleId: number;
-  turtleUuid: string;
-  transactionId: number;
-  sellerId: number;
-  sellerUuid: string;
-  sellerName: string;
-  sellerAddress: string;
-  transactionTag: string[];
-  transactionImage: string[];
-  documentHash: string | null;
-  amount: number;
+interface AuctionHistoryProps {
+  buyerId: number | null;
+  buyerUuid: string | null;
+  createDate: string | null;
+  images: string;
+  price: number | null;
   progress: string;
+  scientificName: string | null;
+  sellerAddress: string;
+  sellerId: number;
+  sellerName: string;
+  sellerUuid: string | null;
+  tags: string[];
+  title: string;
+  transactionId: number;
+  turtleId: number | null;
+  turtleUuid: string;
+  weight: number;
+  documentHash: string | null;
   myTurtlesUuid: MyTurtleInfo[];
 }
 
@@ -30,7 +35,7 @@ interface MyTurtleInfo {
   turtleGender: string
 }
 
-export default function TransactionHistory(props: TransactionHistoryProps | Partial<TransactionHistoryProps>) {
+export default function AuctionHistory(props: AuctionHistoryProps | Partial<AuctionHistoryProps>) {
   const navigate = useNavigate();
   const { isLogin, userInfo } = useUserStore();
   const { openChatDetail } = useChatStore();
@@ -42,8 +47,8 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
   const isSeller = userInfo?.userId === props.sellerId && props.documentHash !== null;
 
   const handleDeposit = async () => {
-    if (account && props.transactionId !== undefined && props.sellerAddress && props.amount !== undefined) {
-      const isFinish = await createTransaction(props.transactionId, props.sellerAddress, ~~props.amount, props.turtleUuid!, userInfo!.uuid, props.sellerUuid!);
+    if (account && props.transactionId !== undefined && props.sellerAddress && props.price !== undefined) {
+      const isFinish = await createTransaction(props.transactionId, props.sellerAddress, ~~props.price!, props.turtleUuid!, userInfo!.uuid, props.sellerUuid!);
       if (isFinish) {
         alert("거래 대금 송금이 완료되었습니다. 서류 작성을 진행해 주세요.");
       } else {
@@ -97,16 +102,16 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
     <>
       <div className="w-full border-[2px] rounded-[20px] p-[15px] bg-[#f8f8f8] flex flex-col justify-between md:flex-row lg:flex-col xl:flex-row">
         <div className="flex flex-row">
-          <img src={props.transactionImage ? props.transactionImage[0] : NoTurtleImg} loading="lazy" className="w-[130px] lg:w-[200px] h-[130px] lg:h-[150px] rounded-[10px] object-cover" draggable="false" alt="turtle image" />
+          <img src={props.images !== null ? props.images : TmpTurtleImg} loading="lazy" className="w-[130px] lg:w-[200px] h-[130px] lg:h-[150px] rounded-[10px] object-cover" draggable="false" alt="turtle image" />
           <div className="flex flex-col justify-between w-[300px] ml-[15px]">
             <div>
               <div className="mb-1 whitespace-nowrap flex flex-row items-end font-bold font-stardust text-[#4B721F]">
-                <div className="text-[27px] md:text-[29px]">{props.amount?.toLocaleString("ko-KR")}</div>
+                <div className="text-[27px] md:text-[29px]">{props.price?.toLocaleString("ko-KR") || 0}</div>
                 <div className="text-[20px] md:text-[21px]">TURT</div>
               </div>
               <div className="text-[15px] text-gray-700 flex flex-wrap space-x-1">
-                {props.transactionTag
-                  ?.concat("#거래")
+                {props.tags
+                  ?.concat("#경매")
                   .map((tag, index) => (
                     <span
                       key={index}
@@ -132,7 +137,9 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
               <div className="text-[18px] font-bold">
                 {/* 경매 거래인 경우에만 활성화 해당(입금 대기 상태일 때) */}
                 {(userInfo?.userId !== props.sellerId) && (props.progress === "SAIL") && (
-                  <button className="whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0]" onClick={handleDeposit}>
+                  <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0]" 
+                  onClick={handleDeposit}
+                  >
                     입금하기
                   </button>
                 )}
@@ -144,51 +151,77 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
                 )}
                 {/* 서류 검토 */}
                 {(userInfo?.userId !== props.sellerId) && (props.progress === "APPROVED_DOCUMENT") && (
-                  <button className="whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0]" onClick={finalizeTransaction}>
+                  <button className="mr-3 whitespace-nowrap w-auto px-3 h-10 bg-[#E5E4FF] rounded-[10px] hover:bg-[#D6D5F0]" 
+                  onClick={finalizeTransaction}
+                  >
                     구매 확정
                   </button>
                 )}
               </div>
+              
             </div>
           </div>
         </div>
         <div>
          
                     
-          {/* 판매 */}
+         {/* 경매 */}
           <div className="w-[360px] h-[104px] relative mt-[18px]">
             <div className="w-[290px] h-[0px] left-[24px] top-[68px] absolute border-[1.4px] border-gray-400"></div>
 
-            <div className={`left-0 top-0 absolute text-center text-black text-[16px] ${props.progress == "SAIL" ? 'font-bold' : ''}`}>판매중</div>
-            {props.progress == "SAIL" ?
-              <img className="w-[54px] left-0 top-[40px] absolute origin-top-left" src={BabyTurtleImg} draggable="false"/>
-            : <><div className="w-[30px] h-[30px] left-[8px] top-[53px] absolute bg-[#e7f6d1] rounded-full border border-black" />
+            <div className="left-0 top-0 absolute text-center text-black text-[16px]">입금대기</div>
+            {/* 입금대기-완료 */}
+            <div className="w-[30px] h-[30px] left-[8px] top-[53px] absolute bg-[#e7f6d1] rounded-full border border-black" />
             <div className="w-[14px] h-[14px] left-[10px] top-[54px] absolute">
               <IoCheckmark className="text-[28px]" />
-            </div></>
-            }
+            </div>
+            {/* 입금대기-진행중 */}
+            {/* <img className="w-[54px] left-0 top-[40px] absolute origin-top-left" src={BabyTurtleImg} draggable="false"/> */}
+            {/* 입금대기-전 */}
+            {/* <div className="w-[20px] h-[20px] left-[10px] top-[59px] absolute bg-[#aeaeae] rounded-full border border-black" /> */}
 
-            <div className={`left-[92px] top-0 absolute text-center text-black text-[16px] ${props.progress == "REVIEW_DOCUMENT" ? 'font-bold' : ''}`}>서류검토</div>
-            {props.progress == "REVIEW_DOCUMENT" ? 
-            <img className="w-[54px] left-[97px] top-[41px] absolute origin-top-left" src={BabyTurtleImg} draggable="false" />
-            : (props.progress == "SAIL" ? <div className="w-[20px] h-[20px] left-[112px] top-[59px] absolute bg-[#aeaeae] rounded-full border border-black" /> : 
-             <><div className="w-[30px] h-[30px] left-[106px] top-[53px] absolute bg-[#e7f6d1] rounded-full border border-black" />
-                  <div className="w-[14px] h-[14px] left-[108px] top-[54px] absolute"><IoCheckmark className="text-[28px]"/></div></>
-            )}
-         
-
-            <div className={`left-[188px] top-0 absolute text-center text-black text-[16px] ${props.progress == "APPROVED_DOCUMENT" ? 'font-bold' : ''}`}>서류승인</div>
-            {props.progress == "APPROVED_DOCUMENT" ?
-            <img className="w-[54px] left-[192px] top-[40px] absolute origin-top-left" src={BabyTurtleImg} draggable="false"/> :
-             (props.progress == "COMPLETED" ?<><div className="w-[30px] h-[30px] left-[202px] top-[53px] absolute bg-[#e7f6d1] rounded-full border border-black" />
-            <div className="w-[14px] h-[14px] left-[204px] top-[54px] absolute">
+            <div className="left-[78px] top-0 absolute text-center text-black text-[16px]">예약</div>
+            {/* 예약-완료 */}
+            <div className="w-[30px] h-[30px] left-[77px] top-[53px] absolute bg-[#e7f6d1] rounded-full border border-black" />
+            <div className="w-[14px] h-[14px] left-[79px] top-[54px] absolute">
               <IoCheckmark className="text-[28px]" />
-            </div></> : <div className="w-[20px] h-[20px] left-[207px] top-[59px] absolute bg-[#aeaeae] rounded-full border border-black" />)}
-           
+            </div>
+            {/* 예약-진행중 */}
+            {/* <img className="w-[54px] left-[66px] top-[40px] absolute origin-top-left" src={BabyTurtleImg} draggable="false"/> */}
+            {/* 예약-전 */}
+            {/* <div className="w-[20px] h-[20px] left-[83px] top-[59px] absolute bg-[#aeaeae] rounded-full border border-black" /> */}
 
-            <div className={`left-[280px] top-0 absolute text-center text-black text-[16px] ${props.progress == "COMPLETED" ? 'font-bold' : ''}`}>거래완료</div>
-            {props.progress == "COMPLETED" ?  <img className="w-[54px] left-[284px] top-[40px] absolute origin-top-left" src={BabyTurtleImg} draggable="false"/>: <div className="w-[20px] h-[20px] left-[298px] top-[59px] absolute bg-[#aeaeae] rounded-full border border-black" />}
+            <div className="left-[130px] top-0 absolute text-center text-black text-[16px] font-bold">서류검토</div>
+            {/* 서류검토-완료 */}
+            {/* <div className="w-[37px] h-[37px] left-[308px] top-[53px] absolute bg-[#e7f6d1] rounded-full border border-black" />
+                  <div className="w-[25px] h-[29px] left-[314px] top-[54px] absolute"><IoCheckmark className="text-[28px]"/></div> */}
+            {/* 서류검토-진행중 */}
+            <img className="w-[54px] left-[137px] top-[41px] absolute origin-top-left" src={BabyTurtleImg} draggable="false" />
+            {/* 서류검토-전 */}
+            {/* <div className="w-[23px] h-[23px] left-[317px] top-[61px] absolute bg-[#aeaeae] rounded-full border border-black" /> */}
+
+            <div className="left-[206px] top-0 absolute text-center text-black text-[16px]">서류승인</div>
+            {/* 서류검토-완료 */}
+            {/* <div className="w-[30px] h-[30px] left-[220px] top-[53px] absolute bg-[#e7f6d1] rounded-full border border-black" />
+            <div className="w-[14px] h-[14px] left-[222px] top-[54px] absolute">
+              <IoCheckmark className="text-[28px]" />
+            </div> */}
+            {/* 서류검토-진행중 */}
+            {/* <img className="w-[54px] left-[212px] top-[40px] absolute origin-top-left" src={BabyTurtleImg} draggable="false"/> */}
+            {/* 서류검토-전 */}
+            <div className="w-[20px] h-[20px] left-[225px] top-[59px] absolute bg-[#aeaeae] rounded-full border border-black" />
+
+              <div className="left-[280px] top-0 absolute text-center text-black text-[16px]">거래완료</div>
+            {/* 거래완료-완료 */}
+            {/* <div className="w-[30px] h-[30px] left-[292px] top-[53px] absolute bg-[#e7f6d1] rounded-full border border-black" />
+                  <div className="w-[14px] h-[14px] left-[294px] top-[54px] absolute"><IoCheckmark className="text-[28px]"/>
+            </div> */}
+            {/* 거래완료-진행중 */}
+            {/* <img className="w-[54px] left-[284px] top-[40px] absolute origin-top-left" src={BabyTurtleImg} draggable="false"/> */}
+            {/* 거래완료-전 */}
+            <div className="w-[20px] h-[20px] left-[298px] top-[59px] absolute bg-[#aeaeae] rounded-full border border-black" />
           </div>
+        
         </div>
       </div>
     </>
