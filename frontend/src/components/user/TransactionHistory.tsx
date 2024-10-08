@@ -18,8 +18,16 @@ interface TransactionHistoryProps {
   sellerAddress: string;
   transactionTag: string[];
   transactionImage: string[];
+  documentHash: string;
   amount: number;
   progress: string;
+  myTurtlesUuid: MyTurtleInfo[];
+}
+
+interface MyTurtleInfo {
+  turtleName: string,
+  turtleUuid: string,
+  turtleGender: string
 }
 
 export default function TransactionHistory(props: TransactionHistoryProps | Partial<TransactionHistoryProps>) {
@@ -45,7 +53,7 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
   const startPaperwork = () => {
     if (userInfo?.userId === props.sellerId) {
       navigate("/doc-form/grant", {
-        state: { turtleId: props.turtleId, transactionId: props.transactionId },
+        state: { turtleId: props.turtleId, turtleUuid: props.turtleUuid, transactionId: props.transactionId, documentHash: props.documentHash, myTurtlesUuid: props.myTurtlesUuid },
       });
       console.log("Navigate to seller paperwork page");
     } else {

@@ -17,7 +17,6 @@ import { useUserStore } from "../../store/useUserStore";
 import { TurtleDataType } from "../../types/turtle";
 import { useNavigate } from "react-router-dom";
 import AuctionHistory from "../../components/user/AuctionHistory";
-import NoTurtleImg from "../../assets/NoTurtleImg.webp";
 
 interface AuctionItemType {
   buyerId: number | null;
@@ -268,6 +267,7 @@ function MyPage() {
           <TransactionHistory
             key={item.transactionId}
             auctionFlag={item.auctionFlag}
+            documentHash={item.documentHash!}
             turtleId={item.turtleId}
             turtleUuid={item.turtleUuid}
             transactionId={item.transactionId}
@@ -279,6 +279,7 @@ function MyPage() {
             amount={item.price}
             transactionImage={item.transactionImage}
             progress={item.progress}
+            myTurtlesUuid={myTurtlesUuid}
           />
         ))}
       </div>
