@@ -109,6 +109,7 @@ public class Transaction extends BaseEntity {
                 .sellerAddress(this.sellerAddress)
                 .turtleUuid(this.turtle.getUuid())
                 .documentHash(this.documentHash)
+                .sellerNickname(this.getTurtle().getUser().getNickname())
                 .build();
     }
 }

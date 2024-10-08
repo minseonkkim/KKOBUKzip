@@ -64,11 +64,11 @@ public class TransactionService {
             if(user.isEmpty()){
                 throw new UserNotFoundException("유효한 토큰이 아닙니다.");
             }
-            Turtle turtle = turtleRepository.getReferenceById(dto.getTurtleId());
-            Optional<Transaction> existingTransaction = transactionRepository.findTopByTurtleOrderByLastModifiedDateDesc(turtle);
+            Optional<Turtle> turtle = turtleRepository.findById(dto.getTurtleId());
+            Optional<Transaction> existingTransaction = transactionRepository.findTopByTurtleOrderByLastModifiedDateDesc(turtle.orElse(null));
 
             if (existingTransaction != null) {
-                Long previousOwnerId = turtle.getUser().getId();
+                Long previousOwnerId = turtle.get().getUser().getId();
                 Long currentOwnerId = user.get().getId();
 
                 // 이전 거래 주인과 현재 거래 등록 주인이 동일한지 확인
@@ -86,7 +86,7 @@ public class TransactionService {
             transaction.setContent(dto.getContent());
             transaction.setPrice(dto.getPrice());
             transaction.setSellerAddress(dto.getSellerAddress());
-            transaction.setTurtle(turtle);
+            transaction.setTurtle(turtle.get());
             transaction.setTransactionPhotos(new ArrayList<>());
             transaction.setTransactionTags(new ArrayList<>());
 
