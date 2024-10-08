@@ -21,6 +21,7 @@ import AuctionDetailPage from "./pages/auction/AuctionDetailPage";
 import AuctionListPage from "./pages/auction/AuctionListPage";
 import ChatList from "./components/chatting/ChatList";
 import { useUserStore } from "./store/useUserStore";
+import Loading from "./components/common/Loading";
 
 const MyPage = React.lazy(() => import("./pages/user/MyPage"));
 
@@ -68,17 +69,7 @@ function App() {
       <BrowserRouter>
         <Suspense
           fallback={
-            <div className="w-full h-[100vh] flex flex-col justify-center items-center">
-              <img
-                src={LoadingImage}
-                className="loading-image w-[500px] h-auto"
-                alt="Loading"
-                draggable="false"
-              />
-              <p className="typing-effect font-stardust font-bold text-[30px]">
-                Loading...
-              </p>
-            </div>
+            <Loading />
           }
         >
           <Routes>
