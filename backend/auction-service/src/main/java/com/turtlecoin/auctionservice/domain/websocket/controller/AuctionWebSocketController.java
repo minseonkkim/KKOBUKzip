@@ -1,18 +1,28 @@
 package com.turtlecoin.auctionservice.domain.websocket.controller;
 
+import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.facade.RedissonLockFacade;
+import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
 import com.turtlecoin.auctionservice.domain.auction.service.BidService;
 import com.turtlecoin.auctionservice.domain.websocket.dto.BidMessage;
 import com.turtlecoin.auctionservice.feign.MainClient;
 import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
 import com.turtlecoin.auctionservice.global.exception.*;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
+import com.turtlecoin.auctionservice.global.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Controller
@@ -22,7 +32,68 @@ public class AuctionWebSocketController {
     private final SimpMessagingTemplate messagingTemplate;
     private final RedissonLockFacade redissonLockFacade;
     private final MainClient mainClient;
+    private final RedisTemplate redisTemplate;
+    private static final String AUCTION_END_KEY_PREFIX = "auction_end_";
+    private static final String AUCTION_BID_KEY = "auction_bid_";
+    private final AuctionRepository auctionRepository;
+    private final JWTUtil jwtUtil;
 //    private final BidService bidService;
+
+    @MessageMapping("/auction/{auctionId}/init")
+    public void sendInitialData(@DestinationVariable Long auctionId, @Payload Map<String, Object> payload, Principal principal) {
+        System.out.println("Initial Data 진입");
+        Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매가 존재하지 않습니다."));
+        String bidKey = AUCTION_BID_KEY+auctionId;
+        String endKey = AUCTION_END_KEY_PREFIX+auctionId;
+
+        Long userId = Long.valueOf(principal.getName());
+
+        if (!redisTemplate.hasKey(bidKey)) {
+            log.warn("Redis에 키가 존재하지 않습니다. 기본값을 사용합니다.");
+
+            // 기본값으로 처리
+            Double nowBid = auction.getMinBid(); // 기본값
+            Long remainingTime = redisTemplate.getExpire(endKey, TimeUnit.MILLISECONDS);
+
+            // 필요한 데이터를 초기화
+            Map<String, Object> initialData = new HashMap<>();
+            initialData.put("minBid", auction.getMinBid());
+            initialData.put("nowBid", nowBid);
+            initialData.put("remainingTime", remainingTime);
+
+            // 클라이언트에게 데이터 전송
+            String destination = "/queue/auction/" + auctionId + "/init";
+            System.out.println("DESTINATION: "+destination);
+
+
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
+                    ResponseVO.success("Join", "200", "HIHI!!"));
+
+
+            messagingTemplate.convertAndSendToUser(principal.getName(), destination,
+                    ResponseVO.success("Join", "200", initialData));
+
+            log.info("기본값을 사용하여 유저에게 데이터 전송 완료: userId={}, auctionId={}", userId, auctionId);
+        } else {
+            // 키가 있는 경우, Redis에서 값을 가져옵니다.
+            Object bidAmountObj = redisTemplate.opsForHash().get(bidKey, "bidAmount");
+            Double nowBid = (bidAmountObj != null) ? Double.parseDouble(bidAmountObj.toString()) : auction.getMinBid();
+            Long remainingTime = redisTemplate.getExpire(endKey, TimeUnit.MILLISECONDS);
+
+            // 필요한 데이터 조회 및 응답 처리
+            Map<String, Object> initialData = new HashMap<>();
+            initialData.put("minBid", auction.getMinBid());
+            initialData.put("nowBid", nowBid);
+            initialData.put("remainingTime", remainingTime);
+
+            // 클라이언트에게 데이터 전송
+            String destination = "/queue/auction/" + auctionId + "/init";
+            messagingTemplate.convertAndSendToUser(principal.getName(), destination,
+                    ResponseVO.success("Join", "200", initialData));
+
+            log.info("유저에게 데이터 전송 완료: userId={}, auctionId={}", userId, auctionId);
+        }
+    }
 
     // 클라이언트가 특정 경매에 입찰을 보낼 때 (/pub/auction/{auctionId}/bid)
     @MessageMapping("/auction/{auctionId}/bid")
