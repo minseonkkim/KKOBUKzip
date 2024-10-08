@@ -49,7 +49,7 @@ function AuctionDetailPage() {
       }
       const response = await getAuctionDetailItemData(auctionId);
       if (response.success) {
-        console.log(response);
+        console.log("경매 상세", response);
         setAuctionStatus(response.data.data.auction.progress);
         setAuctionItemData(response.data.data.auction);
       } else {
@@ -144,18 +144,20 @@ function AuctionDetailPage() {
               auctionId={Number(auctionId)}
             />
           )}
-          {auctionStatus === "DURING_AUCTION" && auctionItemData!.nowBid !== null && (
-            <DuringAuction
-              minBid={auctionItemData!.minBid}
-              channelId={String(auctionItemData?.id)}
-              nowBid={auctionItemData!.nowBid}
-              remainingTime={auctionItemData!.remainingTime}
-            />
-          )}
-          {auctionStatus === "NO_BID" || <NoBid />}
-          {auctionStatus === "SUCCESSFUL_BID" && auctionItemData!.nowBid !== null && (
-            <SuccessfulBid nowBid={auctionItemData!.nowBid} />
-          )}
+          {auctionStatus === "DURING_AUCTION" &&
+            auctionItemData!.nowBid !== null && (
+              <DuringAuction
+                minBid={auctionItemData!.minBid}
+                channelId={String(auctionItemData?.id)}
+                nowBid={auctionItemData!.nowBid}
+                remainingTime={auctionItemData!.remainingTime}
+              />
+            )}
+          {auctionStatus === "NO_BID" && <NoBid />}
+          {auctionStatus === "SUCCESSFUL_BID" &&
+            auctionItemData!.nowBid !== null && (
+              <SuccessfulBid nowBid={auctionItemData!.nowBid} />
+            )}
         </div>
       </main>
     </>

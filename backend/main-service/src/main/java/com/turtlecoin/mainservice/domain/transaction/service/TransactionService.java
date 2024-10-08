@@ -234,4 +234,13 @@ public class TransactionService {
         }
         return progressList;
     }
+
+    @Transactional
+    public void setDocumentHash(Long transactionId, String documentHash) {
+        Transaction transaction = findTransactionById(transactionId);
+        if(transaction == null){
+            throw new TransactionNotFoundException("서류와 연결될 거래가 존재하지 않습니다.");
+        }
+        transaction.changeDocumentHash(documentHash);
+    }
 }

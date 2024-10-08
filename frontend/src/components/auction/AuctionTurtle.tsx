@@ -30,11 +30,11 @@ export default function AuctionTurtle({
         <div className="absolute top-4 right-4">
           <AuctionStatusTag
             progress={
-              data?.auctionProgress === "BEFORE_AUCTION"
+              data?.progress === "BEFORE_AUCTION"
                 ? "경매전"
-                : data?.auctionProgress === "DURING_AUCTION"
+                : data?.progress === "DURING_AUCTION"
                 ? "경매중"
-                : data?.auctionProgress === "NO_BID"
+                : data?.progress === "NO_BID"
                 ? "유찰"
                 : "낙찰"
             }
@@ -50,12 +50,12 @@ export default function AuctionTurtle({
               {data?.scientificName}
             </div>
             <div className="text-[15px] text-gray-700 flex space-x-1.5">
-              {data?.auctionTags?.map((tag, index) => (
+              {data?.auctionTag?.map((tag, index) => (
                 <span
                   key={index}
                   className="whitespace-nowrap bg-[#D5F0DD] text-[#065F46] px-2 py-1 rounded-full"
                 >
-                  #{tag.tag}
+                  #{tag}
                 </span>
               ))}
             </div>

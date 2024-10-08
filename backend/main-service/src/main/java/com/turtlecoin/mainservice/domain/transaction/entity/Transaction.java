@@ -112,4 +112,9 @@ public class Transaction extends BaseEntity {
                 .sellerNickname(this.getTurtle().getUser().getNickname())
                 .build();
     }
+
+    @Transactional
+    public void changeDocumentHash(String documentHash) {
+        this.documentHash = documentHash;
+    }
 }

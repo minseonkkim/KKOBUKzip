@@ -34,6 +34,9 @@ import com.turtlecoin.mainservice.domain.document.repository.DocumentRepository;
 import com.turtlecoin.mainservice.domain.document.service.ContractService;
 import com.turtlecoin.mainservice.domain.document.service.DocumentService;
 import com.turtlecoin.mainservice.domain.s3.service.ImageUploadService;
+import com.turtlecoin.mainservice.domain.transaction.entity.Transaction;
+import com.turtlecoin.mainservice.domain.transaction.exception.TransactionNotFoundException;
+import com.turtlecoin.mainservice.domain.transaction.service.TransactionService;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
 import com.turtlecoin.mainservice.domain.turtle.service.TurtleService;
 import com.turtlecoin.mainservice.domain.user.entity.Role;
@@ -62,6 +65,7 @@ public class DocumentController {
 	private final TurtleService turtleService;
 	private final DocumentRepository documentRepository;
 	private final JWTUtil jwtUtil;
+	private final TransactionService transactionService;
 
 	// 인공증식서류 등록
 	@PostMapping(value = "/register/breed", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -203,6 +207,7 @@ public class DocumentController {
 				throw new TurtleDeadException("개체가 이미 폐사한 상태입니다.");
 			}
 
+
 			String currentVariable = requestData.getApplicant() + turtleUUID + Long.toString(System.currentTimeMillis());
 			documentHash = contractService.keccak256(currentVariable.getBytes());
 			// 이름 전화번호로 사용자 검색하고 없으면 에러
@@ -211,8 +216,10 @@ public class DocumentController {
 				throw new UserNotFoundException("양수인 정보와 일치하는 회원이 존재하지 않습니다.");
 			}
 			assigneeUUID = assignee.getUuid();
+			// 거래에 서류 정보를 할당하기
+			transactionService.setDocumentHash(requestData.getTransactionId(), documentHash);
 		}
-		catch(UserNotFoundException | TurtleNotFoundException e){
+		catch(UserNotFoundException | TransactionNotFoundException | TurtleNotFoundException e){
 			return new ResponseEntity<>(ResponseVO.failure("404", e.getMessage()), HttpStatus.NOT_FOUND);
 		}
 		catch(TurtleDeadException e){
