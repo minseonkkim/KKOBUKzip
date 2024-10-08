@@ -131,6 +131,7 @@ public class BidService {
         log.info("경매 남은시간 검증 후 에러 던져주는 로직");
         String key = AUCTION_END_KEY_PREFIX + auctionId;
         Long remainingTime = redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
+        System.out.println("redis key : "+key+" remainingTime : "+remainingTime);
         log.info("redis key : {}remaining time : {}", key, remainingTime);
 
         // 키가 만료됐으면
@@ -236,7 +237,7 @@ public class BidService {
         ResponseVO<Object> response;
         if (isError) {
             // 에러가 발생한 경우
-            response = ResponseVO.failure("500", errorMessage);
+            response = ResponseVO.failure("Bid","500", errorMessage);
         } else {
             // 성공적인 입찰인 경우
             Map<String, Object> data = new HashMap<>();
@@ -244,7 +245,7 @@ public class BidService {
             System.out.println("===");
             System.out.println(data.get("bidRecord").toString());
             System.out.println("===");
-            response = ResponseVO.success("data", data);
+            response = ResponseVO.success("Bid","data", data);
         }
 
         // 클라이언트에게 ResponseVO 객체를 전송

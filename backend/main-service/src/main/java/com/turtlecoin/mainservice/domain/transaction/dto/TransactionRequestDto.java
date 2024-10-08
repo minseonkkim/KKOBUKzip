@@ -13,6 +13,7 @@ public class TransactionRequestDto {
     private String content;
     private String sellerAddress;
     private double price;
+    private int weight;
     // Double에서 int로 바꿈 Block chain에는 Double 사용 안됨
     private Long turtleId;
     private List<String> transactionTags;

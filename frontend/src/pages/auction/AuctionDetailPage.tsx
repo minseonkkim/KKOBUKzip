@@ -75,6 +75,12 @@ function AuctionDetailPage() {
 
   // 옥션 전-> 옥션 진행
   const changeAuctionStatus = useCallback(() => {
+    setAuctionItemData((prev) => {
+      if (prev) {
+        return { ...prev, remainingTime: 30000 };
+      }
+      return prev;
+    });
     setAuctionStatus("DURING_AUCTION");
   }, []);
 
@@ -149,8 +155,8 @@ function AuctionDetailPage() {
               <DuringAuction
                 minBid={auctionItemData!.minBid}
                 channelId={String(auctionItemData?.id)}
-                nowBid={auctionItemData!.nowBid}
-                remainingTime={auctionItemData!.remainingTime}
+                initialBid={auctionItemData!.nowBid}
+                initTime={auctionItemData!.remainingTime}
               />
             )}
           {auctionStatus === "NO_BID" && <NoBid />}

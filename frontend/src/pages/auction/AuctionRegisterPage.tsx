@@ -1,7 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import Header from "../../components/common/Header";
-import TmpTurtleImg from "../../assets/tmp_turtle.jpg";
 import { IoMdAddCircle } from "@react-icons/all-files/io/IoMdAddCircle";
 import { ChangeEvent, useState } from "react";
 import { IoClose } from "@react-icons/all-files/io5/IoClose";
@@ -9,6 +8,7 @@ import { addAuctionItem } from "../../apis/tradeApi";
 import formatDate from "../../utils/formatDate";
 import { useWeb3Store } from "../../store/useWeb3Store";
 import Loading from "../../components/common/Loading";
+import NoTurtleImg from "../../assets/NoTurtleImg.webp";
 
 
 export default function AuctionRegisterPage() {
@@ -146,7 +146,7 @@ export default function AuctionRegisterPage() {
         </h1>
         <div className="rounded-[10px] p-[13px] bg-[#F2F2F2] h-[150px] flex flex-row items-center mb-[25px]">
           <img
-            src={state.imageAddress ? state.imageAddress : TmpTurtleImg}
+            src={state.imageAddress ? state.imageAddress : NoTurtleImg}
             alt="turtle image"
             draggable="false"
             className="w-[150px] md:w-[170px] h-full object-cover rounded-[10px] mr-4 md:mr-8"
