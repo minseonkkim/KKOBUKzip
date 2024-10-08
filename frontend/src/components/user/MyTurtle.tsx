@@ -144,16 +144,14 @@ function MyTurtle({turtleId, turtleUuid, name, scientificName, gender, weight, b
   const [transferDocumentData, setTransferDocumentData] = useState<AdminAssignDocumentDataType | null>(null);
   const [deathDocumentData, setDeathDocumentData] = useState<AdminDeathDocumentDataType | null>(null);
 
-  console.log("turtleUuid", turtleUuid);
-
   useEffect(() => {
     async function fetchData () {
-      const { hasMultiplicationRecord, documentHash: breedDocumentHash }: { hasMultiplicationRecord: boolean, documentHash: string } = await documentContract!.methods.searchCurrentMultiplicationDocumentHash(turtleUuid).call();
-      const { hasTransferRecord, documentHash: transferDocumentHash }: { hasTransferRecord: boolean, documentHash: string } = await documentContract!.methods.searchCurrentTransferredDocumentHash(turtleUuid).call();
-      const { hasDeathRecord, documentHash: deathDocumentHash }: { hasDeathRecord: boolean, documentHash: string } = await documentContract!.methods.searchCurrentDeathDocumentHash(turtleUuid).call();
+      const breedDoc: [boolean, string] = await documentContract!.methods.searchCurrentMultiplicationDocumentHash(turtleUuid).call();
+      const transferDoc: [boolean, string] = await documentContract!.methods.searchCurrentTransferredDocumentHash(turtleUuid).call();
+      const deathDoc: [boolean, string] = await documentContract!.methods.searchCurrentDeathDocumentHash(turtleUuid).call();
 
-      if (hasMultiplicationRecord) {
-        const {message, success, data, error} = await getDetailDocumentData(turtleUuid, breedDocumentHash);
+      if (breedDoc[0]) {
+        const {message, success, data, error} = await getDetailDocumentData(turtleUuid, breedDoc[1].slice(2));
         if (success) {
           setBreedDocumentData(data! as AdminBreedDocumentDataType);
         } else {
@@ -161,8 +159,8 @@ function MyTurtle({turtleId, turtleUuid, name, scientificName, gender, weight, b
         }
       }
 
-      if (hasTransferRecord) {
-        const {message, success, data, error} = await getDetailDocumentData(turtleUuid, transferDocumentHash);
+      if (transferDoc[0]) {
+        const {message, success, data, error} = await getDetailDocumentData(turtleUuid, transferDoc[1].slice(2));
         if (success) {
           setTransferDocumentData(data! as AdminAssignDocumentDataType);
         } else {
@@ -170,8 +168,8 @@ function MyTurtle({turtleId, turtleUuid, name, scientificName, gender, weight, b
         }
       }
       
-      if (hasDeathRecord) {
-        const {message, success, data, error} = await getDetailDocumentData(turtleUuid, deathDocumentHash);
+      if (deathDoc[0]) {
+        const {message, success, data, error} = await getDetailDocumentData(turtleUuid, transferDoc[1].slice(2));
         if (success) {
           setDeathDocumentData(data! as AdminDeathDocumentDataType);
         } else {

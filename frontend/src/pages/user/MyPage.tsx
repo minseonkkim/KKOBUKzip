@@ -105,7 +105,6 @@ function MyPage() {
   useEffect(() => {
     const makemMTurtlesUuidArray = () => {
       const uuidArray = turtleData.map((turtle) => {
-        console.log(turtle);
         return {
           turtleName: turtle.name,
           turtleUuid: turtle.turtleUuid,
