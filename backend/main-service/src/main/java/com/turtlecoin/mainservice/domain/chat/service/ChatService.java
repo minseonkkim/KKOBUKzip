@@ -180,7 +180,7 @@ public class ChatService {
 				chatTextMessage = chat.getRecentMessage();
 			}
 			catch(Exception e){
-				throw new InvalidChattingException("저장된 채팅 데이터에 문제가 있습니다.");
+				throw new InvalidChattingException(e.getMessage());
 			}
 
 			UserResponseDTO userResponseDTO = userService.getByUserId(otherUserId);
