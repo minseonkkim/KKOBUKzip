@@ -9,7 +9,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.turtlecoin.mainservice.domain.chat.repository.EmitterRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SseService {
@@ -21,6 +23,7 @@ public class SseService {
 		SseEmitter emitter = createEmitter(userId);
 		String jsonData = objectMapper.writeValueAsString("SSE Connected");
 		emitter.send(SseEmitter.event().id(String.valueOf(userId)).name("sse").data(jsonData));
+		log.info("Subscribed to sse emitter" + userId);
 		return emitter;
 	}
 

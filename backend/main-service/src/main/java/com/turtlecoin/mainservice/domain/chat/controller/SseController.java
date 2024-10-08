@@ -2,7 +2,9 @@ package com.turtlecoin.mainservice.domain.chat.controller;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,14 +34,18 @@ public class SseController {
 	private final JWTUtil jwtUtil;
 
 	@GetMapping(value = "/sse/subscribe/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public SseEmitter subscribe(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+	public ResponseEntity<SseEmitter> subscribe(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
 		try{
 			String token = headers.getFirst("Authorization");
 			Long userId = jwtUtil.getIdFromToken(token.substring(7));
 
+			HttpHeaders responseHeader = new HttpHeaders();
+			responseHeader.add("Cache-Control", "no-cache");
+			responseHeader.add("X-Accel-Buffering", "no");
+
 			if(id.equals(userId)) {
 				log.info(userId + "가 SSE 연결을 시도했습니다!");
-				return sseService.subscribe(id);
+				return new ResponseEntity<>(sseService.subscribe(id), responseHeader, HttpStatus.OK);
 			}
 			else{
 				return null;
