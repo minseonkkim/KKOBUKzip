@@ -7,6 +7,8 @@ import com.turtlecoin.mainservice.domain.turtle.dto.TurtleResponseDTO;
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
 import com.turtlecoin.mainservice.domain.turtle.entity.QTurtle;
 import com.turtlecoin.mainservice.domain.turtle.entity.Turtle;
+import com.turtlecoin.mainservice.domain.turtle.entity.TurtlePhoto;
+import com.turtlecoin.mainservice.domain.turtle.repository.TurtlePhotoRepository;
 import com.turtlecoin.mainservice.domain.turtle.repository.TurtleRepository;
 import com.turtlecoin.mainservice.global.exception.TurtleNotFoundException;
 import com.turtlecoin.mainservice.global.response.ResponseVO;
@@ -28,6 +30,7 @@ import java.util.stream.StreamSupport;
 @RequiredArgsConstructor
 public class TurtleService {
     private final TurtleRepository turtleRepository;
+    private final TurtlePhotoRepository turtlePhotoRepository;
     private final JPAQueryFactory jpaQueryFactory;
 
     //거북이를 필터링해서 auction-service에 넘겨주기
@@ -77,6 +80,11 @@ public class TurtleService {
     @Transactional
     public void saveTurtle(Turtle turtle) {
         turtleRepository.save(turtle);
+    }
+
+    @Transactional
+    public void saveTurtlePhoto(TurtlePhoto turtlePhoto){
+        turtlePhotoRepository.save(turtlePhoto);
     }
 
     public TurtleResponseDTO getTurtleById(Long turtleId) {
