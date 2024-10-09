@@ -59,12 +59,16 @@ public class BidService {
     // 입찰 가격 갱신
     @Transactional
     public void processBidWithRedis(Long auctionId, Long userId, Double bidAmount)
-            throws SameUserBidException, WrongBidAmountException, AuctionTimeNotValidException, AuctionAlreadyFinishedException {
+            throws SameUserBidException, WrongBidAmountException, AuctionTimeNotValidException, AuctionAlreadyFinishedException, BidNotValidException {
         // 1. 경매 시작 및 상태 확인
 //        startAuctionIfNotStarted(auctionId);
 
         // 2. 현재 경매와 입찰 정보를 확인하고 유효성을 검증
         Auction auction = getAuction(auctionId);
+
+        if (auction.getUserId().equals(userId)) {
+            throw new BidNotValidException("자신의 경매에 입찰할 수 없습니다");
+        }
 
         Long currentUserId = getCurrentBidUserId(auctionId);
         // 최신 입찰가 가져오기
@@ -134,6 +138,8 @@ public class BidService {
         Long remainingTime = redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
         System.out.println("redis key : "+key+" remainingTime : "+remainingTime);
         log.info("redis key : {}remaining time : {}", key, remainingTime);
+
+        log.info("자신의 경매에 재입찰 하는지 검증하는 로직");
 
         log.info("자신의 입찰에 재입찰 하는지 검증하는 로직");
         if (currentUserId != null && currentUserId.equals(userId)) {
