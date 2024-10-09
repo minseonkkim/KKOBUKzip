@@ -42,6 +42,7 @@ public class AuctionExpirationListener implements MessageListener {
             try {
                 sendService.endAuction(auctionId);
                 System.out.println("경매 종료!!");
+                System.out.println("경매 종료 보내준 시간 : "+LocalDateTime.now());
             } catch (Exception e) {
                 // 에러 발생 시 경매 전으로 상태 갱신
                 auction.updateStatus(AuctionProgress.BEFORE_AUCTION);
