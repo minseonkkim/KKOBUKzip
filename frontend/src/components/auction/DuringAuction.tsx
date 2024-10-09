@@ -143,7 +143,7 @@ function DuringAuction({
 
       const updatedTime = ~~(bidData.Bid.bidRecord.remainingTime / 1000);
 
-      setBidPrice(bidData.Bid.bidRecord.nextBid);
+      setBidPrice(bidData.Bid.bidRecord.bidAmount);
       console.log("remainingTime : ", bidData.Bid.bidRecord.remainingTime);
       setRemainingTime(updatedTime);
       setNextBid(bidData.Bid.bidRecord.nextBid);
