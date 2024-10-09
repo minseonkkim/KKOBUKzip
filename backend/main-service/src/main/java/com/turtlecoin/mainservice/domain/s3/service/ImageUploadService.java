@@ -34,8 +34,8 @@ public class ImageUploadService {
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
-	@Value("cloud.aws.cloudFront")
-	private String cloudFront;
+	@Value("${cloud.aws.cloudfront.url}")
+	private String cloudFrontUrl;
 
 	// MultipartFile을 받아 S3에 업로드하는 메서드
 	public String upload(MultipartFile multipartFile, String dirName) throws IOException {
@@ -80,17 +80,26 @@ public class ImageUploadService {
 	// 파일을 S3에 업로드하고 URL을 반환하는 메서드
 	private String putS3(File uploadFile, String fileName) {
 		// S3에 파일 업로드 요청
+		// amazonS3.putObject(new PutObjectRequest(bucket, fileName, uploadFile)
+		// 	.withCannedAcl(CannedAccessControlList.PublicRead));
+
+		// CloudFront를 적용한 경우
+		// S3에 파일 업로드 요청
 		amazonS3.putObject(new PutObjectRequest(bucket, fileName, uploadFile)
 			.withCannedAcl(CannedAccessControlList.PublicRead));
+
+		// CloudFront URL 반환
+		return cloudFrontUrl + fileName;
+
+
 		// 업로드된 파일의 URL 반환
-		//return cloudFront + fileName;
-		return amazonS3.getUrl(bucket, fileName).toString();
+		//return amazonS3.getUrl(bucket, fileName).toString();
 	}
 
 	// S3에서 파일 삭제하는 메서드
 	public void deleteS3(String url) {
 		try {
-			String fileName = extractS3FileNameFromUrl(url);
+			String fileName = extractS3FileNameFromUrlCloudFront(url);
 			// 파일이 존재하는지 확인
 			if (amazonS3.doesObjectExist(bucket, fileName)) {
 				amazonS3.deleteObject(bucket, fileName);
@@ -135,6 +144,16 @@ public class ImageUploadService {
 			String path = url.getPath(); // /bucket-name/path/to/file
 			// CloudFront 경로에 맞게 조정할 수 있음
 			return path.startsWith("/") ? path.substring(1) : path;
+		} catch (Exception e) {
+			throw new RuntimeException("URL 파싱 중 오류 발생", e);
+		}
+	}
+
+	// S3 URL에서 파일 경로를 추출하는 메서드
+	private String extractS3FileNameFromUrlCloudFront(String url) {
+		try {
+			// CloudFront URL에서 도메인 부분 제거하고 파일 경로만 추출
+			return url.replace(cloudFrontUrl, "");
 		} catch (Exception e) {
 			throw new RuntimeException("URL 파싱 중 오류 발생", e);
 		}

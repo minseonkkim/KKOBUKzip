@@ -236,6 +236,7 @@ public class TransactionService {
         return progressList;
     }
 
+    // 거래에 DocumentHash를 적용하기 위한 로직
     @Transactional
     public void setDocumentHash(Long transactionId, String documentHash) {
         Transaction transaction = findTransactionById(transactionId);
@@ -243,5 +244,17 @@ public class TransactionService {
             throw new TransactionNotFoundException("서류와 연결될 거래가 존재하지 않습니다.");
         }
         transaction.changeDocumentHash(documentHash);
+    }
+    
+    // 서류 승인시 거래의 상태를 변경해주는 함수
+    @Transactional
+    public void approveTransactionDocument(Long transactionId){
+        Transaction transaction = findTransactionById(transactionId);
+        if(transaction == null){
+            throw new TransactionNotFoundException();
+        }
+        else{
+            transaction.changeStatusToApproveDocument();
+        }
     }
 }

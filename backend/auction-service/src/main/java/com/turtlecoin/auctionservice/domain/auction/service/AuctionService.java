@@ -92,7 +92,7 @@ public class AuctionService {
             log.info("이미지 업로드 완료");
             System.out.println("거북이 무게 : "+auction.getWeight());
 
-            return new ResponseEntity<>(ResponseVO.success("경매가 성공적으로 등록됐습니다."), HttpStatus.OK);
+            return new ResponseEntity<>(ResponseVO.success("경매가 등록됐습니다.","auctionId", auction.getId()), HttpStatus.OK);
 
 
         } catch (TurtleAlreadyRegisteredException e) {

@@ -112,7 +112,7 @@ public class AuctionWebSocketController {
             redissonLockFacade.updateBidWithLock(auctionId, userId, bidAmount);
             log.info("입찰이 성공적으로 처리되었습니다: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount);
         } catch (BidConcurrencyException e) {
-            log.error("경매를 찾을 수 없습니다: auctionId = {}, userId = {}", auctionId, userId, e);
+            log.error("다른 사람이 입찰 중 입니다.: auctionId = {}, userId = {}", auctionId, userId, e);
             String destination = "/user/" + userId + "/queue/auction";
             messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
                     ResponseVO.failure("Bid","409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요."));
