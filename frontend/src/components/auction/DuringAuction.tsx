@@ -11,29 +11,31 @@ interface StompFrame {
 }
 
 interface DefaultType {
-  bidAmount:number
+  bidAmount: number;
+  nextBid: number;
+  remainingTime: number;
 }
 
 interface JoinData {
-  Join : DefaultType;
+  Join: DefaultType;
 }
 
 interface BidData {
-  Bid : {
+  Bid: {
     bidRecord: MessageType;
-  }
+  };
 }
 
-interface EndData{
-  End : {
+interface EndData {
+  End: {
     bidAmount: number;
-  }
+  };
 }
 
 interface WsResponseType {
   status: string;
   data: {
-    data: BidData|JoinData|EndData;
+    data: BidData | JoinData | EndData;
   };
   message: string;
 }
@@ -41,9 +43,7 @@ interface WsResponseType {
 interface MessageType extends DefaultType {
   auctionId: string;
   userId: string;
-  nextBid: number;
   nickname: string;
-  remainingTime: number;
 }
 
 function DuringAuction({
@@ -53,11 +53,16 @@ function DuringAuction({
   // 남은시간이 -2이면 경매시간이 아니라는 뜻
   initTime,
   initialBid,
+  changeAuctionStatusToComplete,
 }: {
   channelId: string;
   minBid: number;
   initTime: number;
   initialBid: number;
+  changeAuctionStatusToComplete: (
+    state: "NO_BID" | "SUCCESSFUL_BID",
+    winningBid?: number
+  ) => void;
 }) {
   const auctionStompClient = useRef<CompatClient | null>(null);
 
@@ -92,10 +97,11 @@ function DuringAuction({
           console.log("userID : ", userInfo!.userId);
           auctionStompClient.current!.subscribe(
             `/user/queue/auction/${auctionId}/init`,
+            // 초기 데이터 수신 처리
             (message) => {
               const newMessage: WsResponseType = JSON.parse(message.body);
+              handleAuctionMessage(newMessage);
               console.log("Received init message at auction:", newMessage);
-              // 다음 가격 수신 처리
             }
           );
 
@@ -135,7 +141,7 @@ function DuringAuction({
     if ("Bid" in newMessage.data) {
       const bidData = newMessage.data as BidData;
 
-      const updatedTime = ~~((bidData.Bid.bidRecord.remainingTime) / 1000);
+      const updatedTime = ~~(bidData.Bid.bidRecord.remainingTime / 1000);
 
       setBidPrice(bidData.Bid.bidRecord.nextBid);
       console.log("remainingTime : ", bidData.Bid.bidRecord.remainingTime);
@@ -158,11 +164,23 @@ function DuringAuction({
     } else if ("Join" in newMessage.data) {
       const joinData = newMessage.data as JoinData;
       console.log("Join event: ", joinData.Join);
+      setRemainingTime(joinData.Join.remainingTime);
+      setNextBid(joinData.Join.nextBid);
+
       // Join 이벤트 처리
-      // set 관련 로직을 추가할 수 있음
-      setBidPrice(joinData.Join.bidAmount);
+      if (joinData.Join.bidAmount === 0) {
+        setBidPrice(joinData.Join.nextBid);
+      } else {
+        setBidPrice(joinData.Join.bidAmount);
+      }
     } else if ("End" in newMessage.data) {
       const endData = newMessage.data as EndData;
+      if (newMessage.status === "205") {
+        changeAuctionStatusToComplete("NO_BID");
+      } else {
+        changeAuctionStatusToComplete("SUCCESSFUL_BID", endData.End.bidAmount);
+      }
+
       console.log("Auction Ended, final bid amount:", endData.End.bidAmount);
       // End 이벤트 처리
       // set 관련 로직을 추가할 수 있음
