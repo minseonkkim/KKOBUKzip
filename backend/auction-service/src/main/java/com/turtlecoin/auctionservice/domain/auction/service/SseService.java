@@ -43,7 +43,8 @@ public class SseService {
             if (emitter != null) {
                 CompletableFuture.runAsync(() -> {
                     try {
-                        emitter.send(SseEmitter.event().id(String.valueOf(id)).name("sse").data(data));
+                       String jsonData = objectMapper.writeValueAsString("SSE Connected");
+                       emitter.send(SseEmitter.event().id(String.valueOf(id)).name("sse").data(jsonData));
                     } catch (Exception e) {
                         // 유효성을 검사하여 삭제 및 종료
                         emitter.completeWithError(e);
