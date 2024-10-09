@@ -49,6 +49,7 @@ export default function ChatDetail({
   const [groupedChat, setGroupedChat] = useState<
     { date: string; messages: (ChatData | SystemMessageType)[] }[]
   >([]);
+  const messageEndRef = useRef<HTMLDivElement>(null);
   const { userInfo } = useUserStore();
   const [chatData, setChatData] = useState<ChatData[]>([]);
   const recentChattingTime = useChatStore((state) => state.recentChattingTime);
@@ -170,8 +171,12 @@ export default function ChatDetail({
     }
   };
 
-  useEffect(() => {}, []);
-
+  useEffect(() => {
+    scrollToBottom();
+  }, [groupedChat]);
+  const scrollToBottom = () => {
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   const sendMessage = () => {
     if (inputValue.trim() !== "" && stompClient.current) {
       const message = {
@@ -193,7 +198,7 @@ export default function ChatDetail({
 
   return (
     <>
-      <div className="text-black bg-gray-100 rounded-[10px] flex flex-col justify-between w-full">
+      <div className="text-black pb-2 rounded-[10px] flex flex-col justify-between w-full">
         <div className="overflow-y-auto">
           <div className="text-[#43493A] p-[10px] flex flex-row justify-between items-center text-[29px] font-dnf-bitbit absolute bg-gray-100 w-full">
             <span className="cursor-pointer" onClick={closeChatDetail}>
@@ -246,6 +251,7 @@ export default function ChatDetail({
                     );
                   }
                 })}
+                <div ref={messageEndRef} />
               </div>
             ))}
           </div>

@@ -18,7 +18,7 @@ export default function AuctionRegisterPage() {
   const [minBid, setMinBid] = useState("");
   const [startTime, setStartTime] = useState("");
   const [title, setTitle] = useState("");
-  const [weight, setWeight] = useState<number | null>(null);
+  const [weight, setWeight] = useState<number | undefined>(undefined);
   const { state } = useLocation();
   const navigate = useNavigate();
   const userStore = localStorage.getItem("userStore");
