@@ -133,14 +133,6 @@ public class BidService {
         System.out.println("redis key : "+key+" remainingTime : "+remainingTime);
         log.info("redis key : {}remaining time : {}", key, remainingTime);
 
-        // 키가 만료됐으면
-        if (remainingTime < 0) {
-            throw new AuctionTimeNotValidException("입찰 가능한 시간이 아닙니다.");
-        } else {
-            // 입찰시간 갱신
-            redisTemplate.expire(key, (long) (30.1*1000), TimeUnit.MILLISECONDS); // TTL 30초 재설정
-        }
-
         log.info("자신의 입찰에 재입찰 하는지 검증하는 로직");
         if (currentUserId != null && currentUserId.equals(userId)) {
             throw new SameUserBidException("자신의 입찰에 재입찰할 수 없습니다: userId = " + userId);
@@ -152,6 +144,14 @@ public class BidService {
             throw new WrongBidAmountException("현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다: currentBid = " +
                     currentBid + ", bidAmount = " + bidAmount);
         }
+
+        // 키가 만료됐으면
+        if (remainingTime < 0) {
+            throw new AuctionTimeNotValidException("입찰 가능한 시간이 아닙니다.");
+        } else {
+            // 입찰시간 갱신
+            redisTemplate.expire(key, (long) (30.1*1000), TimeUnit.MILLISECONDS); // TTL 30초 재설정
+        }
     }
 
     private Double updateBidInfo(Long auctionId, Long userId, Double bidAmount) {
@@ -162,6 +162,9 @@ public class BidService {
         String redisKey = AUCTION_BID_KEY + auctionId;
         Map<String, Object> bidData = new HashMap<>();
         bidData.put("userId", userId.toString());
+        System.out.println("updateBidInfo remainingTime 저장 시도");
+        bidData.put("remainingTime", redisTemplate.getExpire(redisKey, TimeUnit.MILLISECONDS).toString());
+        System.out.println("updateBidInfo remainingTime 저장 완료");
         bidData.put("bidAmount", bidAmount.toString());
         bidData.put("nextBid", newBidAmount.toString());
 
@@ -240,7 +243,7 @@ public class BidService {
             System.out.println("===");
             System.out.println(data.get("bidRecord").toString());
             System.out.println("===");
-            response = ResponseVO.bidSuccess("Bid","data", data);
+            response = ResponseVO.bidSuccess("Bid","200", data);
         }
 
         // 클라이언트에게 ResponseVO 객체를 전송
