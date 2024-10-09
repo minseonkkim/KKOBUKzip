@@ -11,16 +11,15 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   const isMobile = useDeviceStore((state) => state.isMobile);
-  
+
   const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null);
   const [isClosing, setIsClosing] = useState(false);
 
-   // 애니메이션 적용 여부 상태
-   const [shouldAnimate, setShouldAnimate] = useState(false);
-  
-   // 첫 렌더링 여부 확인을 위한 ref
-   const firstRender = useRef(true);
- 
+  // 애니메이션 적용 여부 상태
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+
+  // 첫 렌더링 여부 확인을 위한 ref
+  const firstRender = useRef(true);
 
   useEffect(() => {
     const root = document.getElementById("modal");
@@ -35,7 +34,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
     }
     // 이후 렌더링부터 애니메이션 적용
     setShouldAnimate(true);
-
 
     if (!isOpen) {
       setIsClosing(true);
@@ -54,23 +52,26 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   };
 
   const animationClass = shouldAnimate
-    ? (isOpen ? "animate-modal-down" : "animate-modal-up")
+    ? isOpen
+      ? "animate-modal-down"
+      : "animate-modal-up"
     : "";
-
 
   return ReactDOM.createPortal(
     <div className="inset-0 z-1000 pointer-events-none flex flex-end">
-      <div style={{
+      <div
+        style={{
           left: isMobile ? "0" : "calc(100% - 500px)",
         }}
         className={`${
-        isMobile
-          ? "absolute top-[65px] w-full pointer-events-auto transition"
-          : "absolute top-[65px] lg:top-[77px] w-[330px] pointer-events-auto"
-      } ${animationClass}`}>
+          isMobile
+            ? "fixed top-[65px] w-full pointer-events-auto transition"
+            : "fixed top-[65px] lg:top-[77px] w-[330px] pointer-events-auto"
+        } ${animationClass}`}
+      >
         <div className="relative border-2 border-yellow-500 bg-yellow-400 rounded-[10px] shadow-md">
-          <button 
-            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700" 
+          <button
+            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
             onClick={handleClose}
           >
             <IoClose className="text-[28px]" />
