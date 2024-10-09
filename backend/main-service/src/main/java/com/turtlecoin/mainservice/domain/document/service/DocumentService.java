@@ -273,6 +273,7 @@ public class DocumentService {
 			}
 			else if(document.getDocType() == DocType.TRANSFER){
 				contractService.approveTransfer(document.getTurtleUUID(), document.getDocumentHash());
+				transactionService.approveTransactionDocument(null);
 			}
 		}
 		else {

@@ -72,7 +72,7 @@ public class ContractService {
 	// 양수 서류 비동기 등록
 	public void registerTurtleAssigneeDocumentAsync(
 		String turtleUUID, String applicant, String documentHash, String assigneeID,
-		BigInteger count, String transferReason, String purpose
+		BigInteger count, String transferReason, String purpose, Long transactionId
 	) throws Exception {
 		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
 		// byte로 변환
