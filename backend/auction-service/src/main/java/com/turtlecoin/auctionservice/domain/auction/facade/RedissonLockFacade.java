@@ -35,10 +35,9 @@ public class RedissonLockFacade {
                 throw new BidConcurrencyException("다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요.");
             }
             bidService.processBidWithRedis(auctionId, userId, bidAmount);  // BidService로 분리된 로직 호출
-        } catch (InterruptedException e) {
-            System.out.println("인터럽트 익셉션");
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            log.error("락을 이용한 입찰 처리 중 오류 발생: auctionId = {}, userId = {}", auctionId, userId, e);
+            throw e;  // 예외를 상위로 던짐
         } finally {
             log.info("Lock 성공");
             if (lock.isHeldByCurrentThread()) {

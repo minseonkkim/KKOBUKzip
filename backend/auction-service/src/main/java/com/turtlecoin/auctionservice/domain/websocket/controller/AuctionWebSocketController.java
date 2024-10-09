@@ -137,7 +137,7 @@ public class AuctionWebSocketController {
         messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
                 ResponseVO.failure("Bid", errorCode, message));
     }
-    
+
 
     public void sendNicknameOnConnect(String userId) {
         // 메인 서비스에서 유저 정보를 가져와서 nickname 전송
