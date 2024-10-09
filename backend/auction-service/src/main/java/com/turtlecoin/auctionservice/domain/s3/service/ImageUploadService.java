@@ -27,10 +27,10 @@ public class ImageUploadService {
 	private final AmazonS3 amazonS3;
 
 	// s3.properties 파일에서 받아 온 S3 버킷 이름
-//	@Value("${cloud.aws.s3.bucket}")
+	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
-//	@Value("${cloud.aws.cloudfront.url}")
+	@Value("${cloud.aws.cloudfront.url}")
 	private String cloudFrontUrl;
 
 	// MultipartFile을 받아 S3에 업로드하는 메서드

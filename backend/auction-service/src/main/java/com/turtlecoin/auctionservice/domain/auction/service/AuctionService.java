@@ -69,6 +69,7 @@ public class AuctionService {
 
             // 이미지가 없으면 예외 던지기
             if (images == null || images.isEmpty()) {
+                log.info("이미지가 없음");
                 throw new PhotoNotUploadedException("사진이 등록되지 않았습니다.");
             }
 
