@@ -11,6 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "turtle_photo")
 public class TurtlePhoto extends BaseEntity {
+    public TurtlePhoto(Turtle turtle, String image){
+        this.turtle = turtle;
+        this.image = image;
+    }
+
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

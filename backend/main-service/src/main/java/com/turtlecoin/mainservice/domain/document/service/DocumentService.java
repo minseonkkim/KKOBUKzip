@@ -1,9 +1,15 @@
 package com.turtlecoin.mainservice.domain.document.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import com.turtlecoin.mainservice.domain.turtle.entity.QTurtlePhoto;
+import com.turtlecoin.mainservice.domain.turtle.entity.TurtlePhoto;
+import com.turtlecoin.mainservice.domain.turtle.repository.TurtlePhotoRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -46,9 +52,13 @@ public class DocumentService {
 	private final UserService userService;
 	private final ContractService contractService;
 	private final TurtleRepository turtleRepository;
+	private final TurtlePhotoRepository turtlePhotoRepository;
 	private final UserRepository userRepository;
 	private final TurtleService turtleService;
 	private final TransactionService transactionService;
+
+	@Value("${cloud.aws.cloudfront.url}")
+	private String cloudFrontUrl;
 
 	// 서류 저장
 	@Transactional
@@ -257,7 +267,12 @@ public class DocumentService {
 					.dead(false)
 					.build();
 
-				turtleRepository.save(turtle);
+				turtleService.saveTurtle(turtle);
+
+				// TurtlePhoto 생성 및 저장
+				int randomNumber = (int)(Math.random() * 6) + 1;
+				TurtlePhoto photo = new TurtlePhoto(turtle, cloudFrontUrl + "turtle/terrpin" + randomNumber + ".jpg");
+				turtleService.saveTurtlePhoto(photo);
 
 				contractService.approveBreeding(document.getTurtleUUID(), document.getDocumentHash());
 			}

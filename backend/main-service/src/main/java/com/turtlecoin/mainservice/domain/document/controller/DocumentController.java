@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -66,6 +67,7 @@ public class DocumentController {
 	private final DocumentRepository documentRepository;
 	private final JWTUtil jwtUtil;
 	private final TransactionService transactionService;
+	private final UserRepository userRepository;
 
 	// 인공증식서류 등록
 	@PostMapping(value = "/register/breed", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -476,8 +478,9 @@ public class DocumentController {
 		try{
 			String accessToken = header.getFirst("Authorization").split("Bearer ")[1].split(" ")[0];
 			Role role = Role.valueOf(jwtUtil.getRoleFromToken(accessToken));
+			User user = userRepository.findById(jwtUtil.getIdFromToken(accessToken)).get();
 
-			if(role != Role.ROLE_ADMIN){
+			if(user.getRole() != Role.ROLE_ADMIN || role != Role.ROLE_ADMIN){
 				return new ResponseEntity<>(ResponseVO.failure("401", "관리자만 접근 가능합니다."), HttpStatus.UNAUTHORIZED);
 			}
 
