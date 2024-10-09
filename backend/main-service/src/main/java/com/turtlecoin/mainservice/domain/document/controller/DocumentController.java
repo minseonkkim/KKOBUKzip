@@ -499,4 +499,25 @@ public class DocumentController {
 
 		return new ResponseEntity<>(ResponseVO.success("서류 처리에 성공했습니다."), HttpStatus.OK);
 	}
+
+	@PostMapping(value = "/register/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<?> registerPhoto(@RequestPart(value = "turtleImg") MultipartFile multipartFile) {
+		String imageAddress = "";
+
+		// 이미지가 비어 있는지 확인
+		if (multipartFile == null || multipartFile.isEmpty()) {
+			return new ResponseEntity<>(ResponseVO.failure("400", "이미지가 첨부되지 않았습니다."), HttpStatus.BAD_REQUEST);
+		}
+
+		// S3에 이미지 업로드
+		try {
+			imageAddress = imageUploadService.upload(multipartFile, "turtlePhoto");
+		} catch (Exception e) {
+			// S3 업로드 중 오류 발생 시 처리
+			return new ResponseEntity<>(ResponseVO.failure("500", "이미지 업로드 중 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		// 성공적으로 이미지가 업로드되었을 때, S3 주소 반환
+		return new ResponseEntity<>(ResponseSingle.success("이미지 등록에 성공했습니다.", imageAddress), HttpStatus.OK);
+	}
 }
