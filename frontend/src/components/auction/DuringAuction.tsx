@@ -10,25 +10,40 @@ interface StompFrame {
   body?: string;
 }
 
-interface MessageType {
-  auctionId: string;
-  userId: string;
-  bidAmount: number;
-  nextBid: number;
-  nickname: string;
-  remainingTime: number;
+interface DefaultType {
+  bidAmount:number
+}
+
+interface JoinData {
+  Join : DefaultType;
+}
+
+interface BidData {
+  Bid : {
+    bidRecord: MessageType;
+  }
+}
+
+interface EndData{
+  End : {
+    bidAmount: number;
+  }
 }
 
 interface WsResponseType {
   status: string;
   data: {
-    data: BidRecordData;
+    data: BidData|JoinData|EndData;
   };
   message: string;
 }
 
-interface BidRecordData {
-  bidRecord: MessageType;
+interface MessageType extends DefaultType {
+  auctionId: string;
+  userId: string;
+  nextBid: number;
+  nickname: string;
+  remainingTime: number;
 }
 
 function DuringAuction({
@@ -49,7 +64,7 @@ function DuringAuction({
   const auctionId = Number(channelId);
   const [loading, setLoading] = useState(true);
   // const [isBidStarted, setIsBidStarted] = useState(false);
-  // const [nowBid, setNowBid] = useState(initialBid);
+  const [nowBid, setNowBid] = useState(initialBid);
   const [nextBid, setNextBid] = useState(minBid);
   const { userInfo } = useUserStore();
 
@@ -88,26 +103,8 @@ function DuringAuction({
             `/sub/auction/${auctionId}`,
             (message) => {
               const newMessage: WsResponseType = JSON.parse(message.body);
-              console.log("Received message at auction:", newMessage);
-              setBidPrice(newMessage.data.data.bidRecord.nextBid);
-              setRemainingTime(
-                newMessage.data.data.bidRecord.remainingTime / 1000
-              );
-
-              setNextBid(newMessage.data.data.bidRecord.nextBid);
-
-              setBidHistory((prev) => {
-                const newHistory = [
-                  ...prev,
-
-                  {
-                    bidder: newMessage.data.data.bidRecord.nickname,
-                    price: Number(newMessage.data.data.bidRecord.bidAmount),
-                  },
-                ];
-                return newHistory.slice(0, 8);
-              });
-              // 다음 가격 수신 처리
+              console.log("Received message while auction:", newMessage);
+              handleAuctionMessage(newMessage);
             }
           );
 
@@ -132,6 +129,45 @@ function DuringAuction({
       }
     };
   }, [channelId]);
+
+  // Meesage 타입 분기 함수 (Join, Bid, End)
+  const handleAuctionMessage = (newMessage: WsResponseType) => {
+    if ("Bid" in newMessage.data) {
+      const bidData = newMessage.data as BidData;
+
+      const updatedTime = ~~((bidData.Bid.bidRecord.remainingTime) / 1000);
+
+      setBidPrice(bidData.Bid.bidRecord.nextBid);
+      console.log("remainingTime : ", bidData.Bid.bidRecord.remainingTime);
+      setRemainingTime(updatedTime);
+      setNextBid(bidData.Bid.bidRecord.nextBid);
+
+      //추가한 내용
+      setTimeLeft(updatedTime);
+
+      setBidHistory((prev) => {
+        const newHistory = [
+          ...prev,
+          {
+            bidder: bidData.Bid.bidRecord.nickname,
+            price: Number(bidData.Bid.bidRecord.bidAmount),
+          },
+        ];
+        return newHistory.slice(0, 8);
+      });
+    } else if ("Join" in newMessage.data) {
+      const joinData = newMessage.data as JoinData;
+      console.log("Join event: ", joinData.Join);
+      // Join 이벤트 처리
+      // set 관련 로직을 추가할 수 있음
+      setBidPrice(joinData.Join.bidAmount);
+    } else if ("End" in newMessage.data) {
+      const endData = newMessage.data as EndData;
+      console.log("Auction Ended, final bid amount:", endData.End.bidAmount);
+      // End 이벤트 처리
+      // set 관련 로직을 추가할 수 있음
+    }
+  };
 
   // 입찰 요청 보내기
   const sendBidRequest = async () => {
@@ -163,7 +199,7 @@ function DuringAuction({
     }
   };
 
-  const [bidPrice, setBidPrice] = useState(initialBid); // 입찰가
+  const [bidPrice, setBidPrice] = useState(nowBid); // 입찰가
   const [bidHistory, setBidHistory] = useState<
     { bidder: string; price: number }[]
   >([

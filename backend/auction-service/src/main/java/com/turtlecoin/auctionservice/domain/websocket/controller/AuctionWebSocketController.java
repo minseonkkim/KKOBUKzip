@@ -54,14 +54,11 @@ public class AuctionWebSocketController {
             log.warn("Redis에 키가 존재하지 않습니다. 기본값을 사용합니다.");
 
             // 기본값으로 처리
-            Double nowBid = auction.getMinBid(); // 기본값
-            Long remainingTime = redisTemplate.getExpire(endKey, TimeUnit.MILLISECONDS);
+            Double nowBid = 0D; // 기본값
 
             // 필요한 데이터를 초기화
             Map<String, Object> initialData = new HashMap<>();
-            initialData.put("minBid", auction.getMinBid());
-            initialData.put("nowBid", nowBid);
-            initialData.put("remainingTime", remainingTime);
+            initialData.put("bidAmount", nowBid);
 
             // 클라이언트에게 데이터 전송
             String destination = "/queue/auction/" + auctionId + "/init";
@@ -78,15 +75,17 @@ public class AuctionWebSocketController {
             log.info("기본값을 사용하여 유저에게 데이터 전송 완료: userId={}, auctionId={}", userId, auctionId);
         } else {
             // 키가 있는 경우, Redis에서 값을 가져옵니다.
+            log.info("Redis에 키가 존재합니다. Redis에서 정보를 가져옵니다.");
+
             Object bidAmountObj = redisTemplate.opsForHash().get(bidKey, "bidAmount");
-            Double nowBid = (bidAmountObj != null) ? Double.parseDouble(bidAmountObj.toString()) : 0L;
-            Long remainingTime = redisTemplate.getExpire(endKey, TimeUnit.MILLISECONDS);
+            Double nowBid = (bidAmountObj != null) ? Double.parseDouble(bidAmountObj.toString()) : 0D;
+            Object nextBidObj = redisTemplate.opsForHash().get(bidKey, "nextBid");
+            Double nextBid = (nextBidObj != null) ? Double.parseDouble(nextBidObj.toString()) : 0D;
 
             // 필요한 데이터 조회 및 응답 처리
             Map<String, Object> initialData = new HashMap<>();
-            initialData.put("minBid", auction.getMinBid());
-            initialData.put("nowBid", nowBid);
-            initialData.put("remainingTime", remainingTime);
+            initialData.put("bidAmount", nowBid);
+            initialData.put("nextBid", nextBid);
 
             // 클라이언트에게 데이터 전송
             String destination = "/queue/auction/" + auctionId + "/init";
