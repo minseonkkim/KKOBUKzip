@@ -247,6 +247,7 @@ function MyPage() {
                     {myAuctions.map((item) => (
                       <AuctionHistory
                         key={item.transactionId}
+                        title={item.title}
                         turtleId={item.turtleId}
                         turtleUuid={item.turtleUuid}
                         documentHash={item.documentHash!}
@@ -267,6 +268,7 @@ function MyPage() {
                       <TransactionHistory
                         key={item.transactionId}
                         auctionFlag={item.auctionFlag}
+                        title={item.title}
                         documentHash={item.documentHash}
                         turtleId={item.turtleId}
                         turtleUuid={item.turtleUuid}
