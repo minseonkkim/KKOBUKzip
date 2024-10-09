@@ -178,8 +178,8 @@ function MyPage() {
             </div>
             <div className="lg:text-[19px] text-[17px] space-y-1">
               <div>닉네임: {userInfo?.nickname}</div>
-              <div>주소: {userInfo?.address}</div>
               <div>연락처: {userInfo?.phoneNumber}</div>
+              <div>주소: {userInfo?.address.replace(" / ", " ")}</div>
             </div>
           </div>
           <div

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import {
   AdminAssignDocumentDataType,
@@ -15,6 +15,7 @@ import {
   approveDocumentRequest,
   getDetailDocumentData,
 } from "../../../apis/documentApis";
+import Header from "../../../components/common/Header";
 
 type AdminDocType = "인공증식증명서" | "양도양수확인서" | "폐사질병신고서";
 type dataType =
@@ -25,6 +26,7 @@ type dataType =
 function AdminDocsDetailPage() {
   const params = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const [layout, setLayout] = useState<AdminDocType | null>(null);
 
   const [data, setData] = useState<dataType | null>(null);
@@ -69,16 +71,33 @@ function AdminDocsDetailPage() {
   }, []);
 
   const handleAcceptSubmit = (turtleUUID: string, documentHash: string) => {
-    approveDocumentRequest(turtleUUID, documentHash, true);
+    approveDocumentRequest(turtleUUID, documentHash, true).then((response) => {
+      if (response.success) {
+        console.log("성공");
+        alert("서류 승인 처리가 완료되었습니다.");
+        navigate("/admin/document/list");
+      } else {
+        alert("서류 승인 처리에 실패했습니다. 다시 시도해 주세요.");
+      }
+    })
   };
   const handleDenySubmit = (turtleUUID: string, documentHash: string) => {
-    approveDocumentRequest(turtleUUID, documentHash, false);
+    approveDocumentRequest(turtleUUID, documentHash, false).then((response) => {
+      if (response.success) {
+        console.log("성공");
+        alert("서류 반려 처리가 완료되었습니다.");
+        navigate("/admin/document/list");
+      } else {
+        alert("서류 반려 처리에 실패했습니다. 다시 시도해 주세요.");
+      }
+    })
   };
   return (
     <>
       <Helmet>
         <title>관리자 - 문서 상세 조회</title>
       </Helmet>
+      <Header />
 
       {/* 테스트 드라이버 */}
       {/* <div className="space-x-3 text-center">
@@ -110,7 +129,7 @@ function AdminDocsDetailPage() {
       </div> */}
       {/* 테스트 드라이버 끝 */}
 
-      <>
+      <div className="mt-[100px]">
         {layout === "인공증식증명서" && (
           <AdminBreedDocsCheck
             onAccept={handleAcceptSubmit}
@@ -134,7 +153,7 @@ function AdminDocsDetailPage() {
             data={data as AdminDeathDocumentDataType}
           />
         )}
-      </>
+      </div>
     </>
   );
 }
