@@ -58,7 +58,8 @@ public class BidService {
 
     // 입찰 가격 갱신
     @Transactional
-    public void processBidWithRedis(Long auctionId, Long userId, Double bidAmount) throws Exception {
+    public void processBidWithRedis(Long auctionId, Long userId, Double bidAmount)
+            throws SameUserBidException, WrongBidAmountException, AuctionTimeNotValidException, AuctionAlreadyFinishedException {
         // 1. 경매 시작 및 상태 확인
 //        startAuctionIfNotStarted(auctionId);
 
@@ -125,7 +126,8 @@ public class BidService {
         throw new IllegalArgumentException("Invalid bid amount type");
     }
 
-    private void validateBid(Long auctionId, Long userId, Double bidAmount, Long currentUserId, Double currentBid) {
+    private void validateBid(Long auctionId, Long userId, Double bidAmount, Long currentUserId, Double currentBid)
+        throws SameUserBidException, WrongBidAmountException, AuctionTimeNotValidException{
         // 경매 남은시간 확인
         log.info("경매 남은시간 검증 후 에러 던져주는 로직");
         String key = AUCTION_END_KEY_PREFIX + auctionId;

@@ -115,43 +115,29 @@ public class AuctionWebSocketController {
         try {
             redissonLockFacade.updateBidWithLock(auctionId, userId, nextBid);
             log.info("입찰이 성공적으로 처리되었습니다: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, nextBid);
-        } catch (BidConcurrencyException e) {
-            log.error("다른 사람이 입찰 중 입니다.: auctionId = {}, userId = {}", auctionId, userId, e);
-            String destination = "/user/" + userId + "/queue/auction";
-            messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
-                    ResponseVO.failure("Bid","409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요."));
-        } catch (AuctionNotFoundException e) {
-            log.error("경매를 찾을 수 없습니다: auctionId = {}, userId = {}", auctionId, userId, e);
-            String destination = "/user/" + userId + "/queue/auction";
-            messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
-                    ResponseVO.failure("Bid", "404", "해당 경매를 찾을 수 없습니다."));
         } catch (SameUserBidException e) {
-            log.error("동일 사용자의 재입찰 시도: auctionId = {}, userId = {}", auctionId, userId, e);
-            String destination = "/user/" + userId + "/queue/auction";
-            messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
-                    ResponseVO.failure("Bid", "400", "자신의 입찰에 재입찰 할 수 없습니다."));
-        } catch (AuctionTimeNotValidException e) {
-          log.error("경매 시간이 아님. auctionId = {}, userId = {}", auctionId, userId, e);
-            String destination = "/user/" + userId + "/queue/auction";
-            messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
-                    ResponseVO.failure("Bid", "422", "입찰 가능한 시간이 아닙니다."));
-        } catch (AuctionAlreadyFinishedException e) {
-            log.error("이미 종료된 경매: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, nextBid, e);
-            String destination = "/user/" + userId + "/queue/auction";
-            messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
-                    ResponseVO.failure("Bid", "400", "이미 종료된 경매입니다."));
+            sendFailureMessage(socketUserId, userId, "400", "자신의 입찰에 재입찰 할 수 없습니다.");
         } catch (WrongBidAmountException e) {
-            log.error("잘못된 입찰 금액: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, nextBid, e);
-            String destination = "/user/" + userId + "/queue/auction";
-            messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
-                    ResponseVO.failure("Bid", "400", "현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다."));
+            sendFailureMessage(socketUserId, userId, "400", "현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다.");
+        } catch (AuctionTimeNotValidException e) {
+            sendFailureMessage(socketUserId, userId, "422", "입찰 가능한 시간이 아닙니다.");
+        } catch (AuctionAlreadyFinishedException e) {
+            sendFailureMessage(socketUserId, userId, "400", "이미 종료된 경매입니다.");
+        } catch (BidConcurrencyException e) {
+            sendFailureMessage(socketUserId, userId, "409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요.");
+        } catch (AuctionNotFoundException e) {
+            sendFailureMessage(socketUserId, userId, "404", "해당 경매를 찾을 수 없습니다.");
         } catch (Exception e) {
-            log.error("입찰 처리 중 예상치 못한 오류 발생: auctionId = {}, userId = {}", auctionId, userId, e);
-            String destination = "/user/" + userId + "/queue/auction";
-            messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
-                    ResponseVO.failure("Bid", "500", e.getMessage()));
+            sendFailureMessage(socketUserId, userId, "500", "입찰 처리 중 오류가 발생했습니다.");
         }
     }
+
+    private void sendFailureMessage(Long socketUserId, Long userId, String errorCode, String message) {
+        String destination = "/user/" + userId + "/queue/auction";
+        messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
+                ResponseVO.failure("Bid", errorCode, message));
+    }
+    
 
     public void sendNicknameOnConnect(String userId) {
         // 메인 서비스에서 유저 정보를 가져와서 nickname 전송
