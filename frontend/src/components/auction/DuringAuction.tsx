@@ -138,7 +138,17 @@ function DuringAuction({
 
   // Meesage 타입 분기 함수 (Join, Bid, End)
   const handleAuctionMessage = (newMessage: WsResponseType) => {
+
+    
     if ("Bid" in newMessage.data) {
+
+      if (newMessage.status !== "200") {
+        // status가 200이 아닐 때 에러 처리
+        console.error("Error occurred:", newMessage.message);
+        alert(`Error: ${newMessage.message}`);
+        return; // 더 이상 처리하지 않고 종료
+      }
+      
       const bidData = newMessage.data as BidData;
 
       const updatedTime = ~~(bidData.Bid.bidRecord.remainingTime / 1000);
@@ -197,6 +207,8 @@ function DuringAuction({
       // if(statusCode === "???") alert(newMessage.message)
     }
   };
+
+  
 
   // 입찰 요청 보내기
   const sendBidRequest = async () => {
