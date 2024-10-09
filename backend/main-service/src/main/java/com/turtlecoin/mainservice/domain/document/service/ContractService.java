@@ -1,26 +1,18 @@
 package com.turtlecoin.mainservice.domain.document.service;
 
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
+
 import com.turtlecoin.mainservice.domain.document.entity.contract.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-import org.web3j.crypto.Credentials;
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.TransactionManager;
 import org.web3j.tx.gas.ContractGasProvider;
-import org.web3j.tx.gas.StaticGasProvider;
 
 import com.turtlecoin.mainservice.domain.turtle.entity.Gender;
-import com.turtlecoin.mainservice.domain.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -72,13 +64,13 @@ public class ContractService {
 	// 양수 서류 비동기 등록
 	public void registerTurtleAssigneeDocumentAsync(
 		String turtleUUID, String applicant, String documentHash, String assigneeID,
-		BigInteger count, String transferReason, String purpose, Long transactionId
+		BigInteger count, String transferReason, String purpose, BigInteger transactionId
 	) throws Exception {
 		TurtleDocumentation turtleDocumentation = loadTurtleDocumentationContract();
 		// byte로 변환
 		byte[] byteArray = hexStringToByte32("0x" + documentHash);
 		turtleDocumentation.registerTurtleAssigneeDocument(
-			turtleUUID, applicant, byteArray, assigneeID, count, transferReason, purpose
+			transactionId, turtleUUID, applicant, byteArray, assigneeID, count, transferReason, purpose
 		).sendAsync();
 	}
 

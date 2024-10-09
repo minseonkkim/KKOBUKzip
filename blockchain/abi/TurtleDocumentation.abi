@@ -134,6 +134,11 @@
     {
       "inputs": [
         {
+          "internalType": "uint8",
+          "name": "_transactionId",
+          "type": "uint8"
+        },
+        {
           "internalType": "string",
           "name": "_turtleId",
           "type": "string"
@@ -506,6 +511,12 @@
       "inputs": [
         {
           "indexed": true,
+          "internalType": "uint8",
+          "name": "transactionId",
+          "type": "uint8"
+        },
+        {
+          "indexed": true,
           "internalType": "string",
           "name": "turtleId",
           "type": "string"
@@ -810,6 +821,11 @@
       "outputs": [
         {
           "components": [
+            {
+              "internalType": "uint8",
+              "name": "transactionId",
+              "type": "uint8"
+            },
             {
               "internalType": "string",
               "name": "grantApplicant",
