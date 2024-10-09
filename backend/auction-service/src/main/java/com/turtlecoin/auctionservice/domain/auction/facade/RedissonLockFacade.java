@@ -10,6 +10,8 @@ import org.redisson.api.RedissonClient;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -25,13 +27,15 @@ public class RedissonLockFacade {
         String destination = "/queue/auction/" + auctionId;
         RLock lock = redissonClient.getLock(auctionId.toString());
         log.info("Redis를 이용한 락 실행");
+        Map<String, String> data = new HashMap<>();
         try {
             boolean available = lock.tryLock(5, 2, TimeUnit.SECONDS);
 
             if (!available) {
                 log.info("Lock 실패");
+                data.put("message", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요.");
                 messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
-                        ResponseVO.failure("Bid","409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요."));
+                        ResponseVO.failure("Bid","409", data));
                 throw new BidConcurrencyException("다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요.");
             }
             bidService.processBidWithRedis(auctionId, userId, bidAmount);  // BidService로 분리된 로직 호출

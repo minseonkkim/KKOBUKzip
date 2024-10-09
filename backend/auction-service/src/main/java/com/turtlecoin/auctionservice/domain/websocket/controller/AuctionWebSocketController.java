@@ -134,8 +134,10 @@ public class AuctionWebSocketController {
 
     private void sendFailureMessage(Long socketUserId, Long auctionId, String errorCode, String message) {
         String destination = "/queue/auction/" + auctionId + "/init";
+        Map<String, String> data = new HashMap<>();
+        data.put("message", message);
         messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
-                ResponseVO.failure("Bid", errorCode, message));
+                ResponseVO.failure("Bid", errorCode, data));
     }
 
 

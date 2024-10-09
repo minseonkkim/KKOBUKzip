@@ -184,6 +184,7 @@ function DuringAuction({
       // End 이벤트 처리
     } else {
       // 에러 메세지 관리
+      console.log("ErrorMsg : ",newMessage)
       const statusCode = newMessage.status;
       console.log(
         "StatusCode :",
