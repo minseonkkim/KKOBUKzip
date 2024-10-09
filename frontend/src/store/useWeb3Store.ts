@@ -13,7 +13,7 @@ const TURTLE_TOKEN_ABI: AbiItem[] = TurtleTokenAbi.abi as AbiItem[];
 const TURTLE_ESCROW_ADDRESS = "0x4C3f97793a723BEe60d27c53255aC372A23d4Ba2";
 const TURTLE_ESCROW_ABI: AbiItem[] = TurtleEscrowAbi.abi as AbiItem[];
 
-const TURTLE_DOCUMENTATION_ADDRESS = "0xcB3Ef08a242D604e65A431f28460b2C428cE2344";
+const TURTLE_DOCUMENTATION_ADDRESS = "0x472A3113E6Fc421b070DA538bB4F425AeA6cCc1b";
 const TURTLE_DOCUMENTATION_ABI: AbiItem[] = TurtleDocumentationAbi.abi as AbiItem[];
 
 interface Web3State {
