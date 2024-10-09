@@ -97,8 +97,8 @@ function BreedDocument() {
       detail: {
         ...data,
         weight: Number(data.weight),
-        motherUUID: "uuid-male-001",
-        fatherUUID: "uuid-female-001",
+        motherUUID: data.motherUUID,
+        fatherUUID: data.fatherUUID,
         location: postcodeData?.roadAddress + " / " + detailLocation,
         registerDate: new Date().toISOString().substring(0, 10),
       },
