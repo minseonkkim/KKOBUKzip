@@ -227,7 +227,7 @@ public class BidService {
         return auction.getMinBid();
     }
 
-    private Double calculateBidIncrement(Double currentBid) {
+    public Double calculateBidIncrement(Double currentBid) {
         // 경매 가격에 따라 구분 필요
         if (currentBid >= 0 && currentBid < 10000) {
             return 1000.0; // 0 ~ 10000 : 500

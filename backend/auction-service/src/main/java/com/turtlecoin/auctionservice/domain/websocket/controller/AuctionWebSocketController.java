@@ -37,6 +37,7 @@ public class AuctionWebSocketController {
     private static final String AUCTION_BID_KEY = "auction_bid_";
     private final AuctionRepository auctionRepository;
     private final JWTUtil jwtUtil;
+    private final BidService bidService;
 //    private final BidService bidService;
 
     @MessageMapping("/auction/{auctionId}/init")
@@ -56,13 +57,14 @@ public class AuctionWebSocketController {
             log.warn("Redis에 키가 존재하지 않습니다. 기본값을 사용합니다.");
 
             // 기본값으로 처리
-            Double nowBid = 0D; // 기본값
+            Double nowBid = auction.getMinBid(); // 기본값
+            Double nextBid = bidService.calculateBidIncrement(nowBid);
 
 
             // 필요한 데이터를 초기화 (nextBid랑 remainingTime)
             Map<String, Object> initialData = new HashMap<>();
             initialData.put("bidAmount", nowBid);
-            initialData.put("nextBid", auction.getMinBid());
+            initialData.put("nextBid", nextBid);
             initialData.put("remainingTime", remainingTime);
 
             // 클라이언트에게 데이터 전송
