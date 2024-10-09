@@ -125,6 +125,8 @@ public class AuctionWebSocketController {
             sendFailureMessage(socketUserId, auctionId, "400", "이미 종료된 경매입니다.");
         } catch (BidConcurrencyException e) {
             sendFailureMessage(socketUserId, auctionId, "409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요.");
+        } catch (BidNotValidException e) {
+            sendFailureMessage(socketUserId, auctionId, "400", "자신의 경매에 입찰할 수 없습니다.");
         } catch (AuctionNotFoundException e) {
             sendFailureMessage(socketUserId, auctionId, "404", "해당 경매를 찾을 수 없습니다.");
         } catch (Exception e) {
@@ -134,10 +136,8 @@ public class AuctionWebSocketController {
 
     private void sendFailureMessage(Long socketUserId, Long auctionId, String errorCode, String message) {
         String destination = "/queue/auction/" + auctionId + "/init";
-        Map<String, String> data = new HashMap<>();
-        data.put("message", message);
         messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
-                ResponseVO.failure("Bid", errorCode, data));
+                ResponseVO.failure("Bid", errorCode, message));
     }
 
 
