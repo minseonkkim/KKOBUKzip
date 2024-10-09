@@ -52,7 +52,7 @@
 
     - Spring Boot
     - Spring Security
-    - Spring Cloud Eureka
+    - Spring Cloud
     - RabbitMQ
 
   ### 👨‍💻 **DB**
