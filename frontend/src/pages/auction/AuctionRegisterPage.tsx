@@ -116,17 +116,8 @@ export default function AuctionRegisterPage() {
     try {
       const result = await addAuctionItem(formData);
       if (result.success) {
-        if (
-          window.confirm(
-            `${state.name}(이)의 경매 등록이 완료되었습니다. 리스트 페이지로 이동하시겠습니까?`
-          )
-        ) {
-          navigate("/auction-list");
-        } else {
-          // navigate("")
-          // console.log(result.data)
-          // 경매 등록 디테일로 가기
-        }
+        alert(`${state.name}(이)의 경매 등록이 완료되었습니다.`);
+        navigate("/auction-list");
       } else {
         throw new Error(result.message);
       }
