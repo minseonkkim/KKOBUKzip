@@ -183,7 +183,18 @@ function DuringAuction({
 
       console.log("Auction Ended, final bid amount:", endData.End.bidAmount);
       // End 이벤트 처리
-      // set 관련 로직을 추가할 수 있음
+    } else {
+      // 에러 메세지 관리
+      const statusCode = newMessage.status;
+      console.log(
+        "StatusCode :",
+        statusCode,
+        "// data : ",
+        newMessage.data,
+        "// Message : ",
+        newMessage.message
+      );
+      // if(statusCode === "???") alert(newMessage.message)
     }
   };
 
