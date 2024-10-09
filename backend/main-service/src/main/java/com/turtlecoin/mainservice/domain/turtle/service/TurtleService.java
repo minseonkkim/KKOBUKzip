@@ -60,7 +60,7 @@ public class TurtleService {
                     return new AuctionTurtleInfoDTO(
                             t.getId(),
                             t.getGender(),
-                            "임시학명 거북이!!!",
+                            "다이아몬드 백 테라핀",
                             t.getWeight(),
                             t.getBirth(),
                             t.getUser().getId()
