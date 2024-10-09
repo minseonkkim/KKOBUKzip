@@ -33,9 +33,6 @@ public class ImageUploadService {
 	@Value("${cloud.aws.cloudfront.url}")
 	private String cloudFrontUrl;
 
-	@Value("${cloud.aws.cloudfront.id}")
-	private String cloudFrontId;
-
 	// MultipartFile을 받아 S3에 업로드하는 메서드
 	public String upload(MultipartFile multipartFile, String dirName) throws IOException {
 		// MultipartFile을 File 객체로 변환
