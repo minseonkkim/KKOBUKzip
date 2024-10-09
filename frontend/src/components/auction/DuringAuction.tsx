@@ -148,18 +148,17 @@ function DuringAuction({
       setRemainingTime(updatedTime);
       setNextBid(bidData.Bid.bidRecord.nextBid);
 
-      //추가한 내용
       setTimeLeft(updatedTime);
 
       setBidHistory((prev) => {
         const newHistory = [
-          ...prev,
           {
             bidder: bidData.Bid.bidRecord.nickname,
             price: Number(bidData.Bid.bidRecord.bidAmount),
           },
+          ...prev,
         ];
-        return newHistory.slice(0, 8);
+        return newHistory.slice(0, 8); 
       });
     } else if ("Join" in newMessage.data) {
       const joinData = newMessage.data as JoinData;
@@ -232,7 +231,6 @@ function DuringAuction({
   const [bidHistory, setBidHistory] = useState<
     { bidder: string; price: number }[]
   >([
-    // { bidder: "민굥", price: 3400000 },
   ]);
 
   const [springProps, api] = useSpring(() => ({
@@ -357,25 +355,37 @@ function DuringAuction({
                 "👋🏻 입찰하기"
               )}
             </button>
-            <div>다음입찰가:{nextBid}</div>
+            <div className="flex flex-row items-center mt-5">
+              <div className="text-[13px] md:text-[17px]">
+                다음입찰가&nbsp;&nbsp;
+              </div>
+              <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
+                <animated.div className="text-[20px] md:text-[26px]">
+                  {Math.floor(nextBid).toLocaleString()}
+                </animated.div>
+                <div className="text-[13px] md:text-[17px]">TURT</div>
+              </div>
+            </div>
 
-            <div>
+            <div className="mt-[20px] w-full text-[19px]">
               {bidHistory.map((el, index) => {
                 return (
                   <div key={index}>
                     {index === 0 ? (
-                      <span style={{ fontSize: "1.5em", fontWeight: "bold" }}>
-                        {el.bidder} : {el.price}
-                      </span>
+                      <div className="flex flex-row justify-between font-bold">
+                        <span>{el.bidder}</span>
+                        <span>{el.price}</span>
+                      </div>
                     ) : (
-                      <span>
-                        {el.bidder} : {el.price}
-                      </span>
+                      <div className="flex flex-row justify-between">
+                        <span>{el.bidder}</span>
+                        <span>{el.price}</span>
+                      </div>
                     )}
                     <br />
                   </div>
                 );
-              })}
+              })} 
             </div>
             {showEmoji && (
               <animated.div
