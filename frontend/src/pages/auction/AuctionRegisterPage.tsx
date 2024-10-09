@@ -122,6 +122,10 @@ export default function AuctionRegisterPage() {
           )
         ) {
           navigate("/auction-list");
+        } else {
+          // navigate("")
+          // console.log(result.data)
+          // 경매 등록 디테일로 가기
         }
       } else {
         throw new Error(result.message);
