@@ -142,6 +142,12 @@
 				"inputs": [
 					{
 						"indexed": true,
+						"internalType": "uint8",
+						"name": "transactionId",
+						"type": "uint8"
+					},
+					{
+						"indexed": true,
 						"internalType": "string",
 						"name": "turtleId",
 						"type": "string"
@@ -263,6 +269,11 @@
 						"internalType": "string",
 						"name": "_applicant",
 						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_turtleHash",
+						"type": "bytes32"
 					}
 				],
 				"name": "registerTurtle",
@@ -272,6 +283,11 @@
 			},
 			{
 				"inputs": [
+					{
+						"internalType": "uint8",
+						"name": "_transactionId",
+						"type": "uint8"
+					},
 					{
 						"internalType": "string",
 						"name": "_turtleId",
@@ -799,6 +815,11 @@
 					{
 						"components": [
 							{
+								"internalType": "uint8",
+								"name": "transactionId",
+								"type": "uint8"
+							},
+							{
 								"internalType": "string",
 								"name": "grantApplicant",
 								"type": "string"
@@ -950,11 +971,11 @@
 			]
 		},
 		"contracts/TurtleDocumentation.sol": {
-			"keccak256": "0x44f729dcd831d04f8f4a66351b40e66b9af77c6fa3d0432da17a5d7179c55126",
+			"keccak256": "0x911924cf729a926da15e36df6d7836a7f12c6a1ec20b0e816081487612d4f604",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4b228307c086e98e5c4027e6bd6bb4ffbaeaed45f8db84f1b283ce3759db4677",
-				"dweb:/ipfs/QmbyFFZyf4ucxsJRwi7ksqLPwv3oxZ2WQHoxd71KrQTee6"
+				"bzz-raw://229cede818fda4b4516f2b2e171a93841fb1ec0abbbc5dba22c95b7dc42e4a5e",
+				"dweb:/ipfs/QmcMRMr1L6qS65KLvYHqdVxZZFVqCSAG9WJrSCKvf6mfNS"
 			]
 		}
 	},

@@ -85,8 +85,16 @@ function AuctionDetailPage() {
   }, []);
 
   const changeAuctionStatusToComplete = useCallback(
-    (state: "NO_BID" | "SUCCESSFUL_BID") => {
+    (state: "NO_BID" | "SUCCESSFUL_BID", winningBid?: number) => {
       setAuctionStatus(state);
+      if (winningBid) {
+        setAuctionItemData((prev) => {
+          if (prev) {
+            return { ...prev, winningBid };
+          }
+          return prev;
+        });
+      }
     },
     []
   );
@@ -157,12 +165,13 @@ function AuctionDetailPage() {
                 channelId={String(auctionItemData?.id)}
                 initialBid={auctionItemData!.nowBid}
                 initTime={auctionItemData!.remainingTime}
+                changeAuctionStatusToComplete={changeAuctionStatusToComplete}
               />
             )}
           {auctionStatus === "NO_BID" && <NoBid />}
           {auctionStatus === "SUCCESSFUL_BID" &&
             auctionItemData!.nowBid !== null && (
-              <SuccessfulBid nowBid={auctionItemData!.nowBid} />
+              <SuccessfulBid nowBid={auctionItemData!.winningBid!} />
             )}
         </div>
       </main>
