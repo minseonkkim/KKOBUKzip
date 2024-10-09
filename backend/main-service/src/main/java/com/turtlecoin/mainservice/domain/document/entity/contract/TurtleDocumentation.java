@@ -108,7 +108,7 @@ public class TurtleDocumentation extends Contract {
     ;
 
     public static final Event TURTLETRANSFERRED_EVENT = new Event("TurtleTransferred", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>(true) {}, new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Bytes32>(true) {}));
+            Arrays.<TypeReference<?>>asList(new TypeReference<Uint8>(true) {}, new TypeReference<Utf8String>(true) {}, new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Bytes32>(true) {}));
     ;
 
     @Deprecated
@@ -245,12 +245,13 @@ public class TurtleDocumentation extends Contract {
         return executeRemoteCallTransaction(function);
     }
 
-    public RemoteFunctionCall<TransactionReceipt> registerTurtleAssigneeDocument(String _turtleId,
-            String _applicant, byte[] _documentHash, String _assigneeId, BigInteger _count,
-            String _transferReason, String _purpose) {
+    public RemoteFunctionCall<TransactionReceipt> registerTurtleAssigneeDocument(
+            BigInteger _transactionId, String _turtleId, String _applicant, byte[] _documentHash,
+            String _assigneeId, BigInteger _count, String _transferReason, String _purpose) {
         final Function function = new Function(
                 FUNC_REGISTERTURTLEASSIGNEEDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(_turtleId), 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint8(_transactionId), 
+                new org.web3j.abi.datatypes.Utf8String(_turtleId), 
                 new org.web3j.abi.datatypes.Utf8String(_applicant), 
                 new org.web3j.abi.datatypes.generated.Bytes32(_documentHash), 
                 new org.web3j.abi.datatypes.Utf8String(_assigneeId), 
@@ -491,8 +492,9 @@ public class TurtleDocumentation extends Contract {
         for (Contract.EventValuesWithLog eventValues : valueList) {
             TurtleTransferredEventResponse typedResponse = new TurtleTransferredEventResponse();
             typedResponse.log = eventValues.getLog();
-            typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
-            typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+            typedResponse.transactionId = (BigInteger) eventValues.getIndexedValues().get(0).getValue();
+            typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+            typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(2).getValue();
             typedResponse.grantApplicant = (String) eventValues.getNonIndexedValues().get(0).getValue();
             typedResponse.assignApplicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
             responses.add(typedResponse);
@@ -504,8 +506,9 @@ public class TurtleDocumentation extends Contract {
         Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(TURTLETRANSFERRED_EVENT, log);
         TurtleTransferredEventResponse typedResponse = new TurtleTransferredEventResponse();
         typedResponse.log = log;
-        typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(0).getValue();
-        typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+        typedResponse.transactionId = (BigInteger) eventValues.getIndexedValues().get(0).getValue();
+        typedResponse.turtleId = (byte[]) eventValues.getIndexedValues().get(1).getValue();
+        typedResponse.documentHash = (byte[]) eventValues.getIndexedValues().get(2).getValue();
         typedResponse.grantApplicant = (String) eventValues.getNonIndexedValues().get(0).getValue();
         typedResponse.assignApplicant = (String) eventValues.getNonIndexedValues().get(1).getValue();
         return typedResponse;
@@ -778,6 +781,8 @@ public class TurtleDocumentation extends Contract {
     }
 
     public static class Transfer extends DynamicStruct {
+        public BigInteger transactionId;
+
         public String grantApplicant;
 
         public String assignApplicant;
@@ -798,10 +803,11 @@ public class TurtleDocumentation extends Contract {
 
         public String motherId;
 
-        public Transfer(String grantApplicant, String assignApplicant, String grantorId,
-                String assigneeId, BigInteger count, String transferReason, String purpose,
-                String aquisition, String fatherId, String motherId) {
-            super(new org.web3j.abi.datatypes.Utf8String(grantApplicant), 
+        public Transfer(BigInteger transactionId, String grantApplicant, String assignApplicant,
+                String grantorId, String assigneeId, BigInteger count, String transferReason,
+                String purpose, String aquisition, String fatherId, String motherId) {
+            super(new org.web3j.abi.datatypes.generated.Uint8(transactionId), 
+                    new org.web3j.abi.datatypes.Utf8String(grantApplicant), 
                     new org.web3j.abi.datatypes.Utf8String(assignApplicant), 
                     new org.web3j.abi.datatypes.Utf8String(grantorId), 
                     new org.web3j.abi.datatypes.Utf8String(assigneeId), 
@@ -811,6 +817,7 @@ public class TurtleDocumentation extends Contract {
                     new org.web3j.abi.datatypes.Utf8String(aquisition), 
                     new org.web3j.abi.datatypes.Utf8String(fatherId), 
                     new org.web3j.abi.datatypes.Utf8String(motherId));
+            this.transactionId = transactionId;
             this.grantApplicant = grantApplicant;
             this.assignApplicant = assignApplicant;
             this.grantorId = grantorId;
@@ -823,10 +830,12 @@ public class TurtleDocumentation extends Contract {
             this.motherId = motherId;
         }
 
-        public Transfer(Utf8String grantApplicant, Utf8String assignApplicant, Utf8String grantorId,
-                Utf8String assigneeId, Uint8 count, Utf8String transferReason, Utf8String purpose,
-                Utf8String aquisition, Utf8String fatherId, Utf8String motherId) {
-            super(grantApplicant, assignApplicant, grantorId, assigneeId, count, transferReason, purpose, aquisition, fatherId, motherId);
+        public Transfer(Uint8 transactionId, Utf8String grantApplicant, Utf8String assignApplicant,
+                Utf8String grantorId, Utf8String assigneeId, Uint8 count, Utf8String transferReason,
+                Utf8String purpose, Utf8String aquisition, Utf8String fatherId,
+                Utf8String motherId) {
+            super(transactionId, grantApplicant, assignApplicant, grantorId, assigneeId, count, transferReason, purpose, aquisition, fatherId, motherId);
+            this.transactionId = transactionId.getValue();
             this.grantApplicant = grantApplicant.getValue();
             this.assignApplicant = assignApplicant.getValue();
             this.grantorId = grantorId.getValue();
@@ -883,6 +892,8 @@ public class TurtleDocumentation extends Contract {
     }
 
     public static class TurtleTransferredEventResponse extends BaseEventResponse {
+        public BigInteger transactionId;
+
         public byte[] turtleId;
 
         public byte[] documentHash;
