@@ -20,7 +20,7 @@ services:
       - kkobuk-network
     ports:
       - "6379:6379"
-    command: [ "redis-server", "--appendonly", "yes", "--appendfsync", "everysec", "--save", "900", "1", "--save", "300", "10", "--save", "60", "10000", "--dbfilename", "dump.rdb", "--dir", "../data", "--requirepass", "kkobuk", "--masterauth", "kkobuk" ]
+    command: [ "redis-server", "--appendonly", "yes", "--appendfsync", "everysec", "--save", "900", "1", "--save", "300", "10", "--save", "60", "10000", "--dbfilename", "dump.rdb", "--dir", "../data", "--requirepass", "kkobuk", "--masterauth", "kkobuk", "--notify-keyspace-events", "Ex" ]
     volumes:
       - ../data/redis:/data # RDB 및 AOF 파일이 저장될 디렉토리
 

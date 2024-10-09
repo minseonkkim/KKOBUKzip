@@ -48,6 +48,8 @@ public class AuctionWebSocketController {
 
         Long userId = Long.valueOf(principal.getName());
 
+        Long remainingTime = redisTemplate.getExpire(endKey, TimeUnit.MILLISECONDS);
+
         System.out.println("Principal에서 userId : "+userId);
 
         if (!redisTemplate.hasKey(bidKey)) {
@@ -56,17 +58,16 @@ public class AuctionWebSocketController {
             // 기본값으로 처리
             Double nowBid = 0D; // 기본값
 
-            // 필요한 데이터를 초기화
+
+            // 필요한 데이터를 초기화 (nextBid랑 remainingTime)
             Map<String, Object> initialData = new HashMap<>();
             initialData.put("bidAmount", nowBid);
+            initialData.put("nextBid", auction.getMinBid());
+            initialData.put("remainingTime", remainingTime);
 
             // 클라이언트에게 데이터 전송
             String destination = "/queue/auction/" + auctionId + "/init";
             System.out.println("DESTINATION: "+destination);
-
-
-            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
-                    ResponseVO.bidSuccess("Join", "200", "HIHI!!"));
 
         // /user/{userId}/queue/auction/{auctionId}/init
             messagingTemplate.convertAndSendToUser(userId.toString(), destination,
@@ -86,13 +87,14 @@ public class AuctionWebSocketController {
             Map<String, Object> initialData = new HashMap<>();
             initialData.put("bidAmount", nowBid);
             initialData.put("nextBid", nextBid);
+            initialData.put("remainingTime", remainingTime);
 
             // 클라이언트에게 데이터 전송
             String destination = "/queue/auction/" + auctionId + "/init";
             messagingTemplate.convertAndSendToUser(principal.getName(), destination,
                     ResponseVO.bidSuccess("Join", "200", initialData));
 
-            log.info("유저에게 데이터 전송 완료: userId={}, auctionId={}", userId, auctionId);
+            log.info("Redis 유저에게 데이터 전송 완료: userId={}, auctionId={}", userId, auctionId);
         }
     }
 
