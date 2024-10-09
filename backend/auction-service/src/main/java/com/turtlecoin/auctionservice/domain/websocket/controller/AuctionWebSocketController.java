@@ -58,7 +58,7 @@ public class AuctionWebSocketController {
 
             // 기본값으로 처리
             Double nowBid = auction.getMinBid(); // 기본값
-            Double nextBid = bidService.calculateBidIncrement(nowBid);
+            Double nextBid = nowBid + bidService.calculateBidIncrement(nowBid);
 
 
             // 필요한 데이터를 초기화 (nextBid랑 remainingTime)
@@ -85,8 +85,8 @@ public class AuctionWebSocketController {
             Object nextBidObj = redisTemplate.opsForHash().get(bidKey, "nextBid");
             Double nextBid = (nextBidObj != null) ? Double.parseDouble(nextBidObj.toString()) : 0D;
 
-            Double bidAmount = bidService.calculateBidIncrement(nowBid);
-            Double nextBidAmount = bidService.calculateBidIncrement(bidAmount);
+            Double bidAmount = nowBid + bidService.calculateBidIncrement(nowBid);
+            Double nextBidAmount = bidAmount + bidService.calculateBidIncrement(bidAmount);
 
             // 필요한 데이터 조회 및 응답 처리
             Map<String, Object> initialData = new HashMap<>();
@@ -111,43 +111,47 @@ public class AuctionWebSocketController {
         log.info("Bid Amount: {}", bidAmount);
         Double nextBid = bidMessage.getNextBid();
 
+        Long socketUserId = Long.valueOf(principal.getName());
+
+        log.info("socketUserId : {}", socketUserId);
+
         try {
             redissonLockFacade.updateBidWithLock(auctionId, userId, bidAmount);
             log.info("입찰이 성공적으로 처리되었습니다: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount);
         } catch (BidConcurrencyException e) {
             log.error("다른 사람이 입찰 중 입니다.: auctionId = {}, userId = {}", auctionId, userId, e);
             String destination = "/user/" + userId + "/queue/auction";
-            messagingTemplate.convertAndSendToUser(principal.getName(), destination,
+            messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
                     ResponseVO.failure("Bid","409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요."));
         } catch (AuctionNotFoundException e) {
             log.error("경매를 찾을 수 없습니다: auctionId = {}, userId = {}", auctionId, userId, e);
             String destination = "/user/" + userId + "/queue/auction";
-            messagingTemplate.convertAndSendToUser(principal.getName(), destination,
+            messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
                     ResponseVO.failure("Bid", "404", "해당 경매를 찾을 수 없습니다."));
         } catch (SameUserBidException e) {
             log.error("동일 사용자의 재입찰 시도: auctionId = {}, userId = {}", auctionId, userId, e);
             String destination = "/user/" + userId + "/queue/auction";
-            messagingTemplate.convertAndSendToUser(principal.getName(), destination,
+            messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
                     ResponseVO.failure("Bid", "400", "자신의 입찰에 재입찰 할 수 없습니다."));
         } catch (AuctionTimeNotValidException e) {
           log.error("경매 시간이 아님. auctionId = {}, userId = {}", auctionId, userId, e);
             String destination = "/user/" + userId + "/queue/auction";
-            messagingTemplate.convertAndSendToUser(principal.getName(), destination,
+            messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
                     ResponseVO.failure("Bid", "422", "입찰 가능한 시간이 아닙니다."));
         } catch (AuctionAlreadyFinishedException e) {
             log.error("이미 종료된 경매: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount, e);
             String destination = "/user/" + userId + "/queue/auction";
-            messagingTemplate.convertAndSendToUser(principal.getName(), destination,
+            messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
                     ResponseVO.failure("Bid", "400", "이미 종료된 경매입니다."));
         } catch (WrongBidAmountException e) {
             log.error("잘못된 입찰 금액: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount, e);
             String destination = "/user/" + userId + "/queue/auction";
-            messagingTemplate.convertAndSendToUser(principal.getName(), destination,
+            messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
                     ResponseVO.failure("Bid", "400", "현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다."));
         } catch (Exception e) {
             log.error("입찰 처리 중 예상치 못한 오류 발생: auctionId = {}, userId = {}", auctionId, userId, e);
             String destination = "/user/" + userId + "/queue/auction";
-            messagingTemplate.convertAndSendToUser(principal.getName(), destination,
+            messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
                     ResponseVO.failure("Bid", "500", e.getMessage()));
         }
     }
