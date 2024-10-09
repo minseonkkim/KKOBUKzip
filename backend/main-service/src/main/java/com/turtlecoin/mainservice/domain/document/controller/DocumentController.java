@@ -248,7 +248,7 @@ public class DocumentController {
 		try{
 			contractService.registerTurtleAssigneeDocumentAsync(
 				turtleUUID, requestData.getApplicant(), documentHash, assigneeUUID, BigInteger.valueOf(requestData.getDetail().getCount()),
-				requestData.getDetail().getTransferReason(), requestData.getDetail().getPurpose()
+				requestData.getDetail().getTransferReason(), requestData.getDetail().getPurpose(), BigInteger.valueOf(requestData.getTransactionId())
 			);
 		}
 		catch(Exception e){

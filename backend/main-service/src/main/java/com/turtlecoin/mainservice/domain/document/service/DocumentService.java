@@ -271,8 +271,13 @@ public class DocumentService {
 					turtle.turtleDie();
 				}
 			}
+			// 양도양수서류인경우
 			else if(document.getDocType() == DocType.TRANSFER){
+				TurtleDocumentation.Transfer transfer = contractService.searchTurtleTransferDocument(document.getTurtleUUID(), document.getDocumentHash());
+				// 블록체인상 서류 상태도 바꿔주고
 				contractService.approveTransfer(document.getTurtleUUID(), document.getDocumentHash());
+				// 거래의 상태도 변경한다.
+				transactionService.approveTransactionDocument(transfer.transactionId.longValue());
 			}
 		}
 		else {

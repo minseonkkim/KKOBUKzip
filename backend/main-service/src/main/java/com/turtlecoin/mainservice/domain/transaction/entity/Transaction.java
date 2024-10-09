@@ -116,4 +116,9 @@ public class Transaction extends BaseEntity {
     public void changeDocumentHash(String documentHash) {
         this.documentHash = documentHash;
     }
+
+    @Transactional
+    public void changeStatusToApproveDocument() {
+        this.progress = TransactionProgress.APPROVED_DOCUMENT;
+    }
 }
