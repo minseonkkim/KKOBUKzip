@@ -135,18 +135,27 @@ public class BidService {
 
         log.info("자신의 입찰에 재입찰 하는지 검증하는 로직");
         if (currentUserId != null && currentUserId.equals(userId)) {
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
+                    ResponseVO.failure("Bid", "400", "자신의 입찰에 재입찰 할 수 없습니다."));
             throw new SameUserBidException("자신의 입찰에 재입찰할 수 없습니다: userId = " + userId);
         }
 
         log.info("적절한 입찰가인지 검증하는 로직");
         if (bidAmount <= currentBid) {
             System.out.println("입찰요청가격 bidAmount : "+bidAmount+" 이전 입찰가 currentBid : "+currentBid);
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
+                    ResponseVO.failure("Bid", "400", "현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다."));
             throw new WrongBidAmountException("현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다: currentBid = " +
                     currentBid + ", bidAmount = " + bidAmount);
         }
 
         // 키가 만료됐으면
         if (remainingTime < 0) {
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
+                    ResponseVO.failure("Bid", "422", "입찰 가능한 시간이 아닙니다."));
             throw new AuctionTimeNotValidException("입찰 가능한 시간이 아닙니다.");
         } else {
             // 입찰시간 갱신
