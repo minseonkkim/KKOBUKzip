@@ -83,15 +83,19 @@ const refreshToken = async (): Promise<string> => {
       throw new Error("No refresh token available");
     }
 
-    const response = await axios.post(REFRESH_URL, { refreshToken });
-    const { accessToken, expiresIn } = response.data;
-
-    // 새로운 토큰과 만료 시간을 로컬 스토리지에 저장
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem(
-      "expiresAt",
-      (Date.now() + expiresIn * 1000).toString()
+    const response = await axios.post(
+      REFRESH_URL,
+      {},
+      {
+        headers: {
+          "Refresh-Token": `Bearer ${refreshToken}`,
+        },
+      }
     );
+    const { accessToken } = response.data;
+
+    // 새로운 토큰 로컬 스토리지에 저장
+    localStorage.setItem("accessToken", accessToken);
 
     return accessToken;
   } catch (error) {
