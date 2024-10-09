@@ -162,11 +162,12 @@ function GrantorDocument() {
     const { success } = await createGrantDocumentRequest(docs);
 
     if (success) {
-      alert("양도성공후로직");
+      alert("양도 서류 등록이 완료되었습니다.");
+      navigate("/mypage");
     } else {
-      alert("양도실패후로직");
+      alert("양수 서류 등록에 실패했습니다. 다시 시도해 주세요.");
+      return;
     }
-    console.log(docs);
   };
 
   const changeHandle = (

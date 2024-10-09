@@ -331,7 +331,7 @@ function MyTurtle({turtleId, turtleUuid, name, scientificName, gender, weight, b
       {isDocumentModalOpen && 
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100000]"
         onClick={handleDocumentOverlayClick} >
-            <div className="bg-white p-6 rounded-[10px] shadow-lg md:w-[600px] w-[380px]">
+            <div className="bg-white p-6 rounded-[10px] shadow-lg md:w-[800px] w-[380px]">
                 <div className="flex flex-row justify-between">
                     <h2 className="text-[22px] font-bold mb-4 font-stardust">서류 조회</h2>
                     <IoClose className="text-[30px] cursor-pointer" onClick={closeDocumentModal} />
@@ -365,19 +365,19 @@ function MyTurtle({turtleId, turtleUuid, name, scientificName, gender, weight, b
 
                 {/* 인공증식 */}
                 {selectedMenu === 0 &&
-                <div className="md:h-[460px] h-[390px] overflow-y-auto md:p-12 p-3">
+                <div className="md:h-[560px] h-[390px] overflow-y-auto md:p-12 p-3">
                     <CompleteBreedDocument data={breedDocumentData}/>
                 </div>}
 
                 {/* 양도양수 */}
                 {selectedMenu === 1 &&
-                <div className="md:h-[460px] h-[390px] overflow-y-auto md:p-12 p-3">
+                <div className="md:h-[560px] h-[390px] overflow-y-auto md:p-12 p-3">
                     <CompleteAssignGrantDocument data={transferDocumentData}/>
                 </div>}
 
                 {/* 폐사 */}
                 {selectedMenu === 2 &&
-                <div className="md:h-[460px] h-[390px] overflow-y-auto md:p-12 p-3">
+                <div className="md:h-[560px] h-[390px] overflow-y-auto md:p-12 p-3">
                     <CompleteDeathDocument data={deathDocumentData}/>
                 </div>}
 
