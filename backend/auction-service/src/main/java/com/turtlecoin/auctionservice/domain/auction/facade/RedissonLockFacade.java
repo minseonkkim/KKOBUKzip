@@ -21,7 +21,7 @@ public class RedissonLockFacade {
     private final BidService bidService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public void updateBidWithLock(Long auctionId, Long userId, Double bidAmount) {
+    public void updateBidWithLock(Long auctionId, Long userId, Double bidAmount) throws Exception{
         RLock lock = redissonClient.getLock(auctionId.toString());
         log.info("Redis를 이용한 락 실행");
         try {
@@ -34,17 +34,18 @@ public class RedissonLockFacade {
                         ResponseVO.failure("Bid","409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요."));
                 throw new BidConcurrencyException("다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요.");
             }
-            log.info("Lock 성공");
-            bidService.processBidWithRedis(auctionId, userId, bidAmount);  // BidService로 분리된 로직 호출
 
         } catch (InterruptedException e) {
             System.out.println("인터럽트 익셉션");
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         } finally {
+            log.info("Lock 성공");
+            bidService.processBidWithRedis(auctionId, userId, bidAmount);  // BidService로 분리된 로직 호출
             if (lock.isHeldByCurrentThread()) {
                 lock.unlock();
             }
+
         }
     }
 }

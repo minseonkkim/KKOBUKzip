@@ -392,9 +392,9 @@ public class AuctionService {
 //        return AuctionResponseDTO.from(auction, turtleInfo, userInfo);
 //    }
 
-    public void processBid(Long auctionId, Long userId, Double newBidAmount) {
-        redissonLockFacade.updateBidWithLock(auctionId, userId, newBidAmount);
-    }
+//    public void processBid(Long auctionId, Long userId, Double newBidAmount) {
+//        redissonLockFacade.updateBidWithLock(auctionId, userId, newBidAmount);
+//    }
 
     // 서버 재시작시 스케줄링 다시 등록하기
     @EventListener(ApplicationReadyEvent.class)

@@ -58,7 +58,7 @@ public class BidService {
 
     // 입찰 가격 갱신
     @Transactional
-    public void processBidWithRedis(Long auctionId, Long userId, Double bidAmount) {
+    public void processBidWithRedis(Long auctionId, Long userId, Double bidAmount) throws Exception {
         // 1. 경매 시작 및 상태 확인
 //        startAuctionIfNotStarted(auctionId);
 

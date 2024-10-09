@@ -57,8 +57,8 @@ public class AuctionWebSocketController {
             log.warn("Redis에 키가 존재하지 않습니다. 기본값을 사용합니다.");
 
             // 기본값으로 처리
-            Double nowBid = auction.getMinBid(); // 기본값
-            Double nextBid = nowBid + bidService.calculateBidIncrement(nowBid);
+            Double nowBid = 0D; // 기본값
+            Double nextBid = auction.getMinBid();
 
 
             // 필요한 데이터를 초기화 (nextBid랑 remainingTime)
@@ -82,16 +82,13 @@ public class AuctionWebSocketController {
 
             Object bidAmountObj = redisTemplate.opsForHash().get(bidKey, "bidAmount");
             Double nowBid = (bidAmountObj != null) ? Double.parseDouble(bidAmountObj.toString()) : 0D;
-            Object nextBidObj = redisTemplate.opsForHash().get(bidKey, "nextBid");
-            Double nextBid = (nextBidObj != null) ? Double.parseDouble(nextBidObj.toString()) : 0D;
 
-            Double bidAmount = nowBid + bidService.calculateBidIncrement(nowBid);
-            Double nextBidAmount = bidAmount + bidService.calculateBidIncrement(bidAmount);
+            Double nextBid = nowBid + bidService.calculateBidIncrement(nowBid);
 
             // 필요한 데이터 조회 및 응답 처리
             Map<String, Object> initialData = new HashMap<>();
-            initialData.put("bidAmount", bidAmount);
-            initialData.put("nextBid", nextBidAmount);
+            initialData.put("bidAmount", nowBid);
+            initialData.put("nextBid", nextBid);
             initialData.put("remainingTime", remainingTime);
 
             // 클라이언트에게 데이터 전송
@@ -108,7 +105,7 @@ public class AuctionWebSocketController {
     public void handleBid(@DestinationVariable Long auctionId, BidMessage bidMessage, Principal principal) {
         Long userId = bidMessage.getUserId();
         Double bidAmount = bidMessage.getBidAmount();
-        log.info("Bid Amount: {}", bidAmount);
+//        log.info("Bid Amount: {}", bidAmount);
         Double nextBid = bidMessage.getNextBid();
 
         Long socketUserId = Long.valueOf(principal.getName());
@@ -116,8 +113,8 @@ public class AuctionWebSocketController {
         log.info("socketUserId : {}", socketUserId);
 
         try {
-            redissonLockFacade.updateBidWithLock(auctionId, userId, bidAmount);
-            log.info("입찰이 성공적으로 처리되었습니다: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount);
+            redissonLockFacade.updateBidWithLock(auctionId, userId, nextBid);
+            log.info("입찰이 성공적으로 처리되었습니다: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, nextBid);
         } catch (BidConcurrencyException e) {
             log.error("다른 사람이 입찰 중 입니다.: auctionId = {}, userId = {}", auctionId, userId, e);
             String destination = "/user/" + userId + "/queue/auction";
@@ -139,12 +136,12 @@ public class AuctionWebSocketController {
             messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
                     ResponseVO.failure("Bid", "422", "입찰 가능한 시간이 아닙니다."));
         } catch (AuctionAlreadyFinishedException e) {
-            log.error("이미 종료된 경매: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount, e);
+            log.error("이미 종료된 경매: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, nextBid, e);
             String destination = "/user/" + userId + "/queue/auction";
             messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
                     ResponseVO.failure("Bid", "400", "이미 종료된 경매입니다."));
         } catch (WrongBidAmountException e) {
-            log.error("잘못된 입찰 금액: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, bidAmount, e);
+            log.error("잘못된 입찰 금액: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, nextBid, e);
             String destination = "/user/" + userId + "/queue/auction";
             messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
                     ResponseVO.failure("Bid", "400", "현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다."));
