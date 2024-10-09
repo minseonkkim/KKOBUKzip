@@ -35,7 +35,7 @@ public class RedissonLockFacade {
                 log.info("Lock 실패");
                 data.put("message", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요.");
                 messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
-                        ResponseVO.failure("Bid","409", data));
+                        ResponseVO.failure("Bid","409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요."));
                 throw new BidConcurrencyException("다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요.");
             }
             bidService.processBidWithRedis(auctionId, userId, bidAmount);  // BidService로 분리된 로직 호출

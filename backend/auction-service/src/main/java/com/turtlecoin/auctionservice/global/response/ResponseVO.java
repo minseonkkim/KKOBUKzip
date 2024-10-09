@@ -68,9 +68,13 @@ public class ResponseVO<T> {
         return new ResponseVO<>(status, message, null);
     }
 
-    public static <T> ResponseVO<T> failure(String type, String status, T data) {
-        Map<String, T> dataMap = new HashMap<>();
-        dataMap.put(type, data);
-        return new ResponseVO<>(type, status, dataMap);
+//    public static <T> ResponseVO<T> failure(String type, String status, T data) {
+//        Map<String, T> dataMap = new HashMap<>();
+//        dataMap.put(type, data);
+//        return new ResponseVO<>(type, status, dataMap);
+//    }
+
+    public static <T> ResponseVO<T> failure(String type, String status, String message) {
+        return new ResponseVO<>(type, status, message, null);
     }
 }

@@ -138,7 +138,7 @@ function DuringAuction({
 
   // Meesage 타입 분기 함수 (Join, Bid, End)
   const handleAuctionMessage = (newMessage: WsResponseType) => {
-
+    console.log("newMessage : ", newMessage);
     
     if ("Bid" in newMessage.data) {
 
@@ -148,7 +148,7 @@ function DuringAuction({
         alert(`Error: ${newMessage.message}`);
         return; // 더 이상 처리하지 않고 종료
       }
-      
+
       const bidData = newMessage.data as BidData;
 
       const updatedTime = ~~(bidData.Bid.bidRecord.remainingTime / 1000);
