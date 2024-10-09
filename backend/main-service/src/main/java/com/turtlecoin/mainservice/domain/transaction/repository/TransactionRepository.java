@@ -30,7 +30,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             + "AND (:sizeMax IS NULL OR t.turtle.weight <= :sizeMax) "
             + "AND (:priceMin IS NULL OR t.price >= :priceMin) "
             + "AND (:priceMax IS NULL OR t.price <= :priceMax) "
-            + "AND (:progressList IS NULL OR t.progress IN :progressList)")
+            + "AND (:progressList IS NULL OR t.progress IN :progressList)"
+            + "AND t.auctionFlag = false"
+    )
     Page<Transaction> findFilteredTransactions(
             @Param("gender") Gender gender,
             @Param("sizeMin") Double sizeMin,
