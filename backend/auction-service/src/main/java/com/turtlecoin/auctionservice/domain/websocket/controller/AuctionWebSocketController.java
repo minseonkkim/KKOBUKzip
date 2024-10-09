@@ -113,27 +113,27 @@ public class AuctionWebSocketController {
         log.info("socketUserId : {}", socketUserId);
 
         try {
-            redissonLockFacade.updateBidWithLock(auctionId, userId, nextBid);
+            redissonLockFacade.updateBidWithLock(auctionId, userId, nextBid, socketUserId);
             log.info("입찰이 성공적으로 처리되었습니다: auctionId = {}, userId = {}, bidAmount = {}", auctionId, userId, nextBid);
         } catch (SameUserBidException e) {
-            sendFailureMessage(socketUserId, userId, "400", "자신의 입찰에 재입찰 할 수 없습니다.");
+            sendFailureMessage(socketUserId, auctionId, "400", "자신의 입찰에 재입찰 할 수 없습니다.");
         } catch (WrongBidAmountException e) {
-            sendFailureMessage(socketUserId, userId, "400", "현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다.");
+            sendFailureMessage(socketUserId, auctionId, "400", "현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다.");
         } catch (AuctionTimeNotValidException e) {
-            sendFailureMessage(socketUserId, userId, "422", "입찰 가능한 시간이 아닙니다.");
+            sendFailureMessage(socketUserId, auctionId, "422", "입찰 가능한 시간이 아닙니다.");
         } catch (AuctionAlreadyFinishedException e) {
-            sendFailureMessage(socketUserId, userId, "400", "이미 종료된 경매입니다.");
+            sendFailureMessage(socketUserId, auctionId, "400", "이미 종료된 경매입니다.");
         } catch (BidConcurrencyException e) {
-            sendFailureMessage(socketUserId, userId, "409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요.");
+            sendFailureMessage(socketUserId, auctionId, "409", "다른 사람이 입찰 중입니다. 잠시 후 다시 시도하세요.");
         } catch (AuctionNotFoundException e) {
-            sendFailureMessage(socketUserId, userId, "404", "해당 경매를 찾을 수 없습니다.");
+            sendFailureMessage(socketUserId, auctionId, "404", "해당 경매를 찾을 수 없습니다.");
         } catch (Exception e) {
-            sendFailureMessage(socketUserId, userId, "500", "입찰 처리 중 오류가 발생했습니다.");
+            sendFailureMessage(socketUserId, auctionId, "500", "입찰 처리 중 오류가 발생했습니다.");
         }
     }
 
-    private void sendFailureMessage(Long socketUserId, Long userId, String errorCode, String message) {
-        String destination = "/user/" + userId + "/queue/auction";
+    private void sendFailureMessage(Long socketUserId, Long auctionId, String errorCode, String message) {
+        String destination = "/queue/auction/" + auctionId + "/init";
         messagingTemplate.convertAndSendToUser(socketUserId.toString(), destination,
                 ResponseVO.failure("Bid", errorCode, message));
     }
