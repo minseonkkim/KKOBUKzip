@@ -3,8 +3,6 @@ import MovingTurtle from "../../assets/moving_turtle.webp";
 import { useSpring, animated } from "@react-spring/web";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import { useUserStore } from "../../store/useUserStore";
-import Web3 from "web3";
-import { useWeb3Store } from "../../store/useWeb3Store";
 import Alert from "../common/Alert";
 
 interface StompFrame {
@@ -69,8 +67,6 @@ function DuringAuction({
     winner?: string
   ) => void;
 }) {
-  const { tokenContract, account } = useWeb3Store();
-
   const auctionStompClient = useRef<CompatClient | null>(null);
 
   const auctionId = Number(channelId);
@@ -157,20 +153,6 @@ function DuringAuction({
     };
   }, [channelId]);
 
-  // turtle token 관리 useEffect
-  useEffect(() => {
-    const loadToken = async () => {
-      const turtBalance: number = await tokenContract!.methods
-        .balanceOf(account)
-        .call();
-      const convertedTurtleBalance = Web3.utils.fromWei(turtBalance, "ether");
-      setMyTurtToken(convertedTurtleBalance);
-      setBitLimiter(~~convertedTurtleBalance);
-    };
-
-    loadToken();
-  }, [tokenContract, account]);
-
   // Meesage 타입 분기 함수 (Join, Bid, End)
   const handleAuctionMessage = (newMessage: WsResponseType) => {
     console.log("newMessage : ", newMessage);
@@ -249,11 +231,6 @@ function DuringAuction({
   const sendBidRequest = async () => {
     if (loading) return;
     setLoading(true);
-
-    if (nowBid > bidLimiter) {
-      openAlert(`${userInfo!.nickname}님이 지정한 최대 입찰가를 초과합니다.`);
-      return;
-    }
 
     try {
       const data = {
@@ -347,10 +324,6 @@ function DuringAuction({
     api.start({ price: bidPrice });
   }, [bidPrice, api]);
 
-  const handleBidLimiterChange = (value: string) => {
-    setBitLimiter(~~value);
-  };
-
   return (
     <>
       {/* 경매중 */}
@@ -422,21 +395,6 @@ function DuringAuction({
                 </animated.div>
                 <div className="text-[13px] md:text-[17px]">TURT</div>
               </div>
-            </div>
-
-            <div className="relative flex-1">
-              <input
-                type="number"
-                value={bidLimiter}
-                onChange={(e) => handleBidLimiterChange(e.target.value)}
-                min="0"
-                max={myTurtToken}
-                className="w-full p-2 border-2 border-yellow-600 rounded bg-white focus:outline-none focus:ring-4 focus:ring-yellow-300"
-                placeholder="0"
-              />
-              <span className="absolute right-2 top-1/2 transform -translate-y-1/2 font-semibold">
-                TURT
-              </span>
             </div>
 
             <div className="mt-[20px] w-full text-[19px]">
