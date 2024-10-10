@@ -53,7 +53,7 @@ public class AuctionResponseDTO {
                 .nowBid(nowBid)
                 .winningBid(auction.getWinningBid())
                 .buyerId(auction.getBuyerId())
-                .nickname(nickname)
+                .nickname(nickname != null ? nickname : "입찰 인원 없음")
                 .sellerId(auction.getUserId())
                 .startTime(auction.getStartTime())
                 .endTime(LocalDateTime.now())
