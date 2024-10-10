@@ -17,11 +17,11 @@ function AdminDocsListPage() {
     if (success && data!.length > 0) {
       setDocuments(data!);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     fetchDocuments();
-  });
+  }, [fetchDocuments]);
 
   return (
     <>
@@ -34,11 +34,11 @@ function AdminDocsListPage() {
         <div className="flex justify-between">
           <h1 className="text-2xl font-bold mb-4">서류 신청 목록</h1>
           <div
-              onClick={fetchDocuments}
-              className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[360px] w-[38px] md:w-[42px] h-[38px] md:h-[42px] cursor-pointer font-bold hover:text-[#4B721F] hover:border-[#4B721F]"
-            >
-              <GrPowerReset className="text-[18px] md:text-[20px] " />
-            </div>
+            onClick={fetchDocuments}
+            className="flex justify-center items-center border-[2px] border-[#DADADA] rounded-[360px] w-[38px] md:w-[42px] h-[38px] md:h-[42px] cursor-pointer font-bold hover:text-[#4B721F] hover:border-[#4B721F]"
+          >
+            <GrPowerReset className="text-[18px] md:text-[20px] " />
+          </div>
         </div>
         <div className="grid gap-4 grid-cols-1 overflow-y-auto">
           {documents.length === 0 && (
