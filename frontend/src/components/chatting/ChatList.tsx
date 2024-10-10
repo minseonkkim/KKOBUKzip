@@ -16,6 +16,7 @@ export default function ChatList() {
     isChattingOpen,
     selectedChat,
     selectedChatTitle,
+    selectedTransaction,
     toggleChat,
     closeChatDetail,
     openChatDetail,
@@ -53,7 +54,7 @@ export default function ChatList() {
           Authorization: `Bearer ${accessToken}`,
           Accept: "text/event-stream",
         },
-        heartbeatTimeout: 7200 * 1000,
+        heartbeatTimeout: 30 * 60 * 1000,
       });
 
       eventSource.onopen = () => {
@@ -165,7 +166,8 @@ export default function ChatList() {
               // 상세 채팅
               <ChatDetail
                 chattingTitle={selectedChatTitle!}
-                chattingId={selectedChat}
+                otherUserId={selectedChat}
+                transactionId={selectedTransaction}
                 closeChatDetail={closeChatDetail}
                 toggleChat={toggleChat}
                 openedFromTransaction={openedFromTransaction}

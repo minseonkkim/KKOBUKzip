@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.turtlecoin.mainservice.domain.user.repository.UserRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -66,6 +67,7 @@ public class DocumentController {
 	private final DocumentRepository documentRepository;
 	private final JWTUtil jwtUtil;
 	private final TransactionService transactionService;
+	private final UserRepository userRepository;
 
 	// 인공증식서류 등록
 	@PostMapping(value = "/register/breed", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -248,7 +250,7 @@ public class DocumentController {
 		try{
 			contractService.registerTurtleAssigneeDocumentAsync(
 				turtleUUID, requestData.getApplicant(), documentHash, assigneeUUID, BigInteger.valueOf(requestData.getDetail().getCount()),
-				requestData.getDetail().getTransferReason(), requestData.getDetail().getPurpose()
+				requestData.getDetail().getTransferReason(), requestData.getDetail().getPurpose(), BigInteger.valueOf(requestData.getTransactionId())
 			);
 		}
 		catch(Exception e){
@@ -476,8 +478,9 @@ public class DocumentController {
 		try{
 			String accessToken = header.getFirst("Authorization").split("Bearer ")[1].split(" ")[0];
 			Role role = Role.valueOf(jwtUtil.getRoleFromToken(accessToken));
+			User user = userRepository.findById(jwtUtil.getIdFromToken(accessToken)).get();
 
-			if(role != Role.ROLE_ADMIN){
+			if(user.getRole() != Role.ROLE_ADMIN || role != Role.ROLE_ADMIN){
 				return new ResponseEntity<>(ResponseVO.failure("401", "관리자만 접근 가능합니다."), HttpStatus.UNAUTHORIZED);
 			}
 
@@ -498,5 +501,26 @@ public class DocumentController {
 		}
 
 		return new ResponseEntity<>(ResponseVO.success("서류 처리에 성공했습니다."), HttpStatus.OK);
+	}
+
+	@PostMapping(value = "/register/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<?> registerPhoto(@RequestPart(value = "turtleImg") MultipartFile multipartFile) {
+		String imageAddress = "";
+
+		// 이미지가 비어 있는지 확인
+		if (multipartFile == null || multipartFile.isEmpty()) {
+			return new ResponseEntity<>(ResponseVO.failure("400", "이미지가 첨부되지 않았습니다."), HttpStatus.BAD_REQUEST);
+		}
+
+		// S3에 이미지 업로드
+		try {
+			imageAddress = imageUploadService.upload(multipartFile, "turtlePhoto");
+		} catch (Exception e) {
+			// S3 업로드 중 오류 발생 시 처리
+			return new ResponseEntity<>(ResponseVO.failure("500", "이미지 업로드 중 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		// 성공적으로 이미지가 업로드되었을 때, S3 주소 반환
+		return new ResponseEntity<>(ResponseSingle.success("이미지 등록에 성공했습니다.", imageAddress), HttpStatus.OK);
 	}
 }

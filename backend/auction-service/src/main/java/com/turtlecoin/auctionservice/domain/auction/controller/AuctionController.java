@@ -14,9 +14,12 @@ import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.global.exception.*;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
 import com.turtlecoin.auctionservice.global.utils.JWTUtil;
+
+import jakarta.ws.rs.sse.Sse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpConnectException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -58,8 +61,18 @@ public class AuctionController {
 
     // SSE 연결
     @GetMapping(value = "/sse/subscribe/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@PathVariable Long id) {
-        return sseService.subscribe(id);
+    public ResponseEntity<SseEmitter> subscribe(@PathVariable Long id) {
+        try{
+            log.info(id + "로 SSE요청이 들어왔음");
+
+            HttpHeaders responseHeader = new HttpHeaders();
+            responseHeader.add("Cache-Control", "no-cache");
+            responseHeader.add("X-Accel-Buffering", "no");
+
+            return new ResponseEntity<>(sseService.subscribe(id), responseHeader, HttpStatus.OK);
+        }catch (Exception e) {
+            return null;
+        }
     }
 
     // SSE 보내기 테스트

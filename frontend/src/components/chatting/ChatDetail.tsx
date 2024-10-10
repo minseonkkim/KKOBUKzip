@@ -17,7 +17,8 @@ import useChatStore from "../../store/useChatStore";
 
 interface ChatDetailProps {
   closeChatDetail: () => void;
-  chattingId: number;
+  otherUserId: number;
+  transactionId: number | null;
   toggleChat: () => void;
   chattingTitle: string;
   openedFromTransaction: boolean;
@@ -39,7 +40,8 @@ interface SystemMessageType {
 
 export default function ChatDetail({
   chattingTitle,
-  chattingId,
+  otherUserId,
+  transactionId,
   closeChatDetail,
   toggleChat,
   openedFromTransaction,
@@ -49,6 +51,7 @@ export default function ChatDetail({
   const [groupedChat, setGroupedChat] = useState<
     { date: string; messages: (ChatData | SystemMessageType)[] }[]
   >([]);
+  const messageEndRef = useRef<HTMLDivElement>(null);
   const { userInfo } = useUserStore();
   const [chatData, setChatData] = useState<ChatData[]>([]);
   const recentChattingTime = useChatStore((state) => state.recentChattingTime);
@@ -57,29 +60,29 @@ export default function ChatDetail({
   );
 
   const chatId =
-    Math.min(userInfo?.userId!, chattingId) +
+    Math.min(userInfo?.userId!, otherUserId) +
     "-" +
-    Math.max(userInfo?.userId!, chattingId);
+    Math.max(userInfo?.userId!, otherUserId);
   useEffect(() => {
     const getChatData = async () => {
       await initData();
-      console.log("chattingId", chatId);
+      console.log("otherUserId", chatId);
     };
     getChatData();
     connect();
 
     return () => disconnect();
-  }, [chattingId]);
+  }, [otherUserId]);
 
   // 데이터 초기화 및 전처리
   const initData = async () => {
     let success: boolean;
     let data: ChatData[] | undefined;
 
-    if (openedFromTransaction) {
-      ({ success, data } = await fetchChatMessageDataFromTx(chattingId));
+    if (openedFromTransaction && transactionId) {
+      ({ success, data } = await fetchChatMessageDataFromTx(transactionId));
     } else {
-      ({ success, data } = await fetchChatMessageData(chattingId));
+      ({ success, data } = await fetchChatMessageData(otherUserId));
     }
     if (success) {
       const chatMessages = data;
@@ -170,8 +173,12 @@ export default function ChatDetail({
     }
   };
 
-  useEffect(() => {}, []);
-
+  useEffect(() => {
+    scrollToBottom();
+  }, [groupedChat]);
+  const scrollToBottom = () => {
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   const sendMessage = () => {
     if (inputValue.trim() !== "" && stompClient.current) {
       const message = {
@@ -193,7 +200,7 @@ export default function ChatDetail({
 
   return (
     <>
-      <div className="text-black bg-gray-100 rounded-[10px] flex flex-col justify-between w-full">
+      <div className="text-black pb-2 rounded-[10px] flex flex-col justify-between w-full">
         <div className="overflow-y-auto">
           <div className="text-[#43493A] p-[10px] flex flex-row justify-between items-center text-[29px] font-dnf-bitbit absolute bg-gray-100 w-full">
             <span className="cursor-pointer" onClick={closeChatDetail}>
@@ -206,8 +213,8 @@ export default function ChatDetail({
             />
           </div>
           <div className="p-[10px] mt-[49px] mb-[42px] flex flex-col">
-            {groupedChat.map((group, index) => (
-              <div key={index}>
+            {groupedChat.map((group) => (
+              <div key={group.date}>
                 {/* 날짜 */}
 
                 <ChatDayDivider date={group.date} />
@@ -246,6 +253,7 @@ export default function ChatDetail({
                     );
                   }
                 })}
+                <div ref={messageEndRef} />
               </div>
             ))}
           </div>

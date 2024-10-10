@@ -109,11 +109,17 @@ public class Transaction extends BaseEntity {
                 .turtleUuid(this.turtle.getUuid())
                 .documentHash(this.documentHash)
                 .sellerNickname(this.getTurtle().getUser().getNickname())
+                .auctionFlag(this.auctionFlag) // 경매 유무 전송
                 .build();
     }
 
     @Transactional
     public void changeDocumentHash(String documentHash) {
         this.documentHash = documentHash;
+    }
+
+    @Transactional
+    public void changeStatusToApproveDocument() {
+        this.progress = TransactionProgress.APPROVED_DOCUMENT;
     }
 }

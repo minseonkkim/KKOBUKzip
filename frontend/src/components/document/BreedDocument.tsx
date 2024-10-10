@@ -97,8 +97,8 @@ function BreedDocument() {
       detail: {
         ...data,
         weight: Number(data.weight),
-        motherUUID: "uuid-male-001",
-        fatherUUID: "uuid-female-001",
+        motherUUID: data.motherUUID,
+        fatherUUID: data.fatherUUID,
         location: postcodeData?.roadAddress + " / " + detailLocation,
         registerDate: new Date().toISOString().substring(0, 10),
       },
@@ -114,7 +114,7 @@ function BreedDocument() {
 
     const result = await createBreedDocumentRequest(formData);
     if (result.success) {
-      alert("서류가 성공적으로 등록되었습니다.");
+      alert("인공증식 서류가 성공적으로 등록되었습니다. 승인이 완료될 때까지 대기해 주세요.");
       navigate("/mypage");
     } else {
       alert(result.message);

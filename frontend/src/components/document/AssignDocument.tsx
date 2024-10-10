@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useOutletContext } from "react-router-dom";
+import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import {
@@ -19,6 +19,7 @@ interface ApplicantInfoContext {
 
 // 양수 서류 컴포넌트
 function AssignDocument() {
+  const navigate = useNavigate();
   const { state } = useLocation();
   const { userInfo } = useUserStore();
   const { applicantName, applicantPhoneNumber, applicantAddress } = useOutletContext<ApplicantInfoContext>();
@@ -33,7 +34,7 @@ function AssignDocument() {
   });
 
   const [data, setData] = useState<AssigneeDocDataType>({
-    turtleUUID: "",
+    turtleUUID: state.turtleUuid,
     count: 1,
     purpose: "연구",
     transferReason: "",
@@ -42,13 +43,14 @@ function AssignDocument() {
   const [detailLocation, setDetailLocation] = useState<string>("");
 
   useEffect(() => {
-    if (postcodeData?.jibunAddress) {
+    if (postcodeData?.roadAddress) {
       setAssignee((prev) => ({
         ...prev,
-        address: postcodeData.jibunAddress,
+        address: postcodeData.roadAddress,
       }));
     }
-  }, [postcodeData?.jibunAddress]);
+    console.log(assignee)
+  }, [postcodeData?.roadAddress]);
 
   // 유저데이터 로드하는 함수
   const loadUserData = () => {
@@ -66,9 +68,10 @@ function AssignDocument() {
       alert("양수인 정보를 모두 입력해주세요.");
       return;
     }
-
+    console.log("data : ", data)
+    console.log(state);
     const docs: AssigneeFetchData = {
-      transactionId: state.transactionId,
+      transactionId: state.transactionId as number,
       docType: "양수신청서",
       applicant: userInfo!.uuid,
       detail: {
@@ -79,11 +82,14 @@ function AssignDocument() {
         ...data,
       },
     };
+    console.log(docs);
     const result = await createAssignDocumentRequest(docs);
     if (result.success) {
-      console.log("성공 후 로직");
+      alert("양수 서류 등록이 완료되었습니다.");
+      navigate("/mypage");
     } else {
-      console.log("실패 후 로직");
+      alert("양수 서류 등록에 실패했습니다. 다시 시도해 주세요.")
+      return;
     }
   };
 
@@ -238,12 +244,13 @@ function AssignDocument() {
             </div>
             <div className="flex items-center">
               <label className="w-1/3 font-medium">개체식별번호</label>
-              <input
+              {/* <input
                 type="text"
                 onChange={(evt) => changeDataHandle("turtleUUID", evt)}
                 className="w-2/3 px-3 py-2 border rounded"
                 placeholder="개체식별번호"
-              />
+              /> */}
+              <span className="w-2/3 px-3 py-2">{state.turtleUuid}</span>
             </div>
           </div>
         </div>

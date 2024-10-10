@@ -85,8 +85,16 @@ function AuctionDetailPage() {
   }, []);
 
   const changeAuctionStatusToComplete = useCallback(
-    (state: "NO_BID" | "SUCCESSFUL_BID") => {
+    (state: "NO_BID" | "SUCCESSFUL_BID", winningBid?: number) => {
       setAuctionStatus(state);
+      if (winningBid) {
+        setAuctionItemData((prev) => {
+          if (prev) {
+            return { ...prev, winningBid };
+          }
+          return prev;
+        });
+      }
     },
     []
   );
@@ -97,9 +105,9 @@ function AuctionDetailPage() {
         <title>경매중인 거북이</title>
       </Helmet>
       <Header />
-      <main className="px-4 lg:px-[250px] mt-[78px]">
+      <main className="px-4 lg:px-[250px] mt-[85px]">
         {/* 테스트 드라이버 */}
-        <div className="grid grid-cols-4">
+        {/* <div className="grid grid-cols-4">
           <button
             className="bg-slate-200"
             onClick={() => setAuctionStatus("BEFORE_AUCTION")}
@@ -124,7 +132,7 @@ function AuctionDetailPage() {
           >
             SUCCESSFUL_BID
           </button>
-        </div>
+        </div> */}
         {/* 테스트 드라이버 끝 */}
 
         <div className="whitespace-nowrap text-[28px] md:text-[33px] text-gray-900 font-dnf-bitbit pt-0 lg:pt-[18px] pb-[13px]">
@@ -157,12 +165,13 @@ function AuctionDetailPage() {
                 channelId={String(auctionItemData?.id)}
                 initialBid={auctionItemData!.nowBid}
                 initTime={auctionItemData!.remainingTime}
+                changeAuctionStatusToComplete={changeAuctionStatusToComplete}
               />
             )}
           {auctionStatus === "NO_BID" && <NoBid />}
           {auctionStatus === "SUCCESSFUL_BID" &&
             auctionItemData!.nowBid !== null && (
-              <SuccessfulBid nowBid={auctionItemData!.nowBid} />
+              <SuccessfulBid nowBid={auctionItemData!.winningBid!} />
             )}
         </div>
       </main>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useOutletContext } from "react-router-dom";
+import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { usePostcodeSearch } from "../../hooks/usePostcodeSearch";
 import {
@@ -7,33 +7,43 @@ import {
   AssignDocumentDataType as GrantorDocumentDataType,
   GrantorFetchData,
 } from "../../types/document";
-import { createGrantDocumentRequest, getDetailDocumentData } from "../../apis/documentApis";
+import {
+  createGrantDocumentRequest,
+  getDetailDocumentData,
+} from "../../apis/documentApis";
 import { grantDoc } from "../../utils/grantDriverObject";
+import { useUserStore } from "../../store/useUserStore";
+import { useWeb3Store } from "../../store/useWeb3Store";
 
 interface ApplicantInfoContext {
-  applicantName: string,
-  applicantPhoneNumber: string,
-  applicantAddress: string,
+  applicantName: string;
+  applicantPhoneNumber: string;
+  applicantAddress: string;
 }
 
 interface MyTurtleInfo {
-  turtleName: string,
-  turtleUuid: string,
-  turtleGender: string
+  turtleName: string;
+  turtleUuid: string;
+  turtleGender: string;
 }
 
 // 양도 서류 컴포넌트
 function GrantorDocument() {
   const { state } = useLocation();
+  const navigate = useNavigate();
   const { applicantName, applicantPhoneNumber, applicantAddress } = useOutletContext<ApplicantInfoContext>();
+  const { documentContract } = useWeb3Store();
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
+  const { userInfo } = useUserStore();
+
+  const [aquisition, setAquisition] = useState<string | null>(null);
 
   const [assignee, setAssignee] = useState<GrantorDocumentDataType>({
     name: "",
     phoneNumber: "",
-    address: ""
-  })
+    address: "",
+  });
 
   const [grantor, setGrantor] = useState<GrantorDocumentDataType>({
     name: "",
@@ -42,18 +52,18 @@ function GrantorDocument() {
   });
 
   const [detailByAssignee, setDetailByAssignee] = useState<{
-    turtleUUID: string,
-    count: number,
-    transferReason: string,
+    turtleUUID: string;
+    count: number;
+    transferReason: string;
   }>({
     turtleUUID: "",
     count: 0,
     transferReason: "",
-  })
+  });
 
   const [uuidData, setUuidData] = useState<{
-    motherUUID: string,
-    fatherUUID: string,
+    motherUUID: string;
+    fatherUUID: string;
   }>({
     motherUUID: "",
     fatherUUID: "",
@@ -71,28 +81,46 @@ function GrantorDocument() {
 
   useEffect(() => {
     // 기존 작성된 양수 서류 데이터 불러오기
-      getDetailDocumentData(state.turtleUuid, state.documentHash).then((response) => {
+    getDetailDocumentData(state.turtleUuid, state.documentHash).then(
+      (response) => {
         const data = response.data as AdminAssignDocumentDataType;
         setAssignee({
           name: data.assignee.name,
           phoneNumber: data.assignee.phoneNumber,
           address: data.assignee.address,
-        })
+        });
 
         setDetailByAssignee({
           turtleUUID: state.turtleUuid,
           count: data.detail.count,
           transferReason: data.detail.transferReason,
-        })
-      })
-  }, [state.documentHash, state.turtleUuid])
+        });
+      }
+    );
+  }, [state.documentHash, state.turtleUuid]);
+
+  useEffect(() => {
+    if (documentContract === null) {
+      alert("블록체인 지갑에 연결되어 있지 않습니다. 연결 완료 후 다시 접속해 주세요.");
+      navigate(-1);
+      return
+    }
+
+    documentContract!.methods.searchCurrentDocumentHash(state.turtleUuid).call().then((response) => {
+      setAquisition(response as unknown as string);
+    }).catch((error) => {
+      console.error(error);
+      alert("블록체인 지갑의 연결 상태를 확인해 주세요.")
+      return
+    })
+  }, [])
 
   const loadUserData = () => {
     setGrantor({
       name: applicantName,
       phoneNumber: applicantPhoneNumber,
       address: applicantAddress,
-    })
+    });
     console.log("loadUserData");
   };
 
@@ -110,36 +138,36 @@ function GrantorDocument() {
 
   const sendGrantorDocRequest = async () => {
     // grantor status check logic
-    console.log(grantor.address);
     if (!grantor.name || !grantor.phoneNumber || !grantor.address) {
       alert("양도인 정보를 모두 입력해주세요.");
       return;
     }
-
+    
     const docs: GrantorFetchData = {
       docType: "양도신청서",
-      applicant: "sadfk3ld-3b7d-8012-9bdd-2b0182lscb6d", // storage에서 가져올 것
+      documentHash: state.documentHash,
+      turtleUUID: detailByAssignee.turtleUUID,
+      applicant: userInfo!.uuid, // storage에서 가져올 것
       detail: {
-        granter: {
+        grantor: {
           ...grantor,
           address: postcodeData?.roadAddress + " / " + detailLocation,
         },
-
-        // UUID 부분 데이터 들어오면 할당할 것
-        turtleUUID: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-        aquisition: "0x1238801732341294",
-        motherUUID: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-        fatherUUID: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        turtleUUID: detailByAssignee.turtleUUID,
+        aquisition: aquisition!,
+        motherUUID: uuidData.motherUUID,
+        fatherUUID: uuidData.fatherUUID,
       },
     };
     const { success } = await createGrantDocumentRequest(docs);
 
     if (success) {
-      alert("양도성공후로직");
+      alert("양도 서류 등록이 완료되었습니다.");
+      navigate("/mypage");
     } else {
-      alert("양도실패후로직");
+      alert("양수 서류 등록에 실패했습니다. 다시 시도해 주세요.");
+      return;
     }
-    console.log(docs);
   };
 
   const changeHandle = (
@@ -154,7 +182,7 @@ function GrantorDocument() {
 
   const handleGuide = () => {
     grantDoc.drive();
-  }
+  };
 
   return (
     <>
@@ -163,7 +191,12 @@ function GrantorDocument() {
       </Helmet>
 
       <div className="flex justify-end">
-        <button onClick={handleGuide} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">가이드 시작</button>
+        <button
+          onClick={handleGuide}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          가이드 시작
+        </button>
       </div>
 
       <div id="grantContainer">
@@ -291,11 +324,15 @@ function GrantorDocument() {
             </div>
             <div className="flex items-center">
               <span className="w-1/3 font-medium">양수사유</span>
-              <span className="w-2/3 px-3 py-2">{detailByAssignee.transferReason}</span>
+              <span className="w-2/3 px-3 py-2">
+                {detailByAssignee.transferReason}
+              </span>
             </div>
             <div className="flex items-center">
               <label className="w-1/3 font-medium">개체식별번호</label>
-              <span className="w-2/3 px-3 py-2">{detailByAssignee.turtleUUID}</span>
+              <span className="w-2/3 px-3 py-2">
+                {detailByAssignee.turtleUUID}
+              </span>
             </div>
           </div>
         </div>
@@ -336,12 +373,22 @@ function GrantorDocument() {
                   onChange={(evt) => changeUuidData("fatherUUID", evt)}
                   value={uuidData.fatherUUID}
                 >
-                  <option value="" disabled>부 개체 고유번호</option>
-                  {state.myTurtlesUuid.map((turtle: MyTurtleInfo) => (
-                    turtle.turtleGender === "MALE" && <option key={turtle.turtleUuid} value={turtle.turtleUuid}>
-                      {turtle.turtleName} / {turtle.turtleGender === "MALE" ? "수컷" : "암컷"} ({turtle.turtleUuid})
-                    </option>
-                  ))}
+                  <option value="" disabled>
+                    부 개체 고유번호
+                  </option>
+                  {state.myTurtlesUuid.map(
+                    (turtle: MyTurtleInfo) =>
+                      turtle.turtleGender === "MALE" && (
+                        <option
+                          key={turtle.turtleUuid}
+                          value={turtle.turtleUuid}
+                        >
+                          {turtle.turtleName} /{" "}
+                          {turtle.turtleGender === "MALE" ? "수컷" : "암컷"} (
+                          {turtle.turtleUuid})
+                        </option>
+                      )
+                  )}
                 </select>
               </div>
               <div>
@@ -350,12 +397,22 @@ function GrantorDocument() {
                   onChange={(evt) => changeUuidData("motherUUID", evt)}
                   value={uuidData.motherUUID}
                 >
-                  <option value="" disabled>모 개체 고유번호</option>
-                  {state.myTurtlesUuid.map((turtle: MyTurtleInfo) => (
-                    turtle.turtleGender === "FEMALE" && <option key={turtle.turtleUuid} value={turtle.turtleUuid}>
-                      {turtle.turtleName} / {turtle.turtleGender === "FEMALE" ? "암컷" : "수컷"} ({turtle.turtleUuid})
-                    </option>
-                  ))}
+                  <option value="" disabled>
+                    모 개체 고유번호
+                  </option>
+                  {state.myTurtlesUuid.map(
+                    (turtle: MyTurtleInfo) =>
+                      turtle.turtleGender === "FEMALE" && (
+                        <option
+                          key={turtle.turtleUuid}
+                          value={turtle.turtleUuid}
+                        >
+                          {turtle.turtleName} /{" "}
+                          {turtle.turtleGender === "FEMALE" ? "암컷" : "수컷"} (
+                          {turtle.turtleUuid})
+                        </option>
+                      )
+                  )}
                 </select>
               </div>
             </div>

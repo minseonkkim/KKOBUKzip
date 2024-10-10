@@ -58,7 +58,7 @@ public class AuctionResponseDTO {
                 .content(auction.getContent())
                 .sellerAddress(auction.getSellerAddress())
                 .remainingTime(remainingTime)
-                .scientificName("임시학명 거북이!!!")
+                .scientificName("다이아몬드 백 테라핀")
                 .progress(auction.getAuctionProgress().toString())
                 .tags(auction.getAuctionTags().stream()
                         .map(AuctionTag::getTag)

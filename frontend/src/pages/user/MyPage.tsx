@@ -105,7 +105,6 @@ function MyPage() {
   useEffect(() => {
     const makemMTurtlesUuidArray = () => {
       const uuidArray = turtleData.map((turtle) => {
-        console.log(turtle);
         return {
           turtleName: turtle.name,
           turtleUuid: turtle.turtleUuid,
@@ -179,8 +178,8 @@ function MyPage() {
             </div>
             <div className="lg:text-[19px] text-[17px] space-y-1">
               <div>닉네임: {userInfo?.nickname}</div>
-              <div>주소: {userInfo?.address}</div>
               <div>연락처: {userInfo?.phoneNumber}</div>
+              <div>주소: {userInfo?.address.replace(" / ", " ")}</div>
             </div>
           </div>
           <div
@@ -226,70 +225,70 @@ function MyPage() {
             </button>
           )}
         </div>
-        <div className="overflow-y-auto flex-1 mb-4">
+        <div className="overflow-y-auto flex-1 mb-4 pb-8">
           {/* 거래내역 */}
           {selectedMenu === 0 && (
-  <>
-    {myTransactions.length == 0 && myAuctions.length == 0 ? (
-      <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-28">
-        <img
-          src={NoImage}
-          alt="turtle image"
-          className="w-[200px] mb-7"
-          draggable="false"
-        />
-        <div className="text-[25px] font-bold text-center font-stardust">
-          거래 내역이 없어요.
-        </div>
-      </div>
-      
-    ) : (
-      <>
-       <div className="flex flex-col space-y-4 mb-4">
-        {myAuctions.map((item) => (
-          <AuctionHistory
-            key={item.transactionId}
-            turtleId={item.turtleId}
-            turtleUuid={item.turtleUuid}
-            documentHash={item.documentHash!}
-            transactionId={item.transactionId!}
-            sellerId={item.sellerId}
-            sellerUuid={item.sellerUuid}
-            sellerName={item.sellerName}
-            sellerAddress={item.sellerAddress}
-            tags={item.tags}
-            price={item.price}
-            images={item.images}
-            progress={item.progress}
-          />
-        ))}
-      </div>
-      <div className="flex flex-col space-y-4">
-        {myTransactions.map((item) => (
-          <TransactionHistory
-            key={item.transactionId}
-            auctionFlag={item.auctionFlag}
-            documentHash={item.documentHash}
-            turtleId={item.turtleId}
-            turtleUuid={item.turtleUuid}
-            transactionId={item.transactionId}
-            sellerId={item.sellerId}
-            sellerUuid={item.sellerUuid}
-            sellerName={item.sellerName}
-            sellerAddress={item.sellerAddress}
-            transactionTag={item.transactionTag}
-            amount={item.price}
-            transactionImage={item.transactionImage}
-            progress={item.progress}
-            myTurtlesUuid={myTurtlesUuid}
-          />
-        ))}
-      </div>
-     
-      </>
-        )}
-      </>
-    )}
+            <>
+              {myTransactions.length == 0 && myAuctions.length == 0 ? (
+                <div className="w-full flex justify-center items-center flex-col bg-[#f7f7f7] rounded-[20px] px-5 py-28">
+                  <img
+                    src={NoImage}
+                    alt="turtle image"
+                    className="w-[200px] mb-7"
+                    draggable="false"
+                  />
+                  <div className="text-[25px] font-bold text-center font-stardust">
+                    거래 내역이 없어요.
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex flex-col space-y-4 mb-4">
+                    {myAuctions.map((item) => (
+                      <AuctionHistory
+                        key={item.transactionId}
+                        title={item.title}
+                        turtleId={item.turtleId}
+                        turtleUuid={item.turtleUuid}
+                        documentHash={item.documentHash!}
+                        transactionId={item.transactionId!}
+                        sellerId={item.sellerId}
+                        sellerUuid={item.sellerUuid}
+                        sellerName={item.sellerName}
+                        sellerAddress={item.sellerAddress}
+                        tags={item.tags}
+                        price={item.price}
+                        images={item.images}
+                        progress={item.progress}
+                      />
+                    ))}
+                  </div>
+                  <div className="flex flex-col space-y-4">
+                    {myTransactions.map((item) => (
+                      <TransactionHistory
+                        key={item.transactionId}
+                        auctionFlag={item.auctionFlag}
+                        title={item.title}
+                        documentHash={item.documentHash}
+                        turtleId={item.turtleId}
+                        turtleUuid={item.turtleUuid}
+                        transactionId={item.transactionId}
+                        sellerId={item.sellerId}
+                        sellerUuid={item.sellerUuid}
+                        sellerName={item.sellerName}
+                        sellerAddress={item.sellerAddress}
+                        transactionTag={item.transactionTag}
+                        amount={item.price}
+                        transactionImage={item.transactionImage}
+                        progress={item.progress}
+                        myTurtlesUuid={myTurtlesUuid}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
+          )}
 
           {/* 나의 거북이 */}
           {selectedMenu === 1 &&
@@ -325,6 +324,7 @@ function MyPage() {
             ))}
         </div>
       </main>
+
       {isCustomModalOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100000]"

@@ -47,7 +47,10 @@ authAxios.interceptors.response.use(
       _retry?: boolean;
     };
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      (error.response?.status === 401 || error.response?.status === 500) &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
 
       try {
@@ -60,6 +63,10 @@ authAxios.interceptors.response.use(
         // 리프레시 토큰 실패 처리
         console.error("Failed to refresh token:", refreshError);
         // 로그아웃 처리나 리다이렉트 등 추가적인 처리를 여기에 구현
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("userStore");
+        window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }
@@ -76,15 +83,19 @@ const refreshToken = async (): Promise<string> => {
       throw new Error("No refresh token available");
     }
 
-    const response = await axios.post(REFRESH_URL, { refreshToken });
-    const { accessToken, expiresIn } = response.data;
-
-    // 새로운 토큰과 만료 시간을 로컬 스토리지에 저장
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem(
-      "expiresAt",
-      (Date.now() + expiresIn * 1000).toString()
+    const response = await axios.post(
+      REFRESH_URL,
+      {},
+      {
+        headers: {
+          "Refresh-Token": `Bearer ${refreshToken}`,
+        },
+      }
     );
+    const { accessToken } = response.data;
+
+    // 새로운 토큰 로컬 스토리지에 저장
+    localStorage.setItem("accessToken", accessToken);
 
     return accessToken;
   } catch (error) {

@@ -1,9 +1,12 @@
 package com.turtlecoin.auctionservice.domain.auction.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.turtlecoin.auctionservice.domain.auction.repository.EmitterRepository;
 import com.turtlecoin.auctionservice.domain.global.internal.EmitterMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -11,16 +14,19 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SseService {
     private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
     private final EmitterRepository emitterRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 변환용 ObjectMapper
 
-    public SseEmitter subscribe(Long auctionId) {
+    public SseEmitter subscribe(Long auctionId) throws IOException {
         SseEmitter emitter = createEmitter(auctionId);
-        System.out.println("SSE 연결 완료");
-        // sendToClient(auctionId, "EventStream Created. [auctionId=" + auctionId + "]");
+        log.info(auctionId + "에 대하여 SSE 연결 완료");
+//        String jsonData = objectMapper.writeValueAsString("SSE Connected");
+//        emitter.send(SseEmitter.event().id(String.valueOf(auctionId)).name("sse").data(jsonData));
         return emitter;
     }
 
@@ -37,7 +43,8 @@ public class SseService {
             if (emitter != null) {
                 CompletableFuture.runAsync(() -> {
                     try {
-                        emitter.send(SseEmitter.event().id(String.valueOf(id)).name("sse").data(data));
+                       String jsonData = objectMapper.writeValueAsString("SSE Connected");
+                       emitter.send(SseEmitter.event().id(String.valueOf(id)).name("sse").data(jsonData));
                     } catch (Exception e) {
                         // 유효성을 검사하여 삭제 및 종료
                         emitter.completeWithError(e);

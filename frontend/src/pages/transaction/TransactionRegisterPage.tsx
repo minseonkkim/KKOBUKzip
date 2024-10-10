@@ -96,11 +96,12 @@ export default function TransactionRegisterPage() {
     const newTransactionData = {
       title: transactionData.title,
       content: transactionData.content,
-      price: parseFloat(price),
+      price: Number(price.replace(/,/g, "")),
       turtleId: state.turtleId,
       sellerAddress: account,
       transactionTags: [selectedGender, selectedSize],
     }
+
     const blob = new Blob([JSON.stringify(newTransactionData)], {
       type: "application/json",
     });
@@ -109,7 +110,6 @@ export default function TransactionRegisterPage() {
     images.forEach((image) => {
       formData.append(`transactionPhotos`, image);
     });
-    console.log(newTransactionData)
 
     try {
       const response = await addTransactionItem(formData);

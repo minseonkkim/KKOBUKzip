@@ -58,13 +58,17 @@ public class BidService {
 
     // 입찰 가격 갱신
     @Transactional
-    public void processBidWithRedis(Long auctionId, Long userId, Double bidAmount) {
+    public void processBidWithRedis(Long auctionId, Long userId, Double bidAmount)
+            throws SameUserBidException, WrongBidAmountException, AuctionTimeNotValidException, AuctionAlreadyFinishedException, BidNotValidException {
         // 1. 경매 시작 및 상태 확인
-        log.info("경매 시작 안했으면 강제로 시작, AuctionID : {}", auctionId);
 //        startAuctionIfNotStarted(auctionId);
 
         // 2. 현재 경매와 입찰 정보를 확인하고 유효성을 검증
         Auction auction = getAuction(auctionId);
+
+        if (auction.getUserId().equals(userId)) {
+            throw new BidNotValidException("자신의 경매에 입찰할 수 없습니다");
+        }
 
         Long currentUserId = getCurrentBidUserId(auctionId);
         // 최신 입찰가 가져오기
@@ -108,7 +112,7 @@ public class BidService {
     private Double getCurrentBidAmount(Long auctionId, Auction auction) {
         String redisKey = AUCTION_BID_KEY + auctionId;
         Map<Object, Object> currentBidData = redisTemplate.opsForHash().entries(redisKey);
-        Double currentBid = auction.getMinBid(); // 기본값은 경매 최소 입찰가
+        Double currentBid = 0D; // 기본값은 0원
         if (!currentBidData.isEmpty()) {
             System.out.println("최근 입찰 데이터가 있는 경우의 currentBid : "+currentBid);
             return parseBidAmount(currentBidData.get("bidAmount"));
@@ -126,7 +130,8 @@ public class BidService {
         throw new IllegalArgumentException("Invalid bid amount type");
     }
 
-    private void validateBid(Long auctionId, Long userId, Double bidAmount, Long currentUserId, Double currentBid) {
+    private void validateBid(Long auctionId, Long userId, Double bidAmount, Long currentUserId, Double currentBid)
+        throws SameUserBidException, WrongBidAmountException, AuctionTimeNotValidException{
         // 경매 남은시간 확인
         log.info("경매 남은시간 검증 후 에러 던져주는 로직");
         String key = AUCTION_END_KEY_PREFIX + auctionId;
@@ -134,24 +139,35 @@ public class BidService {
         System.out.println("redis key : "+key+" remainingTime : "+remainingTime);
         log.info("redis key : {}remaining time : {}", key, remainingTime);
 
-        // 키가 만료됐으면
-        if (remainingTime < 0) {
-            throw new AuctionTimeNotValidException("입찰 가능한 시간이 아닙니다.");
-        } else {
-            // 입찰시간 갱신
-            redisTemplate.expire(key, (long) (30.1*1000), TimeUnit.MILLISECONDS); // TTL 30초 재설정
-        }
+        log.info("자신의 경매에 재입찰 하는지 검증하는 로직");
 
         log.info("자신의 입찰에 재입찰 하는지 검증하는 로직");
         if (currentUserId != null && currentUserId.equals(userId)) {
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
+                    ResponseVO.failure("Bid", "400", "자신의 입찰에 재입찰 할 수 없습니다."));
             throw new SameUserBidException("자신의 입찰에 재입찰할 수 없습니다: userId = " + userId);
         }
 
         log.info("적절한 입찰가인지 검증하는 로직");
         if (bidAmount <= currentBid) {
             System.out.println("입찰요청가격 bidAmount : "+bidAmount+" 이전 입찰가 currentBid : "+currentBid);
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
+                    ResponseVO.failure("Bid", "400", "현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다."));
             throw new WrongBidAmountException("현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다: currentBid = " +
                     currentBid + ", bidAmount = " + bidAmount);
+        }
+
+        // 키가 만료됐으면
+        if (remainingTime < 0) {
+            String destination = "/user/" + userId + "/queue/auction";
+            messagingTemplate.convertAndSendToUser(userId.toString(), destination,
+                    ResponseVO.failure("Bid", "422", "입찰 가능한 시간이 아닙니다."));
+            throw new AuctionTimeNotValidException("입찰 가능한 시간이 아닙니다.");
+        } else {
+            // 입찰시간 갱신
+            redisTemplate.expire(key, (long) (30.1*1000), TimeUnit.MILLISECONDS); // TTL 30초 재설정
         }
     }
 
@@ -163,6 +179,9 @@ public class BidService {
         String redisKey = AUCTION_BID_KEY + auctionId;
         Map<String, Object> bidData = new HashMap<>();
         bidData.put("userId", userId.toString());
+        System.out.println("updateBidInfo remainingTime 저장 시도");
+        bidData.put("remainingTime", redisTemplate.getExpire(redisKey, TimeUnit.MILLISECONDS).toString());
+        System.out.println("updateBidInfo remainingTime 저장 완료");
         bidData.put("bidAmount", bidAmount.toString());
         bidData.put("nextBid", newBidAmount.toString());
 
@@ -176,15 +195,11 @@ public class BidService {
     }
 
     private void notifyClientWithBidInfo(Long auctionId, Long userId, Double bidAmount, Double newBidAmount) {
-        log.info("유저 닉네임 가져오기 시도");
         String userNickname = userService.getUserNicknameById(userId);
-        log.info("userNickname: {}", userNickname);
-
-        log.info("잔여시간 가져오기");
+        log.info("입찰한 userNickname: {}", userNickname);
 
         String key = AUCTION_END_KEY_PREFIX + auctionId;
-        System.out.println("key : "+key);
-        log.info("key : {}", key);
+
         Double remainingTime = (double) redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
         log.info("remaining time : {}", remainingTime);
 
@@ -197,9 +212,9 @@ public class BidService {
                 .nextBid(newBidAmount)
                 .remainingTime(remainingTime)
                 .build();
-        log.info("BidRecord : {}", bidRecord);
+
         notifyClient(auctionId, bidRecord, false, null);
-        System.out.println("전송까지 완료");
+        log.info("클라이언트들에게 전송 완료");
     }
 
 //    private void updateAuctionEndTime(Long auctionId, LocalDateTime localDateTime) {
@@ -220,7 +235,7 @@ public class BidService {
         return auction.getMinBid();
     }
 
-    private Double calculateBidIncrement(Double currentBid) {
+    public Double calculateBidIncrement(Double currentBid) {
         // 경매 가격에 따라 구분 필요
         if (currentBid >= 0 && currentBid < 10000) {
             return 1000.0; // 0 ~ 10000 : 500
@@ -245,7 +260,7 @@ public class BidService {
             System.out.println("===");
             System.out.println(data.get("bidRecord").toString());
             System.out.println("===");
-            response = ResponseVO.success("Bid","data", data);
+            response = ResponseVO.bidSuccess("Bid","200", data);
         }
 
         // 클라이언트에게 ResponseVO 객체를 전송

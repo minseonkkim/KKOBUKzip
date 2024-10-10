@@ -9,6 +9,7 @@ import NoTurtleImg from "../../assets/NoTurtleImg.webp"
 
 interface TransactionHistoryProps {
   auctionFlag: boolean;
+  title: string;
   turtleId: number;
   turtleUuid: string;
   transactionId: number;
@@ -62,7 +63,7 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
       console.log("Navigate to seller paperwork page");
     } else {
       navigate("/doc-form/assign", {
-        state: { turtleId: props.turtleId, transactionId: props.transactionId },
+        state: { turtleId: props.turtleId, turtleUuid: props.turtleUuid, transactionId: props.transactionId },
       });
       console.log("Navigate to buyer paperwork page");
     }
@@ -103,10 +104,11 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
               <div className="mb-1 whitespace-nowrap flex flex-row items-end font-bold font-stardust text-[#4B721F]">
                 <div className="text-[27px] md:text-[29px]">{props.amount?.toLocaleString("ko-KR")}</div>
                 <div className="text-[20px] md:text-[21px]">TURT</div>
+                <div className="text-[20px] text-gray-400 ml-4">|&nbsp;&nbsp;&nbsp;{props.title}</div>
               </div>
               <div className="text-[15px] text-gray-700 flex flex-wrap space-x-1">
                 {props.transactionTag
-                  ?.concat("#거래")
+                  ?.concat(props.auctionFlag ? "#경매" : "#거래")
                   .map((tag, index) => (
                     <span
                       key={index}

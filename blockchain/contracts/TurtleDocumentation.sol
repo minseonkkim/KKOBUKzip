@@ -28,6 +28,7 @@ contract TurtleDocumentation is Ownable {
     // 양도양수 서류
     struct Transfer {
         // 기본 정보
+        uint8 transactionId;
         string grantApplicant;
         string assignApplicant;
         // 양도, 양수인 정보
@@ -79,7 +80,7 @@ contract TurtleDocumentation is Ownable {
     // event 모음
     event TurtleRegistered(string indexed turtleId, string indexed applicant);
     event TurtleMultiplication(string indexed turtleId, string indexed applicant, bytes32 indexed documentHash);
-    event TurtleTransferred(string indexed turtleId, string grantApplicant, string assignApplicant, bytes32 indexed documentHash);
+    event TurtleTransferred(uint8 indexed transactionId, string indexed turtleId, string grantApplicant, string assignApplicant, bytes32 indexed documentHash);
     event TurtleDeath(string indexed turtleId, string indexed applicant, bytes32 indexed documentHash);
     event TurtleOwnerChanged(string indexed turtleId, string indexed oldOwner, string indexed newOwner);
     event CurrentTurtleDocument(string indexed turtleId, bytes32 indexed documentHash);
@@ -150,6 +151,7 @@ contract TurtleDocumentation is Ownable {
 
     // 거북이 양수 서류 등록
     function registerTurtleAssigneeDocument(
+        uint8 _transactionId,
         string memory _turtleId,
         string memory _applicant,
         bytes32 _documentHash,
@@ -158,13 +160,14 @@ contract TurtleDocumentation is Ownable {
         string memory _transferReason,
         string memory _purpose
     ) public returns (bytes32) {
+        turtles[_turtleId].transferDocs[_documentHash].transactionId = _transactionId;
         turtles[_turtleId].transferDocs[_documentHash].assignApplicant = _applicant;
         turtles[_turtleId].transferDocs[_documentHash].assigneeId = _assigneeId;
         turtles[_turtleId].transferDocs[_documentHash].count = _count;
         turtles[_turtleId].transferDocs[_documentHash].transferReason = _transferReason;
         turtles[_turtleId].transferDocs[_documentHash].purpose = _purpose;
 
-        emit TurtleTransferred(_turtleId, _applicant, _assigneeId, _documentHash);
+        emit TurtleTransferred(_transactionId, _turtleId, _applicant, _assigneeId, _documentHash);
 
         return _documentHash;
     }
@@ -185,7 +188,9 @@ contract TurtleDocumentation is Ownable {
         turtles[_turtleId].transferDocs[_documentHash].fatherId = _fatherId;
         turtles[_turtleId].transferDocs[_documentHash].motherId = _motherId;
 
-        emit TurtleTransferred(_turtleId, _applicant, _grantorId, _documentHash);
+        uint8 transactionId = turtles[_turtleId].transferDocs[_documentHash].transactionId;
+
+        emit TurtleTransferred(transactionId, _turtleId, _applicant, _grantorId, _documentHash);
 
         return _documentHash;
     }

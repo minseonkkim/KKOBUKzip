@@ -65,10 +65,14 @@ public class AuctionService {
             validateUserOwnsTurtle(registerAuctionDTO.getUserId(), registerAuctionDTO.getTurtleId());
             log.info("두번째 검증");
             validateTurtleNotAlreadyRegistered(registerAuctionDTO.getTurtleId());
+            log.info("세번째 검증");
+            validateDate(registerAuctionDTO.getStartTime());
+
             log.info("검증 끝");
 
             // 이미지가 없으면 예외 던지기
             if (images == null || images.isEmpty()) {
+                log.info("이미지가 없음");
                 throw new PhotoNotUploadedException("사진이 등록되지 않았습니다.");
             }
 
@@ -92,7 +96,7 @@ public class AuctionService {
             log.info("이미지 업로드 완료");
             System.out.println("거북이 무게 : "+auction.getWeight());
 
-            return new ResponseEntity<>(ResponseVO.success("경매가 성공적으로 등록됐습니다."), HttpStatus.OK);
+            return new ResponseEntity<>(ResponseVO.success("경매가 등록됐습니다.","auctionId", auction.getId()), HttpStatus.OK);
 
 
         } catch (TurtleAlreadyRegisteredException e) {
@@ -118,8 +122,11 @@ public class AuctionService {
             log.error("MultipartException 발생: {}", e.getMessage());
             deleteUploadedImages(uploadedPhotos);
             return new ResponseEntity<>(ResponseVO.failure("400", "잘못된 요청입니다. multipart/form-data 형식으로 요청해주세요."), HttpStatus.BAD_REQUEST);
+        } catch (AuctionTimeNotValidException e) {
+            return new ResponseEntity<>(ResponseVO.failure("400", "현재시간보다 이전으로 경매시작시간을 등록할 수 없습니다,"), HttpStatus.BAD_REQUEST);
+        }
 
-        } catch (Exception e) {
+        catch (Exception e) {
             log.info("기타 오류 발생");
             deleteUploadedImages(uploadedPhotos);
             return new ResponseEntity<>(ResponseVO.failure("500", "서버 내부 오류가 발생했습니다. " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -150,6 +157,12 @@ public class AuctionService {
             throw new TurtleNotFoundException("해당 거북이는 사용자가 소유한 거북이가 아닙니다.");
         }
         log.info("거북이 일치여부 확인 완료");
+    }
+
+    private void validateDate(LocalDateTime startTime) {
+        if (startTime.isBefore(LocalDateTime.now())) {
+            throw new AuctionTimeNotValidException("현재보다 이전 시간을 시작시간으로 등록할 수 없습니다.");
+        }
     }
 
     private void validateTurtleNotAlreadyRegistered(Long turtleId) {
@@ -392,9 +405,9 @@ public class AuctionService {
 //        return AuctionResponseDTO.from(auction, turtleInfo, userInfo);
 //    }
 
-    public void processBid(Long auctionId, Long userId, Double newBidAmount) {
-        redissonLockFacade.updateBidWithLock(auctionId, userId, newBidAmount);
-    }
+//    public void processBid(Long auctionId, Long userId, Double newBidAmount) {
+//        redissonLockFacade.updateBidWithLock(auctionId, userId, newBidAmount);
+//    }
 
     // 서버 재시작시 스케줄링 다시 등록하기
     @EventListener(ApplicationReadyEvent.class)

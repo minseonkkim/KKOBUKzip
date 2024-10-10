@@ -28,10 +28,10 @@ export const fetchChatMessageData = async (memberId: number) => {
 };
 
 // 거래내역에서 채팅창 이동
-export const fetchChatMessageDataFromTx = async (memberId: number) => {
+export const fetchChatMessageDataFromTx = async (transactionId: number) => {
   try {
     const response = await authAxios<ChatResponse>(
-      `${path}/detail?id=${memberId}&type=transaction`
+      `${path}/detail?id=${transactionId}&type=transaction`
     );
     return {
       success: true,

@@ -67,10 +67,10 @@ public class TransactionService {
             Optional<Turtle> turtle = turtleRepository.findById(dto.getTurtleId());
             Optional<Transaction> existingTransaction = transactionRepository.findTopByTurtleOrderByLastModifiedDateDesc(turtle.orElse(null));
 
-            if (existingTransaction != null) {
-                Long previousOwnerId = turtle.get().getUser().getId();
+            if (existingTransaction.isPresent()) {
+                Long previousOwnerId = existingTransaction.get().getTurtle().getUser().getId();
                 Long currentOwnerId = user.get().getId();
-
+                System.out.println(previousOwnerId +" "+currentOwnerId);
                 // 이전 거래 주인과 현재 거래 등록 주인이 동일한지 확인
                 if (Objects.equals(previousOwnerId, currentOwnerId)) {
                     throw new DuplicatedEnrollTransaction("이미 거래가 등록된 거북이 입니다. 거래를 등록할 수 없습니다.");
@@ -236,6 +236,7 @@ public class TransactionService {
         return progressList;
     }
 
+    // 거래에 DocumentHash를 적용하기 위한 로직
     @Transactional
     public void setDocumentHash(Long transactionId, String documentHash) {
         Transaction transaction = findTransactionById(transactionId);
@@ -243,5 +244,17 @@ public class TransactionService {
             throw new TransactionNotFoundException("서류와 연결될 거래가 존재하지 않습니다.");
         }
         transaction.changeDocumentHash(documentHash);
+    }
+    
+    // 서류 승인시 거래의 상태를 변경해주는 함수
+    @Transactional
+    public void approveTransactionDocument(Long transactionId){
+        Transaction transaction = findTransactionById(transactionId);
+        if(transaction == null){
+            throw new TransactionNotFoundException();
+        }
+        else{
+            transaction.changeStatusToApproveDocument();
+        }
     }
 }

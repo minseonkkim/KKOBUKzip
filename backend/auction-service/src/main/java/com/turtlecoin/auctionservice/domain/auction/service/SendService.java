@@ -15,6 +15,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -51,14 +52,16 @@ public class SendService {
         Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다"));
         String redisBidKey = AUCTION_BID_KEY_PREFIX + auctionId;
         Map<Object, Object> bidData = redisTemplate.opsForHash().entries(redisBidKey);
-
+        Map<String, Object> data = new HashMap<>();
         if (bidData.isEmpty()) {
             // 유찰 시키기
             auction.updateStatus(AuctionProgress.NO_BID);
 
-            AuctionResultDTO auctionResultDTO = createAuctionResultDTO(auction, null, null);
+//            AuctionResultDTO auctionResultDTO = createAuctionResultDTO(auction, null, null);
+            data.put("bidAmount", 0);
+            data.put("message", "경매가 유찰됐습니다.");
 
-            response = ResponseVO.success("End","205","경매가 유찰됐습니다.");
+            response = ResponseVO.bidSuccess("End","205",data);
             messagingTemplate.convertAndSend("/sub/auction/" + auctionId, response);
             // rabbitmq로 보내기
 //            sendMessage(auctionResultDTO);
@@ -71,7 +74,14 @@ public class SendService {
         Long winningUserId = Long.parseLong(bidData.get("userId").toString());
 
         AuctionResultDTO auctionResultDTO = createAuctionResultDTO(auction, winningBid, winningUserId);
-        response = ResponseVO.success("End","201","경매가 종료됐습니다.");
+
+
+
+        data.put("bidAmount", winningBid);
+        data.put("message", "경매가 낙찰됐습니다.");
+
+        // 가격도 같이 보내주기
+        response = ResponseVO.bidSuccess("End","201",data);
 
         auction.updateStatus(AuctionProgress.SUCCESSFUL_BID);
         auction.updateAfterAuction(winningUserId, winningBid);

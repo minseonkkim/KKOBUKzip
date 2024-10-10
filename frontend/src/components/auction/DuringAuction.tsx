@@ -3,6 +3,10 @@ import MovingTurtle from "../../assets/moving_turtle.webp";
 import { useSpring, animated } from "@react-spring/web";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import { useUserStore } from "../../store/useUserStore";
+import { json } from "react-router-dom";
+import Web3 from "web3";
+import { useWeb3Store } from "../../store/useWeb3Store";
+import Alert from "../common/Alert";
 
 interface StompFrame {
   command: string;
@@ -10,25 +14,40 @@ interface StompFrame {
   body?: string;
 }
 
-interface MessageType {
-  auctionId: string;
-  userId: string;
+interface DefaultType {
   bidAmount: number;
   nextBid: number;
-  nickname: string;
   remainingTime: number;
+}
+
+interface JoinData {
+  Join: DefaultType;
+}
+
+interface BidData {
+  Bid: {
+    bidRecord: MessageType;
+  };
+}
+
+interface EndData {
+  End: {
+    bidAmount: number;
+  };
 }
 
 interface WsResponseType {
   status: string;
   data: {
-    data: BidRecordData;
+    data: BidData | JoinData | EndData;
   };
   message: string;
 }
 
-interface BidRecordData {
-  bidRecord: MessageType;
+interface MessageType extends DefaultType {
+  auctionId: string;
+  userId: string;
+  nickname: string;
 }
 
 function DuringAuction({
@@ -37,13 +56,20 @@ function DuringAuction({
   // 남은시간, 현재 입찰가 추가
   // 남은시간이 -2이면 경매시간이 아니라는 뜻
   initTime,
-  initialBid
+  initialBid,
+  changeAuctionStatusToComplete,
 }: {
   channelId: string;
   minBid: number;
   initTime: number;
   initialBid: number;
+  changeAuctionStatusToComplete: (
+    state: "NO_BID" | "SUCCESSFUL_BID",
+    winningBid?: number
+  ) => void;
 }) {
+  const { tokenContract, account } = useWeb3Store();
+
   const auctionStompClient = useRef<CompatClient | null>(null);
 
   const auctionId = Number(channelId);
@@ -51,9 +77,25 @@ function DuringAuction({
   // const [isBidStarted, setIsBidStarted] = useState(false);
   const [nowBid, setNowBid] = useState(initialBid);
   const [nextBid, setNextBid] = useState(minBid);
+  const [bidLimiter, setBitLimiter] = useState(0);
+  const [isWarningAlertOpen, setIsWarningAlertOpen] = useState(false);
+  const [myTurtToken, setMyTurtToken] = useState<string>("0");
   const { userInfo } = useUserStore();
 
   const [remainingTime, setRemainingTime] = useState(initTime);
+
+
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
+  const openAlert = (message: string) => {
+    setAlertMessage(message);
+    setIsAlertOpen(true);
+  };
+
+  const closeAlert = () => {
+    setIsAlertOpen(false);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -61,7 +103,9 @@ function DuringAuction({
       const token = localStorage.getItem("accessToken");
 
       // WebSocket 주소에 token과 auctionId를 쿼리 파라미터로 추가
-      const socketAddress = `${import.meta.env.VITE_SOCKET_AUCTION_URL}?token=${token}&auctionId=${auctionId}`;
+      const socketAddress = `${
+        import.meta.env.VITE_SOCKET_AUCTION_URL
+      }?token=${token}&auctionId=${auctionId}`;
       const socket = new WebSocket(socketAddress);
 
       auctionStompClient.current = Stomp.over(socket);
@@ -72,13 +116,14 @@ function DuringAuction({
         },
         (frame: StompFrame) => {
           console.log("Connected: " + frame);
-          console.log("userID : ",userInfo!.userId)
+          console.log("userID : ", userInfo!.userId);
           auctionStompClient.current!.subscribe(
             `/user/queue/auction/${auctionId}/init`,
+            // 초기 데이터 수신 처리
             (message) => {
               const newMessage: WsResponseType = JSON.parse(message.body);
+              handleAuctionMessage(newMessage);
               console.log("Received init message at auction:", newMessage);
-              // 다음 가격 수신 처리
             }
           );
 
@@ -86,17 +131,17 @@ function DuringAuction({
             `/sub/auction/${auctionId}`,
             (message) => {
               const newMessage: WsResponseType = JSON.parse(message.body);
-              console.log("Received message at auction:", newMessage);
-              setBidPrice(newMessage.data.data.bidRecord.nextBid);
-              setRemainingTime(newMessage.data.data.bidRecord.remainingTime/1000)
-              
-              setNextBid(newMessage.data.data.bidRecord.nextBid);
-              // 다음 가격 수신 처리
+              console.log("Received message while auction:", newMessage);
+              handleAuctionMessage(newMessage);
             }
           );
 
-          auctionStompClient.current!.send(`/pub/auction/${auctionId}/init`, {}, JSON.stringify({}));
-          console.log("빈값으로 보내기")
+          auctionStompClient.current!.send(
+            `/pub/auction/${auctionId}/init`,
+            {},
+            JSON.stringify({})
+          );
+          console.log("빈값으로 보내기");
         },
         (error: unknown) => {
           console.error("Connection error: ", error);
@@ -113,19 +158,107 @@ function DuringAuction({
     };
   }, [channelId]);
 
+  // turtle token 관리 useEffect
+  useEffect(() => {
+    const loadToken = async () => {
+      const turtBalance: number = await tokenContract!.methods.balanceOf(account).call();
+      setMyTurtToken(Web3.utils.fromWei(turtBalance, "ether"));
+    }
+
+    loadToken();
+  }, [tokenContract, account])
+
+  // Meesage 타입 분기 함수 (Join, Bid, End)
+  const handleAuctionMessage = (newMessage: WsResponseType) => {
+    console.log("newMessage : ", newMessage);
+
+    if (!newMessage.data) {
+      console.error("입찰 중 에러가 발생했습니다.", newMessage);
+      openAlert(newMessage.message);
+      return;
+    }
+    
+    if ("Bid" in newMessage.data) {
+      const bidData = newMessage.data as BidData;
+
+      const updatedTime = ~~(bidData.Bid.bidRecord.remainingTime / 1000);
+
+      setBidPrice(bidData.Bid.bidRecord.bidAmount);
+      console.log("remainingTime : ", bidData.Bid.bidRecord.remainingTime);
+      setRemainingTime(updatedTime);
+      setNextBid(bidData.Bid.bidRecord.nextBid);
+
+      setTimeLeft(updatedTime);
+
+      setBidHistory((prev) => {
+        const newHistory = [
+          {
+            bidder: bidData.Bid.bidRecord.nickname,
+            price: Number(bidData.Bid.bidRecord.bidAmount),
+          },
+          ...prev,
+        ];
+        return newHistory.slice(0, 8); 
+      });
+    } else if ("Join" in newMessage.data) {
+      const joinData = newMessage.data as JoinData;
+      console.log("Join event: ", joinData.Join);
+      setRemainingTime(joinData.Join.remainingTime);
+      setNextBid(joinData.Join.nextBid);
+
+      // Join 이벤트 처리
+      if (joinData.Join.bidAmount === 0) {
+        setBidPrice(joinData.Join.nextBid);
+      } else {
+        setBidPrice(joinData.Join.bidAmount);
+      }
+    } else if ("End" in newMessage.data) {
+      const endData = newMessage.data as EndData;
+      if (newMessage.status === "205") {
+        changeAuctionStatusToComplete("NO_BID");
+      } else {
+        changeAuctionStatusToComplete("SUCCESSFUL_BID", endData.End.bidAmount);
+      }
+
+      console.log("Auction Ended, final bid amount:", endData.End.bidAmount);
+      // End 이벤트 처리
+    } else {
+      // 에러 메세지 관리
+      console.log("ErrorMsg : ",newMessage)
+      const statusCode = newMessage.status;
+      console.log(
+        "StatusCode :",
+        statusCode,
+        "// data : ",
+        newMessage.data,
+        "// Message : ",
+        newMessage.message
+      );
+      // if(statusCode === "???") alert(newMessage.message)
+    }
+  };
+
+  
+
   // 입찰 요청 보내기
   const sendBidRequest = async () => {
     if (loading) return;
     setLoading(true);
+
+    if (nowBid > bidLimiter) {
+      openWarningAlert();
+      return;
+    }
+
     try {
       const data = {
         auctionId,
         userId: userInfo?.userId,
-        nickname: userInfo?.nickname,  // 추가
+        nickname: userInfo?.nickname, // 추가
         bidAmount: bidPrice,
-        nextBid: nextBid,              // 추가
+        nextBid: nextBid, // 추가
         remainingTime: remainingTime,
-    };
+      };
 
       if (auctionStompClient.current && auctionStompClient.current.connected)
         auctionStompClient.current.send(
@@ -147,7 +280,6 @@ function DuringAuction({
   const [bidHistory, setBidHistory] = useState<
     { bidder: string; price: number }[]
   >([
-    // { bidder: "민굥", price: 3400000 },
   ]);
 
   const [springProps, api] = useSpring(() => ({
@@ -160,7 +292,7 @@ function DuringAuction({
     to: { opacity: 0, transform: "translateY(50px)" },
   }));
 
-  const [timeLeft, setTimeLeft] = useState(~~(remainingTime/1000)); // 남은시간으로 변경
+  const [timeLeft, setTimeLeft] = useState(~~(remainingTime / 1000)); // 남은시간으로 변경
   const [auctionEnded, setAuctionEnded] = useState(false);
 
   // **Progress bar 애니메이션 설정**
@@ -211,6 +343,10 @@ function DuringAuction({
     api.start({ price: bidPrice });
   }, [bidPrice, api]);
 
+  const handleBidLimiterChange = (value: string) => {
+    setBitLimiter(~~value);
+  };
+
   return (
     <>
       {/* 경매중 */}
@@ -248,11 +384,10 @@ function DuringAuction({
                 &nbsp;&nbsp;
               </div>
               <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
-
                 <animated.div className="text-[31px] md:text-[39px]">
-                {springProps.price.to(
-                  (price) => `${Math.floor(price).toLocaleString()}`
-                )}
+                  {springProps.price.to(
+                    (price) => `${Math.floor(price).toLocaleString()}`
+                  )}
                 </animated.div>
                 <div className="text-[27px] md:text-[29px]">TURT</div>
               </div>
@@ -273,7 +408,51 @@ function DuringAuction({
                 "👋🏻 입찰하기"
               )}
             </button>
+            <div className="flex flex-row items-center mt-5">
+              <div className="text-[13px] md:text-[17px]">
+                다음입찰가&nbsp;&nbsp;
+              </div>
+              <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
+                <animated.div className="text-[20px] md:text-[26px]">
+                  {Math.floor(nextBid).toLocaleString()}
+                </animated.div>
+                <div className="text-[13px] md:text-[17px]">TURT</div>
+              </div>
+            </div>
 
+            <div className="relative flex-1">
+              <input
+                type="number"
+                value={bidLimiter}
+                onChange={(e) => handleBidLimiterChange(e.target.value)}
+                min="0"
+                max={myTurtToken}
+                className="w-1/2 p-2 border-2 border-yellow-600 rounded bg-white focus:outline-none focus:ring-4 focus:ring-yellow-300"
+                placeholder="0"
+              />
+              <span className="absolute right-2 top-1/2 transform -translate-y-1/2 font-semibold">TURT</span>
+            </div>
+
+            <div className="mt-[20px] w-full text-[19px]">
+              {bidHistory.map((el, index) => {
+                return (
+                  <div key={index}>
+                    {index === 0 ? (
+                      <div className="flex flex-row justify-between font-bold">
+                        <span>{el.bidder}</span>
+                        <span>{el.price}</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-row justify-between">
+                        <span>{el.bidder}</span>
+                        <span>{el.price}</span>
+                      </div>
+                    )}
+                    <br />
+                  </div>
+                );
+              })} 
+            </div>
             {showEmoji && (
               <animated.div
                 style={emojiSpring}
@@ -285,6 +464,7 @@ function DuringAuction({
           </div>
         </div>
       </div>
+      <Alert isOpen={isAlertOpen} message={alertMessage} onClose={closeAlert} />
     </>
   );
 }
