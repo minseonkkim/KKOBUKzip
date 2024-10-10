@@ -17,7 +17,7 @@ function DeathDocument() {
 
   const [deathImage, setDeathImage] = useState<File | null>(null);
   const [diagnosis, setDiagnosis] = useState<File | null>(null);
-  const uuid = useUserStore(state => {state.userInfo?.uuid});
+  const uuid = useUserStore(state => state.userInfo?.uuid);
   const changeHandle = (
     type: keyof DeathDocumentDataType,
     evt:
