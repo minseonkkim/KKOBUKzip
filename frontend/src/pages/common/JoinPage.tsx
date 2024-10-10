@@ -323,7 +323,8 @@ function JoinPage() {
 
         const jsonData = {
           ...data,
-          birth: `${birth.y}-${birth.m && ((birth.m) / 10 >= 1) ? birth.m : `0${birth.m}`}-${birth.d}`,
+          birth: `${birth.y}-${birth.m && ((birth.m) / 10 >= 1) ? birth.m : `0${birth.m}`}-${birth.d && ((birth.d) / 10 >= 1) ? birth.d : `0${birth.d}`
+            }`,
           address: `${data.address} / ${detailedAddress}`,
           phonenumber: `${phoneNumber.first}-${phoneNumber.second}-${phoneNumber.third}`,
         };
