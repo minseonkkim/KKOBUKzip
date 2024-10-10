@@ -7,7 +7,7 @@ export default function AuctionSuccessPage({
   winningNickname,
 }: {
   nowBid: number;
-  winningNickname: string;
+  winningNickname?: string;
 }) {
   const [showConfetti, setShowConfetti] = useState(false);
   const { width, height } = useWindowSize();
@@ -36,15 +36,23 @@ export default function AuctionSuccessPage({
         )}
         <div className="flex flex-col items-center justify-center mt-[200px]">
           <div className="font-bold text-[38px] text-center mt-[48px]">
-            축하합니다.
+
             <br />
-            {winningNickname}님께서
+            <br />
+            축하합니다.
+
+              {winningNickname === "입찰 인원 없음" ? "" :
+              <>
+              <br />
+              {winningNickname + "님께"}
+              </>
+              }
             <br />
             <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
               <div className="text-[31px] md:text-[39px]">{nowBid}</div>
               <div className="text-[27px] md:text-[29px]">TURT</div>
             </div>
-            낙찰되셨습니다.
+            낙찰되었습니다.
           </div>
         </div>
       </div>

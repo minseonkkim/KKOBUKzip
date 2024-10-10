@@ -11,7 +11,8 @@ function AdminDocsListPage() {
   const [documents, setDocuments] = useState<AdminDocsListDataType[]>([]);
 
   const fetchDocuments = useCallback(async () => {
-    const { success, data, error } = await getAllDocumentDataForAdmin();
+    const { success, data, error, message } =
+      await getAllDocumentDataForAdmin();
     console.log(success && data, error);
 
     if (success) {
