@@ -263,7 +263,7 @@ public class AuctionService {
         } catch (FeignException e) {
           return new ResponseEntity<>(ResponseVO.failure("503", "Main-Service가 응답하지 않습니다."+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch(Exception e){
-            return new ResponseEntity<>(ResponseVO.failure("500","경매 조회 과정 중에 서버 에러가 발생하였습니다."+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ResponseVO.failure("500","경매 조회 과정 중에 서버 에러가 발생하였습니다."+e.getStackTrace()[0]), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
