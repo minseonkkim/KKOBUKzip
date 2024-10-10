@@ -20,10 +20,6 @@ ENV VITE_SOCKET_AUCTION_URL=wss://j11c107.p.ssafy.io/ws/auction
 
 #포트번호
 EXPOSE 3000
-#빌드
-
-RUN npm run build
-
 
 #서버 실행
 # CMD ["npm","start"]
