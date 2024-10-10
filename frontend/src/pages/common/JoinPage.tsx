@@ -122,11 +122,11 @@ function JoinPage() {
 
   const changeAddress =
     (type: "address" | "detailedAddress") =>
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      const value = evt.target.value;
-      setData((prev) => ({ ...prev, [type]: value }));
-      console.log(data);
-    };
+      (evt: React.ChangeEvent<HTMLInputElement>) => {
+        const value = evt.target.value;
+        setData((prev) => ({ ...prev, [type]: value }));
+        console.log(data);
+      };
 
   const confirmPasswordChangeHandle = (
     evt: React.ChangeEvent<HTMLInputElement>
@@ -145,10 +145,10 @@ function JoinPage() {
 
   const handleChangePhoneNumber =
     (type: "first" | "second" | "third") =>
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      const value = evt.target.value;
-      setPhoneNumber((prev) => ({ ...prev, [type]: value }));
-    };
+      (evt: React.ChangeEvent<HTMLInputElement>) => {
+        const value = evt.target.value;
+        setPhoneNumber((prev) => ({ ...prev, [type]: value }));
+      };
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -235,11 +235,11 @@ function JoinPage() {
   };
 
   const [isFinishAlertOpen, setIsFinishAlertOpen] = useState(false);
-
-  const openFinishAlert = () => setIsFinishAlertOpen(true);
+  const [fetchLoading, setFetchLoading] = useState(false)
   const closeFinishAlert = () => setIsFinishAlertOpen(false);
 
   const handleJoinSubmit = async () => {
+
     let isValid = true;
     const newErrStat: ErrorStateType = {
       email: "",
@@ -301,40 +301,49 @@ function JoinPage() {
 
     setErrStat(newErrStat);
     if (isValid) {
-      const formData = new FormData();
 
-      // 랜덤 인덱스 생성 (1부터 14까지)
-      const randomIndex = Math.floor(Math.random() * 14) + 1;
-      const selectedImagePath = `custom_profile/profile${randomIndex}.gif`; // public 폴더는 경로에서 제외
+      try {
+        setFetchLoading(true)
 
-      // 이미지 파일 fetch
-      const response = await fetch(selectedImagePath);
-      const blobImage = await response.blob();
-      const file = new File([blobImage], `profile${randomIndex}.gif`, {
-        type: "image/gif",
-      });
+        const formData = new FormData();
 
-      // FormData에 파일 추가
-      formData.append("profileImage", file);
+        // 랜덤 인덱스 생성 (1부터 14까지)
+        const randomIndex = Math.floor(Math.random() * 14) + 1;
+        const selectedImagePath = `custom_profile/profile${randomIndex}.gif`; // public 폴더는 경로에서 제외
 
-      const jsonData = {
-        ...data,
-        birth: `${birth.y}-${birth.m && ((birth.m)/10 >= 1) ? birth.m : `0${birth.m}`}-${birth.d}`,
-        address: `${data.address} / ${detailedAddress}`,
-        phonenumber: `${phoneNumber.first}-${phoneNumber.second}-${phoneNumber.third}`,
-      };
-      // formData.append("data", JSON.stringify(jsonData));
+        // 이미지 파일 fetch
+        const response = await fetch(selectedImagePath);
+        const blobImage = await response.blob();
+        const file = new File([blobImage], `profile${randomIndex}.gif`, {
+          type: "image/gif",
+        });
 
-      const blob = new Blob([JSON.stringify(jsonData)], {
-        type: "application/json",
-      });
-      formData.append("data", blob);
-      const rst = await registerRequest(formData);
-      if (rst.success) {
-        <Alert isOpen={isFinishAlertOpen} message="회원가입이 완료되었습니다." onClose={closeFinishAlert} />
-        navigate("/login");
-      } else {
-        console.log(rst.error);
+        // FormData에 파일 추가
+        formData.append("profileImage", file);
+
+        const jsonData = {
+          ...data,
+          birth: `${birth.y}-${birth.m && ((birth.m) / 10 >= 1) ? birth.m : `0${birth.m}`}-${birth.d}`,
+          address: `${data.address} / ${detailedAddress}`,
+          phonenumber: `${phoneNumber.first}-${phoneNumber.second}-${phoneNumber.third}`,
+        };
+        // formData.append("data", JSON.stringify(jsonData));
+
+        const blob = new Blob([JSON.stringify(jsonData)], {
+          type: "application/json",
+        });
+        formData.append("data", blob);
+        const rst = await registerRequest(formData);
+        setFetchLoading(false)
+
+        if (rst.success) {
+          <Alert isOpen={isFinishAlertOpen} message="회원가입이 완료되었습니다." onClose={closeFinishAlert} />
+          navigate("/login");
+        } else {
+          console.log(rst.error);
+        }
+      } finally {
+        setFetchLoading(false)
       }
     }
   };
@@ -390,7 +399,7 @@ function JoinPage() {
       <main>
         <div className="px-4 lg:px-[250px] flex justify-center items-center mt-[60px] h-[calc(100vh-60px)]">
           <div className="relative w-full bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex h-[680px] md:h-[600px] flex-col md:flex-row">
-            
+
             {step === 1 && (
               <section className="p-2.5 my-3 w-full md:w-1/2 h-[460px] md:h-full">
                 <div className="w-full h-full rounded-l-[20px] m-auto flex justify-center items-center overflow-y-auto">
@@ -540,22 +549,21 @@ function JoinPage() {
                             <button
                               type="button"
                               disabled={emailCheckLoading || emailCheck}
-                              className={`border col-span-3 text-sm ${
-                                emailCheck || emailCheckLoading
-                                  ? "bg-indigo-200"
-                                  : "bg-blue-300"
-                              } rounded rainbow-text`}
+                              className={`border col-span-3 text-sm ${emailCheck || emailCheckLoading
+                                ? "bg-indigo-200"
+                                : "bg-blue-300"
+                                } rounded rainbow-text`}
                               onClick={
                                 emailCheckLoading || emailCheck
-                                  ? () => {}
+                                  ? () => { }
                                   : confirmEmail
                               }
                             >
                               {emailCheckLoading
                                 ? "발송중.."
                                 : emailCheck
-                                ? "발송완료"
-                                : "인증하기"}
+                                  ? "발송완료"
+                                  : "인증하기"}
                             </button>
                           </div>
                         </div>
@@ -598,11 +606,10 @@ function JoinPage() {
 
                         <button
                           type="submit"
-                          className={`w-[48%] transition-colors duration-300 text-[22px] text-white py-3 rounded ${
-                            !emailCheck
-                              ? "cursor-not-allowed bg-gray-500"
-                              : "hover:bg-[#3E5A1E] bg-[#4B721F]"
-                          }`}
+                          className={`w-[48%] transition-colors duration-300 text-[22px] text-white py-3 rounded ${!emailCheck
+                            ? "cursor-not-allowed bg-gray-500"
+                            : "hover:bg-[#3E5A1E] bg-[#4B721F]"
+                            }`}
                         >
                           다음
                         </button>
@@ -688,11 +695,10 @@ function JoinPage() {
                                 onChange={() => handleChangeForeignFlag(false)}
                               />
                               <span
-                                className={`w-6 h-6 rounded-full border-2 transition-colors duration-300 ${
-                                  data.foreignFlag === false
-                                    ? "border-[#4B721F] bg-[#4B721F]"
-                                    : "border-gray-300 bg-gray-50/80"
-                                } cursor-pointer`}
+                                className={`w-6 h-6 rounded-full border-2 transition-colors duration-300 ${data.foreignFlag === false
+                                  ? "border-[#4B721F] bg-[#4B721F]"
+                                  : "border-gray-300 bg-gray-50/80"
+                                  } cursor-pointer`}
                               >
                                 {data.foreignFlag === false && (
                                   <span className="block w-3 h-3 rounded-full bg-white mx-auto mt-1"></span>
@@ -709,11 +715,10 @@ function JoinPage() {
                                 onChange={() => handleChangeForeignFlag(true)}
                               />
                               <span
-                                className={`w-6 h-6 rounded-full border-2 transition-colors duration-300 ${
-                                  data.foreignFlag === true
-                                    ? "border-[#4B721F] bg-[#4B721F]"
-                                    : "border-gray-300 bg-gray-50/80"
-                                } cursor-pointer`}
+                                className={`w-6 h-6 rounded-full border-2 transition-colors duration-300 ${data.foreignFlag === true
+                                  ? "border-[#4B721F] bg-[#4B721F]"
+                                  : "border-gray-300 bg-gray-50/80"
+                                  } cursor-pointer`}
                               >
                                 {data.foreignFlag === true && (
                                   <span className="block w-3 h-3 rounded-full bg-white mx-auto mt-1"></span>
