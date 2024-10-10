@@ -14,6 +14,7 @@ import StopTurtleImg from "../../assets/turtle_home_stop.png";
 import { useNavigate } from "react-router-dom";
 import Alert from "../../components/common/Alert";
 import { useUserStore } from "../../store/useUserStore";
+import Loading from "../../components/common/Loading";
 
 // 1. 인증하기를 누르고 인증이 된다-> 그냥 다음으로 보냄(step 3) 넘어가먼 못돌아옴
 // 2. 인증 직전까지는 -> 이전으로 가서 정보 수정 ok
@@ -403,6 +404,8 @@ function JoinPage() {
       </Helmet>
       <Header />
       <main>
+        {fetchLoading&&<Loading />
+        }
         <div className="px-4 lg:px-[250px] flex justify-center items-center mt-[60px] h-[calc(100vh-60px)]">
           <div className="relative w-full bg-[#D5E5BD] backdrop-blur-sm rounded-[20px] shadow-[20px] z-10 flex h-[680px] md:h-[600px] flex-col md:flex-row">
 
