@@ -227,6 +227,7 @@ public class AuctionService {
             log.info("UserID: {}", user.getUserId());
 
             String key = AUCTION_END_KEY_PREFIX + auctionId;
+            String bidKey = AUCTION_BID_KEY + auctionId;
             System.out.println("get요청 보낼 때 key : " + key);
 
 // Redis에서 경매 종료 시간을 가져옴
@@ -241,7 +242,7 @@ public class AuctionService {
                 log.info("redis에 입찰 가격이 없을 때");
             } else {
                 nowBid = Double.parseDouble(bidAmountObj.toString()); // Redis에서 입찰 가격이 있을 때 변환
-                Long bidUserId = (Long) redisTemplate.opsForHash().get(key, "userId");
+                Long bidUserId = (Long) redisTemplate.opsForHash().get(bidKey, "userId");
 
                 if (bidUserId != null) {
                     nickname = userService.getUserNicknameById(bidUserId); // 입찰한 사용자 닉네임 가져오기
@@ -252,7 +253,7 @@ public class AuctionService {
             }
 
             log.info("RemainingTime : {}", remainingTime);
-
+            log.info("nickname : {}", nickname);
 // 응답 DTO 생성
             AuctionResponseDTO data = AuctionResponseDTO.from(auction, turtle, user, remainingTime, nowBid, nickname);
             return new ResponseEntity<>(ResponseVO.success("경매가 정상적으로 조회되었습니다.", "auction", data), HttpStatus.OK);
