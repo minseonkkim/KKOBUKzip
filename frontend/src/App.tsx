@@ -94,7 +94,11 @@ function App() {
             {/* Auction Domain - 경매 */}
             <Route
               path="/auction-detail/:auctionId"
+              element={
+              <LoginAccessRestrict
               element={<AuctionDetailPage />}
+              />
+            }
             />
             <Route path="/auction-list" element={<AuctionListPage />} />
             {/* <Route path="/auction-success" element={<AuctionSuccessPage />} /> */}
