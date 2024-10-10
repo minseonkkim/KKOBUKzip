@@ -35,6 +35,7 @@ public class AuctionResponseDTO {
     private Long remainingTime;
     private String scientificName;
     private List<String> tags;
+    private String nickname;
 
     // 이미지 주소 리스트로 변경
     private List<String> images;
@@ -42,7 +43,7 @@ public class AuctionResponseDTO {
     private TurtleFilteredResponseDTO turtleInfo;
     private UserResponseDTO userInfo;
 
-    public static AuctionResponseDTO from(Auction auction, TurtleFilteredResponseDTO turtleInfo, UserResponseDTO userInfo, Long remainingTime, Double nowBid) {
+    public static AuctionResponseDTO from(Auction auction, TurtleFilteredResponseDTO turtleInfo, UserResponseDTO userInfo, Long remainingTime, Double nowBid, String nickname) {
         log.info("Auction Tags: {}", auction.getAuctionTags());
         return AuctionResponseDTO.builder()
                 .id(auction.getId())
@@ -52,6 +53,7 @@ public class AuctionResponseDTO {
                 .nowBid(nowBid)
                 .winningBid(auction.getWinningBid())
                 .buyerId(auction.getBuyerId())
+                .nickname(nickname)
                 .sellerId(auction.getUserId())
                 .startTime(auction.getStartTime())
                 .endTime(LocalDateTime.now())

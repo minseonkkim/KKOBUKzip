@@ -47,10 +47,7 @@ authAxios.interceptors.response.use(
       _retry?: boolean;
     };
 
-    if (
-      (error.response?.status === 401 || error.response?.status === 500) &&
-      !originalRequest._retry
-    ) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
@@ -93,9 +90,10 @@ const refreshToken = async (): Promise<string> => {
       }
     );
     const { accessToken } = response.data;
-
-    // 새로운 토큰 로컬 스토리지에 저장
-    localStorage.setItem("accessToken", accessToken);
+    if (accessToken) {
+      // 새로운 토큰 로컬 스토리지에 저장
+      localStorage.setItem("accessToken", accessToken);
+    }
 
     return accessToken;
   } catch (error) {

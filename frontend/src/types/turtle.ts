@@ -8,4 +8,8 @@ export interface TurtleDataType {
   name: string;
   scientificName: string;
   weight: number;
+  motherName: string;
+  fatherName: string;
+  motherImageAddress?: string;
+  fatherImageAddress?: string;
 }
