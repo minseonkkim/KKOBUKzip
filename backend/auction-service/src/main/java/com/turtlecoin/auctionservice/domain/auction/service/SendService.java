@@ -4,6 +4,7 @@ import com.turtlecoin.auctionservice.domain.auction.dto.AuctionResultDTO;
 import com.turtlecoin.auctionservice.domain.auction.entity.Auction;
 import com.turtlecoin.auctionservice.domain.auction.entity.AuctionProgress;
 import com.turtlecoin.auctionservice.domain.auction.repository.AuctionRepository;
+import com.turtlecoin.auctionservice.feign.service.UserService;
 import com.turtlecoin.auctionservice.global.exception.AuctionNotFoundException;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class SendService {
     private final SimpMessagingTemplate messagingTemplate;
     private static final String AUCTION_BID_KEY_PREFIX = "auction_bid_";
     private final RedisTemplate redisTemplate;
+    private final UserService userService;
 
     @Value("${spring.rabbitmq.exchange}")
     private String auctionResultExchange;
@@ -59,6 +61,7 @@ public class SendService {
 
 //            AuctionResultDTO auctionResultDTO = createAuctionResultDTO(auction, null, null);
             data.put("bidAmount", 0);
+            data.put("nickname", null);
             data.put("message", "경매가 유찰됐습니다.");
 
             response = ResponseVO.bidSuccess("End","205",data);
@@ -72,12 +75,14 @@ public class SendService {
         // 마지막 입찰가와 입찰자 ID 가져오기
         Double winningBid = Double.parseDouble(bidData.get("bidAmount").toString());
         Long winningUserId = Long.parseLong(bidData.get("userId").toString());
+        String nickname = userService.getUserNicknameById(winningUserId);
 
         AuctionResultDTO auctionResultDTO = createAuctionResultDTO(auction, winningBid, winningUserId);
 
 
 
         data.put("bidAmount", winningBid);
+        data.put("nickname", nickname);
         data.put("message", "경매가 낙찰됐습니다.");
 
         // 가격도 같이 보내주기
