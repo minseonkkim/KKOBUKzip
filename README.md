@@ -36,6 +36,7 @@
 
 <img src="https://img.shields.io/badge/web3.js-F16822?style=for-the-badge&logo=web3dotjs&logoColor=white" > 
 <img src="https://img.shields.io/badge/solidity-363636?style=for-the-badge&logo=solidity&logoColor=white" >
+<img src="https://img.shields.io/badge/openzeppelin-4E5EE4?style=for-the-badge&logo=openzeppelin&logoColor=white">
 
 ### **CI/CD**
 
@@ -59,7 +60,7 @@
   - [와이어프레임](./docs/와이어프레임.md)
   - [API명세서](./docs/API명세서.md)
   - [블록체인명세서](./docs/블록체인명세서.md)
-  - [ERD]()
+  - [ERD](./docs/ERD.md)
   - [목업](./docs/목업.md)
   - [아키텍처]()
 
