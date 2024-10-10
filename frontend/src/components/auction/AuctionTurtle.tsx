@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import TmpTurtle from "../../assets/tmp_turtle_2.jpg";
-import { AuctionItemDataType, AuctionListDataType } from "../../types/auction";
+// import { useEffect } from "react";
+// import TmpTurtle from "../../assets/tmp_turtle_2.jpg";
+import { AuctionListDataType } from "../../types/auction";
 import AuctionStatusTag from "./AuctionStatusTag";
 import { useNavigate } from "react-router-dom";
 import NoTurtleImg from "../../assets/NoTurtleImg.webp";

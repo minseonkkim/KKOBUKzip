@@ -1,8 +1,0 @@
-//파일 이름 : /resources/s3.properties
-
-cloud.aws.region=us-east-1
-cloud.aws.stack.auto=false 
-
-cloud.aws.s3.bucket=s11p21c107-ssafy-special-project
-cloud.aws.credentials.accessKey=AKIA3FLD42OCD6NMO4B4
-cloud.aws.credentials.secretKey=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

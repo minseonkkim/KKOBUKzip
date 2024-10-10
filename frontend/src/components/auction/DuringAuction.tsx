@@ -183,7 +183,7 @@ function DuringAuction({
           },
           ...prev,
         ];
-        return newHistory.slice(0, 8);
+        return newHistory.slice(0, 4);
       });
     } else if ("Join" in newMessage.data) {
       const joinData = newMessage.data as JoinData;
@@ -327,7 +327,7 @@ function DuringAuction({
   return (
     <>
       {/* 경매중 */}
-      <div className="w-[48%] h-[675px] overflow-hidden bg-[#EAF5DD] rounded-[20px] flex flex-col justify-start items-center">
+      <div className="w-[48%] h-[675px]  bg-[#EAF5DD] rounded-[20px] flex flex-col justify-start items-center">
         <div className="w-full bg-[#EAEAEA] rounded-full h-[10px] relative">
           <animated.div
             className="bg-[#4B721F] h-[10px] rounded-full"
@@ -397,7 +397,7 @@ function DuringAuction({
               </div>
             </div>
 
-            <div className="mt-[20px] w-full text-[19px]">
+            <div className="mt-[20px] h-full overflow-hidden w-full text-[19px]">
               {bidHistory.map((el, index) => {
                 return (
                   <div key={index}>
