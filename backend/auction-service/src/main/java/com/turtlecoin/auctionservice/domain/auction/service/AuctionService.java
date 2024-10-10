@@ -263,8 +263,7 @@ public class AuctionService {
         } catch (FeignException e) {
           return new ResponseEntity<>(ResponseVO.failure("503", "Main-Service가 응답하지 않습니다."+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch(Exception e){
-            log.info(e.getMessage());
-            return new ResponseEntity<>(ResponseVO.failure("500","경매 조회 과정 중에 서버 에러가 발생하였습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ResponseVO.failure("500","경매 조회 과정 중에 서버 에러가 발생하였습니다."+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -359,7 +358,7 @@ public class AuctionService {
                                 .sellerId(a.getUserId())
                                 .sellerName(userInfo.getName())
                                 .turtleId(a.getTurtleId())
-                                .scientificName("Malaclemys terrapin")
+                                .scientificName("임시 거북이 학명!")
                                 .title(a.getTitle())
                                 .price(a.getNowBid())
                                 .weight(a.getWeight())
