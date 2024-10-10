@@ -108,7 +108,7 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
               </div>
               <div className="text-[15px] text-gray-700 flex flex-wrap space-x-1">
                 {props.transactionTag
-                  ?.concat("#거래")
+                  ?.concat(props.auctionFlag ? "#경매" : "#거래")
                   .map((tag, index) => (
                     <span
                       key={index}
