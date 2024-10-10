@@ -109,6 +109,7 @@ public class Transaction extends BaseEntity {
                 .turtleUuid(this.turtle.getUuid())
                 .documentHash(this.documentHash)
                 .sellerNickname(this.getTurtle().getUser().getNickname())
+                .auctionFlag(this.auctionFlag) // 경매 유무 전송
                 .build();
     }
 
