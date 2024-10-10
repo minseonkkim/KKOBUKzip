@@ -236,17 +236,26 @@ public class BidService {
     }
 
     public Double calculateBidIncrement(Double currentBid) {
-        // 경매 가격에 따라 구분 필요
-        if (currentBid >= 0 && currentBid < 10000) {
-            return 1000.0; // 0 ~ 10000 : 500
-        } else if (currentBid >= 10001 && currentBid < 100000) {
-            return 10000.0; // 10001 ~ 100000 : 2000
-        } else if (currentBid >= 100001 && currentBid < 1000000) {
-            return 20000.0; // 100001 ~ 200000 : 5000
+        // 경매 가격에 따라 구분
+        if (currentBid >= 0 && currentBid <= 10000) {
+            return 5000.0; // 0 ~ 10000 : 500
+        } else if (currentBid > 10000 && currentBid <= 50000) {
+            return 10000.0; // 10001 ~ 50000 : 1000
+        } else if (currentBid > 50000 && currentBid <= 100000) {
+            return 30000.0; // 50001 ~ 100000 : 5000
+        } else if (currentBid > 100000 && currentBid <= 500000) {
+            return 50000.0; // 100001 ~ 500000 : 10000
+        } else if (currentBid > 500000 && currentBid <= 1000000) {
+            return 70000.0; // 500001 ~ 1000000 : 20000
+        } else if (currentBid > 1000000 && currentBid <= 5000000) {
+            return 100000.0; // 1000001 ~ 5000000 : 50000
+        } else if (currentBid > 5000000 && currentBid <= 10000000) {
+            return 150000.0; // 5000001 ~ 10000000 : 100000
         } else {
-            return 30000.0; // 그 외 : 10000 (기본 값)
+            return 200000.0; // 10000001 이상 : 200000
         }
     }
+
 
     public void notifyClient(Long auctionId, BidMessage bidMessage, boolean isError, String errorMessage) {
         ResponseVO<Object> response;
