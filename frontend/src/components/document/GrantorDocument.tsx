@@ -348,11 +348,7 @@ function GrantorDocument() {
                 증명하는 서류
               </label>
               <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center">
-                <span className="text-gray-500 flex-grow">서류 번호</span>
-                <input type="file" className="hidden" id="file1" />
-                <label htmlFor="file1" className="cursor-pointer flex-shrink">
-                  서류 찾기
-                </label>
+                {aquisition}
               </div>
             </div>
 
