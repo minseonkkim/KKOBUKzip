@@ -1,1 +1,0 @@
-SPRING_PROFILES_ACTIVE=local // 배포 환경에선 prod
