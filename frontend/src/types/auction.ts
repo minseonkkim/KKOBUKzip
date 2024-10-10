@@ -3,6 +3,7 @@ export interface AuctionItemDataType {
   turtleId: number | null;
   title: string;
   minBid: number;
+  price: number;
   nowBid: number | null;
   winningBid: number | null;
   sellerId: number; // 판매자 아이디
@@ -47,6 +48,7 @@ export interface AuctionListDataType {
   progress: string;
   auctionTag: string[] | null;
   buyerId: number | null;
+  price: number;
   content: string;
   createDate: string | null;
   endTime: string;

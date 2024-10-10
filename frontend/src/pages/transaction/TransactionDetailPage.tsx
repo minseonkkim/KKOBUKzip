@@ -123,12 +123,20 @@ function TransactionDetailPage() {
               <div className="flex flex-col w-full md:w-[48%] rounded-[20px] relative">
                 <div className="relative w-full flex-grow md:flex-1 h-[240px] md:h-auto rounded-[20px] overflow-hidden">
                   <img
+                    onClick={() => {
+                      window.open(
+                        transactionData?.transactionImage.length === 0
+                          ? NoTurtleImg
+                          : transactionData?.transactionImage[0],
+                        "_blank"
+                      );
+                    }}
                     src={
                       transactionData.transactionImage.length == 0
                         ? NoTurtleImg
                         : transactionData.transactionImage[currentIndex]
                     }
-                    className="w-full h-[380px] object-cover rounded-[20px]"
+                    className="cursor-pointer w-full h-[380px] object-cover rounded-[20px]"
                     alt="Turtle"
                     draggable="false"
                   />
