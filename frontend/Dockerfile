@@ -1,6 +1,8 @@
 #베이스 이미지 설정
 FROM node:latest AS build
+FROM nginx:latest
 #작업 디렉토리 설정
+COPY nginx.conf /etc/nginx/conf.d/nginx.conf
 WORKDIR /frontend/
 #의존성 설치
 COPY package*.json ./
@@ -19,5 +21,8 @@ EXPOSE 3000
 #빌드
 
 RUN npm run build
+
+
 #서버 실행
-CMD ["npm","start"]
+# CMD ["npm","start"]
+CMD [ "nginx", "-g", "daemon off" ]
