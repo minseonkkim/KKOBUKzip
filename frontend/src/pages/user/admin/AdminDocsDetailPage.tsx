@@ -79,7 +79,7 @@ function AdminDocsDetailPage() {
       } else {
         alert("서류 승인 처리에 실패했습니다. 다시 시도해 주세요.");
       }
-    })
+    });
   };
   const handleDenySubmit = (turtleUUID: string, documentHash: string) => {
     approveDocumentRequest(turtleUUID, documentHash, false).then((response) => {
@@ -90,8 +90,9 @@ function AdminDocsDetailPage() {
       } else {
         alert("서류 반려 처리에 실패했습니다. 다시 시도해 주세요.");
       }
-    })
+    });
   };
+
   return (
     <>
       <Helmet>
