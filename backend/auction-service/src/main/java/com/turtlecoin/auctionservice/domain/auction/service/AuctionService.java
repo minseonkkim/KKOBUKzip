@@ -12,6 +12,7 @@ import com.turtlecoin.auctionservice.feign.dto.TurtleResponseDTO;
 import com.turtlecoin.auctionservice.domain.turtle.entity.Gender;
 import com.turtlecoin.auctionservice.feign.MainClient;
 import com.turtlecoin.auctionservice.feign.dto.UserResponseDTO;
+import com.turtlecoin.auctionservice.feign.service.UserService;
 import com.turtlecoin.auctionservice.global.exception.*;
 import com.turtlecoin.auctionservice.global.response.ResponseVO;
 import feign.FeignException;
@@ -53,6 +54,8 @@ public class AuctionService {
     private final SseService sseService;
     private static final String AUCTION_END_KEY_PREFIX = "auction_end_";
     private static final String AUCTION_BID_KEY = "auction_bid_";
+    private final UserService userService;
+
     // 경매 등록
     @Transactional
     public ResponseEntity<?> registerAuction(RegisterAuctionDTO registerAuctionDTO, List<MultipartFile> images) {
@@ -238,17 +241,20 @@ public class AuctionService {
 //            }
 
             Object bidAmountObj = redisTemplate.opsForHash().get(key, "bidAmount");
-
+            String nickname;
             Double nowBid;
             if (bidAmountObj == null) {
                 nowBid = auction.getMinBid();
                 log.info("redis에 입찰 가격이 없을 때");
+                nickname = null;
             } else {
                 nowBid = Double.parseDouble(bidAmountObj.toString());  // Object를 Double로 변환
+                Long bidUserId = (long) redisTemplate.opsForHash().get(key, "userId");
+                nickname = userService.getUserNicknameById(bidUserId);
                 log.info("redis에 입찰 가격이 있을 때");
             }
             log.info("RemainingTime : {}", remainingTime);
-            AuctionResponseDTO data = AuctionResponseDTO.from(auction, turtle, user, remainingTime, nowBid);
+            AuctionResponseDTO data = AuctionResponseDTO.from(auction, turtle, user, remainingTime, nowBid, nickname);
             return new ResponseEntity<>(ResponseVO.success("경매가 정상적으로 조회되었습니다.", "auction", data), HttpStatus.OK);
         } catch (AuctionNotFoundException e) {
             return new ResponseEntity<>(ResponseVO.failure("400", e.getMessage()), HttpStatus.BAD_REQUEST);
