@@ -69,7 +69,7 @@ export default function AuctionTurtle({
           </div>
           <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
             <div className="text-[28px] md:text-[32px]">
-              {(data?.nowBid || 0).toLocaleString("ko-KR")}
+              {data?.price?.toLocaleString("ko-KR")}
             </div>
             <div className="text-[18px] md:text-[22px]">TURT</div>
             <div className="text-[28px] md:text-[32px]">↑</div>
