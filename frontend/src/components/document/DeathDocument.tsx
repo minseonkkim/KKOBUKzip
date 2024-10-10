@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { DeathDocumentDataType, DeathFetchData } from "../../types/document";
 import { createDeathDocumentRequest } from "../../apis/documentApis";
 import DocImgUpload from "./DocImgUpload";
+import { useUserStore } from "../../store/useUserStore";
 
 function DeathDocument() {
   const [data, setData] = useState<DeathDocumentDataType>({
@@ -16,7 +17,7 @@ function DeathDocument() {
 
   const [deathImage, setDeathImage] = useState<File | null>(null);
   const [diagnosis, setDiagnosis] = useState<File | null>(null);
-
+  const uuid = useUserStore(state => state.userInfo?.uuid);
   const changeHandle = (
     type: keyof DeathDocumentDataType,
     evt:
@@ -38,7 +39,7 @@ function DeathDocument() {
     }
     const deathData = {
       docType: "폐사질병서류",
-      applicant: "d271c7d8-3f7b-4d4e-8a9e-d60f896b84cb", // storage에서 읽어올것
+      applicant: uuid, // storage에서 읽어올것
       detail: {
         ...data,
         registerDate: new Date().toISOString().substring(0, 10),
@@ -48,9 +49,12 @@ function DeathDocument() {
       // diagnosis: "--사진--",
     };
     const formData = new FormData();
+    const blob = new Blob([JSON.stringify(deathData)], {
+      type: "application/json",
+    });
     formData.append("deathImage", deathImage);
     formData.append("multiplicationMethod", diagnosis);
-    formData.append("data", JSON.stringify(deathData));
+    formData.append("data", blob);
     const { success } = await createDeathDocumentRequest(formData);
 
     if (success) {

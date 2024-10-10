@@ -1,9 +1,15 @@
 import AuctionSuccessPage from "../../pages/auction/AuctionSuccessPage";
 
-function SuccessfulBid({ nowBid }: { nowBid: number }) {
+function SuccessfulBid({
+  nowBid,
+  winningNickname,
+}: {
+  nowBid: number;
+  winningNickname: string;
+}) {
   return (
     <>
-      <AuctionSuccessPage nowBid={nowBid} />
+      <AuctionSuccessPage nowBid={nowBid} winningNickname={winningNickname} />
     </>
   );
 }
