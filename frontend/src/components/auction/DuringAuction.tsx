@@ -31,6 +31,7 @@ interface BidData {
 
 interface EndData {
   End: {
+    nickname: string;
     bidAmount: number;
   };
 }
@@ -64,7 +65,8 @@ function DuringAuction({
   initialBid: number;
   changeAuctionStatusToComplete: (
     state: "NO_BID" | "SUCCESSFUL_BID",
-    winningBid?: number
+    winningBid?: number,
+    winner?: string
   ) => void;
 }) {
   const { tokenContract, account } = useWeb3Store();
@@ -82,9 +84,8 @@ function DuringAuction({
 
   const [remainingTime, setRemainingTime] = useState(initTime);
 
-
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
+  const [alertMessage, setAlertMessage] = useState("");
 
   const openAlert = (message: string) => {
     setAlertMessage(message);
@@ -159,14 +160,16 @@ function DuringAuction({
   // turtle token 관리 useEffect
   useEffect(() => {
     const loadToken = async () => {
-      const turtBalance: number = await tokenContract!.methods.balanceOf(account).call();
-      const convertedTurtleBalance = Web3.utils.fromWei(turtBalance, "ether")
+      const turtBalance: number = await tokenContract!.methods
+        .balanceOf(account)
+        .call();
+      const convertedTurtleBalance = Web3.utils.fromWei(turtBalance, "ether");
       setMyTurtToken(convertedTurtleBalance);
       setBitLimiter(~~convertedTurtleBalance);
-    }
+    };
 
     loadToken();
-  }, [tokenContract, account])
+  }, [tokenContract, account]);
 
   // Meesage 타입 분기 함수 (Join, Bid, End)
   const handleAuctionMessage = (newMessage: WsResponseType) => {
@@ -177,7 +180,7 @@ function DuringAuction({
       openAlert(newMessage.message);
       return;
     }
-    
+
     if ("Bid" in newMessage.data) {
       const bidData = newMessage.data as BidData;
 
@@ -198,7 +201,7 @@ function DuringAuction({
           },
           ...prev,
         ];
-        return newHistory.slice(0, 8); 
+        return newHistory.slice(0, 8);
       });
     } else if ("Join" in newMessage.data) {
       const joinData = newMessage.data as JoinData;
@@ -217,14 +220,18 @@ function DuringAuction({
       if (newMessage.status === "205") {
         changeAuctionStatusToComplete("NO_BID");
       } else {
-        changeAuctionStatusToComplete("SUCCESSFUL_BID", endData.End.bidAmount);
+        changeAuctionStatusToComplete(
+          "SUCCESSFUL_BID",
+          endData.End.bidAmount,
+          endData.End.nickname
+        );
       }
 
       console.log("Auction Ended, final bid amount:", endData.End.bidAmount);
       // End 이벤트 처리
     } else {
       // 에러 메세지 관리
-      console.log("ErrorMsg : ",newMessage)
+      console.log("ErrorMsg : ", newMessage);
       const statusCode = newMessage.status;
       console.log(
         "StatusCode :",
@@ -237,8 +244,6 @@ function DuringAuction({
       // if(statusCode === "???") alert(newMessage.message)
     }
   };
-
-  
 
   // 입찰 요청 보내기
   const sendBidRequest = async () => {
@@ -279,8 +284,7 @@ function DuringAuction({
   const [bidPrice, setBidPrice] = useState(nowBid); // 입찰가
   const [bidHistory, setBidHistory] = useState<
     { bidder: string; price: number }[]
-  >([
-  ]);
+  >([]);
 
   const [springProps, api] = useSpring(() => ({
     price: bidPrice,
@@ -430,7 +434,9 @@ function DuringAuction({
                 className="w-full p-2 border-2 border-yellow-600 rounded bg-white focus:outline-none focus:ring-4 focus:ring-yellow-300"
                 placeholder="0"
               />
-              <span className="absolute right-2 top-1/2 transform -translate-y-1/2 font-semibold">TURT</span>
+              <span className="absolute right-2 top-1/2 transform -translate-y-1/2 font-semibold">
+                TURT
+              </span>
             </div>
 
             <div className="mt-[20px] w-full text-[19px]">
@@ -451,7 +457,7 @@ function DuringAuction({
                     <br />
                   </div>
                 );
-              })} 
+              })}
             </div>
             {showEmoji && (
               <animated.div

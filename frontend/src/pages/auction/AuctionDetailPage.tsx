@@ -85,12 +85,16 @@ function AuctionDetailPage() {
   }, []);
 
   const changeAuctionStatusToComplete = useCallback(
-    (state: "NO_BID" | "SUCCESSFUL_BID", winningBid?: number) => {
+    (
+      state: "NO_BID" | "SUCCESSFUL_BID",
+      winningBid?: number,
+      winner?: string
+    ) => {
       setAuctionStatus(state);
-      if (winningBid) {
+      if (winningBid && winner) {
         setAuctionItemData((prev) => {
           if (prev) {
-            return { ...prev, winningBid };
+            return { ...prev, winningBid, nickname: winner };
           }
           return prev;
         });
@@ -171,7 +175,10 @@ function AuctionDetailPage() {
           {auctionStatus === "NO_BID" && <NoBid />}
           {auctionStatus === "SUCCESSFUL_BID" &&
             auctionItemData!.nowBid !== null && (
-              <SuccessfulBid nowBid={auctionItemData!.winningBid!} />
+              <SuccessfulBid
+                nowBid={auctionItemData!.winningBid!}
+                winningNickname={auctionItemData!.nickname!}
+              />
             )}
         </div>
       </main>
