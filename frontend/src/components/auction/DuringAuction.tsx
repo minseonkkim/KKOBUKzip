@@ -3,6 +3,9 @@ import MovingTurtle from "../../assets/moving_turtle.webp";
 import { useSpring, animated } from "@react-spring/web";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import { useUserStore } from "../../store/useUserStore";
+import { json } from "react-router-dom";
+import Web3 from "web3";
+import { useWeb3Store } from "../../store/useWeb3Store";
 import Alert from "../common/Alert";
 
 interface StompFrame {
@@ -65,6 +68,8 @@ function DuringAuction({
     winningBid?: number
   ) => void;
 }) {
+  const { tokenContract, account } = useWeb3Store();
+
   const auctionStompClient = useRef<CompatClient | null>(null);
 
   const auctionId = Number(channelId);
@@ -72,6 +77,9 @@ function DuringAuction({
   // const [isBidStarted, setIsBidStarted] = useState(false);
   const [nowBid, setNowBid] = useState(initialBid);
   const [nextBid, setNextBid] = useState(minBid);
+  const [bidLimiter, setBitLimiter] = useState(0);
+  const [isWarningAlertOpen, setIsWarningAlertOpen] = useState(false);
+  const [myTurtToken, setMyTurtToken] = useState<string>("0");
   const { userInfo } = useUserStore();
 
   const [remainingTime, setRemainingTime] = useState(initTime);
@@ -150,6 +158,16 @@ function DuringAuction({
     };
   }, [channelId]);
 
+  // turtle token 관리 useEffect
+  useEffect(() => {
+    const loadToken = async () => {
+      const turtBalance: number = await tokenContract!.methods.balanceOf(account).call();
+      setMyTurtToken(Web3.utils.fromWei(turtBalance, "ether"));
+    }
+
+    loadToken();
+  }, [tokenContract, account])
+
   // Meesage 타입 분기 함수 (Join, Bid, End)
   const handleAuctionMessage = (newMessage: WsResponseType) => {
     console.log("newMessage : ", newMessage);
@@ -226,6 +244,12 @@ function DuringAuction({
   const sendBidRequest = async () => {
     if (loading) return;
     setLoading(true);
+
+    if (nowBid > bidLimiter) {
+      openWarningAlert();
+      return;
+    }
+
     try {
       const data = {
         auctionId,
@@ -319,6 +343,10 @@ function DuringAuction({
     api.start({ price: bidPrice });
   }, [bidPrice, api]);
 
+  const handleBidLimiterChange = (value: string) => {
+    setBitLimiter(~~value);
+  };
+
   return (
     <>
       {/* 경매중 */}
@@ -390,6 +418,19 @@ function DuringAuction({
                 </animated.div>
                 <div className="text-[13px] md:text-[17px]">TURT</div>
               </div>
+            </div>
+
+            <div className="relative flex-1">
+              <input
+                type="number"
+                value={bidLimiter}
+                onChange={(e) => handleBidLimiterChange(e.target.value)}
+                min="0"
+                max={myTurtToken}
+                className="w-1/2 p-2 border-2 border-yellow-600 rounded bg-white focus:outline-none focus:ring-4 focus:ring-yellow-300"
+                placeholder="0"
+              />
+              <span className="absolute right-2 top-1/2 transform -translate-y-1/2 font-semibold">TURT</span>
             </div>
 
             <div className="mt-[20px] w-full text-[19px]">
