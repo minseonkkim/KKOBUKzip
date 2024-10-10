@@ -1,14 +1,16 @@
-#베이스 이미지 설정
+# Node.js를 사용한 빌드 스테이지
 FROM node:latest AS build
-FROM nginx:latest
-#작업 디렉토리 설정
-COPY nginx.conf /etc/nginx/conf.d/nginx.conf
 WORKDIR /frontend/
-#의존성 설치
 COPY package*.json ./
 RUN npm install
-#앱 소스 복사
 COPY . .
+RUN npm run build
+
+# Nginx를 사용한 배포 스테이지
+FROM nginx:latest
+COPY nginx.conf /etc/nginx/conf.d/nginx.conf
+# 빌드된 결과물을 Nginx의 루트 디렉토리로 복사
+COPY --from=build /frontend/dist /usr/share/nginx/html
 
 ENV VITE_BASE_URL=https://j11c107.p.ssafy.io/api
 ENV VITE_SSE_MAIN_URL=https://j11c107.p.ssafy.io/api/main/notifications/sse/subscribe
