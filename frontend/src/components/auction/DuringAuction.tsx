@@ -3,7 +3,6 @@ import MovingTurtle from "../../assets/moving_turtle.webp";
 import { useSpring, animated } from "@react-spring/web";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import { useUserStore } from "../../store/useUserStore";
-import { json } from "react-router-dom";
 import Web3 from "web3";
 import { useWeb3Store } from "../../store/useWeb3Store";
 import Alert from "../common/Alert";
@@ -78,7 +77,6 @@ function DuringAuction({
   const [nowBid, setNowBid] = useState(initialBid);
   const [nextBid, setNextBid] = useState(minBid);
   const [bidLimiter, setBitLimiter] = useState(0);
-  const [isWarningAlertOpen, setIsWarningAlertOpen] = useState(false);
   const [myTurtToken, setMyTurtToken] = useState<string>("0");
   const { userInfo } = useUserStore();
 
@@ -246,7 +244,7 @@ function DuringAuction({
     setLoading(true);
 
     if (nowBid > bidLimiter) {
-      openWarningAlert();
+      openAlert(`${userInfo!.nickname}님이 지정한 최대 입찰가를 초과합니다.`);
       return;
     }
 
