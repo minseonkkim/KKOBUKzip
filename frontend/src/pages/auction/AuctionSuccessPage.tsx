@@ -38,10 +38,9 @@ export default function AuctionSuccessPage({
           <div className="font-bold text-[38px] text-center mt-[48px]">
             축하합니다.
             <br />
-            {(winningNickname === null && "익명의 사용자") ||
-              (winningNickname === "입찰 인원 없음" && " 익명의 사용자") ||
-              winningNickname}
-            님께
+            {(winningNickname === null && "") ||
+              (winningNickname === "입찰 인원 없음" && "") ||
+              winningNickname &&"님께"}
             <br />
             <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
               <div className="text-[31px] md:text-[39px]">{nowBid}</div>
