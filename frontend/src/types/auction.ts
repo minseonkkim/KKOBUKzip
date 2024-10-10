@@ -15,6 +15,7 @@ export interface AuctionItemDataType {
   remainingTime: number;
   tags: string[];
   images: string[];
+  nickname?: string;
   turtleInfo: {
     id: number;
     gender: string;
