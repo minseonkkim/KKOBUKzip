@@ -327,7 +327,7 @@ function DuringAuction({
   return (
     <>
       {/* 경매중 */}
-      <div className="w-[48%] h-[675px] bg-[#EAF5DD] rounded-[20px] flex flex-col justify-start items-center">
+      <div className="w-[48%] h-[675px] overflow-hidden bg-[#EAF5DD] rounded-[20px] flex flex-col justify-start items-center">
         <div className="w-full bg-[#EAEAEA] rounded-full h-[10px] relative">
           <animated.div
             className="bg-[#4B721F] h-[10px] rounded-full"
