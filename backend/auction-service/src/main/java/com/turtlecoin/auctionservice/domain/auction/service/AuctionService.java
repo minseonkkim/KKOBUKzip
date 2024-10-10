@@ -351,7 +351,7 @@ public class AuctionService {
                                 .sellerId(a.getUserId())
                                 .sellerName(userInfo.getName())
                                 .turtleId(a.getTurtleId())
-                                .scientificName("임시 거북이 학명!")
+                                .scientificName("Malaclemys terrapin")
                                 .title(a.getTitle())
                                 .price(a.getNowBid())
                                 .weight(a.getWeight())
