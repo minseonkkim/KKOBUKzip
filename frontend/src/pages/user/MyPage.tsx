@@ -297,6 +297,7 @@ function MyPage() {
               <div className="grid grid-cols-2 xl:grid-cols-3 gap-5">
                 {turtleData.map((turtle) => (
                   <MyTurtle
+                    isDead={turtle.dead}
                     key={turtle.id}
                     turtleId={turtle.id}
                     turtleUuid={turtle.turtleUuid}
@@ -306,6 +307,10 @@ function MyPage() {
                     weight={turtle.weight}
                     birth={turtle.birth}
                     imageAddress={turtle.imageAddress!}
+                    motherName={turtle.motherName}
+                    fatherName={turtle.fatherName}
+                    motherImageAddress={turtle.motherImageAddress}
+                    fatherImageAddress={turtle.fatherImageAddress}
                   />
                 ))}
               </div>

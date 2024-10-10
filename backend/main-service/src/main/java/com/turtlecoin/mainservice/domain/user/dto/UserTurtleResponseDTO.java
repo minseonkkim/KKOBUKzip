@@ -20,4 +20,8 @@ public class UserTurtleResponseDTO {
     private LocalDate birth;
     private boolean dead;
     private String imageAddress;
+    private String motherName;
+    private String motherImageAddress;
+    private String fatherName;
+    private String fatherImageAddress;
 }
