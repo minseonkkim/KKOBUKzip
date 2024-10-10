@@ -84,9 +84,18 @@ function DuringAuction({
 
   const [remainingTime, setRemainingTime] = useState(initTime);
 
-  // 지정 금액 초과 입찰건에 대한 경고 모달 처리
-  const openWarningAlert = () => setIsWarningAlertOpen(true);
-  const closeWarningAlert = () => setIsWarningAlertOpen(false);
+
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
+  const openAlert = (message: string) => {
+    setAlertMessage(message);
+    setIsAlertOpen(true);
+  };
+
+  const closeAlert = () => {
+    setIsAlertOpen(false);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -165,7 +174,7 @@ function DuringAuction({
 
     if (!newMessage.data) {
       console.error("입찰 중 에러가 발생했습니다.", newMessage);
-      alert(newMessage.message);
+      openAlert(newMessage.message);
       return;
     }
     
@@ -455,7 +464,7 @@ function DuringAuction({
           </div>
         </div>
       </div>
-      <Alert isOpen={isWarningAlertOpen} message="블록체인 네트워크의 해시 정보와 일치합니다." onClose={closeWarningAlert} />
+      <Alert isOpen={isAlertOpen} message={alertMessage} onClose={closeAlert} />
     </>
   );
 }
