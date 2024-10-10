@@ -31,16 +31,16 @@ function CompleteAssignGrantDocument({
         <div className="grid grid-cols-1 gap-x-8 gap-y-1 md:grid-cols-2 md:gap-y-2">
           <div className="flex items-center">
             <span className="w-1/3 font-medium">성명</span>
-            <span className="w-2/3 px-3 py-2">{data!.applicant.name}</span>
+            <span className="w-2/3 px-3 py-2">{data?.applicant.name}</span>
           </div>
           <div className="flex items-center">
             <span className="w-1/3 font-medium">전화번호</span>
-            <span className="w-2/3 px-3 py-2">{data!.applicant.phonenumber}</span>
+            <span className="w-2/3 px-3 py-2">{data?.applicant.phonenumber}</span>
           </div>
         </div>
         <div className="flex items-center">
           <span className="w-1/6 font-medium">주소</span>
-          <span className="py-2">{data!.applicant.address.replace(" / ", " ")}</span>
+          <span className="py-2">{data?.applicant?.address.replace(" / ", " ")}</span>
         </div>
       </div>
 
@@ -49,16 +49,16 @@ function CompleteAssignGrantDocument({
         <div className="grid grid-cols-1 gap-x-8 gap-y-1 md:grid-cols-2 md:gap-y-2">
           <div className="flex items-center">
             <span className="w-1/3 font-medium">성명</span>
-            <span className="w-2/3 px-3 py-2">{data!.grantor.name}</span>
+            <span className="w-2/3 px-3 py-2">{data?.grantor?.name}</span>
           </div>
           <div className="flex items-center">
             <span className="w-1/3 font-medium">전화번호</span>
-            <span className="w-2/3 px-3 py-2">{data!.grantor.phoneNumber}</span>
+            <span className="w-2/3 px-3 py-2">{data?.grantor?.phoneNumber}</span>
           </div>
         </div>
         <div className="flex items-center">
           <span className="w-1/6 font-medium">주소</span>
-          <span className="py-2">{data!.grantor.address.replace(" / ", " ")}</span>
+          <span className="py-2">{data?.grantor?.address.replace(" / ", " ")}</span>
         </div>
       </div>
 
