@@ -217,43 +217,44 @@ public class AuctionService {
                 log.warn("거북이 정보를 찾을 수 없습니다: turtleId={}", auction.getTurtleId());
                 throw new TurtleNotFoundException("Main-service에서 거북이정보를 찾을 수 없습니다.");
             }
-            log.info("TurtleID: {}",turtle.getId());
+            log.info("TurtleID: {}", turtle.getId());
+
             UserResponseDTO user = mainClient.getUserById(auction.getUserId());
-            if (turtle == null) {
+            if (user == null) {
                 log.warn("사용자 정보를 찾을 수 없습니다: UserId={}", auction.getUserId());
                 throw new UserNotFoundException("Main-service에서 사용자정보를 찾을 수 없습니다.");
             }
-            log.info("UserID: {}",user.getUserId());
+            log.info("UserID: {}", user.getUserId());
 
-            String key = AUCTION_END_KEY_PREFIX+auction;
-            System.out.println("get요청 보낼 때 key : "+ key);
-            // null값일 때 어떻게 하지?
-            Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX+auctionId, TimeUnit.MILLISECONDS);
+            String key = AUCTION_END_KEY_PREFIX + auctionId;
+            String bidKey = AUCTION_BID_KEY + auctionId;
+            System.out.println("get요청 보낼 때 key : " + key);
 
-//            // 종료됐거나, 시작하지 않았을 때
-//            if (remainingTime == -2) {
-//                if (auction.getEndTime().isAfter(LocalDateTime.now())) {
-//                    remainingTime = 0L;
-//                } else {
-//                    // 아직 시작 안한 경매
-//                    remainingTime = 0L;
-//                }
-//            }
+// Redis에서 경매 종료 시간을 가져옴
+            Long remainingTime = redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
 
             Object bidAmountObj = redisTemplate.opsForHash().get(key, "bidAmount");
-            String nickname;
             Double nowBid;
+            String nickname = null;
+
             if (bidAmountObj == null) {
-                nowBid = auction.getMinBid();
+                nowBid = auction.getMinBid(); // Redis에 입찰 정보가 없을 때 최소 입찰가로 설정
                 log.info("redis에 입찰 가격이 없을 때");
-                nickname = null;
             } else {
-                nowBid = Double.parseDouble(bidAmountObj.toString());  // Object를 Double로 변환
-                Long bidUserId = (long) redisTemplate.opsForHash().get(key, "userId");
-                nickname = userService.getUserNicknameById(bidUserId);
-                log.info("redis에 입찰 가격이 있을 때");
+                nowBid = Double.parseDouble(bidAmountObj.toString()); // Redis에서 입찰 가격이 있을 때 변환
+                Long bidUserId = (Long) redisTemplate.opsForHash().get(bidKey, "userId");
+
+                if (bidUserId != null) {
+                    nickname = userService.getUserNicknameById(bidUserId); // 입찰한 사용자 닉네임 가져오기
+                    log.info("redis에 입찰 가격이 있을 때");
+                } else {
+                    log.warn("redis에서 userId 정보를 찾을 수 없습니다.");
+                }
             }
+
             log.info("RemainingTime : {}", remainingTime);
+            log.info("nickname : {}", nickname);
+// 응답 DTO 생성
             AuctionResponseDTO data = AuctionResponseDTO.from(auction, turtle, user, remainingTime, nowBid, nickname);
             return new ResponseEntity<>(ResponseVO.success("경매가 정상적으로 조회되었습니다.", "auction", data), HttpStatus.OK);
         } catch (AuctionNotFoundException e) {
