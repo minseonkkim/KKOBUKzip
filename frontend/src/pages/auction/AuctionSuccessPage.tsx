@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import Confetti from "react-confetti";
 import { useWindowSize } from "react-use"; // Confetti의 사이즈를 윈도우 사이즈에 맞추기 위한 훅
 
-export default function AuctionSuccessPage({ nowBid }: { nowBid: number }) {
+export default function AuctionSuccessPage({
+  nowBid,
+  winningNickname,
+}: {
+  nowBid: number;
+  winningNickname: string;
+}) {
   const [showConfetti, setShowConfetti] = useState(false);
   const { width, height } = useWindowSize();
 
@@ -31,6 +37,8 @@ export default function AuctionSuccessPage({ nowBid }: { nowBid: number }) {
         <div className="flex flex-col items-center justify-center mt-[200px]">
           <div className="font-bold text-[38px] text-center mt-[48px]">
             축하합니다.
+            <br />
+            {winningNickname}님께서
             <br />
             <div className="font-bold flex flex-row items-end font-stardust text-[#4B721F]">
               <div className="text-[31px] md:text-[39px]">{nowBid}</div>
