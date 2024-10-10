@@ -74,7 +74,7 @@ export default function ChatList() {
         console.log(JSON.parse(messageEvent.data));
         const newChat: ChatListItem = JSON.parse(messageEvent.data);
         updateRoomList(newChat);
-        addTotalUnreadCount(newChat.unreadCount);
+        addTotalUnreadCount(1);
       });
 
       eventSource.onerror = (error) => {
