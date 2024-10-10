@@ -193,6 +193,10 @@ public class UserService {
                             .imageAddress(turtle.getTurtlePhotos().isEmpty() ? null : turtle.getTurtlePhotos().get(0).getImage())
                             .weight(turtle.getWeight())
                             .gender(turtle.getGender())
+                            .motherName(turtle.getMom() != null ? turtle.getMom().getName() : "")
+                            .motherImageAddress(turtle.getMom() != null ? turtle.getMom().getTurtlePhotos().get(0).getImage() : "")
+                            .fatherName(turtle.getDad() != null ? turtle.getDad().getName() : "")
+                            .fatherImageAddress(turtle.getDad() != null ? turtle.getDad().getTurtlePhotos().get(0).getImage() : "")
                             .build())
                     .toList();
             log.info("DTO로 거북이 변환 완료");
