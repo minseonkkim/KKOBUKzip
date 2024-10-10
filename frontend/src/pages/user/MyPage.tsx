@@ -216,7 +216,7 @@ function MyPage() {
               거래 내역
             </div>
           </div>
-          {selectedMenu === 1 && (
+          {selectedMenu === 1 && turtleData.length > 0 && (
             <button
               className="text-[20px] rounded-[10px] bg-[#F5E0E4] h-[37px] px-3 border-2 border-dotted border-[#353535]"
               onClick={goToBreedDocPage}
