@@ -113,6 +113,8 @@ public class MessageController {
 			// SSE 메세지를 보내줘야 함
 			ChatListDto chatListDto = chatService.chattingRoomList(smallUserId, bigUserId, opponentUserId);
 			sseService.notify(opponentUserId, chatListDto);
+			ChatListDto myChatListDto = chatService.chattingRoomList(smallUserId, bigUserId, userId);
+			sseService.notify(userId, myChatListDto);
 		} catch (Exception e){
 			e.printStackTrace();
 			messagingTemplate.convertAndSend("/sub/main/" + chattingId,
