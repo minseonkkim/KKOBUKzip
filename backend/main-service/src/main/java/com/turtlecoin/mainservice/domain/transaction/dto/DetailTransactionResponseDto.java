@@ -29,4 +29,5 @@ public class DetailTransactionResponseDto {
     private List<String> transactionTag;  // 태그 목록
     private List<String> transactionImage;  // 이미지 경로 목록
     private String progress;  // 진행 상황 (Enum 값)
+    private boolean auctionFlag;
 }
