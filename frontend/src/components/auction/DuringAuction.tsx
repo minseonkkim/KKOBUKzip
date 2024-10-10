@@ -3,6 +3,7 @@ import MovingTurtle from "../../assets/moving_turtle.webp";
 import { useSpring, animated } from "@react-spring/web";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import { useUserStore } from "../../store/useUserStore";
+import Alert from "../common/Alert";
 
 interface StompFrame {
   command: string;
@@ -75,6 +76,19 @@ function DuringAuction({
 
   const [remainingTime, setRemainingTime] = useState(initTime);
 
+
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
+  const openAlert = (message: string) => {
+    setAlertMessage(message);
+    setIsAlertOpen(true);
+  };
+
+  const closeAlert = () => {
+    setIsAlertOpen(false);
+  };
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
@@ -142,7 +156,7 @@ function DuringAuction({
 
     if (!newMessage.data) {
       console.error("입찰 중 에러가 발생했습니다.", newMessage);
-      alert(newMessage.message);
+      openAlert(newMessage.message);
       return;
     }
     
@@ -409,6 +423,7 @@ function DuringAuction({
           </div>
         </div>
       </div>
+      <Alert isOpen={isAlertOpen} message={alertMessage} onClose={closeAlert} />
     </>
   );
 }
