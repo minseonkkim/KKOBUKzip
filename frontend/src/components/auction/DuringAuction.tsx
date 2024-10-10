@@ -160,7 +160,9 @@ function DuringAuction({
   useEffect(() => {
     const loadToken = async () => {
       const turtBalance: number = await tokenContract!.methods.balanceOf(account).call();
-      setMyTurtToken(Web3.utils.fromWei(turtBalance, "ether"));
+      const convertedTurtleBalance = Web3.utils.fromWei(turtBalance, "ether")
+      setMyTurtToken(convertedTurtleBalance);
+      setBitLimiter(~~convertedTurtleBalance);
     }
 
     loadToken();
@@ -425,7 +427,7 @@ function DuringAuction({
                 onChange={(e) => handleBidLimiterChange(e.target.value)}
                 min="0"
                 max={myTurtToken}
-                className="w-1/2 p-2 border-2 border-yellow-600 rounded bg-white focus:outline-none focus:ring-4 focus:ring-yellow-300"
+                className="w-full p-2 border-2 border-yellow-600 rounded bg-white focus:outline-none focus:ring-4 focus:ring-yellow-300"
                 placeholder="0"
               />
               <span className="absolute right-2 top-1/2 transform -translate-y-1/2 font-semibold">TURT</span>
