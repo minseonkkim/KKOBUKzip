@@ -332,18 +332,18 @@ function MyTurtle({
 
             <div className="flex flex-row mt-1 md:mt-7">
               <div className="flex flex-col space-y-2 w-1/2 text-[19px]">
-                <div>부개체 : {motherName}</div>
+                <div>부개체 : {fatherName}</div>
                 <img
-                  src={motherImageAddress ?? NoTurtleImg}
+                  src={fatherImageAddress ?? NoTurtleImg}
                   className="object-cover rounded-[10px] w-full h-[155px] md:h-[180px]"
                   draggable="false"
                   alt="father turtle image"
                 />
               </div>
               <div className="flex flex-col space-y-2 w-1/2 text-[19px]">
-                <div>모개체 : {fatherName}</div>
+                <div>모개체 : {motherName}</div>
                 <img
-                  src={fatherImageAddress ?? NoTurtleImg}
+                  src={motherImageAddress ?? NoTurtleImg}
                   className="object-cover rounded-[10px] w-full h-[155px] md:h-[180px]"
                   draggable="false"
                   alt="mother turtle image"
