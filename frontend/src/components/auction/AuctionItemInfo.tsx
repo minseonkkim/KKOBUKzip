@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AuctionItemDataType } from "../../types/auction";
 import { FaAngleLeft } from "@react-icons/all-files/fa/FaAngleLeft";
 import { FaAngleRight } from "@react-icons/all-files/fa/FaAngleRight";
-import NoTurtleImg from "../../assets/NoTurtleImg.webp"
+import NoTurtleImg from "../../assets/NoTurtleImg.webp";
 
 function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -24,8 +24,20 @@ function AuctionItemInfo({ itemData }: { itemData: AuctionItemDataType }) {
         <figure>
           <div className="relative w-full flex-grow md:flex-1 h-[240px] md:h-auto rounded-[20px] overflow-hidden">
             <img
-              src={itemData.images.length == 0 ? NoTurtleImg : itemData.images[currentIndex]}
-              className="w-full h-[380px] object-cover rounded-[20px]"
+              onClick={() => {
+                window.open(
+                  itemData?.images.length === 0
+                    ? NoTurtleImg
+                    : itemData?.images[0],
+                  "_blank"
+                );
+              }}
+              src={
+                itemData.images.length == 0
+                  ? NoTurtleImg
+                  : itemData.images[currentIndex]
+              }
+              className="w-full h-[380px] object-cover rounded-[20px] cursor-pointer"
               alt="Turtle"
               draggable="false"
             />
