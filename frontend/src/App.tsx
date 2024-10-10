@@ -60,7 +60,7 @@ function App() {
     const preloadImage = new Image();
     preloadImage.src = LoadingImage;
     preloadImage.loading = "eager";
-    preloadImage.decode().catch(() => {});
+    preloadImage.decode().catch(() => { });
   }, []);
   const role = useUserStore((state) => state.userInfo?.role);
   const isLogin = useUserStore((state) => state.isLogin);
@@ -94,11 +94,22 @@ function App() {
             {/* Auction Domain - 경매 */}
             <Route
               path="/auction-detail/:auctionId"
-              element={<AuctionDetailPage />}
+              element={
+                <LoginAccessRestrict
+                  element={<AuctionDetailPage />}
+                />
+              }
             />
             <Route path="/auction-list" element={<AuctionListPage />} />
             {/* <Route path="/auction-success" element={<AuctionSuccessPage />} /> */}
-            <Route path="/auction-register" element={<AuctionRegisterPage />} />
+            <Route path="/auction-register" element={
+              <LoginAccessRestrict
+                element={
+                  <AuctionRegisterPage />
+                }
+              />
+
+            } />
 
             {/* Transaction Domain - 거래 */}
             <Route
@@ -108,7 +119,12 @@ function App() {
             <Route path="/transaction-list" element={<TransactionListPage />} />
             <Route
               path="/transaction-register"
-              element={<TransactionRegisterPage />}
+
+              element={
+                <LoginAccessRestrict
+                  element={<TransactionRegisterPage />}
+                />
+              }
             />
 
             {/* User Domain - 유저 */}
