@@ -50,7 +50,7 @@ export default function Header() {
 
   return (
     <header>
-      <div
+      <nav
         className="fixed top-0 left-0 w-full h-[62px] lg:h-[75px] px-4 lg:px-[250px] flex flex-row justify-between items-center shadow-md z-50"
         style={{ backgroundColor: headerBackgroundColor }}
       >
@@ -144,7 +144,7 @@ export default function Header() {
             </Modal>
           </Suspense>
         )}
-      </div>
+      </nav>
     </header>
   );
 }

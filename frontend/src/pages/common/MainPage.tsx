@@ -44,7 +44,7 @@ function MainPage() {
         <link rel="preload" href={TurtleStop} as="image" />
       </Helmet>
       <Header />
-      <div className="relative min-h-screen bg-white overflow-hidden">
+      <main className="relative min-h-screen bg-white overflow-hidden">
         <div className="img-box-center">
           <img
             src={BackgroundImg}
@@ -112,7 +112,7 @@ function MainPage() {
             </div>
           )}
         </div>
-      </div>
+      </main>
 
       <style>{`
         .turtle-animation {
