@@ -40,7 +40,7 @@ function CompleteAssignGrantDocument({
         </div>
         <div className="flex items-center">
           <span className="w-1/6 font-medium">주소</span>
-          <span className="py-2">{data?.applicant?.address.replace(" / ", " ")}</span>
+          <span className="py-2">{data?.applicant?.address?.replace(" / ", " ")}</span>
         </div>
       </div>
 
@@ -58,7 +58,7 @@ function CompleteAssignGrantDocument({
         </div>
         <div className="flex items-center">
           <span className="w-1/6 font-medium">주소</span>
-          <span className="py-2">{data?.grantor?.address.replace(" / ", " ")}</span>
+          <span className="py-2">{data?.grantor?.address?.replace(" / ", " ")}</span>
         </div>
       </div>
 
