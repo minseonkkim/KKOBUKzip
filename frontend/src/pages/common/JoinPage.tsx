@@ -13,6 +13,7 @@ import Header from "../../components/common/Header";
 import StopTurtleImg from "../../assets/turtle_home_stop.png";
 import { useNavigate } from "react-router-dom";
 import Alert from "../../components/common/Alert";
+import { useUserStore } from "../../store/useUserStore";
 
 // 1. 인증하기를 누르고 인증이 된다-> 그냥 다음으로 보냄(step 3) 넘어가먼 못돌아옴
 // 2. 인증 직전까지는 -> 이전으로 가서 정보 수정 ok
@@ -31,7 +32,10 @@ interface ErrorStateType {
 }
 
 function JoinPage() {
-  // const isMobile = useDeviceStore((state) => state.isMobile);
+  const isLogin = useUserStore((state) => state.isLogin);
+  useEffect(()=>{
+    if(isLogin) navigate("/");
+  },[])
   const { postcodeData, loadPostcodeSearch } = usePostcodeSearch();
   const addressBtnRef = useRef<HTMLButtonElement | null>(null);
   const [step, setStep] = useState(1);
@@ -79,6 +83,7 @@ function JoinPage() {
     address: "",
     detailedAddress: "",
   });
+
 
   const navigate = useNavigate();
 
