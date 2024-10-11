@@ -28,7 +28,7 @@
 
 ### **Backend**
 
-<img src="https://img.shields.io/badge/IntelliJ IDEA-000000?style=for-the-badge&logo=IntelliJ IDEA&logoColor=white"> <img src="https://img.shields.io/badge/SpringBoot_3.3.1-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"> <img src="https://img.shields.io/badge/Spring Data JPA-6DB33F?style=for-the-badge&logo=&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white"> <img src="https://img.shields.io/badge/Spring Cloud-6DB33F?style=for-the-badge&logo=Spring Colud&logoColor=white"> <img src="https://img.shields.io/badge/Spring Batch-6DB33F?style=for-the-badge&logo=&logoColor=white"> <br> <img src="https://img.shields.io/badge/rabbitmq-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white"> <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"> <img src = "https://img.shields.io/badge/-MongoDB-13aa52?style=for-the-badge&logo=mongodb&logoColor=white"> <img src="https://img.shields.io/badge/AWS S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white"> <img src="https://img.shields.io/badge/WebSocket-000000?style=for-the-badge&logo=&logoColor=white">
+<img src="https://img.shields.io/badge/IntelliJ IDEA-000000?style=for-the-badge&logo=IntelliJ IDEA&logoColor=white"> <img src="https://img.shields.io/badge/SpringBoot_3.3.1-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"> <img src="https://img.shields.io/badge/Spring Data JPA-6DB33F?style=for-the-badge&logo=&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white"> <img src="https://img.shields.io/badge/Spring Cloud-6DB33F?style=for-the-badge&logo=Spring Colud&logoColor=white"> <br> <img src="https://img.shields.io/badge/Spring Batch-6DB33F?style=for-the-badge&logo=&logoColor=white"> <img src="https://img.shields.io/badge/rabbitmq-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white"> <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"> <img src = "https://img.shields.io/badge/-MongoDB-13aa52?style=for-the-badge&logo=mongodb&logoColor=white"> <img src="https://img.shields.io/badge/AWS S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white"> <img src="https://img.shields.io/badge/WebSocket-000000?style=for-the-badge&logo=&logoColor=white">
 
 ### **Frontend**
 
@@ -85,6 +85,10 @@
 
   ![양수서류등록](./docs/assets/양수서류등록.gif)
 
+- 관리자 승인
+
+  ![관리자승인](./docs/assets/관리자승인.gif)
+
 ### 경매
 - 경매 진행
 
@@ -96,6 +100,18 @@
 
 ### 마이페이지
 ![마이페이지](./docs/assets/마이페이지.gif)  
+
+- 판매 등록
+
+  ![판매등록](./docs/assets/판매등록.gif)
+
+- 인공증식 서류 등록
+
+  ![인공증식등록](./docs/assets/인공증식등록.gif) 
+
+- 양도 서류 등록
+  
+  ![양도서류등록](./docs/assets/양도서류등록.gif)
 
 ### 404 (거북이 달리기 게임)
 ![404화면](./docs/assets/404화면.gif)  
