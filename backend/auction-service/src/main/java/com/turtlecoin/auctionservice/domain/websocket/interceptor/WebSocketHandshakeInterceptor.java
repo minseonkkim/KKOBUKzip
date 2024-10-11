@@ -39,6 +39,8 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
 
         HttpHeaders headers = request.getHeaders();
         String token = headers.getFirst("Authorization");
+        log.info("Token : {}", token);
+        System.out.println("Token : "+ token);
 
         if (token == null || !token.startsWith("Bearer ")) {
             log.warn("Authorization 헤더가 없거나 잘못되었습니다.");

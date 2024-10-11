@@ -132,7 +132,7 @@ function DuringAuction({
 
           auctionStompClient.current!.send(
             `/pub/auction/${auctionId}/init`,
-            {},
+            { Authorization: `Bearer ${sessionStorage.getItem("accessToken")}` },
             JSON.stringify({})
           );
         },
