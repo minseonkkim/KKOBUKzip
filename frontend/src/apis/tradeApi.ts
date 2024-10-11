@@ -127,8 +127,8 @@ export const getAuctionDatas = async ({
     pageQuery + genderQuery + sizeQuery + priceQuery + progressQuery;
   // request
   const response = await guestAxios.get(`/auction?${query}`);
-  console.log(query);
-  console.log(response);
+  // console.log(query);
+  // console.log(response);
   return response;
 };
 
