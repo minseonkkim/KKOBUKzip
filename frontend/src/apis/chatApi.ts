@@ -16,7 +16,6 @@ export const fetchChatMessageData = async (memberId: number) => {
   } catch (error) {
     let message = "Unknown Error";
     if (error instanceof Error) {
-      console.log(error.message);
       message = error.message;
     }
     console.error("Chat LIST API Error : " + message);
@@ -40,7 +39,6 @@ export const fetchChatMessageDataFromTx = async (transactionId: number) => {
   } catch (error) {
     let message = "Unknown Error";
     if (error instanceof Error) {
-      console.log(error.message);
       message = error.message;
     }
     console.error("Chat LIST API Error : " + message);
@@ -64,7 +62,6 @@ export const fetchChatListData = async (memberId: number) => {
   } catch (error) {
     let message = "Unknown Error";
     if (error instanceof Error) {
-      console.log(error.message);
       message = error.message;
     }
     console.error("Chat Detail API Error : " + message);
