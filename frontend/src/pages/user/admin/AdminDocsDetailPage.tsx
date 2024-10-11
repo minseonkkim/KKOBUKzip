@@ -32,7 +32,6 @@ function AdminDocsDetailPage() {
   const [data, setData] = useState<dataType | null>(null);
 
   useEffect(() => {
-    // console.log(params?.turtleUUID, params?.documentHash);
     const documentType: AdminDocType = location.state?.documentType ?? null;
 
     const getData = async () => {
@@ -49,7 +48,6 @@ function AdminDocsDetailPage() {
         return false;
       }
       setData(data);
-      console.log(data);
       // return;
       if (
         ["인공증식증명서", "양도양수확인서", "폐사질병신고서"].includes(
@@ -73,7 +71,6 @@ function AdminDocsDetailPage() {
   const handleAcceptSubmit = (turtleUUID: string, documentHash: string) => {
     approveDocumentRequest(turtleUUID, documentHash, true).then((response) => {
       if (response.success) {
-        console.log("성공");
         alert("서류 승인 처리가 완료되었습니다.");
         navigate("/admin/document/list");
       } else {
@@ -84,7 +81,6 @@ function AdminDocsDetailPage() {
   const handleDenySubmit = (turtleUUID: string, documentHash: string) => {
     approveDocumentRequest(turtleUUID, documentHash, false).then((response) => {
       if (response.success) {
-        console.log("성공");
         alert("서류 반려 처리가 완료되었습니다.");
         navigate("/admin/document/list");
       } else {

@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link, useNavigate } from "react-router-dom";
-import useDeviceStore from "../../store/useDeviceStore";
-import naver_logo from "../../assets/login/naver_logo2.webp";
-import kakao_logo from "../../assets/login/kakao_logo.webp";
+import { useNavigate } from "react-router-dom";
 import Header from "../../components/common/Header";
 import StopTurtleImg from "../../assets/turtle_home_stop.png";
 import { FaRegEye } from "@react-icons/all-files/fa/FaRegEye";

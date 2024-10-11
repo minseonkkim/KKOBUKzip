@@ -64,12 +64,10 @@ export default function AuctionHistory(props: AuctionHistoryProps | Partial<Auct
       navigate("/doc-form/grant", {
         state: { turtleId: props.turtleId, turtleUuid: props.turtleUuid, transactionId: props.transactionId, documentHash: props.documentHash, myTurtlesUuid: props.myTurtlesUuid },
       });
-      console.log("Navigate to seller paperwork page");
     } else {
       navigate("/doc-form/assign", {
         state: { turtleId: props.turtleId, transactionId: props.transactionId },
       });
-      console.log("Navigate to buyer paperwork page");
     }
   };
 

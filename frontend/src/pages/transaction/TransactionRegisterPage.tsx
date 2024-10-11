@@ -119,7 +119,6 @@ export default function TransactionRegisterPage() {
       }
 
       if(window.confirm(`${state.name}(이)의 판매 등록이 완료되었습니다.`)){
-        console.log("Transaction added successfully:", response);
         navigate("/transaction-list");
       }
       

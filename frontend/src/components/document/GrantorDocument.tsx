@@ -121,7 +121,6 @@ function GrantorDocument() {
       phoneNumber: applicantPhoneNumber,
       address: applicantAddress,
     });
-    console.log("loadUserData");
   };
 
   const changeUuidData = (
@@ -176,7 +175,6 @@ function GrantorDocument() {
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLSelectElement>
   ) => {
-    console.log(evt.target.value);
     setGrantor((prev) => ({ ...prev, [key]: evt.target.value }));
   };
 

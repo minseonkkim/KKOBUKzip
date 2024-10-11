@@ -44,7 +44,6 @@ export default function ChatList() {
 
     // SSE 연결하는 함수
     const initializeSSE = () => {
-      console.log("sse 연결 시도");
       const SSE_URL =
         import.meta.env.VITE_SSE_MAIN_URL + "/" + Number(userInfo?.userId);
       // const eventSource = new EventSource(SSE_URL);
@@ -58,20 +57,11 @@ export default function ChatList() {
       });
 
       eventSource.onopen = () => {
-        console.log("!SSE 연결 성공!");
-        console.log("readyState:", eventSource.readyState);
+        console.log("SSE successfully connected!");
       };
-
-      // eventSource.onmessage = (event) => {
-      //   console.log("SSE가 도착한다!");
-      //   const newChat: ChatListItem = JSON.parse(event.data);
-      //   updateRoomList(newChat);
-      // };
 
       eventSource.addEventListener("sse", (event) => {
         const messageEvent = event as MessageEvent; // Type Assertion
-        console.log("SSE가 도착한다!!!!!");
-        console.log(JSON.parse(messageEvent.data));
         const newChat: ChatListItem = JSON.parse(messageEvent.data);
         updateRoomList(newChat);
         addTotalUnreadCount(1);

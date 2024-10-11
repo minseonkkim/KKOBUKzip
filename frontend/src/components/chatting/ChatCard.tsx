@@ -9,7 +9,6 @@ interface ChatCardProps {
 export default function ChatCard({ openChatDetail, chat }: ChatCardProps) {
   const isTablet = useDeviceStore((state) => state.isTablet);
 
-  // console.log(openChatDetail, chat);
   return (
     <div
       className="w-full text-black bg-white rounded-[10px] py-2 lg:my-3 my-4 mx-1 cursor-pointer"
