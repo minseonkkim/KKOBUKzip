@@ -1,7 +1,8 @@
 # 🐢 꼬북집 KKOBUKZIP
-![썸네일](./docs/assets/thumbnail.PNG)
-## 💚 프로젝트 소개
 
+![썸네일](./docs/assets/thumbnail.PNG)
+
+## 💚 프로젝트 소개
 
 대부분의 거북이는 희귀동물로 분류되어, 양육 시 반드시 <b>CITES</b>라는 서류를 통해 환경부에 신고해야 합니다.
 
@@ -18,15 +19,16 @@
 [배포 링크 🔗](https://j11c107.p.ssafy.io/)
 
 ## 💚 프로젝트 기간
+
 24.08.19 ~ 24.10.11 (8주)
 
 (SSAFY 특화 프로젝트 - 블록체인 트랙)
 
 ## 💚 기술 스택
+
 ### **Backend**
 
-<img src="https://img.shields.io/badge/IntelliJ IDEA-000000?style=for-the-badge&logo=IntelliJ IDEA&logoColor=white"> <img src="https://img.shields.io/badge/SpringBoot_3.3.1-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"> <img src="https://img.shields.io/badge/Spring Data JPA-6DB33F?style=for-the-badge&logo=&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white"> <img src="https://img.shields.io/badge/Spring Cloud-6DB33F?style=for-the-badge&logo=Spring Colud&logoColor=white"> <br> <img src="https://img.shields.io/badge/rabbitmq-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white"> <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"> <img src="https://img.shields.io/badge/AWS S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white"> <img src="https://img.shields.io/badge/WebSocket-000000?style=for-the-badge&logo=&logoColor=white">
- 
+<img src="https://img.shields.io/badge/IntelliJ IDEA-000000?style=for-the-badge&logo=IntelliJ IDEA&logoColor=white"> <img src="https://img.shields.io/badge/SpringBoot_3.3.1-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"> <img src="https://img.shields.io/badge/Spring Data JPA-6DB33F?style=for-the-badge&logo=&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white"> <img src="https://img.shields.io/badge/Spring Cloud-6DB33F?style=for-the-badge&logo=Spring Colud&logoColor=white"> <img src="https://img.shields.io/badge/Spring Batch-6DB33F?style=for-the-badge&logo=&logoColor=white"> <br> <img src="https://img.shields.io/badge/rabbitmq-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white"> <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"> <img src = "https://img.shields.io/badge/-MongoDB-13aa52?style=for-the-badge&logo=mongodb&logoColor=white"> <img src="https://img.shields.io/badge/AWS S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white"> <img src="https://img.shields.io/badge/WebSocket-000000?style=for-the-badge&logo=&logoColor=white">
 
 ### **Frontend**
 
@@ -48,34 +50,32 @@
 
 ## 💚 팀원 소개
 
-| ![김여준](https://avatars.githubusercontent.com/junjunclub) | ![김영빈](https://avatars.githubusercontent.com/YBK1) | ![신민경](https://avatars.githubusercontent.com/minggwen) | ![김민선](https://avatars.githubusercontent.com/minseonkkim) | ![서규범](https://avatars.githubusercontent.com/goosebbeoms) | ![한세훈](https://avatars.githubusercontent.com/DDARK00) | 
-|---------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| 김여준([@junjunclub](https://github.com/junjunclub)) | 김영빈([@YBK1](https://github.com/YBK1)) | 신민경([@minggwen](https://github.com/minggwen)) | 김민선([@minseonkkim](https://github.com/minseonkkim)) | 서규범([@goosebbeoms](https://github.com/goosebbeoms)) | 한세훈([@DDARK00](https://github.com/DDARK00)) | 
-| Leader / Back End | Back End / Blockchain | Back End | Front End | Front End / Blockchain | Front End |
-
+| ![김여준](https://avatars.githubusercontent.com/junjunclub) | ![김영빈](https://avatars.githubusercontent.com/YBK1) | ![신민경](https://avatars.githubusercontent.com/minggwen) | ![김민선](https://avatars.githubusercontent.com/minseonkkim) | ![서규범](https://avatars.githubusercontent.com/goosebbeoms) | ![한세훈](https://avatars.githubusercontent.com/DDARK00) |
+| ----------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | -------------------------------------------------------- |
+| 김여준([@junjunclub](https://github.com/junjunclub))        | 김영빈([@YBK1](https://github.com/YBK1))              | 신민경([@minggwen](https://github.com/minggwen))          | 김민선([@minseonkkim](https://github.com/minseonkkim))       | 서규범([@goosebbeoms](https://github.com/goosebbeoms))       | 한세훈([@DDARK00](https://github.com/DDARK00))           |
+| Leader / Back End                                           | Back End / Blockchain                                 | Back End                                                  | Front End                                                    | Front End / Blockchain                                       | Front End                                                |
 
 ## 💚 프로젝트 산출물
 
-  - [기능명세서](./docs/기능명세서.md)
-  - [와이어프레임](./docs/와이어프레임.md)
-  - [API명세서](./docs/API명세서.md)
-  - [블록체인명세서](./docs/블록체인명세서.md)
-  - [ERD](./docs/ERD.md)
-  - [목업](./docs/목업.md)
-  - [아키텍처](./docs/아키텍처.md)
+- [기능명세서](./docs/기능명세서.md)
+- [와이어프레임](./docs/와이어프레임.md)
+- [API명세서](./docs/API명세서.md)
+- [블록체인명세서](./docs/블록체인명세서.md)
+- [ERD](./docs/ERD.md)
+- [목업](./docs/목업.md)
+- [아키텍처](./docs/아키텍처.md)
 
 ## 💚 프로젝트 결과물
 
-  - [포팅매뉴얼](./exec/)
-  - [중간발표자료](./docs/꼬북집_중간발표_PPT.pdf)
-  - [최종발표자료](./docs/꼬북집_최종발표_PPT.pdf)
+- [포팅매뉴얼](./exec/)
+- [중간발표자료](./docs/꼬북집_중간발표_PPT.pdf)
+- [최종발표자료](./docs/꼬북집_최종발표_PPT.pdf)
 
 ## 💚 화면 구성
 
-
 ## 💚 Git Flow
 
-  **Commit Convention**
+**Commit Convention**
 
     📌 feat: 새로운 기능 추가, 기능 수정, 삭제
 
@@ -94,4 +94,3 @@
     📌 rename: 파일 이름 변경이 있을 때 사용
 
     📌 remove : 파일 삭제
-
