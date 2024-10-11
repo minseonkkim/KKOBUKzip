@@ -28,8 +28,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/ws/main") //우리의 endpoint
 			.setAllowedOrigins("*");
-		//System.out.println("registry: "+registry);
-		//                .addInterceptors(handshakeInterceptor); // 핸드셰이크 인터셉터 추가
 	}
 	@Override
 	public void configureClientInboundChannel(ChannelRegistration registration) {

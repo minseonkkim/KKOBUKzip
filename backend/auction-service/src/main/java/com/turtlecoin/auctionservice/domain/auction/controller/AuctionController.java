@@ -53,9 +53,6 @@ public class AuctionController {
     // 테스트
     @GetMapping("/test")
     public ResponseEntity<String> test () {
-        log.info("test");
-        System.out.println("test!");
-//        sendService.sendMessage();
         return ResponseEntity.status(HttpStatus.OK).body("OK");
     }
 
@@ -105,7 +102,7 @@ public class AuctionController {
         Double maxSize = null;
         if (size != null && size.contains("-")) {
             String[] sizeRange = size.split("-");
-            System.out.println("길이"+ sizeRange.length);
+
             if (sizeRange.length == 2) {
                 log.info(sizeRange[0]);
                 log.info(sizeRange[1]);
@@ -119,7 +116,7 @@ public class AuctionController {
         Double maxPrice = null;
         if (price != null && price.contains("-")) {
             String[] priceRange = price.split("-");
-            System.out.println("길이"+ priceRange.length);
+
             if (priceRange.length == 2) {
                 log.info(priceRange[0]);
                 log.info(priceRange[1]);
@@ -151,7 +148,6 @@ public class AuctionController {
                 throw new UserNotFoundException("유효한 토큰 값이 아닙니다.");
             }
             List<AuctionListResponseDto> data = auctionService.getMyAuctions(id);
-            System.out.println(data.toString());
             return new ResponseEntity<>(ResponseVO.success("내 경매 조회에 성공하였습니다.", "data", data), HttpStatus.OK);
         }catch (IOException e){
             return new ResponseEntity<>(ResponseVO.failure("500", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);

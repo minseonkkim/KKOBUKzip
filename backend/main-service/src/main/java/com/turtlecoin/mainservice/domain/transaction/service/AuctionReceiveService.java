@@ -33,13 +33,11 @@ public class AuctionReceiveService {
     @Transactional
     @RabbitListener(queues = "auction.result.queue")
     public void receiveMessage(AuctionResultDTO auctionResultDTO) {
-        log.info("Received AuctionResultDTO: {}", auctionResultDTO);
         if (auctionResultDTO.getWinningBid() == null) {
             log.error("Received message with null price. Message will be discarded.");
             // 에러 처리 혹은 메시지 무시
             return;
         }
-        log.info("여기가 문제");
         log.info("Received message with price " + auctionResultDTO.getWinningBid());
         Turtle turtle = turtleRepository.findById(auctionResultDTO.getTurtleId()).get();
         String imageAddress = auctionResultDTO.getImageAddress();
@@ -64,9 +62,5 @@ public class AuctionReceiveService {
         }
 
         transactionRepository.save(transaction);
-
-        // 사진은 없음
-//        transactionService.enrollTransaction(transaction, );
-        System.out.println("Received message: " + auctionResultDTO.getTurtleId());
     }
 }

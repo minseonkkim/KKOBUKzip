@@ -18,8 +18,6 @@ public class MainServiceApplication {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		String rawPassword = "kkobuk107!";
 		String encodedPassword = encoder.encode(rawPassword);
-		System.out.println("encodedPassword");
-		System.out.println(encodedPassword);
 	}
 
 }

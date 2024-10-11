@@ -128,7 +128,6 @@ public class UserController {
     @GetMapping("/nickname")
     public String getUserNicknameById(@RequestHeader("Authorization") String token) {
         User user = jwtService.getUserByToken(token).orElseThrow(() -> new UserNotFoundException("이용자를 찾을 수 없습니다."));
-        System.out.println("userNickname: " + user.getNickname());
         return user.getNickname();
     }
 

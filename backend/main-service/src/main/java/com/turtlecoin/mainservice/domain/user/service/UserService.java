@@ -140,11 +140,9 @@ public class UserService {
     }
 
     public List<FeignTurtleResponseDTO> getTurtlesdtoByUserId(Long userId) {
-        log.info("거북이 조회 호출");
         try {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-            log.info("사용자 조회 완료");
             List<FeignTurtleResponseDTO> dtos = user.getTurtles().stream()
                     .map(turtle -> FeignTurtleResponseDTO.builder()
                             .id(turtle.getId())
@@ -154,7 +152,6 @@ public class UserService {
                             .userId(user.getId())
                             .build())
                     .toList();
-            log.info("처리 완료");
             return dtos;
         } catch (Exception e) {
             log.info("에러 메시지 : " + e.getMessage());
@@ -162,24 +159,10 @@ public class UserService {
         }
     }
 
-
-
-//            log.info("DTO로 거북이 변환 완료");
-//            int cnt = dtos.size();
-//            log.info("cnt : {}", cnt);
-//            Map<String, Object> data = new HashMap<>();
-//
-//            data.put("data", dtos);
-//            data.put("cnt", cnt);
-//
-//            return
-
     public ResponseEntity<?> getTurtlesByUserId (Long userId) {
-        log.info("거북이 조회 호출");
         try {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-            log.info("사용자 조회 완료");
             List<UserTurtleResponseDTO> dtos =  user.getTurtles().stream()
                     .map(turtle -> UserTurtleResponseDTO.builder()
                             .id(turtle.getId())
@@ -199,7 +182,6 @@ public class UserService {
                             .fatherImageAddress(turtle.getDad() != null ? turtle.getDad().getTurtlePhotos().get(0).getImage() : "")
                             .build())
                     .toList();
-            log.info("DTO로 거북이 변환 완료");
             int cnt = dtos.size();
             log.info("cnt : {}", cnt);
             Map<String, Object> data = new HashMap<>();
