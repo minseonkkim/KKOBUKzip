@@ -22,8 +22,6 @@ function BeforeAuction({
 
     eventSource.addEventListener("sse", (event) => {
       const messageEvent = event as MessageEvent; // Type Assertion
-      console.log("SSE가 도착한다!!!!!");
-      console.log(JSON.parse(messageEvent.data));
       changeAuctionStatus();
     });
 

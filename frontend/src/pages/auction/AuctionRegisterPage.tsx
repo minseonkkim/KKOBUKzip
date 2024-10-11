@@ -111,7 +111,6 @@ export default function AuctionRegisterPage() {
         type: "application/json",
       })
     );
-    console.log(data);
 
     try {
       const result = await addAuctionItem(formData);

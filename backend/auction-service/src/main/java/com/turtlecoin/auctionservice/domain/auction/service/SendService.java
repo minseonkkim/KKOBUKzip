@@ -100,13 +100,11 @@ public class SendService {
 
     @Transactional
     public AuctionResultDTO createAuctionResultDTO(Auction auction, Double winningBid, Long buyerId) {
-        System.out.println("사진 주소 가져오기 시도");
 
         // 트랜잭션 내에서 auctionPhotos를 초기화하여 Lazy Loading 문제 해결
         if (!auction.getAuctionPhotos().isEmpty()) {
             // auctionPhotos가 있을 경우, 첫 번째 사진 가져오기
             String firstImageAddress = auction.getAuctionPhotos().get(0).getImageUrl();
-            System.out.println("사진 주소 가져오기 성공");
 
             return AuctionResultDTO.builder()
                     .title(auction.getTitle())
@@ -121,7 +119,6 @@ public class SendService {
                     .imageAddress(firstImageAddress) // 첫 번째 사진 주소 넣기
                     .build();
         } else {
-            System.out.println("사진이 없습니다.");
 
             return AuctionResultDTO.builder()
                     .title(auction.getTitle())

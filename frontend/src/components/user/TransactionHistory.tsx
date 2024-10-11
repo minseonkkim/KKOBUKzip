@@ -60,12 +60,10 @@ export default function TransactionHistory(props: TransactionHistoryProps | Part
       navigate("/doc-form/grant", {
         state: { turtleId: props.turtleId, turtleUuid: props.turtleUuid, transactionId: props.transactionId, documentHash: props.documentHash, myTurtlesUuid: props.myTurtlesUuid },
       });
-      console.log("Navigate to seller paperwork page");
     } else {
       navigate("/doc-form/assign", {
         state: { turtleId: props.turtleId, turtleUuid: props.turtleUuid, transactionId: props.transactionId },
       });
-      console.log("Navigate to buyer paperwork page");
     }
   };
 

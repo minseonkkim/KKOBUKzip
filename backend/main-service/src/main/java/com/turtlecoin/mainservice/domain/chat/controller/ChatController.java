@@ -131,7 +131,6 @@ public class ChatController {
 	@GetMapping("/connectUser")
 	public String connectUser() {
 		for(String s : customWebSocketHandler.getConnectedUsers()) {
-			System.out.println(s);
 		}
 		return "Success";
 	}

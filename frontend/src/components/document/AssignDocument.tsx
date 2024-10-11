@@ -49,7 +49,6 @@ function AssignDocument() {
         address: postcodeData.roadAddress,
       }));
     }
-    console.log(assignee)
   }, [postcodeData?.roadAddress]);
 
   // 유저데이터 로드하는 함수
@@ -59,7 +58,6 @@ function AssignDocument() {
       phoneNumber: applicantPhoneNumber,
       address: applicantAddress,
     })
-    console.log("loadUserData");
   };
 
   // 문서 작성 요청 함수
@@ -68,8 +66,6 @@ function AssignDocument() {
       alert("양수인 정보를 모두 입력해주세요.");
       return;
     }
-    console.log("data : ", data)
-    console.log(state);
     const docs: AssigneeFetchData = {
       transactionId: state.transactionId as number,
       docType: "양수신청서",
@@ -82,7 +78,6 @@ function AssignDocument() {
         ...data,
       },
     };
-    console.log(docs);
     const result = await createAssignDocumentRequest(docs);
     if (result.success) {
       alert("양수 서류 등록이 완료되었습니다.");

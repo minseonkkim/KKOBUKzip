@@ -49,8 +49,6 @@ public class MessageController {
 			redisTemplate.opsForHash().put("userId:" + userId, "room", chattingId);
 			// TTL(만료 시간) 설정
 			redisTemplate.expire("user:" + userId, 60, TimeUnit.MINUTES);
-
-			//System.out.println(userId);
 		}
 	}
 

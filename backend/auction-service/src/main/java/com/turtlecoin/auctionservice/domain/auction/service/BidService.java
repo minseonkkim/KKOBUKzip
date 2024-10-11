@@ -42,18 +42,13 @@ public class BidService {
         String key = AUCTION_END_KEY_PREFIX + auctionId;
 
         redisTemplate.opsForValue().set(key, "ready");
-        System.out.println("redis expire key : "+key);
+
         redisTemplate.expire(key, (long) (30.1*1000), TimeUnit.MILLISECONDS); // TTL 30초 설정
 
         Long remainingTime = redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
-        System.out.println("startAuction에서 remainingTime: " + remainingTime);
-        System.out.println("여기까지는 찍혔음1");
         auction.updateStatus(AuctionProgress.DURING_AUCTION);
-        System.out.println("여기까지는 찍혔음2");
         // sse로 경매 시작을 알림
         sseService.notify(auction.getId(), "Auction Started");
-        
-        System.out.println("경매 상태 변경 및 경매 종료시간 설정");
     }
 
     // 입찰 가격 갱신
@@ -114,10 +109,8 @@ public class BidService {
         Map<Object, Object> currentBidData = redisTemplate.opsForHash().entries(redisKey);
         Double currentBid = 0D; // 기본값은 0원
         if (!currentBidData.isEmpty()) {
-            System.out.println("최근 입찰 데이터가 있는 경우의 currentBid : "+currentBid);
             return parseBidAmount(currentBidData.get("bidAmount"));
         }
-        System.out.println("최근 입찰 데이터가 없는 경우의 currentBid : "+currentBid);
         return currentBid;
     }
 
@@ -136,12 +129,7 @@ public class BidService {
         log.info("경매 남은시간 검증 후 에러 던져주는 로직");
         String key = AUCTION_END_KEY_PREFIX + auctionId;
         Long remainingTime = redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
-        System.out.println("redis key : "+key+" remainingTime : "+remainingTime);
         log.info("redis key : {}remaining time : {}", key, remainingTime);
-
-        log.info("자신의 경매에 재입찰 하는지 검증하는 로직");
-
-        log.info("자신의 입찰에 재입찰 하는지 검증하는 로직");
         if (currentUserId != null && currentUserId.equals(userId)) {
             String destination = "/user/" + userId + "/queue/auction";
             messagingTemplate.convertAndSendToUser(userId.toString(), destination,
@@ -149,9 +137,7 @@ public class BidService {
             throw new SameUserBidException("자신의 입찰에 재입찰할 수 없습니다: userId = " + userId);
         }
 
-        log.info("적절한 입찰가인지 검증하는 로직");
         if (bidAmount <= currentBid) {
-            System.out.println("입찰요청가격 bidAmount : "+bidAmount+" 이전 입찰가 currentBid : "+currentBid);
             String destination = "/user/" + userId + "/queue/auction";
             messagingTemplate.convertAndSendToUser(userId.toString(), destination,
                     ResponseVO.failure("Bid", "400", "현재 입찰가보다 낮거나 같은 금액으로 입찰할 수 없습니다."));
@@ -179,9 +165,7 @@ public class BidService {
         String redisKey = AUCTION_BID_KEY + auctionId;
         Map<String, Object> bidData = new HashMap<>();
         bidData.put("userId", userId.toString());
-        System.out.println("updateBidInfo remainingTime 저장 시도");
         bidData.put("remainingTime", redisTemplate.getExpire(redisKey, TimeUnit.MILLISECONDS).toString());
-        System.out.println("updateBidInfo remainingTime 저장 완료");
         bidData.put("bidAmount", bidAmount.toString());
         bidData.put("nextBid", newBidAmount.toString());
 
@@ -266,9 +250,6 @@ public class BidService {
             // 성공적인 입찰인 경우
             Map<String, Object> data = new HashMap<>();
             data.put("bidRecord", bidMessage);
-            System.out.println("===");
-            System.out.println(data.get("bidRecord").toString());
-            System.out.println("===");
             response = ResponseVO.bidSuccess("Bid","200", data);
         }
 
@@ -292,21 +273,13 @@ public class BidService {
     public void setAuctionEndTime(Long auctionId, LocalDateTime endTime) {
         String key = AUCTION_END_KEY_PREFIX + auctionId;
         String timeToString = endTime.toString();
-        System.out.println("Key : "+key);
-        System.out.println("Time To String : "+timeToString);
         ValueOperations<String, Object> ops = redisTemplate.opsForValue();
-        System.out.println("====여기서 오류 발생====");
         ops.set(key, timeToString, (long) (30.1*1000), TimeUnit.MILLISECONDS); // TTL 30초 설정
-        System.out.println("endTime 시간 설정");
     }
 
     // 경매 종료 시간 갱신
     public void resetAuctionEndTime(Long auctionId) {
-        log.info("auctionId: {}", auctionId);
         String key = AUCTION_END_KEY_PREFIX + auctionId;
-        System.out.println("key : "+key);
-        System.out.println("resetAuctionEndTime 내부에서 입찰시간 갱신");
-        log.info("resetAuctionEndTime 내부에서 입찰시간 갱신");
         redisTemplate.expire(key, (long) (30.1*1000), TimeUnit.MILLISECONDS); // TTL 30초 재설정
     }
 

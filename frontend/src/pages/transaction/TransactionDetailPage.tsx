@@ -7,7 +7,6 @@ import { getTransactionDetailItemData } from "../../apis/tradeApi";
 import { TransactionItemDetailType } from "../../types/transaction";
 import formatDate from "../../utils/formatDate";
 import { useUserStore } from "../../store/useUserStore";
-// import tmpProfileImg from "../../assets/tmp_profile.gif";
 import { FaAngleLeft } from "@react-icons/all-files/fa/FaAngleLeft";
 import { FaAngleRight } from "@react-icons/all-files/fa/FaAngleRight";
 import NoTurtleImg from "../../assets/NoTurtleImg.webp";
@@ -37,7 +36,6 @@ function TransactionDetailPage() {
       const id = params.id;
       if (id) {
         const result = await getTransactionDetailItemData(id);
-        console.log(result);
         if (result.success) {
           setTransactionData(result.data.data.turtle);
         }

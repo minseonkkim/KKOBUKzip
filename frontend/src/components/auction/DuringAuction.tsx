@@ -111,7 +111,6 @@ function DuringAuction({
         },
         (frame: StompFrame) => {
           console.log("Connected: " + frame);
-          console.log("userID : ", userInfo!.userId);
           auctionStompClient.current!.subscribe(
             `/user/queue/auction/${auctionId}/init`,
             // 초기 데이터 수신 처리
@@ -136,7 +135,6 @@ function DuringAuction({
             {},
             JSON.stringify({})
           );
-          console.log("빈값으로 보내기");
         },
         (error: unknown) => {
           console.error("Connection error: ", error);
@@ -223,7 +221,6 @@ function DuringAuction({
         "// Message : ",
         newMessage.message
       );
-      // if(statusCode === "???") alert(newMessage.message)
     }
   };
 
@@ -250,7 +247,6 @@ function DuringAuction({
           },
           JSON.stringify(data)
         );
-      console.log("메세지BidRequest 테스트", data);
     } finally {
       setTimeout(() => {
         setLoading(false);

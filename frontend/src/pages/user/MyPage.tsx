@@ -81,19 +81,13 @@ function MyPage() {
           ]);
 
         if (transactionResponse.success) {
-          console.log(
-            "거래내역 목록",
-            transactionResponse.data!.data.transaction
-          );
           setMyTransactions(transactionResponse.data!.data.transaction);
         }
         if (auctionResponse.success) {
-          console.log("경매내역 목록", auctionResponse.data!.data.data);
           setMyAuctions(auctionResponse.data.data.data);
         }
         if (turtleResponse.success) {
           setTurtleData(turtleResponse.data.data.data.data);
-          console.log("거북이 목록", turtleResponse.data.data.data.data);
         }
       } catch (error) {
         console.error("Error initializing data:", error);
@@ -151,7 +145,6 @@ function MyPage() {
         useUserStore.getState().setProfileImage(newProfileImageUrl);
         // 모달 닫기
         closeCustomModal();
-        console.log("프로필사진 업데이트 완료:", newProfileImageUrl);
       } else {
         console.error("No valid profile image URL found in response:", result);
       }

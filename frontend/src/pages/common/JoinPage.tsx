@@ -131,7 +131,6 @@ function JoinPage() {
       (evt: React.ChangeEvent<HTMLInputElement>) => {
         const value = evt.target.value;
         setData((prev) => ({ ...prev, [type]: value }));
-        console.log(data);
       };
 
   const confirmPasswordChangeHandle = (
@@ -347,7 +346,7 @@ function JoinPage() {
           <Alert isOpen={isFinishAlertOpen} message="회원가입이 완료되었습니다." onClose={closeFinishAlert} />
           navigate("/login");
         } else {
-          console.log(rst.error);
+          console.error(rst.error);
         }
       } finally {
         setFetchLoading(false)

@@ -36,7 +36,6 @@ public class TurtleService {
     //거북이를 필터링해서 auction-service에 넘겨주기
     public List<AuctionTurtleInfoDTO> getFilteredTurtles(Gender gender, Double minSize, Double maxSize) {
         log.info("파라미터 체크 성별: {}, 최소 사이즈 : {}, 최대 사이즈: {}", gender, minSize, maxSize);
-        System.out.println("요청 오는지 체크");
         QTurtle turtle = QTurtle.turtle;
         BooleanBuilder whereClause = new BooleanBuilder();
 
@@ -88,7 +87,6 @@ public class TurtleService {
     }
 
     public TurtleResponseDTO getTurtleById(Long turtleId) {
-        log.info("거북이 아이디로 조회 시도");
         try {
             // 거북이 정보 조회
             Turtle turtle = turtleRepository.findById(turtleId)

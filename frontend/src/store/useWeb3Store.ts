@@ -120,7 +120,7 @@ export const useWeb3Store = create<Web3State>((set, get) => ({
           error: null,
         });
 
-        console.log("지갑이 연결되었습니다:", newAccount);
+        console.log("wallet is connected");
       } else {
         throw new Error("연결된 계정이 없습니다.");
       }
@@ -165,8 +165,6 @@ export const useWeb3Store = create<Web3State>((set, get) => ({
         documentContract,
         error: null 
       });
-
-      console.log("계정이 변경되었습니다:", newAccount);
     }
   },
 

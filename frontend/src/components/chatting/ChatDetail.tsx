@@ -66,7 +66,6 @@ export default function ChatDetail({
   useEffect(() => {
     const getChatData = async () => {
       await initData();
-      console.log("otherUserId", chatId);
     };
     getChatData();
     connect();
@@ -107,12 +106,9 @@ export default function ChatDetail({
         }
       });
     }
-    console.log("groupedMessages", groupedMessages);
     setGroupedChat(groupedMessages);
     if (groupedMessages) {
       setRecentChattingTime(groupedMessages[groupedMessages.length - 1].date);
-      console.log(groupedMessages[groupedMessages.length - 1].date);
-      console.log(recentChattingTime);
     }
     // }
   };
@@ -134,12 +130,6 @@ export default function ChatDetail({
             //const lastGroup = groupedChatRef.current[groupedChat.length - 1];
             const lastGroup = useChatStore.getState().recentChattingTime;
 
-            console.log("Sender:", newMessage.userId);
-            console.log("NickName:", newMessage.nickname);
-            console.log("Register Time:", newMessage.registTime);
-            console.log("Message:", newMessage.message);
-            console.log("ProfileImg:", newMessage.userProfile);
-            console.log(lastGroup);
             // 날짜별로 분류
             if (!lastGroup || lastGroup !== messageDate) {
               setGroupedChat((prevMessages) => [
@@ -194,8 +184,6 @@ export default function ChatDetail({
       );
       setInputValue("");
     }
-    // 메세지 보내기
-    console.log("메세지 보내기");
   };
 
   return (

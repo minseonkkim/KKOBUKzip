@@ -51,7 +51,6 @@ public class WebSocketUtil {
 
 			// TTL(만료 시간)도 삭제
 			redisTemplate.delete("user:" + userId);
-			// System.out.println(userId);
 		}
 	}
 }

@@ -48,7 +48,6 @@ const TransactionListPage = () => {
     setFilters({}); 
     setPages(0); 
     fetchData(0, {}, true);
-    console.log("필터 초기화");
   };
 
   return (
