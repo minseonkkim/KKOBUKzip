@@ -48,6 +48,12 @@
 
 <img src="https://img.shields.io/badge/Git(Gitlab)-FCA121?style=for-the-badge&logo=Gitlab&logoColor=white"> <img src="https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=Jira&logoColor=white"> <img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white"> <img src="https://img.shields.io/badge/Mattermost-0058CC?style=for-the-badge&logo=Mattermost&logoColor=white"> <img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=Figma&logoColor=white">
 
+## 💚 팀원 소개
+
+| ![김여준](https://avatars.githubusercontent.com/junjunclub) | ![김영빈](https://avatars.githubusercontent.com/YBK1) | ![신민경](https://avatars.githubusercontent.com/minggwen) | ![김민선](https://avatars.githubusercontent.com/minseonkkim) | ![서규범](https://avatars.githubusercontent.com/goosebbeoms) | ![한세훈](https://avatars.githubusercontent.com/DDARK00) | 
+|---------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| 김여준([@junjunclub](https://github.com/junjunclub)) | 김영빈([@YBK1](https://github.com/YBK1)) | 신민경([@minggwen](https://github.com/minggwen)) | 김민선([@minseonkkim](https://github.com/minseonkkim)) | 서규범([@goosebbeoms](https://github.com/goosebbeoms)) | 한세훈([@DDARK00](https://github.com/DDARK00)) | 
+| Leader / Back End | Back End / Blockchain | Back End | Front End | Front End / Blockchain | Front End |
 
 ## 💚 프로젝트 산출물
 
@@ -94,10 +100,4 @@
 ![404화면](./docs/assets/404화면.gif)  
 
 
-## 💚 팀원 소개
-
-| ![김여준](https://avatars.githubusercontent.com/junjunclub) | ![김영빈](https://avatars.githubusercontent.com/YBK1) | ![신민경](https://avatars.githubusercontent.com/minggwen) | ![김민선](https://avatars.githubusercontent.com/minseonkkim) | ![서규범](https://avatars.githubusercontent.com/goosebbeoms) | ![한세훈](https://avatars.githubusercontent.com/DDARK00) | 
-|---------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| 김여준([@junjunclub](https://github.com/junjunclub)) | 김영빈([@YBK1](https://github.com/YBK1)) | 신민경([@minggwen](https://github.com/minggwen)) | 김민선([@minseonkkim](https://github.com/minseonkkim)) | 서규범([@goosebbeoms](https://github.com/goosebbeoms)) | 한세훈([@DDARK00](https://github.com/DDARK00)) | 
-| Leader / Back End | Back End / Blockchain | Back End | Front End | Front End / Blockchain | Front End |
 
