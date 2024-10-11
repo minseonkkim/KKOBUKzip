@@ -100,14 +100,14 @@ function DuringAuction({
       // WebSocket 주소에 token과 auctionId를 쿼리 파라미터로 추가
       const socketAddress = `${
         import.meta.env.VITE_SOCKET_AUCTION_URL
-      }?token=${token}&auctionId=${auctionId}`;
+      }?auctionId=${auctionId}`;
       const socket = new WebSocket(socketAddress);
 
       auctionStompClient.current = Stomp.over(socket);
 
       auctionStompClient.current.connect(
         {
-          // Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`
         },
         (frame: StompFrame) => {
           console.log("Connected: " + frame);

@@ -8,11 +8,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
@@ -33,22 +36,17 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-        // 쿼리에서 토큰 추출
-        String query = request.getURI().getQuery();
-        String token = extractTokenFromQuery(query);
 
-        log.info("Token from query: {}", token);
+        HttpHeaders headers = request.getHeaders();
+        String token = headers.getFirst("Authorization");
 
-        if (token == null || !jwtUtil.validateAccessToken(token)) {
-            log.warn("JWT 토큰이 유효하지 않습니다.");
-            response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            return false;
+        if (token == null || !token.startsWith("Bearer ")) {
+            log.warn("Authorization 헤더가 없거나 잘못되었습니다.");
+            return false; // 토큰이 유효하지 않으면 핸드셰이크를 중단할 수 있습니다.
         }
 
-        Long userId = jwtUtil.getIdFromToken(token);
-//        String nickname = jwtUtil.getUsernameFromToken(token);
+        Long userId = jwtUtil.getIdFromToken(token.substring(7));
 
-//        log.info("nickname: {}", nickname);
         log.info("userId: {}", userId);
 
         UserResponseDTO user = mainClient.getUserById(userId);
