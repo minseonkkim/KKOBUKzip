@@ -42,7 +42,6 @@ public class AuctionWebSocketController {
 
     @MessageMapping("/auction/{auctionId}/init")
     public void sendInitialData(@DestinationVariable Long auctionId, Principal principal) {
-        System.out.println("Initial Data 진입");
         Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매가 존재하지 않습니다."));
         String bidKey = AUCTION_BID_KEY+auctionId;
         String endKey = AUCTION_END_KEY_PREFIX+auctionId;
@@ -50,8 +49,6 @@ public class AuctionWebSocketController {
         Long userId = Long.valueOf(principal.getName());
 
         Long remainingTime = redisTemplate.getExpire(endKey, TimeUnit.MILLISECONDS);
-
-        System.out.println("Principal에서 userId : "+userId);
 
         if (!redisTemplate.hasKey(bidKey)) {
             log.warn("Redis에 키가 존재하지 않습니다. 기본값을 사용합니다.");
@@ -69,7 +66,6 @@ public class AuctionWebSocketController {
 
             // 클라이언트에게 데이터 전송
             String destination = "/queue/auction/" + auctionId + "/init";
-            System.out.println("DESTINATION: "+destination);
 
         // /user/{userId}/queue/auction/{auctionId}/init
             messagingTemplate.convertAndSendToUser(userId.toString(), destination,

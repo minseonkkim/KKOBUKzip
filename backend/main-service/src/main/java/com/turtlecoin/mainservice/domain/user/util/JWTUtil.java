@@ -59,21 +59,18 @@ public class JWTUtil {
     public Boolean validateAccessToken(String token) throws IOException {
         String tokens[] = token.split(" ");
         if(token==null||!"Bearer".equals(tokens[0])){
-            System.out.println("token format is wrong");
             return false;
         }
         token = tokens[1];
         try {
             isTokenExpired(token);  // 토큰 만료 여부 확인
         } catch (ExpiredJwtException e) {
-            System.out.println("token is expired");
             return false;
         }
 
         // 토큰이 access 토큰인지 확인
         String category = getCategoryFromToken(token);
         if (!category.equals("access")) {
-            System.out.println("category is not access");
             return false;
         }
 

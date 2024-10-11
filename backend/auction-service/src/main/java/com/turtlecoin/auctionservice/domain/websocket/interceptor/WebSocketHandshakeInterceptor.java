@@ -62,14 +62,11 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
 
         Principal userPrincipal = new StompPrincipal(userId.toString());
         attributes.put("principal", userPrincipal);
-
-        System.out.println("beforeHandShake True!!");
         return true;
     }
 
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
-        System.out.println("afterHandShake True!!");
 //        // URI에서 경매 ID와 userId 추출
 //        String uri = request.getURI().toString();
 //        log.info("uri: {}", uri);

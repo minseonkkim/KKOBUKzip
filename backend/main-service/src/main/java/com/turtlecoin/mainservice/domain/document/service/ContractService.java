@@ -42,7 +42,6 @@ public class ContractService {
 
 		// 거북이 정보 해시함수 처리
 		String turtleInfo = birth.toString() + weight + gender;
-		System.out.println(turtleInfo);
 		byte[] turtleHash = hexStringToByte32("0x" + keccak256(turtleInfo.getBytes()));
 
 		turtleDocumentation.registerTurtleMultiplicationDocument(

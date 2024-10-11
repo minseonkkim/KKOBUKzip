@@ -96,9 +96,6 @@ public class AuctionService {
             } else {
                 throw new PhotoNotUploadedException("사진이 등록되지 않았습니다.");
             }
-            log.info("이미지 업로드 완료");
-            System.out.println("거북이 무게 : "+auction.getWeight());
-
             return new ResponseEntity<>(ResponseVO.success("경매가 등록됐습니다.","auctionId", auction.getId()), HttpStatus.OK);
 
 
@@ -226,7 +223,6 @@ public class AuctionService {
             log.info("UserID: {}",user.getUserId());
 
             String key = AUCTION_END_KEY_PREFIX+auction;
-            System.out.println("get요청 보낼 때 key : "+ key);
             // null값일 때 어떻게 하지?
             Long remainingTime = redisTemplate.getExpire(AUCTION_END_KEY_PREFIX+auctionId, TimeUnit.MILLISECONDS);
 

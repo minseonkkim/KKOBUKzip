@@ -41,10 +41,6 @@ public class AuctionExpirationListener implements MessageListener {
             Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("경매를 찾을 수 없습니다."));
             try {
                 sendService.endAuction(auctionId);
-                log.info("경매 종료!!");
-                System.out.println("경매 종료 보내준 시간 : "+LocalDateTime.now());
-                System.out.println("경매 종료!!");
-                System.out.println("경매 종료 보내준 시간 : "+LocalDateTime.now());
             } catch (Exception e) {
                 // 에러 발생 시 경매 전으로 상태 갱신
                 auction.updateStatus(AuctionProgress.BEFORE_AUCTION);
