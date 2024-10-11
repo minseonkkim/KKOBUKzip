@@ -195,7 +195,6 @@ function MyTurtle({
   };
 
   const handleTurtleDataVerification = async () => {
-    console.log(`${birth}${weight}${gender}`);
     const turtleHash = Web3.utils.sha3(`${birth}${weight}${gender}`);
 
     try {
@@ -208,7 +207,7 @@ function MyTurtle({
         openDisagreeAlert();
       }
     } catch (error) {
-      console.log("에러 : ", error);
+      console.log("error : ", error);
       openErrorAlert();
     }
   };

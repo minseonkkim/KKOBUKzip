@@ -106,11 +106,7 @@ function BreedDocument() {
     const blob = new Blob([JSON.stringify(breedData)], {
       type: "application/json",
     });
-    console.log(JSON.stringify(breedData));
-    // formData.append("data", JSON.stringify(breedData));
     formData.append("data", blob);
-    // 데이터 보낼때 multipart로 적당히 던질것
-    console.log(breedData);
 
     const result = await createBreedDocumentRequest(formData);
     if (result.success) {

@@ -28,7 +28,7 @@
 
 ### **Backend**
 
-<img src="https://img.shields.io/badge/IntelliJ IDEA-000000?style=for-the-badge&logo=IntelliJ IDEA&logoColor=white"> <img src="https://img.shields.io/badge/SpringBoot_3.3.1-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"> <img src="https://img.shields.io/badge/Spring Data JPA-6DB33F?style=for-the-badge&logo=&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white"> <img src="https://img.shields.io/badge/Spring Cloud-6DB33F?style=for-the-badge&logo=Spring Colud&logoColor=white"> <img src="https://img.shields.io/badge/Spring Batch-6DB33F?style=for-the-badge&logo=&logoColor=white"> <br> <img src="https://img.shields.io/badge/rabbitmq-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white"> <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"> <img src = "https://img.shields.io/badge/-MongoDB-13aa52?style=for-the-badge&logo=mongodb&logoColor=white"> <img src="https://img.shields.io/badge/AWS S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white"> <img src="https://img.shields.io/badge/WebSocket-000000?style=for-the-badge&logo=&logoColor=white">
+<img src="https://img.shields.io/badge/IntelliJ IDEA-000000?style=for-the-badge&logo=IntelliJ IDEA&logoColor=white"> <img src="https://img.shields.io/badge/SpringBoot_3.3.1-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"> <img src="https://img.shields.io/badge/Spring Data JPA-6DB33F?style=for-the-badge&logo=&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white"> <img src="https://img.shields.io/badge/Spring Cloud-6DB33F?style=for-the-badge&logo=Spring Colud&logoColor=white"> <br> <img src="https://img.shields.io/badge/Spring Batch-6DB33F?style=for-the-badge&logo=&logoColor=white"> <img src="https://img.shields.io/badge/rabbitmq-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white"> <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"> <img src = "https://img.shields.io/badge/-MongoDB-13aa52?style=for-the-badge&logo=mongodb&logoColor=white"> <img src="https://img.shields.io/badge/AWS S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white"> <img src="https://img.shields.io/badge/WebSocket-000000?style=for-the-badge&logo=&logoColor=white">
 
 ### **Frontend**
 
@@ -36,8 +36,9 @@
 
 ### **BlockChain**
 
-<img src="https://img.shields.io/badge/web3.js-F16822?style=for-the-badge&logo=web3dotjs&logoColor=white" > 
 <img src="https://img.shields.io/badge/solidity-363636?style=for-the-badge&logo=solidity&logoColor=white" >
+<img src="https://img.shields.io/badge/web3j-F16822?style=for-the-badge" >
+<img src="https://img.shields.io/badge/web3.js-F16822?style=for-the-badge&logo=web3dotjs&logoColor=white" > 
 <img src="https://img.shields.io/badge/openzeppelin-4E5EE4?style=for-the-badge&logo=openzeppelin&logoColor=white">
 
 ### **CI/CD**
@@ -50,10 +51,10 @@
 
 ## 💚 팀원 소개
 
-| ![김여준](https://avatars.githubusercontent.com/junjunclub) | ![김영빈](https://avatars.githubusercontent.com/YBK1) | ![신민경](https://avatars.githubusercontent.com/minggwen) | ![김민선](https://avatars.githubusercontent.com/minseonkkim) | ![서규범](https://avatars.githubusercontent.com/goosebbeoms) | ![한세훈](https://avatars.githubusercontent.com/DDARK00) |
-| ----------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | -------------------------------------------------------- |
-| 김여준([@junjunclub](https://github.com/junjunclub))        | 김영빈([@YBK1](https://github.com/YBK1))              | 신민경([@minggwen](https://github.com/minggwen))          | 김민선([@minseonkkim](https://github.com/minseonkkim))       | 서규범([@goosebbeoms](https://github.com/goosebbeoms))       | 한세훈([@DDARK00](https://github.com/DDARK00))           |
-| Leader / Back End                                           | Back End / Blockchain                                 | Back End                                                  | Front End                                                    | Front End / Blockchain                                       | Front End                                                |
+| ![김여준](https://avatars.githubusercontent.com/junjunclub) | ![김영빈](https://avatars.githubusercontent.com/YBK1) | ![신민경](https://avatars.githubusercontent.com/minggwen) | ![김민선](https://avatars.githubusercontent.com/minseonkkim) | ![서규범](https://avatars.githubusercontent.com/goosebbeoms) | ![한세훈](https://avatars.githubusercontent.com/DDARK00) | 
+|---------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| 김여준([@junjunclub](https://github.com/junjunclub)) | 김영빈([@YBK1](https://github.com/YBK1)) | 신민경([@minggwen](https://github.com/minggwen)) | 김민선([@minseonkkim](https://github.com/minseonkkim)) | 서규범([@goosebbeoms](https://github.com/goosebbeoms)) | 한세훈([@DDARK00](https://github.com/DDARK00)) | 
+| Leader / Back End | Back End / Blockchain | Back End | Front End | Front End / Blockchain | Front End |
 
 ## 💚 프로젝트 산출물
 
@@ -71,26 +72,49 @@
 - [중간발표자료](./docs/꼬북집_중간발표_PPT.pdf)
 - [최종발표자료](./docs/꼬북집_최종발표_PPT.pdf)
 
-## 💚 화면 구성
+## 💚 기능 및 화면 구성
+### 메인
+![메인화면](./docs/assets/메인화면.gif)
 
-## 💚 Git Flow
+### 거래
+- 구매 (+ 채팅)
 
-**Commit Convention**
+  ![구매](./docs/assets/구매.gif)
 
-    📌 feat: 새로운 기능 추가, 기능 수정, 삭제
+- 양수 서류 등록
 
-    📌 fix: 오류, 버그 수정
+  ![양수서류등록](./docs/assets/양수서류등록.gif)
 
-    📌 docs: README나 WIKI 같은 문서 개정
+- 관리자 승인
 
-    📌 style: 코드 스타일 혹은 포맷 등에 관한 커밋
-    📌 refactor:  코드 리팩토링에 대한 커밋 (쓸모없는 코드 삭제 등)
-    📌 test : 테스트 코드 수정에 대한 커밋
+  ![관리자승인](./docs/assets/관리자승인.gif)
 
-    📌 config : 모듈 설치, 설정 파일 추가, 라이브러리 추가, 패키지 구조 수정 등
+### 경매
+- 경매 진행
 
-    📌 chore: 간단한 코드 수정(오탈자 등), 내부 파일 수정 등 기타 변경 사항
+  ![경매진행](./docs/assets/경매진행.gif)
 
-    📌 rename: 파일 이름 변경이 있을 때 사용
+- 경매 낙찰
 
-    📌 remove : 파일 삭제
+  ![경매낙찰](./docs/assets/경매낙찰.gif)
+
+### 마이페이지
+![마이페이지](./docs/assets/마이페이지.gif)  
+
+- 판매 등록
+
+  ![판매등록](./docs/assets/판매등록.gif)
+
+- 인공증식 서류 등록
+
+  ![인공증식등록](./docs/assets/인공증식등록.gif) 
+
+- 양도 서류 등록
+  
+  ![양도서류등록](./docs/assets/양도서류등록.gif)
+
+### 404 (거북이 달리기 게임)
+![404화면](./docs/assets/404화면.gif)  
+
+
+

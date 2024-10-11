@@ -22,7 +22,6 @@ const AuctionListPage = () => {
         const progressItems: JSX.Element[] = [];
         const auctionItems = result.data.data.data.auctions.map(
           (item: AuctionListDataType) => {
-            console.log(item.progress);
             if (item.progress === "DURING_AUCTION") {
               // auctionId로 변경
               progressItems.push(<AuctionTurtle key={item.auctionId!} data={item} />);
