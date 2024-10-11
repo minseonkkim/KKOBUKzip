@@ -46,13 +46,6 @@
 
 <img src="https://img.shields.io/badge/Git(Gitlab)-FCA121?style=for-the-badge&logo=Gitlab&logoColor=white"> <img src="https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=Jira&logoColor=white"> <img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white"> <img src="https://img.shields.io/badge/Mattermost-0058CC?style=for-the-badge&logo=Mattermost&logoColor=white"> <img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=Figma&logoColor=white">
 
-## 💚 팀원 소개
-
-| ![김여준](https://avatars.githubusercontent.com/junjunclub) | ![김영빈](https://avatars.githubusercontent.com/YBK1) | ![신민경](https://avatars.githubusercontent.com/minggwen) | ![김민선](https://avatars.githubusercontent.com/minseonkkim) | ![서규범](https://avatars.githubusercontent.com/goosebbeoms) | ![한세훈](https://avatars.githubusercontent.com/DDARK00) | 
-|---------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| 김여준([@junjunclub](https://github.com/junjunclub)) | 김영빈([@YBK1](https://github.com/YBK1)) | 신민경([@minggwen](https://github.com/minggwen)) | 김민선([@minseonkkim](https://github.com/minseonkkim)) | 서규범([@goosebbeoms](https://github.com/goosebbeoms)) | 한세훈([@DDARK00](https://github.com/DDARK00)) | 
-| Leader / Back End | Back End / Blockchain | Back End | Front End | Front End / Blockchain | Front End |
-
 
 ## 💚 프로젝트 산출물
 
@@ -70,28 +63,39 @@
   - [중간발표자료](./docs/꼬북집_중간발표_PPT.pdf)
   - [최종발표자료](./docs/꼬북집_최종발표_PPT.pdf)
 
-## 💚 화면 구성
+## 💚 기능 및 화면 구성
+### 메인
+![메인화면](./docs/assets/메인화면.gif)
+
+### 거래
+- 구매
+
+  ![경매진행](./docs/assets/경매진행.gif)
+
+- 양수 서류 등록
+
+  ![양수서류등록](./docs/assets/양수서류등록.gif)
+
+### 경매
+- 경매 진행
+
+  ![경매진행](./docs/assets/경매진행.gif)
+
+- 경매 낙찰
+
+  ![경매낙찰](./docs/assets/경매낙찰.gif)
+
+### 마이페이지
+![마이페이지](./docs/assets/마이페이지.gif)  
+
+### 404 (거북이 달리기 게임)
+![404화면](./docs/assets/404화면.gif)  
 
 
-## 💚 Git Flow
+## 💚 팀원 소개
 
-  **Commit Convention**
-
-    📌 feat: 새로운 기능 추가, 기능 수정, 삭제
-
-    📌 fix: 오류, 버그 수정
-
-    📌 docs: README나 WIKI 같은 문서 개정
-
-    📌 style: 코드 스타일 혹은 포맷 등에 관한 커밋
-    📌 refactor:  코드 리팩토링에 대한 커밋 (쓸모없는 코드 삭제 등)
-    📌 test : 테스트 코드 수정에 대한 커밋
-
-    📌 config : 모듈 설치, 설정 파일 추가, 라이브러리 추가, 패키지 구조 수정 등
-
-    📌 chore: 간단한 코드 수정(오탈자 등), 내부 파일 수정 등 기타 변경 사항
-
-    📌 rename: 파일 이름 변경이 있을 때 사용
-
-    📌 remove : 파일 삭제
+| ![김여준](https://avatars.githubusercontent.com/junjunclub) | ![김영빈](https://avatars.githubusercontent.com/YBK1) | ![신민경](https://avatars.githubusercontent.com/minggwen) | ![김민선](https://avatars.githubusercontent.com/minseonkkim) | ![서규범](https://avatars.githubusercontent.com/goosebbeoms) | ![한세훈](https://avatars.githubusercontent.com/DDARK00) | 
+|---------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| 김여준([@junjunclub](https://github.com/junjunclub)) | 김영빈([@YBK1](https://github.com/YBK1)) | 신민경([@minggwen](https://github.com/minggwen)) | 김민선([@minseonkkim](https://github.com/minseonkkim)) | 서규범([@goosebbeoms](https://github.com/goosebbeoms)) | 한세훈([@DDARK00](https://github.com/DDARK00)) | 
+| Leader / Back End | Back End / Blockchain | Back End | Front End | Front End / Blockchain | Front End |
 
